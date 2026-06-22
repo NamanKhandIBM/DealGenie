@@ -8,7 +8,11 @@ export async function POST(req: NextRequest) {
   const message: string = body.message ?? "";
   const state: ConversationState = body.state ?? initialState;
 
-  const { state: nextState, reply } = processUserMessage(state, message);
+  const result = processUserMessage(state, message);
 
-  return NextResponse.json({ reply, state: nextState });
+  return NextResponse.json({
+    reply: result.reply,
+    state: result.state,
+    activeQuestion: result.activeQuestion,
+  });
 }
