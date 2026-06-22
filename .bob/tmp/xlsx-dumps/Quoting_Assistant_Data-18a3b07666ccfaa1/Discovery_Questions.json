@@ -1,0 +1,161 @@
+{
+  "name": "Discovery_Questions",
+  "headers": [
+    "Product",
+    "#",
+    "Question",
+    "Drives"
+  ],
+  "rows": [
+    [
+      "Verify",
+      1,
+      "Which capabilities does the client need? (SSO / MFA / Adaptive Access / Lifecycle Mgmt & Governance / Analytics)",
+      "Which rate columns to use"
+    ],
+    [
+      "Verify",
+      2,
+      "Total user population?",
+      "Base for MAU"
+    ],
+    [
+      "Verify",
+      3,
+      "Average logins per user per year? (decimals OK)",
+      "MAU = pop x MIN(logins,12)/12"
+    ],
+    [
+      "Verify",
+      4,
+      "If Lifecycle Mgmt & Governance or Analytics: how many managed users?",
+      "Driver for those two capabilities"
+    ],
+    [
+      "Verify",
+      5,
+      "How many regions? (default 1)",
+      "Multiplies total revenue"
+    ],
+    [
+      "Verify",
+      6,
+      "Any add-ons? (SMS/Email MFA, App Gateway, Vanity Domain, Non-Prod)",
+      "Add-on lines"
+    ],
+    [
+      "Verify",
+      7,
+      "Entitlement term: 12-month or 3-year?",
+      "Opportunity value"
+    ],
+    [
+      "NS1",
+      1,
+      "Current authoritative DNS provider? (self-hosted / registrar / cloud / premium)",
+      "Qualification"
+    ],
+    [
+      "NS1",
+      2,
+      "Average monthly DNS query volume (MQ)? Estimate OK.",
+      "Managed DNS tier"
+    ],
+    [
+      "NS1",
+      3,
+      "Total record count?",
+      "Records (minus 3,000 free)"
+    ],
+    [
+      "NS1",
+      4,
+      "Need traffic steering / GSLB? How many records need steering? RUM-based?",
+      "Filter chains / GSLB packs"
+    ],
+    [
+      "NS1",
+      5,
+      "Need up/down monitoring? How many hostnames/IPs?",
+      "Monitors"
+    ],
+    [
+      "NS1",
+      6,
+      "Resilience needs — secondary or Dedicated DNS? (PoPs min 3, max 12)",
+      "Dedicated DNS"
+    ],
+    [
+      "NS1",
+      7,
+      "Operations in mainland China? (min 50M China MQ; requires Managed DNS)",
+      "DNS for China"
+    ],
+    [
+      "NS1",
+      8,
+      "Observability needs? (DNS Insights: 20% of queries, to 10%)",
+      "DNS Insights"
+    ],
+    [
+      "NS1",
+      9,
+      "DDoS / spike protection needed?",
+      "Add-on"
+    ],
+    [
+      "NS1",
+      10,
+      "Expected growth? (size queries with headroom to avoid overages)",
+      "Query sizing"
+    ],
+    [
+      "NS1",
+      11,
+      "Entitlement term: 12-month or 3-year?",
+      "Opportunity value"
+    ],
+    [
+      "Vault",
+      1,
+      "New/expanding customer (Platform RU model) or stable renewal (Clients model)?",
+      "Picks Model A or B — cannot mix"
+    ],
+    [
+      "Vault",
+      2,
+      "How many Vault clusters/servers? (= Installs)",
+      "Install quantity"
+    ],
+    [
+      "Vault",
+      3,
+      "Model A: which use cases & volumes (static/dynamic/PKI/SSH/transit/KMSE)? Model B: how many Clients?",
+      "RUs or Client RVUs"
+    ],
+    [
+      "Vault",
+      4,
+      "Production edition? (Essentials/Standard/Premium — Premium for DR/perf replication)",
+      "Install part"
+    ],
+    [
+      "Vault",
+      5,
+      "Non-production environment needed?",
+      "Non-prod install"
+    ],
+    [
+      "Vault",
+      6,
+      "Add-ons: PKI certificates? KMIP / ADP (Key Mgmt, Transform)? Custom plugins?",
+      "Add-on parts"
+    ],
+    [
+      "Vault",
+      7,
+      "Advanced Support? (large customers only, +15% via Z part)",
+      "Support upgrade"
+    ]
+  ]
+}

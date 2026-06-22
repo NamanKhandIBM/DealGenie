@@ -1,0 +1,40 @@
+{
+  "name": "NS1_AddOns",
+  "headers": [
+    "Add-on",
+    "Sizing / pricing rule",
+    "Part #"
+  ],
+  "rows": [
+    [
+      "Dedicated DNS",
+      "Single-tenant redundant layer. Size PoP by records+queries; choose # PoPs (min 3, max 12).",
+      "PENDING"
+    ],
+    [
+      "DNS for China",
+      "Priced on China-origin MQ; minimum 50M queries; requires Managed DNS; records/filters/monitors same limits.",
+      "PENDING"
+    ],
+    [
+      "DNS Insights",
+      "Flat % of total queries: 20% list, discountable to 10%. Optional custom data-collection policy add-on.",
+      "PENDING"
+    ],
+    [
+      "GSLB",
+      "Cannot be sold standalone — requires Managed DNS (enter Managed DNS data first). RUM queries sold in 5M-query (5-interaction) packs; NS1 RUM data or client's own.",
+      "PENDING"
+    ],
+    [
+      "Traffic Steering",
+      "Per filter chain; RUM-based (GSLB) filters cost extra.",
+      "PENDING"
+    ],
+    [
+      "Typical discount",
+      "20-30% (usually enough to win; NS1 buyers weigh functionality over price).",
+      "n/a"
+    ]
+  ]
+}

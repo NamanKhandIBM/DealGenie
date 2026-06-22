@@ -1,0 +1,54 @@
+{
+  "name": "Verify_Parts",
+  "headers": [
+    "Part #",
+    "Description",
+    "List Price",
+    "Unit",
+    "Type"
+  ],
+  "rows": [
+    [
+      "D0231ZX",
+      "IBM Security Verify SaaS Resource Unit (RU)",
+      281.4,
+      "per RU / year",
+      "CORE"
+    ],
+    [
+      "D02T6ZX",
+      "SMS and Email MFA Only",
+      33.7,
+      "per event per thousand",
+      "Add-on"
+    ],
+    [
+      "D01UQZX",
+      "Hosted Application Gateway",
+      22500,
+      "per instance / month",
+      "Add-on"
+    ],
+    [
+      "D01URZX",
+      "Vanity Domain",
+      562,
+      "per instance / month",
+      "Add-on"
+    ],
+    [
+      "D22PGLL",
+      "Non-Production with SLA",
+      2810,
+      "per instance / month",
+      "Add-on"
+    ],
+    [
+      "D21CWLL",
+      "Non-Production without SLA",
+      1410,
+      "per instance / month",
+      "Add-on"
+    ]
+  ]
+}

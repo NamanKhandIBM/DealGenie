@@ -1,0 +1,40 @@
+{
+  "name": "Vault_RU_Counting",
+  "headers": [
+    "Use case",
+    "What it measures",
+    "How it is counted"
+  ],
+  "rows": [
+    [
+      "Static Secrets",
+      "How many things you store",
+      "Unique secrets (monthly high-water mark)"
+    ],
+    [
+      "Dynamic / Auto-rotated Secrets",
+      "How many roles you manage",
+      "Number of roles configured"
+    ],
+    [
+      "PKI",
+      "How long certificates live",
+      "Duration-adjusted certificate units (730 hours = 1 RU)"
+    ],
+    [
+      "SSH",
+      "How long SSH credentials live",
+      "Duration-adjusted SSH units (730 hours = 1 RU)"
+    ],
+    [
+      "Transit / Transform",
+      "How many items you secure",
+      "Data-protection API calls (per element): 150,000 = 1 RU"
+    ],
+    [
+      "KMSE",
+      "How many keys you manage",
+      "Managed keys (monthly high-water mark)"
+    ]
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "source": "Quoting_Assistant_Data.xlsx",
+  "contentHash": "18a3b07666ccfaa1",
+  "sheets": [
+    {
+      "name": "README",
+      "file": "README.json",
+      "rowCount": 24,
+      "headers": [
+        "IBM QUOTING ASSISTANT — DATA SOURCE OF TRUTH"
+      ]
+    },
+    {
+      "name": "Verify_Parts",
+      "file": "Verify_Parts.json",
+      "rowCount": 6,
+      "headers": [
+        "Part #",
+        "Description",
+        "List Price",
+        "Unit",
+        "Type"
+      ]
+    },
+    {
+      "name": "Verify_RU_Rates",
+      "file": "Verify_RU_Rates.json",
+      "rowCount": 11,
+      "headers": [
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions.",
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions.",
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions.",
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions.",
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions.",
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions.",
+        "Driver: SSO/MFA/Adaptive Access are sized by Monthly Active Users (MAU). Lifecycle Mgmt & Governance and Analytics are sized by # Managed Users.  MAU = ROUNDUP(population x MIN(avg_logins_per_year,12)/12). RU price = $281.40 each (Verify_Parts). Annual list = Total RUs x $281.40 x #regions."
+      ]
+    },
+    {
+      "name": "NS1_Elements",
+      "file": "NS1_Elements.json",
+      "rowCount": 4,
+      "headers": [
+        "Element",
+        "What it is",
+        "Billing rule",
+        "Part #"
+      ]
+    },
+    {
+      "name": "NS1_Pricing_Tiers",
+      "file": "NS1_Pricing_Tiers.json",
+      "rowCount": 26,
+      "headers": [
+        "Find the largest Tier Base <= client's MQ, then price ~= client MQ x that tier's Tier MRR. Example: 150 MQ -> tier base 100 -> $10 Tier MRR -> 150 x $10 = $1,500/month.",
+        "Find the largest Tier Base <= client's MQ, then price ~= client MQ x that tier's Tier MRR. Example: 150 MQ -> tier base 100 -> $10 Tier MRR -> 150 x $10 = $1,500/month.",
+        "Find the largest Tier Base <= client's MQ, then price ~= client MQ x that tier's Tier MRR. Example: 150 MQ -> tier base 100 -> $10 Tier MRR -> 150 x $10 = $1,500/month.",
+        "Find the largest Tier Base <= client's MQ, then price ~= client MQ x that tier's Tier MRR. Example: 150 MQ -> tier base 100 -> $10 Tier MRR -> 150 x $10 = $1,500/month."
+      ]
+    },
+    {
+      "name": "NS1_AddOns",
+      "file": "NS1_AddOns.json",
+      "rowCount": 6,
+      "headers": [
+        "Add-on",
+        "Sizing / pricing rule",
+        "Part #"
+      ]
+    },
+    {
+      "name": "Vault_Parts",
+      "file": "Vault_Parts.json",
+      "rowCount": 23,
+      "headers": [
+        "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+        "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+        "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+        "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+        "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+        "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only)."
+      ]
+    },
+    {
+      "name": "Vault_RU_Counting",
+      "file": "Vault_RU_Counting.json",
+      "rowCount": 6,
+      "headers": [
+        "Use case",
+        "What it measures",
+        "How it is counted"
+      ]
+    },
+    {
+      "name": "Vault_Discounts",
+      "file": "Vault_Discounts.json",
+      "rowCount": 24,
+      "headers": [
+        "RUs (monthly)",
+        "Rec. discount",
+        "Net $/RU",
+        "Total net annual"
+      ]
+    },
+    {
+      "name": "Discovery_Questions",
+      "file": "Discovery_Questions.json",
+      "rowCount": 25,
+      "headers": [
+        "Product",
+        "#",
+        "Question",
+        "Drives"
+      ]
+    },
+    {
+      "name": "Change_Log",
+      "file": "Change_Log.json",
+      "rowCount": 1,
+      "headers": [
+        "Date",
+        "Who",
+        "What changed"
+      ]
+    }
+  ]
+}

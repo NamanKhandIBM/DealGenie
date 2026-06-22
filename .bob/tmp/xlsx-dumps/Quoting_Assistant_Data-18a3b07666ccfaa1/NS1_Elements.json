@@ -1,0 +1,35 @@
+{
+  "name": "NS1_Elements",
+  "headers": [
+    "Element",
+    "What it is",
+    "Billing rule",
+    "Part #"
+  ],
+  "rows": [
+    [
+      "Queries",
+      "DNS queries NS1 answers, in millions/month (MQ)",
+      "Required for every Managed DNS deal; overage applies above band",
+      "PENDING"
+    ],
+    [
+      "Records",
+      "Fully-qualified domain name + record type (e.g. www.example.com Type A)",
+      "First 3,000 included free; size on (records - 3,000)",
+      "PENDING"
+    ],
+    [
+      "Filter Chains",
+      "Traffic-steering rule set on a record",
+      "One per record needing steering; unlimited filters per chain free; RUM/GSLB filters cost extra",
+      "PENDING"
+    ],
+    [
+      "Monitors",
+      "Up/down monitor for a server/infra element",
+      "One per hostname/IP; NS1's own or client's own = same charge",
+      "PENDING"
+    ]
+  ]
+}

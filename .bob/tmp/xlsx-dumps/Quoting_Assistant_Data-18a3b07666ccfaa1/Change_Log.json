@@ -1,0 +1,15 @@
+{
+  "name": "Change_Log",
+  "headers": [
+    "Date",
+    "Who",
+    "What changed"
+  ],
+  "rows": [
+    [
+      "2026-06-22",
+      "Initial build",
+      "Created from transcripts + Verify RU calculator, NS1 L2 Seller Deck, IBM HashiCorp Pricing Guidance (Jun 18 2026). Verify math validated (500 users SSO = 50 RU). NS1 part numbers PENDING."
+    ]
+  ]
+}

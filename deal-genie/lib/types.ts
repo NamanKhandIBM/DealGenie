@@ -1,0 +1,35 @@
+// Shared types for the conversational quoting assistant.
+
+export type Product = "Verify" | "NS1" | "Vault";
+
+export type ConversationPhase =
+  | "welcome"
+  | "product-select"
+  | "discovery"
+  | "computing"
+  | "result";
+
+export interface Message {
+  id: string;
+  role: "assistant" | "user";
+  content: string;
+  timestamp: number;
+}
+
+export interface ConversationState {
+  phase: ConversationPhase;
+  product: Product | null;
+  // Collected answers keyed by question index
+  answers: Record<string, string | number | boolean | string[]>;
+  // Which discovery question step we're on
+  discoveryStep: number;
+  messages: Message[];
+}
+
+export const initialState: ConversationState = {
+  phase: "welcome",
+  product: null,
+  answers: {},
+  discoveryStep: 0,
+  messages: [],
+};

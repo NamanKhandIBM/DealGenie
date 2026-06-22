@@ -1,0 +1,197 @@
+{
+  "name": "Vault_Parts",
+  "headers": [
+    "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+    "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+    "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+    "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+    "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only).",
+    "CRITICAL: Model A (Platform/RU) and Model B (Clients/RVU) may NOT be mixed for one customer. Advanced Support = matching 'Z' part at +15% of parent list (large customers only)."
+  ],
+  "rows": [
+    [
+      "Model",
+      "Part #",
+      "Description",
+      "List Price",
+      "Metric",
+      "Notes"
+    ],
+    [
+      "A · Platform/RU",
+      "D15FQZX",
+      "Vault Platform Standard Install",
+      96000,
+      "Install",
+      "Required, min 1 (the cluster/server)"
+    ],
+    [
+      "A · Platform/RU",
+      "D15FKZX",
+      "Vault Platform Standard Resource Unit",
+      48,
+      "Resource Unit",
+      "Required add-on; see Vault_RU_Counting"
+    ],
+    [
+      "A · Platform/RU",
+      "D155GZX",
+      "Vault Platform Standard Non-Production Install",
+      48000,
+      "Install",
+      "Recommended"
+    ],
+    [
+      "A · Platform/RU",
+      "D155LZX",
+      "Vault Platform Standard incl. KMIP Install",
+      360000,
+      "Install",
+      "Replaces the production install"
+    ],
+    [
+      "A · Platform/RU",
+      "D1556ZX",
+      "Vault Platform Custom Plugin Install",
+      72000,
+      "Install",
+      "Per plugin"
+    ],
+    [
+      "A · Platform/RU",
+      "D15FNZX",
+      "Vault Platform Standard RU Monthly License",
+      48,
+      "Resource Unit",
+      "Short-term only, max 3 months/calendar year"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1015ZX",
+      "Vault Self-Managed Essentials Install",
+      24960,
+      "Install",
+      "Good"
+    ],
+    [
+      "B · Clients/RVU",
+      "D101FZX",
+      "Vault Self-Managed Standard Install",
+      90000,
+      "Install",
+      "Better"
+    ],
+    [
+      "B · Clients/RVU",
+      "D101AZX",
+      "Vault Self-Managed Premium Install",
+      99960,
+      "Install",
+      "Best; buy >=2 for Performance Replication / DR"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1017ZX",
+      "Vault Self-Managed Client",
+      1296,
+      "RVU (Client)",
+      "Required add-on; unique apps/services/users"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1018ZX",
+      "Vault Self-Managed Non-Production",
+      12480,
+      "Install",
+      "Non-prod"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1406ZX",
+      "Vault PKI Certificate Add-On Install",
+      5004,
+      "Install",
+      "Requires Vault Install+Clients & v1.21+"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1405ZX",
+      "Vault Client PKI Certificate Add-On RVU",
+      60,
+      "RVU",
+      "Per PKI certificate"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1013ZX",
+      "Vault ADP – Key Management",
+      249600,
+      "Install",
+      "Per cluster needing KMIP"
+    ],
+    [
+      "B · Clients/RVU",
+      "D1014ZX",
+      "Vault ADP – Transform",
+      3000,
+      "RVU (Client)",
+      "Subset of total Vault Clients"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100PZX",
+      "Vault Dedicated Essentials Small",
+      12600,
+      "Instance",
+      "PID 5900BJ8 (fully-managed SaaS, optional)"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100QZX",
+      "Vault Dedicated Essentials Medium",
+      25200,
+      "Instance",
+      "PID 5900BJ8"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100RZX",
+      "Vault Dedicated Essentials Large",
+      59640,
+      "Instance",
+      "PID 5900BJ8"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100JZX",
+      "Vault Dedicated Standard Small",
+      14760,
+      "Instance",
+      "PID 5900BJ8"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100KZX",
+      "Vault Dedicated Standard Medium",
+      29400,
+      "Instance",
+      "PID 5900BJ8"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100IZX",
+      "Vault Dedicated Standard Large",
+      75000,
+      "Instance",
+      "PID 5900BJ8"
+    ],
+    [
+      "SaaS Dedicated",
+      "D100LZX",
+      "Vault Dedicated Client",
+      null,
+      "Entity ID (Client)",
+      "PID 5900BJ8; client list price varies by volume"
+    ]
+  ]
+}

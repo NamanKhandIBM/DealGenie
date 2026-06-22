@@ -1,0 +1,80 @@
+{
+  "name": "README",
+  "headers": [
+    "IBM QUOTING ASSISTANT — DATA SOURCE OF TRUTH"
+  ],
+  "rows": [
+    [
+      null
+    ],
+    [
+      "What this file is:"
+    ],
+    [
+      "  The single source of truth for the IBM Quoting Assistant (BOB). All part numbers, prices, licensing"
+    ],
+    [
+      "  rates, and discovery questions live here — NOT hard-coded in the prompt. To update the tool, edit this"
+    ],
+    [
+      "  file. BOB reads it; the prompt just tells BOB how to use it."
+    ],
+    [
+      null
+    ],
+    [
+      "How BOB uses it:"
+    ],
+    [
+      "  1. User picks a product (Verify / NS1 / Vault)."
+    ],
+    [
+      "  2. BOB reads the Discovery_Questions tab for that product and asks them."
+    ],
+    [
+      "  3. BOB computes units using the rate tables (Verify_RU_Rates, Vault_RU_Counting, NS1_Pricing_Tiers)."
+    ],
+    [
+      "  4. BOB returns part numbers + quantities from the *_Parts tabs, plus a ballpark LIST price."
+    ],
+    [
+      null
+    ],
+    [
+      "GOLDEN RULES (do not break):"
+    ],
+    [
+      "  • Never invent a part number. If a cell says PENDING, the tool must say the part number isn't available yet."
+    ],
+    [
+      "  • NS1 part numbers are PENDING — source from CPQ / Tony Nicolakis / Nick Lammert. NS1 prices are ILLUSTRATIVE."
+    ],
+    [
+      "  • All prices are LIST. Real pricing, discounts (Optimal Pricing/OPG) and approvals happen in CPQ."
+    ],
+    [
+      "  • Vault: the Platform/RU model and the Client/RVU model may NOT be mixed for one customer."
+    ],
+    [
+      null
+    ],
+    [
+      "Tabs:"
+    ],
+    [
+      "  Verify_Parts · Verify_RU_Rates · NS1_Elements · NS1_Pricing_Tiers · NS1_AddOns ·"
+    ],
+    [
+      "  Vault_Parts · Vault_RU_Counting · Vault_Discounts · Discovery_Questions · Change_Log"
+    ],
+    [
+      null
+    ],
+    [
+      "Source documents: Verify SaaS RU calculator (xlsx) · NS1 L2 Seller Deck (PDF) · IBM HashiCorp Product"
+    ],
+    [
+      "Pricing Guidance (PDF, dated June 18 2026). Validated: Verify 500-users-SSO example = 50 RU of D0231ZX."
+    ]
+  ]
+}
