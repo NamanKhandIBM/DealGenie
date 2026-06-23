@@ -2,6 +2,7 @@
 // All internal metrics (RU, MAU, etc.) are hidden from the seller.
 
 import type { ConversationState, Product } from "./types";
+import type { ExtractedEntities } from "./extractor";
 import type { Question } from "./questions";
 import {
   VERIFY_QUESTIONS,
@@ -129,11 +130,49 @@ function storeAnswer(
   state.answers[key] = rawValue;
 }
 
+// ─── Entity pre-fill ─────────────────────────────────────────────────────────
+// Maps extracted LLM entities onto the ConversationState answers object,
+// but only for keys that are not already set (never overwrites a user's answer).
+
+function applyEntities(s: ConversationState, e: ExtractedEntities): void {
+  const set = (key: string, value: unknown) => {
+    if (value !== undefined && !(key in s.answers)) {
+      s.answers[key] = value as ConversationState["answers"][string];
+    }
+  };
+
+  // Verify
+  if (e.capabilities?.length) set("capabilities", e.capabilities);
+  if (e.population)    set("population",    e.population);
+  if (e.avgLogins)     set("avgLogins",     e.avgLogins);
+  if (e.managedUsers)  set("managedUsers",  e.managedUsers);
+  if (e.regions)       set("regions",       String(e.regions));
+  if (e.term)          set("term",          e.term);
+  if (e.includeNonProd !== undefined) set("includeNonProd", e.includeNonProd ? "yes" : "no");
+
+  // Vault
+  if (e.vaultModel)    set("vaultModel",    e.vaultModel);
+  if (e.installCount)  set("installCount",  e.installCount);
+  if (e.edition) {
+    const editionMap: Record<string, string> = { Essentials: "1", Standard: "2", Premium: "3" };
+    set("edition", editionMap[e.edition] ?? "2");
+  }
+  if (e.clientCount)   set("clientCount",   e.clientCount);
+  if (e.useCases?.length) set("useCases",   e.useCases);
+
+  // NS1
+  if (e.queryMQ)          set("queryMQ",          e.queryMQ);
+  if (e.recordCount)      set("recordCount",       e.recordCount);
+  if (e.filterChainCount) set("filterChainCount",  e.filterChainCount);
+  if (e.monitors)         set("monitors",          e.monitors);
+}
+
 // ─── MAIN PROCESSOR ──────────────────────────────────────────────────────────
 
 export function processUserMessage(
   state: ConversationState,
-  userMessage: string
+  userMessage: string,
+  entities: ExtractedEntities = {}
 ): ProcessResult {
   const s: ConversationState = JSON.parse(JSON.stringify(state));
   const msg = userMessage.trim();
@@ -149,7 +188,7 @@ export function processUserMessage(
 
   // Product selection phase
   if (s.phase === "welcome" || s.phase === "product-select") {
-    const product = detectProduct(msg);
+    const product = entities.product ?? detectProduct(msg);
     if (!product) {
       return {
         state: s,
@@ -161,7 +200,23 @@ export function processUserMessage(
     s.phase = "discovery";
     s.discoveryStep = 0;
     s.answers = {};
-    const firstQ = getQuestions(s)[0];
+
+    // Pre-fill any entities the LLM already extracted from the opening message
+    applyEntities(s, entities);
+
+    // Advance past questions that are already answered
+    const questions = getQuestions(s);
+    s.discoveryStep = nextApplicableStep(questions, 0, s.answers);
+
+    // If all questions are already answered, go straight to result
+    if (s.discoveryStep >= questions.length) {
+      s.phase = "computing";
+      const result = computeResult(s);
+      s.phase = "result";
+      return { state: s, reply: getProductOpening(product) + "\n\n" + result, activeQuestion: null };
+    }
+
+    const firstQ = questions[s.discoveryStep];
     return {
       state: s,
       reply: getProductOpening(product),
@@ -177,6 +232,9 @@ export function processUserMessage(
     if (currentQ) {
       storeAnswer(s, currentQ, msg);
     }
+
+    // Also apply any additional entities the LLM extracted from this message
+    applyEntities(s, entities);
 
     // After model selection for Vault, rebuild question list
     if (s.product === "Vault" && currentQ?.key === "vaultModel") {
@@ -276,32 +334,37 @@ function computeVerifyResult(state: ConversationState): string {
   });
 
   const rows = result.lines.map((l) =>
-    `| \`${l.part}\` | ${l.description} | ${l.quantity.toLocaleString()} | $${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} | ${l.rationale} |`
-  ).join("\n");
-  const flags = result.flags.map((f) => `- ${f}`).join("\n");
+    `<tr><td><code>${l.part}</code></td><td>${l.description}</td><td>${l.quantity.toLocaleString()}</td><td>$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${l.rationale}</td></tr>`
+  ).join("");
+  const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
 
-  return `**PRODUCT:** IBM Security Verify
-**CLIENT INPUTS:** ${population.toLocaleString()} users · ${avgLogins} avg logins/yr → Monthly Active Users: ${result.mau.toLocaleString()} · Features: ${caps.join(", ")} · Term: ${term}
+  return `<div class="result-card">
 
----
+<div class="result-header">
+  <span class="result-product">IBM Security Verify</span>
+  <span class="result-badge">Verify</span>
+</div>
 
-**PARTS TO QUOTE IN CPQ:**
+<div class="result-inputs">
+  ${population.toLocaleString()} users &nbsp;·&nbsp; ${avgLogins} avg logins/yr &nbsp;·&nbsp; MAU: <strong>${result.mau.toLocaleString()}</strong> &nbsp;·&nbsp; ${caps.join(", ")} &nbsp;·&nbsp; ${term}
+</div>
 
-| Part # | Description | Qty | Annual List | How it was calculated |
-|--------|-------------|-----|-------------|----------------------|
-${rows}
+<div class="result-section-label">PARTS TO QUOTE IN CPQ</div>
+<table class="result-table">
+  <thead><tr><th>Part #</th><th>Description</th><th>Qty</th><th>Annual List</th><th>How calculated</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
 
----
+<div class="result-price-row">
+  <div class="result-price">~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+  <div class="result-price-note">LIST — confirm exact pricing, discount &amp; approval in CPQ</div>
+</div>
 
-**BALLPARK LIST PRICE:** ~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} / year *(LIST — confirm exact pricing, discount & approval in CPQ)*
+<ul class="result-flags">${flags}</ul>
 
-**FLAGS:**
-${flags}
+<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
 
-**NEXT STEP:** Paste these parts into CPQ for exact pricing, discounting, and approval.
-
----
-*Say the name of another product to start a new quote, or 'restart' to go again.*`;
+</div>`;
 }
 
 // ─── VAULT ───────────────────────────────────────────────────────────────────
@@ -351,34 +414,39 @@ function computeVaultResult(state: ConversationState): string {
 
 function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLabel: string): string {
   const rows = result.lines.map((l) =>
-    `| \`${l.part}\` | ${l.description} | ${l.quantity.toLocaleString()} | $${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} | ${l.rationale} |`
-  ).join("\n");
-  const flags = result.flags.map((f) => `- ${f}`).join("\n");
+    `<tr><td><code>${l.part}</code></td><td>${l.description}</td><td>${l.quantity.toLocaleString()}</td><td>$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${l.rationale}</td></tr>`
+  ).join("");
+  const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
   const netLine = result.ballparkNet
-    ? `\n**BALLPARK NET (approx.):** ~$${result.ballparkNet.toLocaleString()} / year after recommended discount`
+    ? `<div class="result-net">Approx. net after discount: ~$${result.ballparkNet.toLocaleString()} / yr</div>`
     : "";
 
-  return `**PRODUCT:** IBM HashiCorp Vault (Model ${modelLabel})
+  return `<div class="result-card">
 
----
+<div class="result-header">
+  <span class="result-product">IBM HashiCorp Vault</span>
+  <span class="result-badge">Vault</span>
+</div>
 
-**PARTS TO QUOTE IN CPQ:**
+<div class="result-inputs">Model ${modelLabel}</div>
 
-| Part # | Description | Qty | Annual List | How it was calculated |
-|--------|-------------|-----|-------------|----------------------|
-${rows}
+<div class="result-section-label">PARTS TO QUOTE IN CPQ</div>
+<table class="result-table">
+  <thead><tr><th>Part #</th><th>Description</th><th>Qty</th><th>Annual List</th><th>How calculated</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
 
----
+<div class="result-price-row">
+  <div class="result-price">~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+  <div class="result-price-note">LIST — confirm exact pricing, discount &amp; approval in CPQ</div>
+</div>
+${netLine}
 
-**BALLPARK LIST PRICE:** ~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} / year *(LIST — confirm in CPQ)*${netLine}
+<ul class="result-flags">${flags}</ul>
 
-**FLAGS:**
-${flags}
+<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
 
-**NEXT STEP:** Paste these parts into CPQ for exact pricing, discounting, and approval.
-
----
-*Say the name of another product to start a new quote, or 'restart' to go again.*`;
+</div>`;
 }
 
 // ─── NS1 ─────────────────────────────────────────────────────────────────────
@@ -418,40 +486,44 @@ function computeNS1Result(state: ConversationState): string {
   });
 
   const sizingRows = [
-    `| Managed DNS | ${result.effectiveMQ.toLocaleString()} MQ/month | PENDING | ${result.rationale} |`,
-    result.billableRecords > 0 ? `| Billable Records | ${result.billableRecords.toLocaleString()} | PENDING | total minus 3,000 free |` : null,
-    result.filterChains > 0 ? `| Filter Chains | ${result.filterChains.toLocaleString()} | PENDING | 1 per steered record |` : null,
-    result.monitors > 0 ? `| Monitors | ${result.monitors.toLocaleString()} | PENDING | 1 per hostname/IP |` : null,
-    result.rumPacks ? `| GSLB RUM Packs | ${result.rumPacks} × 5M-query packs | PENDING | RUM-based steering |` : null,
-    result.chinaMQ ? `| DNS for China | ${result.chinaMQ} MQ/month (China-origin) | PENDING | min 50M MQ |` : null,
-    result.dnsInsights ? `| DNS Insights | ~20% of query volume | PENDING | observability add-on |` : null,
-  ].filter(Boolean).join("\n");
+    `<tr><td>Managed DNS</td><td>${result.effectiveMQ.toLocaleString()} MQ/month</td><td class="pending">PENDING</td><td>${result.rationale}</td></tr>`,
+    result.billableRecords > 0 ? `<tr><td>Billable Records</td><td>${result.billableRecords.toLocaleString()}</td><td class="pending">PENDING</td><td>Total minus 3,000 free</td></tr>` : null,
+    result.filterChains > 0   ? `<tr><td>Filter Chains</td><td>${result.filterChains.toLocaleString()}</td><td class="pending">PENDING</td><td>1 per steered record</td></tr>` : null,
+    result.monitors > 0       ? `<tr><td>Monitors</td><td>${result.monitors.toLocaleString()}</td><td class="pending">PENDING</td><td>1 per hostname/IP</td></tr>` : null,
+    result.rumPacks            ? `<tr><td>GSLB RUM Packs</td><td>${result.rumPacks} × 5M-query packs</td><td class="pending">PENDING</td><td>RUM-based steering</td></tr>` : null,
+    result.chinaMQ             ? `<tr><td>DNS for China</td><td>${result.chinaMQ} MQ/month (China-origin)</td><td class="pending">PENDING</td><td>Min 50M MQ required</td></tr>` : null,
+    result.dnsInsights         ? `<tr><td>DNS Insights</td><td>~20% of query volume</td><td class="pending">PENDING</td><td>Observability add-on</td></tr>` : null,
+  ].filter(Boolean).join("");
 
-  const flags = result.flags.map((f) => `- ${f}`).join("\n");
+  const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
 
-  return `**PRODUCT:** NS1 Connect (Managed DNS)
-**CLIENT INPUTS:** ${result.effectiveMQ.toLocaleString()} MQ/month · DNS: ${a.currentDNS ?? "N/A"} · Term: ${a.term ?? "12-month"}
+  return `<div class="result-card">
 
----
+<div class="result-header">
+  <span class="result-product">NS1 Connect</span>
+  <span class="result-badge ns1">NS1</span>
+</div>
 
-**SIZING — ENTER THESE UNIT COUNTS IN CPQ:**
+<div class="result-inputs">
+  ${result.effectiveMQ.toLocaleString()} MQ/month &nbsp;·&nbsp; DNS: ${a.currentDNS ?? "N/A"} &nbsp;·&nbsp; ${a.term ?? "12-month"}
+</div>
 
-| Element | Quantity | Part # | How it was calculated |
-|---------|----------|--------|-----------------------|
-${sizingRows}
+<div class="result-section-label">SIZING — ENTER THESE UNIT COUNTS IN CPQ</div>
+<table class="result-table">
+  <thead><tr><th>Element</th><th>Quantity</th><th>Part #</th><th>How calculated</th></tr></thead>
+  <tbody>${sizingRows}</tbody>
+</table>
 
----
+<div class="result-price-row">
+  <div class="result-price">~$${result.ballparkMRR.toLocaleString()}<span>/mo</span></div>
+  <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()} /yr &nbsp;·&nbsp; ILLUSTRATIVE — confirm in CPQ</div>
+</div>
 
-**BALLPARK LIST PRICE:** ~$${result.ballparkMRR.toLocaleString()} /month · ~$${result.ballparkAnnual.toLocaleString()} /year
-*(ILLUSTRATIVE — confirm in CPQ before quoting)*
+<ul class="result-flags">${flags}</ul>
 
-**FLAGS:**
-${flags}
+<div class="result-next">📋 Share unit counts with Tony Nicolakis / Nick Lammert or enter in CPQ for real part numbers.</div>
 
-**NEXT STEP:** Share these unit counts with Tony Nicolakis / Nick Lammert or enter them in CPQ to get real part numbers and pricing.
-
----
-*Say the name of another product to start a new quote, or 'restart' to go again.*`;
+</div>`;
 }
 
 // ─── WELCOME ─────────────────────────────────────────────────────────────────

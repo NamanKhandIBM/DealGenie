@@ -34,8 +34,7 @@ export default function QuestionInput({ question, onSubmit, disabled }: Props) {
   };
 
   const submitMulti = () => {
-    if (disabled) return;
-    if (selected.length === 0) return;
+    if (disabled || selected.length === 0) return;
     onSubmit(selected.join(","));
   };
 
@@ -55,21 +54,18 @@ export default function QuestionInput({ question, onSubmit, disabled }: Props) {
               key={opt.value}
               onClick={() => handleSingle(opt.value)}
               disabled={disabled}
-              className="group flex flex-col items-start text-left px-4 py-2.5 rounded-xl border border-gray-200 bg-white hover:border-[#0f62fe] hover:bg-blue-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed min-w-[120px]"
+              className="option-btn flex flex-col items-start text-left px-4 py-2.5 min-w-[110px]"
             >
-              <span className="text-sm font-medium text-gray-800 group-hover:text-[#0f62fe]">
-                {opt.label}
-              </span>
-              {opt.hint && (
-                <span className="text-xs text-gray-400 mt-0.5">{opt.hint}</span>
-              )}
+              <span className="text-sm font-medium leading-snug">{opt.label}</span>
+              {opt.hint && <span className="text-xs opacity-50 mt-0.5">{opt.hint}</span>}
             </button>
           ))}
           {question.allowOther && (
             <button
               onClick={() => setShowOther((v) => !v)}
               disabled={disabled}
-              className="px-4 py-2.5 rounded-xl border border-dashed border-gray-300 bg-white hover:border-[#0f62fe] text-sm text-gray-500 hover:text-[#0f62fe] transition-all disabled:opacity-40"
+              className="option-btn px-4 py-2.5 text-sm border-dashed"
+              style={{ borderStyle: "dashed" }}
             >
               Other / enter exact
             </button>
@@ -84,16 +80,12 @@ export default function QuestionInput({ question, onSubmit, disabled }: Props) {
               onChange={(e) => setOtherValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submitOther()}
               placeholder={question.placeholder ?? "Type your answer…"}
-              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f62fe] focus:border-transparent"
+              className="input-glass flex-1 px-3 py-2 text-sm"
             />
             {question.unit && (
-              <span className="flex items-center text-xs text-gray-400 px-1">{question.unit}</span>
+              <span className="flex items-center text-xs text-slate-400 px-1">{question.unit}</span>
             )}
-            <button
-              onClick={submitOther}
-              disabled={!otherValue.trim()}
-              className="bg-[#0f62fe] hover:bg-[#0353e9] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40"
-            >
+            <button onClick={submitOther} disabled={!otherValue.trim()} className="btn-primary px-4 py-2 text-sm">
               Confirm
             </button>
           </div>
@@ -108,76 +100,81 @@ export default function QuestionInput({ question, onSubmit, disabled }: Props) {
         <div className="flex flex-wrap gap-2">
           {question.options?.map((opt) => {
             const isSelected = selected.includes(opt.value);
-            const isNone = opt.value === "none";
             return (
               <button
                 key={opt.value}
                 onClick={() => toggleMulti(opt.value)}
                 disabled={disabled}
-                className={`group flex flex-col items-start text-left px-4 py-2.5 rounded-xl border transition-all disabled:opacity-40 disabled:cursor-not-allowed min-w-[140px] ${
-                  isSelected
-                    ? "border-[#0f62fe] bg-blue-50 ring-2 ring-[#0f62fe]/20"
-                    : "border-gray-200 bg-white hover:border-[#0f62fe] hover:bg-blue-50"
-                }`}
+                className={`option-btn flex flex-col items-start text-left px-4 py-2.5 min-w-[130px] ${isSelected ? "selected" : ""}`}
               >
                 <div className="flex items-center gap-2">
+                  {/* Checkbox indicator */}
                   <div
-                    className={`w-4 h-4 rounded flex-shrink-0 border-2 flex items-center justify-center ${
-                      isSelected ? "bg-[#0f62fe] border-[#0f62fe]" : "border-gray-300"
-                    }`}
+                    className="w-4 h-4 rounded flex-shrink-0 flex items-center justify-center transition-all"
+                    style={{
+                      border: isSelected ? "2px solid #0f62fe" : "2px solid rgba(255,255,255,0.25)",
+                      background: isSelected ? "#0f62fe" : "transparent",
+                    }}
                   >
                     {isSelected && (
                       <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 8">
-                        <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </div>
-                  <span className={`text-sm font-medium ${isSelected ? "text-[#0f62fe]" : "text-gray-800"}`}>
-                    {opt.label}
-                  </span>
+                  <span className="text-sm font-medium leading-snug">{opt.label}</span>
                 </div>
                 {opt.hint && (
-                  <span className="text-xs text-gray-400 mt-0.5 ml-6">{opt.hint}</span>
+                  <span className="text-xs opacity-50 mt-0.5 ml-6">{opt.hint}</span>
                 )}
               </button>
             );
           })}
         </div>
+
         {selected.length > 0 && !selected.includes("none") && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs" style={{ color: "rgba(147,180,253,0.8)" }}>
             Selected: {question.options?.filter((o) => selected.includes(o.value)).map((o) => o.label).join(", ")}
           </p>
         )}
+
         <button
           onClick={submitMulti}
           disabled={disabled || selected.length === 0}
-          className="bg-[#0f62fe] hover:bg-[#0353e9] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="btn-primary px-5 py-2.5 text-sm flex items-center gap-2"
         >
-          {selected.includes("none") ? "Skip (none needed)" : "Confirm selection →"}
+          {selected.includes("none") ? "Skip (none needed)" : "Confirm selection"}
+          {!selected.includes("none") && selected.length > 0 && (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
         </button>
       </div>
     );
   }
 
-  // free / fallback — plain text input
+  /* number / free — plain text input */
   return (
     <div className="flex gap-2">
       <input
         autoFocus
-        type="text"
+        type={question.type === "number" ? "number" : "text"}
         value={otherValue}
         onChange={(e) => setOtherValue(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submitOther()}
         placeholder={question.placeholder ?? "Type your answer…"}
-        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f62fe] focus:border-transparent"
+        className="input-glass flex-1 px-3 py-2.5 text-sm"
       />
       {question.unit && (
-        <span className="flex items-center text-xs text-gray-400 px-1">{question.unit}</span>
+        <span className="flex items-center text-xs px-2" style={{ color: "rgba(203,213,225,0.5)" }}>
+          {question.unit}
+        </span>
       )}
       <button
         onClick={submitOther}
         disabled={!otherValue.trim() || disabled}
-        className="bg-[#0f62fe] hover:bg-[#0353e9] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40"
+        className="btn-primary px-4 py-2 text-sm"
       >
         Confirm
       </button>

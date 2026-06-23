@@ -12,17 +12,45 @@ const WELCOME_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
   content:
-    "👋 Welcome to the **IBM Quoting Assistant**.\n\nI turn client requirements into **part numbers + quantities** ready to paste into CPQ.\n\nWhich product would you like to quote?",
+    "👋 Welcome to the **IBM Quoting Assistant**.\n\nI turn client requirements into **part numbers + quantities** ready to paste into CPQ.\n\nWhich product would you like to quote today?",
   timestamp: Date.now(),
 };
 
 const PRODUCTS = [
-  { label: "IBM Security Verify", value: "Verify" },
-  { label: "NS1 Connect",          value: "NS1" },
-  { label: "IBM HashiCorp Vault",  value: "Vault" },
+  {
+    label: "IBM Security Verify",
+    value: "Verify",
+    desc: "SSO, MFA, Adaptive Access, Lifecycle & Analytics",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "NS1 Connect",
+    value: "NS1",
+    desc: "Managed DNS, Traffic Steering, GSLB, Insights",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "IBM HashiCorp Vault",
+    value: "Vault",
+    desc: "Secrets management — Platform RU or Clients model",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ];
 
-// A "question card" rendered inline in the chat thread
 function QuestionCard({
   question,
   onAnswer,
@@ -33,11 +61,15 @@ function QuestionCard({
   disabled: boolean;
 }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm shadow-sm px-4 py-4 max-w-[85%] space-y-3">
+    <div className="question-card px-5 py-4 max-w-[88%] space-y-3">
       <div>
-        <p className="text-sm font-semibold text-gray-900 leading-snug">{question.ask}</p>
+        <p className="text-sm font-semibold leading-snug" style={{ color: "#e8eaed" }}>
+          {question.ask}
+        </p>
         {question.subtext && (
-          <p className="text-xs text-gray-500 mt-1">{question.subtext}</p>
+          <p className="text-xs mt-1.5" style={{ color: "rgba(147,180,253,0.7)" }}>
+            {question.subtext}
+          </p>
         )}
       </div>
       <QuestionInput question={question} onSubmit={onAnswer} disabled={disabled} />
@@ -52,6 +84,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [freeText, setFreeText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -61,7 +94,6 @@ export default function ChatPage() {
     async (text: string) => {
       if (!text.trim() || loading) return;
 
-      // Add user message to chat
       const userMsg: Message = {
         id: crypto.randomUUID(),
         role: "user",
@@ -73,6 +105,11 @@ export default function ChatPage() {
       setActiveQuestion(null);
       setLoading(true);
 
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "44px";
+      }
+
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
@@ -81,7 +118,6 @@ export default function ChatPage() {
         });
         const json = await res.json();
 
-        // If there's a reply (opening text or result), add it
         if (json.reply) {
           setMessages((m) => [
             ...m,
@@ -124,154 +160,240 @@ export default function ChatPage() {
   const showFreeInput = !activeQuestion && state.phase !== "welcome" && state.phase !== "product-select";
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-[#0f62fe] text-white px-6 py-4 flex items-center gap-3 shadow-md flex-shrink-0">
-        <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center flex-shrink-0">
-          <span className="text-[#0f62fe] font-bold text-xs leading-none">IBM</span>
-        </div>
-        <div>
-          <h1 className="font-semibold text-lg leading-tight">Quoting Assistant</h1>
-          <p className="text-blue-200 text-xs">Requirements → Part Numbers → CPQ</p>
-        </div>
-        <button
-          onClick={reset}
-          className="ml-auto text-xs text-blue-200 hover:text-white border border-blue-300 hover:border-white px-3 py-1 rounded transition-colors"
-        >
-          New Quote
-        </button>
-      </header>
+    <>
+      {/* Background layer */}
+      <div className="app-bg" />
 
-      {/* Message thread */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-3xl mx-auto space-y-4">
-          {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
-          ))}
-
-          {/* Product picker — shown at start */}
-          {showProductPicker && !loading && (
-            <div className="flex flex-col gap-2 ml-9">
-              {PRODUCTS.map((p) => (
-                <button
-                  key={p.value}
-                  onClick={() => send(p.value)}
-                  disabled={loading}
-                  className="w-fit text-sm bg-white border border-gray-200 hover:border-[#0f62fe] hover:text-[#0f62fe] px-4 py-2.5 rounded-xl text-gray-700 font-medium transition-all disabled:opacity-50 text-left shadow-sm"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Active question card — rendered inline in the chat */}
-          {activeQuestion && !loading && (
-            <div className="flex justify-start ml-9">
-              <QuestionCard
-                question={activeQuestion.question}
-                onAnswer={send}
-                disabled={loading}
-              />
-            </div>
-          )}
-
-          {/* Loading indicator */}
-          {loading && (
-            <div className="flex items-center gap-1.5 text-gray-400 text-sm pl-9">
-              <span className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
-            </div>
-          )}
-
-          <div ref={bottomRef} />
-        </div>
-      </div>
-
-      {/* Free-text input — only shown at result phase or for overrides */}
-      {(showFreeInput || state.phase === "result") && (
-        <div className="px-4 pb-4 pt-2 bg-gray-50 border-t border-gray-200 flex-shrink-0">
-          <div className="max-w-3xl mx-auto flex gap-2 items-end">
-            <textarea
-              rows={1}
-              value={freeText}
-              onChange={(e) => setFreeText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  send(freeText);
-                }
-              }}
-              placeholder={
-                state.phase === "result"
-                  ? "Say 'restart' or type a product name to quote again…"
-                  : "Or type your answer here and press Enter…"
-              }
-              disabled={loading}
-              className="flex-1 resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f62fe] focus:border-transparent disabled:opacity-50 bg-white"
-              style={{ minHeight: "44px", maxHeight: "160px" }}
-              onInput={(e) => {
-                const t = e.currentTarget;
-                t.style.height = "auto";
-                t.style.height = `${t.scrollHeight}px`;
-              }}
-            />
-            <button
-              onClick={() => send(freeText)}
-              disabled={loading || !freeText.trim()}
-              className="bg-[#0f62fe] hover:bg-[#0353e9] text-white px-5 py-3 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-            >
-              Send
-            </button>
+      <div className="flex flex-col h-screen relative" style={{ zIndex: 1 }}>
+        {/* ── Header ─────────────────────────────────────────────────────────── */}
+        <header className="header-glass px-6 py-3.5 flex items-center gap-3 flex-shrink-0">
+          {/* IBM logo block */}
+          <div
+            className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0"
+            style={{
+              background: "linear-gradient(135deg, #0f62fe 0%, #0043ce 100%)",
+              boxShadow: "0 2px 12px rgba(15,98,254,0.45)",
+            }}
+          >
+            <span className="text-white font-bold text-[11px] tracking-tight">IBM</span>
           </div>
-          <p className="text-center text-xs text-gray-400 mt-2">
-            All prices are LIST — confirm exact pricing and discounts in CPQ
-          </p>
+
+          <div className="flex flex-col">
+            <h1 className="font-semibold text-base leading-tight" style={{ color: "#e8eaed" }}>
+              Quoting Assistant
+            </h1>
+            <p className="text-[11px] leading-none mt-0.5" style={{ color: "rgba(147,180,253,0.7)" }}>
+              Requirements → Part Numbers → CPQ
+            </p>
+          </div>
+
+          {/* Powered by badge */}
+          <div
+            className="ml-4 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px]"
+            style={{
+              background: "rgba(15,98,254,0.12)",
+              border: "1px solid rgba(15,98,254,0.25)",
+              color: "rgba(147,180,253,0.8)",
+            }}
+          >
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: "#0f62fe", boxShadow: "0 0 6px #0f62fe" }}
+            />
+            watsonx.ai
+          </div>
+
+          <button
+            onClick={reset}
+            className="ml-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(203,213,225,0.8)",
+            }}
+          >
+            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M13.5 2.5A7 7 0 1014 9" strokeLinecap="round"/>
+              <path d="M14 3V7h-4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            New Quote
+          </button>
+        </header>
+
+        {/* ── Message thread ──────────────────────────────────────────────────── */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="max-w-3xl mx-auto space-y-5">
+            {messages.map((msg) => (
+              <MessageBubble key={msg.id} message={msg} />
+            ))}
+
+            {/* Product picker */}
+            {showProductPicker && !loading && (
+              <div className="flex flex-col gap-2.5 ml-10">
+                {PRODUCTS.map((p) => (
+                  <button
+                    key={p.value}
+                    onClick={() => send(p.value)}
+                    disabled={loading}
+                    className="product-card"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span style={{ color: "#0f62fe" }}>{p.icon}</span>
+                      <div>
+                        <p className="text-sm font-semibold" style={{ color: "#e8eaed" }}>{p.label}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.6)" }}>{p.desc}</p>
+                      </div>
+                      <svg
+                        className="w-4 h-4 ml-auto flex-shrink-0"
+                        style={{ color: "rgba(147,180,253,0.4)" }}
+                        fill="none" viewBox="0 0 16 16"
+                      >
+                        <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Active question card */}
+            {activeQuestion && !loading && (
+              <div className="flex justify-start ml-10">
+                <QuestionCard
+                  question={activeQuestion.question}
+                  onAnswer={send}
+                  disabled={loading}
+                />
+              </div>
+            )}
+
+            {/* Loading indicator */}
+            {loading && (
+              <div className="flex items-center gap-2 pl-10">
+                {/* Avatar */}
+                <div className="avatar-ring w-7 h-7 flex-shrink-0">
+                  <div className="avatar-inner">
+                    <span className="text-white font-bold text-[9px]">Q</span>
+                  </div>
+                </div>
+                <div
+                  className="dot-pulse flex items-center gap-1.5 px-4 py-3 rounded-2xl rounded-bl-sm"
+                  style={{
+                    background: "rgba(255,255,255,0.07)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}
+                >
+                  <span /><span /><span />
+                </div>
+              </div>
+            )}
+
+            <div ref={bottomRef} />
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* ── Free-text input bar ─────────────────────────────────────────────── */}
+        {(showFreeInput || state.phase === "result") && (
+          <div
+            className="px-4 pb-4 pt-3 flex-shrink-0"
+            style={{
+              borderTop: "1px solid rgba(255,255,255,0.07)",
+              background: "rgba(10,15,30,0.6)",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            <div className="max-w-3xl mx-auto">
+              <div className="flex gap-2 items-end">
+                <textarea
+                  ref={textareaRef}
+                  rows={1}
+                  value={freeText}
+                  onChange={(e) => setFreeText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      send(freeText);
+                    }
+                  }}
+                  placeholder={
+                    state.phase === "result"
+                      ? "Say 'restart' or type a product to quote again…"
+                      : "Or describe the client's needs in plain language…"
+                  }
+                  disabled={loading}
+                  className="input-glass flex-1 resize-none px-4 py-3 text-sm"
+                  style={{ minHeight: "44px", maxHeight: "160px" }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = "auto";
+                    t.style.height = `${t.scrollHeight}px`;
+                  }}
+                />
+                <button
+                  onClick={() => send(freeText)}
+                  disabled={loading || !freeText.trim()}
+                  className="btn-primary px-4 py-3 flex items-center justify-center flex-shrink-0"
+                  style={{ minWidth: "44px", height: "44px" }}
+                >
+                  <svg viewBox="0 0 20 20" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 10h14M10 4l6 6-6 6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <p className="text-center text-xs mt-2" style={{ color: "rgba(148,163,184,0.45)" }}>
+                All prices are LIST — confirm exact pricing and discounts in CPQ
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Convert raw answer value back to a human-readable label for display in the chat bubble */
 function formatUserAnswer(value: string, question?: Question | null): string {
   if (!question || !question.options) return value;
-
   const values = value.split(",").map((v) => v.trim());
   const labels = values
     .map((v) => question.options?.find((o) => o.value === v)?.label ?? v)
     .filter((l) => l !== "none");
-
   return labels.length > 0 ? labels.join(", ") : value;
 }
 
 function MessageBubble({ message }: { message: Message }) {
   const isUser = message.role === "user";
+
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex items-end gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
+      {/* Assistant avatar */}
       {!isUser && (
-        <div className="w-7 h-7 rounded-full bg-[#0f62fe] text-white text-xs flex items-center justify-center font-bold flex-shrink-0 mr-2 mt-1">
-          Q
+        <div className="avatar-ring w-7 h-7 flex-shrink-0 mb-0.5" style={{ minWidth: "28px" }}>
+          <div className="avatar-inner">
+            <span className="font-bold text-[9px]" style={{ color: "#93b4fd" }}>Q</span>
+          </div>
         </div>
       )}
+
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-          isUser
-            ? "bg-[#0f62fe] text-white rounded-br-sm"
-            : "bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm"
+        className={`max-w-[82%] px-4 py-3 text-sm leading-relaxed ${
+          isUser ? "bubble-user" : "bubble-assistant"
         }`}
       >
         {isUser ? (
           <span className="whitespace-pre-wrap">{message.content}</span>
+        ) : message.content.trimStart().startsWith('<div class="result-card"') ? (
+          <div dangerouslySetInnerHTML={{ __html: message.content }} />
         ) : (
-          <div className="prose prose-sm max-w-none prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded prose-code:text-[#0f62fe] prose-table:text-xs">
+          <div className="prose prose-sm max-w-none">
             <ReactMarkdown>{message.content}</ReactMarkdown>
           </div>
         )}
       </div>
+
+      {/* User spacer to balance layout */}
+      {isUser && <div className="w-7 flex-shrink-0" />}
     </div>
   );
 }
