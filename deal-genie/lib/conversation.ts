@@ -15,6 +15,9 @@ import { computeVerifyQuote } from "./verify-engine";
 import { computeVaultQuote, type VaultEdition, type VaultUseCaseInputs } from "./vault-engine";
 import { computeNS1Quote } from "./ns1-engine";
 import type { VerifyCapability } from "./data";
+import { NS1_BEST_PRACTICES, NS1_ALL_PARTS } from "./ns1-parts";
+import { VAULT_BEST_PRACTICES, VAULT_ALL_PARTS } from "./vault-parts";
+import { VERIFY_BEST_PRACTICES, VERIFY_ALL_PARTS } from "./verify-parts";
 
 // ─── The active question to render in the UI ─────────────────────────────────
 // When non-null, the UI should show option buttons instead of a plain textarea.
@@ -231,6 +234,63 @@ export function processUserMessage(
 
     if (currentQ) {
       storeAnswer(s, currentQ, msg);
+    }
+
+    // Handle NS1 action selection (guide/parts/quote)
+    if (s.product === "NS1" && currentQ?.key === "ns1Action") {
+      const action = msg.trim();
+      
+      if (action === "guide") {
+        // Show best practices guide
+        s.phase = "result";
+        return { state: s, reply: formatNS1BestPractices(), activeQuestion: null };
+      }
+      
+      if (action === "parts") {
+        // Show part numbers reference
+        s.phase = "result";
+        return { state: s, reply: formatNS1PartNumbers(), activeQuestion: null };
+      }
+      
+      // If "quote", continue with normal flow
+    }
+
+    // Handle Vault action selection (guide/parts/quote)
+    if (s.product === "Vault" && currentQ?.key === "vaultAction") {
+      const action = msg.trim();
+      
+      if (action === "guide") {
+        // Show best practices guide
+        s.phase = "result";
+        return { state: s, reply: formatVaultBestPractices(), activeQuestion: null };
+      }
+      
+      if (action === "parts") {
+        // Show part numbers reference
+        s.phase = "result";
+        return { state: s, reply: formatVaultPartNumbers(), activeQuestion: null };
+      }
+      
+      // If "quote", continue with normal flow
+    }
+
+    // Handle Verify action selection (guide/parts/quote)
+    if (s.product === "Verify" && currentQ?.key === "verifyAction") {
+      const action = msg.trim();
+      
+      if (action === "guide") {
+        // Show best practices guide
+        s.phase = "result";
+        return { state: s, reply: formatVerifyBestPractices(), activeQuestion: null };
+      }
+      
+      if (action === "parts") {
+        // Show part numbers reference
+        s.phase = "result";
+        return { state: s, reply: formatVerifyPartNumbers(), activeQuestion: null };
+      }
+      
+      // If "quote", continue with normal flow
     }
 
     // Also apply any additional entities the LLM extracted from this message
@@ -481,21 +541,31 @@ function computeNS1Result(state: ConversationState): string {
     dedicatedPoPs,
     chinaMQ,
     dnsInsights: String(a.insights ?? "no") === "yes",
+    ddosProtection: String(a.ddos ?? "no") === "yes",
     expectedGrowthPct: growth,
     term: String(a.term ?? "12-month") === "3-year" ? "3-year" : "12-month",
   });
 
-  const sizingRows = [
-    `<tr><td>Managed DNS</td><td>${result.effectiveMQ.toLocaleString()} MQ/month</td><td class="pending">PENDING</td><td>${result.rationale}</td></tr>`,
-    result.billableRecords > 0 ? `<tr><td>Billable Records</td><td>${result.billableRecords.toLocaleString()}</td><td class="pending">PENDING</td><td>Total minus 3,000 free</td></tr>` : null,
-    result.filterChains > 0   ? `<tr><td>Filter Chains</td><td>${result.filterChains.toLocaleString()}</td><td class="pending">PENDING</td><td>1 per steered record</td></tr>` : null,
-    result.monitors > 0       ? `<tr><td>Monitors</td><td>${result.monitors.toLocaleString()}</td><td class="pending">PENDING</td><td>1 per hostname/IP</td></tr>` : null,
-    result.rumPacks            ? `<tr><td>GSLB RUM Packs</td><td>${result.rumPacks} × 5M-query packs</td><td class="pending">PENDING</td><td>RUM-based steering</td></tr>` : null,
-    result.chinaMQ             ? `<tr><td>DNS for China</td><td>${result.chinaMQ} MQ/month (China-origin)</td><td class="pending">PENDING</td><td>Min 50M MQ required</td></tr>` : null,
-    result.dnsInsights         ? `<tr><td>DNS Insights</td><td>~20% of query volume</td><td class="pending">PENDING</td><td>Observability add-on</td></tr>` : null,
-  ].filter(Boolean).join("");
+  // Enhanced display with part numbers, best practices, and tutorial
+  const partNumberRows = result.partNumbers.map((part) =>
+    `<tr>
+      <td><code>${part.partNumber}</code></td>
+      <td>${part.description}</td>
+      <td class="text-right">${part.quantity.toLocaleString()}</td>
+      <td>${part.unit}</td>
+      <td class="text-sm">${part.notes}</td>
+    </tr>`
+  ).join("");
 
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  const bestPracticesSection = result.bestPractices.slice(0, 3).map((practice, idx) =>
+    `<div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-2">
+      <p class="font-semibold text-sm text-gray-900">${idx + 1}. ${practice.category}</p>
+      <p class="text-xs text-gray-700 italic mt-1">"${practice.question}"</p>
+      <p class="text-xs text-gray-600 mt-1">${practice.tips[0]}</p>
+    </div>`
+  ).join("");
 
   return `<div class="result-card">
 
@@ -508,10 +578,10 @@ function computeNS1Result(state: ConversationState): string {
   ${result.effectiveMQ.toLocaleString()} MQ/month &nbsp;·&nbsp; DNS: ${a.currentDNS ?? "N/A"} &nbsp;·&nbsp; ${a.term ?? "12-month"}
 </div>
 
-<div class="result-section-label">SIZING — ENTER THESE UNIT COUNTS IN CPQ</div>
+<div class="result-section-label">📋 PART NUMBERS FOR CPQ</div>
 <table class="result-table">
-  <thead><tr><th>Element</th><th>Quantity</th><th>Part #</th><th>How calculated</th></tr></thead>
-  <tbody>${sizingRows}</tbody>
+  <thead><tr><th>Part #</th><th>Description</th><th class="text-right">Qty</th><th>Unit</th><th>Notes</th></tr></thead>
+  <tbody>${partNumberRows}</tbody>
 </table>
 
 <div class="result-price-row">
@@ -521,10 +591,328 @@ function computeNS1Result(state: ConversationState): string {
 
 <ul class="result-flags">${flags}</ul>
 
-<div class="result-next">📋 Share unit counts with Tony Nicolakis / Nick Lammert or enter in CPQ for real part numbers.</div>
+<div class="result-section-label mt-4">💡 BEST PRACTICES (Top 3 of ${result.bestPractices.length})</div>
+${bestPracticesSection}
+<p class="text-xs text-gray-600 mt-2">
+  <strong>Full Guide Available:</strong> ${result.bestPractices.length} best practices, ${result.tutorialSteps.length}-step tutorial, and quick reference included in the quote data.
+</p>
+
+<div class="result-next">
+  ✅ <strong>Part numbers ready for CPQ</strong> (D0XXXZX = placeholder, get actual from Tony Nicolakis/Nick Lammert)<br/>
+  📚 <strong>Best practices & tutorial</strong> included to help with discovery<br/>
+  📋 Copy part numbers and quantities into SAP CPQ
+</div>
 
 </div>`;
 }
+
+// ─── NS1 GUIDE & PARTS FORMATTERS ────────────────────────────────────────────
+
+function formatNS1BestPractices(): string {
+  const practicesHTML = NS1_BEST_PRACTICES.map((practice, idx) => `
+    <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3">
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+          ${idx + 1}
+        </div>
+        <div class="flex-1">
+          <h3 class="font-semibold text-gray-900 mb-2">${practice.category}</h3>
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-2">
+            <p class="text-sm font-medium text-blue-900">Key Question:</p>
+            <p class="text-sm text-blue-800 italic">"${practice.question}"</p>
+          </div>
+          <p class="text-sm text-gray-700 mb-2"><strong>Why this matters:</strong> ${practice.why}</p>
+          <div class="text-sm text-gray-600">
+            <p class="font-medium mb-1">Tips:</p>
+            <ul class="list-disc list-inside space-y-1">
+              ${practice.tips.map(tip => `<li>${tip}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  return `<div class="result-card">
+<div class="result-header">
+  <span class="result-product">NS1 Best Practices Guide</span>
+  <span class="result-badge ns1">NS1</span>
+</div>
+
+<div class="result-inputs">
+  Complete guide to gathering NS1 requirements and preparing accurate quotes
+</div>
+
+<div class="result-section-label">📚 BEST PRACTICES FOR NS1 QUOTING</div>
+${practicesHTML}
+
+<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
+  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
+    ✅ Ready to start quoting?
+  </p>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
+    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
+  </p>
+  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+    📋 Need part numbers? Type "restart" and select "View Part Numbers"
+  </p>
+</div>
+</div>`;
+}
+
+function formatNS1PartNumbers(): string {
+  const partsHTML = NS1_ALL_PARTS.map(part => `
+    <tr>
+      <td><code class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">${part.partNumber}</code></td>
+      <td class="text-sm">${part.description}</td>
+      <td class="text-sm">${part.unit}</td>
+      <td class="text-sm"><span class="px-2 py-1 rounded text-xs ${
+        part.category === 'Core' ? 'bg-blue-100 text-blue-800' :
+        part.category === 'Add-on' ? 'bg-green-100 text-green-800' :
+        'bg-purple-100 text-purple-800'
+      }">${part.category}</span></td>
+      <td class="text-sm text-gray-600">${part.notes || '-'}</td>
+      ${part.minimums ? `<td class="text-sm text-orange-600">${part.minimums.description || `Min: ${part.minimums.quantity}`}</td>` : '<td class="text-sm">-</td>'}
+    </tr>
+  `).join('');
+
+  return `<div class="result-card">
+<div class="result-header">
+  <span class="result-product">NS1 Part Numbers Reference</span>
+  <span class="result-badge ns1">NS1</span>
+</div>
+
+<div class="result-inputs">
+  Complete catalog of NS1 part numbers for SAP CPQ
+</div>
+
+<div class="result-section-label">📋 NS1 PART NUMBERS</div>
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+  <p class="text-sm text-yellow-900">
+    ⚠️ <strong>Important:</strong> Part numbers marked as <code>D0XXXZX</code> are placeholders.
+    Get actual part numbers from SAP CPQ or contact <strong>Tony Nicolakis</strong> / <strong>Nick Lammert</strong>.
+  </p>
+</div>
+
+<table class="result-table">
+  <thead>
+    <tr>
+      <th>Part #</th>
+      <th>Description</th>
+      <th>Unit</th>
+      <th>Category</th>
+      <th>Notes</th>
+      <th>Minimums</th>
+    </tr>
+  </thead>
+  <tbody>${partsHTML}</tbody>
+</table>
+
+<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
+  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
+    ✅ Ready to start quoting?
+  </p>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
+    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
+  </p>
+  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+    📚 Need best practices? Type "restart" and select "View Best Practices"
+  </p>
+</div>
+</div>`;
+}
+// ─── VAULT FORMATTING ────────────────────────────────────────────────────────
+
+function formatVaultBestPractices(): string {
+  const practicesHTML = VAULT_BEST_PRACTICES.map((practice, idx) => `
+    <div style="margin-bottom: 24px; padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #0f62fe;">
+      <h3 style="margin: 0 0 12px 0; color: #0f62fe; font-size: 18px;">
+        ${idx + 1}. ${practice.category}
+      </h3>
+      <p style="margin: 0 0 12px 0; font-weight: 600; color: #1e293b;">
+        ❓ ${practice.question}
+      </p>
+      <p style="margin: 0 0 16px 0; color: #64748b; line-height: 1.6;">
+        <strong>Why it matters:</strong> ${practice.rationale}
+      </p>
+      <div style="background: #f8fafc; padding: 16px; border-radius: 8px;">
+        <p style="margin: 0 0 8px 0; font-weight: 600; color: #475569;">💡 Tips:</p>
+        <ul style="margin: 0; padding-left: 20px; color: #64748b;">
+          ${practice.tips.map(tip => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `).join('');
+
+  return `<div class="result-card" style="max-width: 900px; margin: 0 auto;">
+<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
+  📚 Vault Quoting Best Practices
+</h2>
+<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
+  Essential questions and guidance for accurate Vault quotes
+</p>
+${practicesHTML}
+<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
+  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
+    ✅ Ready to start quoting?
+  </p>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
+    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
+  </p>
+  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+    📋 Need part numbers? Type "restart" and select "View Part Numbers"
+  </p>
+</div>
+</div>`;
+}
+
+function formatVaultPartNumbers(): string {
+  const partsHTML = VAULT_ALL_PARTS.map(part => `
+    <tr>
+      <td><code class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">${part.partNumber}</code></td>
+      <td class="text-sm">${part.description}</td>
+      <td class="text-sm">${part.unit}</td>
+      <td class="text-sm"><span class="px-2 py-1 rounded text-xs ${
+        part.category === 'Model A - Platform/RU' ? 'bg-blue-100 text-blue-800' :
+        part.category === 'Model B - Clients/RVU' ? 'bg-green-100 text-green-800' :
+        'bg-purple-100 text-purple-800'
+      }">${part.category}</span></td>
+      <td class="text-sm text-gray-600">${part.notes || '-'}</td>
+    </tr>
+  `).join('');
+
+  return `<div class="result-card" style="max-width: 1200px; margin: 0 auto;">
+<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
+  📋 Vault Part Numbers & Pricing
+</h2>
+<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
+  Complete catalog of Vault SKUs for SAP CPQ
+</p>
+<div style="overflow-x: auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 2px solid #e2e8f0;">
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Part Number</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Description</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Unit</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Category</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${partsHTML}
+    </tbody>
+  </table>
+</div>
+<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2); margin-top: 24px;">
+  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
+    ✅ Ready to start quoting?
+  </p>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
+    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
+  </p>
+  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+    📚 Need best practices? Type "restart" and select "View Best Practices"
+  </p>
+</div>
+</div>`;
+}
+
+// ─── VERIFY FORMATTING ───────────────────────────────────────────────────────
+
+function formatVerifyBestPractices(): string {
+  const practicesHTML = VERIFY_BEST_PRACTICES.map((practice, idx) => `
+    <div style="margin-bottom: 24px; padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #0f62fe;">
+      <h3 style="margin: 0 0 12px 0; color: #0f62fe; font-size: 18px;">
+        ${idx + 1}. ${practice.category}
+      </h3>
+      <p style="margin: 0 0 12px 0; font-weight: 600; color: #1e293b;">
+        ❓ ${practice.question}
+      </p>
+      <p style="margin: 0 0 16px 0; color: #64748b; line-height: 1.6;">
+        <strong>Why it matters:</strong> ${practice.rationale}
+      </p>
+      <div style="background: #f8fafc; padding: 16px; border-radius: 8px;">
+        <p style="margin: 0 0 8px 0; font-weight: 600; color: #475569;">💡 Tips:</p>
+        <ul style="margin: 0; padding-left: 20px; color: #64748b;">
+          ${practice.tips.map(tip => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `).join('');
+
+  return `<div class="result-card" style="max-width: 900px; margin: 0 auto;">
+<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
+  📚 Verify Quoting Best Practices
+</h2>
+<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
+  Essential questions and guidance for accurate Verify quotes
+</p>
+${practicesHTML}
+<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
+  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
+    ✅ Ready to start quoting?
+  </p>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
+    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
+  </p>
+  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+    📋 Need part numbers? Type "restart" and select "View Part Numbers"
+  </p>
+</div>
+</div>`;
+}
+
+function formatVerifyPartNumbers(): string {
+  const partsHTML = VERIFY_ALL_PARTS.map(part => `
+    <tr>
+      <td><code class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">${part.partNumber}</code></td>
+      <td class="text-sm">${part.description}</td>
+      <td class="text-sm">${part.unit}</td>
+      <td class="text-sm"><span class="px-2 py-1 rounded text-xs ${
+        part.category === 'Core' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+      }">${part.category}</span></td>
+      <td class="text-sm text-gray-600">${part.notes || '-'}</td>
+    </tr>
+  `).join('');
+
+  return `<div class="result-card" style="max-width: 1200px; margin: 0 auto;">
+<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
+  📋 Verify Part Numbers & Pricing
+</h2>
+<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
+  Complete catalog of Verify SKUs for SAP CPQ
+</p>
+<div style="overflow-x: auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 2px solid #e2e8f0;">
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Part Number</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Description</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Unit</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Category</th>
+        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${partsHTML}
+    </tbody>
+  </table>
+</div>
+<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2); margin-top: 24px;">
+  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
+    ✅ Ready to start quoting?
+  </p>
+  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
+    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
+  </p>
+  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+    📚 Need best practices? Type "restart" and select "View Best Practices"
+  </p>
+</div>
+</div>`;
+}
+
 
 // ─── WELCOME ─────────────────────────────────────────────────────────────────
 

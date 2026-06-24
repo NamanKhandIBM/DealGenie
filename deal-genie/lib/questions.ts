@@ -25,7 +25,19 @@ export interface Question {
 
 export const VERIFY_QUESTIONS: Question[] = [
   {
+    key: "verifyAction",
+    ask: "What would you like to do?",
+    subtext: "Choose an option to get started with Verify quoting",
+    type: "single",
+    options: [
+      { label: "📚 View Best Practices", value: "guide", hint: "Learn what to ask clients" },
+      { label: "📋 View Part Numbers", value: "parts", hint: "See all Verify SKUs" },
+      { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
+    ],
+  },
+  {
     key: "capabilities",
+    conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
     ask: "Which security features does the client need?",
     subtext: "Select all that apply.",
     type: "multi",
@@ -39,6 +51,7 @@ export const VERIFY_QUESTIONS: Question[] = [
   },
   {
     key: "population",
+    conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
     ask: "How many users will this cover?",
     subtext: "Total user population — employees, contractors, customers, etc.",
     type: "single",
@@ -56,6 +69,7 @@ export const VERIFY_QUESTIONS: Question[] = [
   },
   {
     key: "avgLogins",
+    conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
     ask: "How often does a typical user log in?",
     subtext: "This determines how many 'monthly active users' to size for.",
     type: "single",
@@ -77,6 +91,7 @@ export const VERIFY_QUESTIONS: Question[] = [
     type: "single",
     allowOther: true,
     conditional: (a) => {
+      if (String(a.verifyAction ?? "quote") !== "quote") return false;
       const caps = a.capabilities as string[] | undefined;
       return !!caps && (caps.includes("Lifecycle") || caps.includes("Analytics"));
     },
@@ -92,6 +107,7 @@ export const VERIFY_QUESTIONS: Question[] = [
   },
   {
     key: "regions",
+    conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
     ask: "How many geographic regions will this be deployed in?",
     type: "single",
     allowOther: true,
@@ -133,10 +149,22 @@ export const VERIFY_QUESTIONS: Question[] = [
 
 export const NS1_QUESTIONS: Question[] = [
   {
+    key: "ns1Action",
+    ask: "What would you like to do?",
+    subtext: "View the guide first, or jump straight into quoting?",
+    type: "single",
+    options: [
+      { label: "📚 View Best Practices & Tutorial", value: "guide", hint: "Learn how to gather requirements" },
+      { label: "📋 View Part Numbers Reference", value: "parts", hint: "See all NS1 part numbers" },
+      { label: "💰 Start Quoting", value: "quote", hint: "Begin the discovery questions" },
+    ],
+  },
+  {
     key: "currentDNS",
     ask: "Who is the client's current DNS provider?",
     type: "single",
     allowOther: true,
+    conditional: (a) => String(a.ns1Action ?? "quote") === "quote",
     options: [
       { label: "Self-hosted (BIND, etc.)",       value: "Self-hosted" },
       { label: "Domain registrar",               value: "Registrar" },
@@ -281,7 +309,19 @@ export const NS1_QUESTIONS: Question[] = [
 
 export const VAULT_QUESTIONS_COMMON: Question[] = [
   {
+    key: "vaultAction",
+    ask: "What would you like to do?",
+    subtext: "Choose an option to get started with Vault quoting",
+    type: "single",
+    options: [
+      { label: "📚 View Best Practices", value: "guide", hint: "Learn what to ask clients" },
+      { label: "📋 View Part Numbers", value: "parts", hint: "See all Vault SKUs" },
+      { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
+    ],
+  },
+  {
     key: "vaultModel",
+    conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "Is this a new Vault deployment or an existing renewal?",
     subtext: "This determines the pricing model. The two models cannot be mixed.",
     type: "single",
@@ -292,6 +332,7 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
   },
   {
     key: "installCount",
+    conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "How many Vault servers or clusters will they run?",
     subtext: "Each production cluster = 1 Install.",
     type: "single",

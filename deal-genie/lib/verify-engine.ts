@@ -7,6 +7,16 @@ import {
   VERIFY_MAU_CAPABILITIES,
   VERIFY_MANAGED_CAPABILITIES,
 } from "./data";
+import {
+  VERIFY_ALL_PARTS,
+  VERIFY_BEST_PRACTICES,
+  VERIFY_TUTORIAL_STEPS,
+  VERIFY_QUICK_REFERENCE,
+  type VerifyPartNumber,
+  type VerifyBestPractice,
+  type VerifyTutorialStep,
+  type VerifyQuickReference
+} from "./verify-parts";
 
 export interface VerifyInputs {
   capabilities: VerifyCapability[];
@@ -42,6 +52,10 @@ export interface VerifyQuoteResult {
   totalRU: number;
   totalAnnualList: number;
   flags: string[];
+  partNumbers?: VerifyPartNumber[];
+  bestPractices?: VerifyBestPractice[];
+  tutorialSteps?: VerifyTutorialStep[];
+  quickReference?: VerifyQuickReference[];
 }
 
 /**
@@ -152,5 +166,16 @@ export function computeVerifyQuote(inputs: VerifyInputs): VerifyQuoteResult {
     flags.push("3-year term selected — multiply annual list × 3 for total opportunity value.");
   }
 
-  return { mau, managedUsers, lines, totalRU, totalAnnualList, flags };
+  return {
+    mau,
+    managedUsers,
+    lines,
+    totalRU,
+    totalAnnualList,
+    flags,
+    partNumbers: VERIFY_ALL_PARTS,
+    bestPractices: VERIFY_BEST_PRACTICES,
+    tutorialSteps: VERIFY_TUTORIAL_STEPS,
+    quickReference: VERIFY_QUICK_REFERENCE
+  };
 }

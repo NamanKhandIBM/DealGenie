@@ -1,6 +1,16 @@
 // Vault quoting engine — handles Platform/RU (Model A) and Clients/RVU (Model B) fork.
 // Model A accepts plain use-case inputs and derives RUs internally — sellers never see RU math.
 import { VAULT_PARTS_MODEL_A, VAULT_PARTS_MODEL_B, VAULT_RU_DISCOUNTS, VAULT_CLIENT_DISCOUNTS } from "./data";
+import {
+  VAULT_ALL_PARTS,
+  VAULT_BEST_PRACTICES,
+  VAULT_TUTORIAL_STEPS,
+  VAULT_QUICK_REFERENCE,
+  type VaultPartNumber,
+  type VaultBestPractice,
+  type VaultTutorialStep,
+  type VaultQuickReference
+} from "./vault-parts";
 
 export type VaultModel = "A-Platform" | "B-Clients";
 
@@ -115,6 +125,10 @@ export interface VaultQuoteResult {
   ballparkNet?: number;
   recDiscount?: number;
   flags: string[];
+  partNumbers?: VaultPartNumber[];
+  bestPractices?: VaultBestPractice[];
+  tutorialSteps?: VaultTutorialStep[];
+  quickReference?: VaultQuickReference[];
 }
 
 /** Find the closest discount tier for RU quantity (rounds down to nearest bracket). */
@@ -206,7 +220,18 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
     );
     flags.push("Model A (Platform/RU) — may NOT be mixed with Model B for this customer.");
 
-    return { model: "A-Platform", lines, totalAnnualList, ballparkNet, recDiscount, flags };
+    return {
+      model: "A-Platform",
+      lines,
+      totalAnnualList,
+      ballparkNet,
+      recDiscount,
+      flags,
+      partNumbers: VAULT_ALL_PARTS,
+      bestPractices: VAULT_BEST_PRACTICES,
+      tutorialSteps: VAULT_TUTORIAL_STEPS,
+      quickReference: VAULT_QUICK_REFERENCE
+    };
   }
 
   // Model B — Clients/RVU
@@ -318,5 +343,16 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
     flags.push("Premium edition: buy ≥ 2 installs for Performance Replication / DR.");
   }
 
-  return { model: "B-Clients", lines, totalAnnualList, ballparkNet, recDiscount: clientRec, flags };
+  return {
+    model: "B-Clients",
+    lines,
+    totalAnnualList,
+    ballparkNet,
+    recDiscount: clientRec,
+    flags,
+    partNumbers: VAULT_ALL_PARTS,
+    bestPractices: VAULT_BEST_PRACTICES,
+    tutorialSteps: VAULT_TUTORIAL_STEPS,
+    quickReference: VAULT_QUICK_REFERENCE
+  };
 }
