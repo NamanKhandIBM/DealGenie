@@ -9,7 +9,7 @@
  */
 
 const IAM_TOKEN_URL = "https://iam.cloud.ibm.com/identity/token";
-const MODEL_ID = "ibm/granite-3-3-8b-instruct";
+const MODEL_ID = "ibm/granite-3-8b-instruct";
 
 // ─── IAM token cache ──────────────────────────────────────────────────────────
 

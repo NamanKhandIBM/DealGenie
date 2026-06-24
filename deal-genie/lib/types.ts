@@ -7,7 +7,8 @@ export type ConversationPhase =
   | "product-select"
   | "discovery"
   | "computing"
-  | "result";
+  | "result"
+  | "best-practices";
 
 export interface Message {
   id: string;

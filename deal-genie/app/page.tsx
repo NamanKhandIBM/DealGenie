@@ -6,6 +6,7 @@ import type { ConversationState, Message } from "@/lib/types";
 import { initialState } from "@/lib/types";
 import type { ActiveQuestion } from "@/lib/conversation";
 import type { Question } from "@/lib/questions";
+import type { BestPracticesMessage } from "@/lib/best-practices-ai";
 import QuestionInput from "@/components/QuestionInput";
 
 const WELCOME_MESSAGE: Message = {
@@ -83,6 +84,8 @@ export default function ChatPage() {
   const [activeQuestion, setActiveQuestion] = useState<ActiveQuestion | null>(null);
   const [loading, setLoading] = useState(false);
   const [freeText, setFreeText] = useState("");
+  // Best-practices AI chat history (for follow-up context)
+  const [bpHistory, setBpHistory] = useState<BestPracticesMessage[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -111,12 +114,107 @@ export default function ChatPage() {
       }
 
       try {
+        // ── Best-practices follow-up Q&A ──────────────────────────────────────
+        if (state.phase === "best-practices" && state.product) {
+          // Let user escape to quoting by typing "quote" or "start quoting"
+          if (/^(quote|start quoting|start quote|begin quote)/i.test(text.trim())) {
+            const switchMsg = text.trim();
+            const res = await fetch("/api/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                message: switchMsg,
+                state: { ...state, phase: "product-select", answers: {}, discoveryStep: 0 },
+              }),
+            });
+            const json = await res.json();
+            if (json.reply) {
+              setMessages((m) => [
+                ...m,
+                { id: crypto.randomUUID(), role: "assistant", content: json.reply, timestamp: Date.now() },
+              ]);
+            }
+            setState(json.state);
+            setActiveQuestion(json.activeQuestion ?? null);
+            setBpHistory([]);
+            return;
+          }
+
+          const newHistory: BestPracticesMessage[] = [
+            ...bpHistory,
+            { role: "user", content: text },
+          ];
+          const bpRes = await fetch("/api/best-practices", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              product: state.product,
+              history: bpHistory,
+              message: text,
+            }),
+          });
+          const bpJson = await bpRes.json();
+          if (!bpRes.ok) {
+            // Surface the real watsonx error in the chat so we can debug
+            const errMsg = bpJson.error ?? `API error ${bpRes.status}`;
+            throw new Error(errMsg);
+          }
+          const aiReply = bpJson.reply ?? "No response from AI.";
+          const assistantHistory: BestPracticesMessage[] = [
+            ...newHistory,
+            { role: "assistant", content: aiReply },
+          ];
+          setBpHistory(assistantHistory);
+          setMessages((m) => [
+            ...m,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content: aiReply,
+              timestamp: Date.now(),
+            },
+          ]);
+          // State stays in best-practices phase — don't update from chat API
+          return;
+        }
+
+        // ── Normal quoting flow ───────────────────────────────────────────────
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: text, state }),
         });
         const json = await res.json();
+
+        // Detect best-practices init sentinel
+        if (json.reply === "__BEST_PRACTICES_INIT__" && json.state?.product) {
+          setState(json.state);
+          setActiveQuestion(null);
+          setBpHistory([]);
+          // Fetch the AI intro
+          const bpRes = await fetch("/api/best-practices", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ product: json.state.product, history: [] }),
+          });
+          const bpJson = await bpRes.json();
+          if (!bpRes.ok) {
+            const errMsg = bpJson.error ?? `API error ${bpRes.status}`;
+            throw new Error(errMsg);
+          }
+          const intro = bpJson.reply ?? "Ask me anything about this product.";
+          setBpHistory([{ role: "assistant", content: intro }]);
+          setMessages((m) => [
+            ...m,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content: intro,
+              timestamp: Date.now(),
+            },
+          ]);
+          return;
+        }
 
         if (json.reply) {
           setMessages((m) => [
@@ -132,13 +230,14 @@ export default function ChatPage() {
 
         setState(json.state);
         setActiveQuestion(json.activeQuestion ?? null);
-      } catch {
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
         setMessages((m) => [
           ...m,
           {
             id: crypto.randomUUID(),
             role: "assistant",
-            content: "⚠️ Something went wrong. Please try again.",
+            content: `⚠️ ${errMsg}`,
             timestamp: Date.now(),
           },
         ]);
@@ -154,10 +253,12 @@ export default function ChatPage() {
     setState(initialState);
     setActiveQuestion(null);
     setFreeText("");
+    setBpHistory([]);
   };
 
   const showProductPicker = state.phase === "welcome" || state.phase === "product-select";
   const showFreeInput = !activeQuestion && state.phase !== "welcome" && state.phase !== "product-select";
+  const isBestPracticesMode = state.phase === "best-practices";
 
   return (
     <>
@@ -316,10 +417,12 @@ export default function ChatPage() {
                     }
                   }}
                   placeholder={
-                    state.phase === "result"
-                      ? "Say 'restart' or type a product to quote again…"
-                      : "Or describe the client's needs in plain language…"
-                  }
+                   isBestPracticesMode
+                     ? "Ask a follow-up question about this product…"
+                     : state.phase === "result"
+                     ? "Say 'restart' or type a product to quote again…"
+                     : "Or describe the client's needs in plain language…"
+                 }
                   disabled={loading}
                   className="input-glass flex-1 resize-none px-4 py-3 text-sm"
                   style={{ minHeight: "44px", maxHeight: "160px" }}

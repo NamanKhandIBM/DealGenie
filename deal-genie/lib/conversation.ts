@@ -241,13 +241,12 @@ export function processUserMessage(
       const action = msg.trim();
       
       if (action === "guide") {
-        // Show best practices guide
-        s.phase = "result";
-        return { state: s, reply: formatNS1BestPractices(), activeQuestion: null };
+        // Switch to AI-powered best practices mode
+        s.phase = "best-practices";
+        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
       }
       
       if (action === "parts") {
-        // Show part numbers reference
         s.phase = "result";
         return { state: s, reply: formatNS1PartNumbers(), activeQuestion: null };
       }
@@ -260,13 +259,12 @@ export function processUserMessage(
       const action = msg.trim();
       
       if (action === "guide") {
-        // Show best practices guide
-        s.phase = "result";
-        return { state: s, reply: formatVaultBestPractices(), activeQuestion: null };
+        // Switch to AI-powered best practices mode
+        s.phase = "best-practices";
+        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
       }
       
       if (action === "parts") {
-        // Show part numbers reference
         s.phase = "result";
         return { state: s, reply: formatVaultPartNumbers(), activeQuestion: null };
       }
@@ -279,13 +277,12 @@ export function processUserMessage(
       const action = msg.trim();
       
       if (action === "guide") {
-        // Show best practices guide
-        s.phase = "result";
-        return { state: s, reply: formatVerifyBestPractices(), activeQuestion: null };
+        // Switch to AI-powered best practices mode
+        s.phase = "best-practices";
+        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
       }
       
       if (action === "parts") {
-        // Show part numbers reference
         s.phase = "result";
         return { state: s, reply: formatVerifyPartNumbers(), activeQuestion: null };
       }
