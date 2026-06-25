@@ -18,10 +18,9 @@ IBM Security Verify is a cloud-based identity and access management (IAM) SaaS p
 PRICING MODEL:
 - Priced on Resource Units (RU), calculated from Monthly Active Users (MAU) using graduated tier brackets
 - MAU formula: ROUNDUP(population × MIN(avgLogins, 12) ÷ 12)
-- 5 capabilities: SSO, MFA, Adaptive Access, Lifecycle Management, Analytics
+- 4 capabilities: SSO, MFA, Adaptive Access, Lifecycle Management
 - SSO/MFA/Adaptive use MAU as the driver
-- Lifecycle and Analytics use Managed Users (accounts Verify actively provisions/deprovisions)
-- Multi-region multiplies total RU by the number of regions
+- Lifecycle uses Managed Users (accounts Verify actively provisions/deprovisions)
 - Terms: 12-month (standard) or 3-year (better pricing)
 
 CAPABILITIES IN DETAIL:
@@ -29,7 +28,6 @@ CAPABILITIES IN DETAIL:
 - MFA: Multi-factor authentication — TOTP, push notification, SMS/email, biometric, FIDO2.
 - Adaptive Access: Risk-based authentication using device, location, behaviour signals. Context-aware policies.
 - Lifecycle Management: User provisioning, deprovisioning, access reviews, joiner-mover-leaver workflows.
-- Analytics: User behaviour analytics, dashboards, reporting, anomaly detection.
 
 KEY ADD-ONS (separate SKUs):
 - D02T6ZX: SMS and Email MFA — per-event pricing ($33.70 per 1,000 events). Use when TOTP/biometric not sufficient.
@@ -39,28 +37,28 @@ KEY ADD-ONS (separate SKUs):
 - D21CWLL: Non-Production without SLA — $1,410/instance/month.
 
 DISCOVERY BEST PRACTICES:
-1. User Population: Always ask for total users AND login frequency. MAU is the real driver, not raw headcount.
-   - "Multiple times a day" or "weekly" → avgLogins ≥ 12 → full population = MAU
-   - "Monthly" → avgLogins = 12 → full population = MAU
-   - "A few times a year" → avgLogins = 6 → ~50% of population is MAU
-   - "Once or twice a year" → avgLogins ≈ 1.5 → small fraction is MAU
+1. User Population: Always ask for total users AND how many months per year they log in at least once. MAU is the real driver, not raw headcount.
+   - Active every month (12/12) → full population = MAU
+   - Active 9 months/year → MAU = 75% of population
+   - Active 6 months/year → MAU = 50% of population
+   - Active 3 months/year → MAU = 25% of population
+   - Active 1 month/year → MAU = ~8% of population
+   - Login frequency within a month does NOT matter — a user active once or 100× in a month counts the same.
 2. Capability Selection: Don't assume — ask specifically about each capability. Clients often don't know they need Adaptive.
-3. Managed Users: Only ask if Lifecycle or Analytics is needed. Managed Users ≤ Total Population (often much smaller).
-4. Multi-Region: Ask about data residency requirements (GDPR, data sovereignty). Most start with 1 region.
-5. Add-ons: Always ask about SMS/Email MFA, legacy apps, custom branding, and dev/test needs.
-6. Term: Introduce 3-year option for better pricing. Most new customers start with 12-month.
+3. Managed Users: Only ask if Lifecycle is needed. Managed Users ≤ Total Population (often much smaller).
+4. Add-ons: Always ask about SMS/Email MFA, legacy apps, custom branding, and dev/test needs.
+5. Term: Introduce 3-year option for better pricing. Most new customers start with 12-month.
 
 COMMON MISTAKES:
 - Using total population as MAU (ignores login frequency)
-- Forgetting to apply region multiplier
-- Not asking about Managed Users for Lifecycle/Analytics
+- Not asking about Managed Users for Lifecycle
 - Missing legacy app integration needs (Application Gateway)
 - Quoting SMS/email MFA at the main RU rate instead of D02T6ZX per-event pricing
 
 SIZING EXAMPLES:
-- 10,000 employees logging in daily: MAU = 10,000. With SSO+MFA: ~180 RU → ~$180,000/year list
-- 50,000 customers logging in 4×/year: MAU = CEIL(50,000 × 4 ÷ 12) = 16,667. SSO only: ~100 RU
-- 100,000 users, 5,000 managed by Verify for Lifecycle: MAU = 100,000 (SSO/MFA), Managed = 5,000 (Lifecycle)
+- 10,000 employees active every month (12/12): MAU = 10,000. With SSO+MFA: ~180 RU → ~$180,000/year list
+- 50,000 customers active 6 months/year (6/12): MAU = CEIL(50,000 × 6 ÷ 12) = 25,000. SSO only: ~200 RU
+- 100,000 users active every month, 5,000 managed by Verify for Lifecycle: MAU = 100,000 (SSO/MFA), Managed = 5,000 (Lifecycle)
 `;
 
 const NS1_KNOWLEDGE = `
@@ -307,14 +305,13 @@ function fallbackIntro(product: Product): string {
 
 **Top questions to ask every customer:**
 - How many total users need access, and how often do they log in? *(determines MAU — the pricing driver)*
-- Which capabilities do they need: SSO, MFA, Adaptive Access, Lifecycle, Analytics?
-- Do they need to manage user accounts (provisioning/deprovisioning)? *(Lifecycle/Analytics require Managed User count)*
-- How many geographic regions? *(each region multiplies RU)*
+- Which capabilities do they need: SSO, MFA, Adaptive Access, Lifecycle?
+- Do they need to manage user accounts (provisioning/deprovisioning)? *(Lifecycle requires Managed User count)*
 - Do they need SMS/email MFA, legacy app integration, or custom branded login?
 
 **Common mistakes to avoid:**
 - Using raw headcount as MAU — login frequency matters (yearly login count ÷ 12, capped at 1×)
-- Forgetting to ask about Managed Users for Lifecycle/Analytics capabilities
+- Not asking about Managed Users when Lifecycle is selected
 - Missing the Hosted Application Gateway for legacy apps
 
 **Quick example:**

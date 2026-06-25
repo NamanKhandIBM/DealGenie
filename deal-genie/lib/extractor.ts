@@ -19,11 +19,11 @@ export interface ExtractedEntities {
   // ── Verify fields ──
   /** Total user population */
   population?: number;
-  /** Average logins per year */
+  /** Active months per year (1–12): number of distinct months the user logs in at least once */
   avgLogins?: number;
-  /** Capabilities: any of SSO | MFA | AdaptiveAccess | LifecycleGov | Analytics */
+  /** Capabilities: any of SSO | MFA | AdaptiveAccess | LifecycleGov */
   capabilities?: string[];
-  /** Number of managed users (for Lifecycle/Analytics) */
+  /** Number of managed users (for Lifecycle) */
   managedUsers?: number;
   /** Number of regions */
   regions?: number;
@@ -68,10 +68,9 @@ Extract any of these fields that are clearly stated or strongly implied:
 
 product: "Verify" | "NS1" | "Vault"  (IBM Security Verify = Verify, NS1 Connect = NS1, HashiCorp Vault = Vault)
 population: number  (total user count, e.g. "500 users" → 500)
-avgLogins: number  (average logins per year; "daily" → 365, "weekly" → 52, "monthly" → 12, "twice a month" → 24)
-capabilities: array of "SSO" | "MFA" | "AdaptiveAccess" | "LifecycleGov" | "Analytics"
+avgLogins: number  (active months per year, 1–12; how many distinct months per year a user logs in at least once — "every day / every week / every month" → 12, "most months" → 9, "half the year" → 6, "a few months" → 3, "once or twice a year" → 1)
+capabilities: array of "SSO" | "MFA" | "AdaptiveAccess" | "LifecycleGov"
 managedUsers: number
-regions: number  (default omit unless explicitly stated)
 vaultModel: "A" | "B"  (A = new customer / expanding, B = renewal / stable)
 installCount: number  (Vault clusters or servers)
 edition: "Essentials" | "Standard" | "Premium"
@@ -142,7 +141,7 @@ function sanitise(raw: Record<string, unknown>): ExtractedEntities {
   const out: ExtractedEntities = {};
 
   const VALID_PRODUCTS = new Set(["Verify", "NS1", "Vault"]);
-  const VALID_CAPS = new Set(["SSO", "MFA", "AdaptiveAccess", "LifecycleGov", "Analytics"]);
+  const VALID_CAPS = new Set(["SSO", "MFA", "AdaptiveAccess", "LifecycleGov"]);
   const VALID_USE_CASES = new Set(["static", "dynamic", "pki", "ssh", "transit", "kmse"]);
 
   if (typeof raw.product === "string" && VALID_PRODUCTS.has(raw.product))

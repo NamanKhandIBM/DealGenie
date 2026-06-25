@@ -60,10 +60,15 @@ export interface VerifyQuoteResult {
 
 /**
  * Derive Monthly Active Users.
- * MAU = ROUNDUP(population × MIN(avgLogins, 12) / 12)
+ *
+ * A user who logs in at least once in a given month counts as 1 MAU for that month,
+ * regardless of how many times they log in. The driver is the number of distinct
+ * months per year the user is active (1–12), not raw login volume.
+ *
+ * MAU = ROUNDUP(population × MIN(activeMonthsPerYear, 12) / 12)
  */
-export function deriveMAU(population: number, avgLoginsPerYear: number): number {
-  return Math.ceil((population * Math.min(avgLoginsPerYear, 12)) / 12);
+export function deriveMAU(population: number, activeMonthsPerYear: number): number {
+  return Math.ceil((population * Math.min(activeMonthsPerYear, 12)) / 12);
 }
 
 /**

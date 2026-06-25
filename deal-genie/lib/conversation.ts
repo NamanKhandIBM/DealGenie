@@ -149,7 +149,6 @@ function applyEntities(s: ConversationState, e: ExtractedEntities): void {
   if (e.population)    set("population",    e.population);
   if (e.avgLogins)     set("avgLogins",     e.avgLogins);
   if (e.managedUsers)  set("managedUsers",  e.managedUsers);
-  if (e.regions)       set("regions",       String(e.regions));
   if (e.term)          set("term",          e.term);
   if (e.includeNonProd !== undefined) set("includeNonProd", e.includeNonProd ? "yes" : "no");
 
@@ -365,7 +364,7 @@ function computeVerifyResult(state: ConversationState): string {
   const population = parseNumber(String(a.population ?? 500));
   const avgLogins = parseNumber(String(a.avgLogins ?? 12));
   const managedUsers = parseNumber(String(a.managedUsers ?? 0));
-  const regions = parseNumber(String(a.regions ?? "1")) || 1;
+  const regions = 1; // one license = one tenant; not a configurable input
   const term = String(a.term ?? "12-month") as "12-month" | "3-year";
 
   const ADDON_MAP: Record<string, { description: string; listPrice: number; unit: string }> = {
@@ -403,7 +402,7 @@ function computeVerifyResult(state: ConversationState): string {
 </div>
 
 <div class="result-inputs">
-  ${population.toLocaleString()} users &nbsp;·&nbsp; ${avgLogins} avg logins/yr &nbsp;·&nbsp; MAU: <strong>${result.mau.toLocaleString()}</strong> &nbsp;·&nbsp; ${caps.join(", ")} &nbsp;·&nbsp; ${term}
+  ${population.toLocaleString()} users &nbsp;·&nbsp; ${avgLogins}/12 active months &nbsp;·&nbsp; MAU: <strong>${result.mau.toLocaleString()}</strong> &nbsp;·&nbsp; ${caps.join(", ")} &nbsp;·&nbsp; ${term}
 </div>
 
 <div class="result-section-label">PARTS TO QUOTE IN CPQ</div>

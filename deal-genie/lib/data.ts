@@ -15,21 +15,21 @@ export const VERIFY_PARTS = [
 // Verify RU rate tiers — graduated brackets (like tax brackets)
 // maxUnits is the upper bound of the bracket (cumulative)
 export const VERIFY_RU_TIERS = [
-  { tier: 1, maxUnits: 500,       SSO: 0.10,   MFA: 0.10,   Adaptive: 0.10,   Lifecycle: 0.29,  Analytics: 0.12   },
-  { tier: 2, maxUnits: 5000,      SSO: 0.08,   MFA: 0.08,   Adaptive: 0.08,   Lifecycle: 0.075, Analytics: 0.10   },
-  { tier: 3, maxUnits: 10000,     SSO: 0.06,   MFA: 0.06,   Adaptive: 0.06,   Lifecycle: 0.05,  Analytics: 0.075  },
-  { tier: 4, maxUnits: 100000,    SSO: 0.008,  MFA: 0.008,  Adaptive: 0.008,  Lifecycle: 0.005, Analytics: 0.02   },
-  { tier: 5, maxUnits: 500000,    SSO: 0.0025, MFA: 0.0025, Adaptive: 0.0025, Lifecycle: 0.002, Analytics: 0.015  },
-  { tier: 6, maxUnits: 1000000,   SSO: 0.002,  MFA: 0.002,  Adaptive: 0.002,  Lifecycle: 0.001, Analytics: 0.001  },
-  { tier: 7, maxUnits: 5000000,   SSO: 0.0015, MFA: 0.0015, Adaptive: 0.0015, Lifecycle: 0.0005,Analytics: 0.0005 },
-  { tier: 8, maxUnits: 10000000,  SSO: 0.0015, MFA: 0.0015, Adaptive: 0.0015, Lifecycle: 0.0002,Analytics: 0.0002 },
-  { tier: 9, maxUnits: 50000000,  SSO: 0.001,  MFA: 0.001,  Adaptive: 0.001,  Lifecycle: 0.0001,Analytics: 0.0001 },
-  { tier: 10,maxUnits: 999999999, SSO: 0.0005, MFA: 0.0005, Adaptive: 0.0005, Lifecycle: 0.0001,Analytics: 0.0001 },
+  { tier: 1, maxUnits: 500,       SSO: 0.10,   MFA: 0.10,   Adaptive: 0.10,   Lifecycle: 0.29   },
+  { tier: 2, maxUnits: 5000,      SSO: 0.08,   MFA: 0.08,   Adaptive: 0.08,   Lifecycle: 0.075  },
+  { tier: 3, maxUnits: 10000,     SSO: 0.06,   MFA: 0.06,   Adaptive: 0.06,   Lifecycle: 0.05   },
+  { tier: 4, maxUnits: 100000,    SSO: 0.008,  MFA: 0.008,  Adaptive: 0.008,  Lifecycle: 0.005  },
+  { tier: 5, maxUnits: 500000,    SSO: 0.0025, MFA: 0.0025, Adaptive: 0.0025, Lifecycle: 0.002  },
+  { tier: 6, maxUnits: 1000000,   SSO: 0.002,  MFA: 0.002,  Adaptive: 0.002,  Lifecycle: 0.001  },
+  { tier: 7, maxUnits: 5000000,   SSO: 0.0015, MFA: 0.0015, Adaptive: 0.0015, Lifecycle: 0.0005 },
+  { tier: 8, maxUnits: 10000000,  SSO: 0.0015, MFA: 0.0015, Adaptive: 0.0015, Lifecycle: 0.0002 },
+  { tier: 9, maxUnits: 50000000,  SSO: 0.001,  MFA: 0.001,  Adaptive: 0.001,  Lifecycle: 0.0001 },
+  { tier: 10,maxUnits: 999999999, SSO: 0.0005, MFA: 0.0005, Adaptive: 0.0005, Lifecycle: 0.0001 },
 ] as const;
 
-export type VerifyCapability = "SSO" | "MFA" | "Adaptive" | "Lifecycle" | "Analytics";
+export type VerifyCapability = "SSO" | "MFA" | "Adaptive" | "Lifecycle";
 export const VERIFY_MAU_CAPABILITIES: VerifyCapability[] = ["SSO", "MFA", "Adaptive"];
-export const VERIFY_MANAGED_CAPABILITIES: VerifyCapability[] = ["Lifecycle", "Analytics"];
+export const VERIFY_MANAGED_CAPABILITIES: VerifyCapability[] = ["Lifecycle"];
 
 // NS1 Pricing Tiers — ILLUSTRATIVE, confirm in CPQ
 export const NS1_PRICING_TIERS = [

@@ -80,32 +80,30 @@ export const VERIFY_BEST_PRACTICES: VerifyBestPractice[] = [
   {
     category: 'Capability Selection',
     question: 'Which Verify capabilities does the client need?',
-    rationale: 'Verify offers 5 capabilities: SSO, MFA, Adaptive Access, Lifecycle Management, and Analytics. Each capability consumes RU based on graduated tiers. Understanding all needed capabilities ensures accurate pricing.',
+    rationale: 'Verify offers 4 capabilities: SSO, MFA, Adaptive Access, and Lifecycle Management. Each capability consumes RU based on graduated tiers. Understanding all needed capabilities ensures accurate pricing.',
     tips: [
       'SSO: Single sign-on for web/mobile apps (most common)',
       'MFA: Multi-factor authentication (TOTP, SMS, email, biometric)',
       'Adaptive Access: Risk-based authentication, context-aware policies',
       'Lifecycle: User provisioning, deprovisioning, access reviews (requires managed users)',
-      'Analytics: User behavior analytics, reporting, dashboards (requires managed users)',
       'Ask: "Do you need single sign-on?" → SSO',
       'Ask: "Do you need multi-factor authentication?" → MFA',
       'Ask: "Do you need risk-based authentication?" → Adaptive',
-      'Ask: "Do you need to manage user accounts and access?" → Lifecycle',
-      'Ask: "Do you need user activity reporting?" → Analytics'
+      'Ask: "Do you need to manage user accounts and access?" → Lifecycle'
     ]
   },
   {
     category: 'MAU vs Managed Users',
-    question: 'Does the client need Lifecycle or Analytics capabilities?',
-    rationale: 'SSO, MFA, and Adaptive use MAU as the driver. Lifecycle and Analytics use Managed Users (subset of population that Verify actively manages). This distinction is critical for RU calculation.',
+    question: 'Does the client need Lifecycle capability?',
+    rationale: 'SSO, MFA, and Adaptive use MAU as the driver. Lifecycle uses Managed Users (subset of population that Verify actively manages). This distinction is critical for RU calculation.',
     tips: [
       'MAU capabilities: SSO, MFA, Adaptive (based on login activity)',
-      'Managed User capabilities: Lifecycle, Analytics (based on accounts managed)',
+      'Managed User capability: Lifecycle (based on accounts managed)',
       'Managed Users ≤ Total Population (usually much smaller)',
       'Ask: "How many user accounts will Verify create and manage?" → Managed Users',
       'Example: 100,000 total users, but only 5,000 employees managed by Verify → 5,000 managed users',
-      'Common mistake: Using MAU for Lifecycle/Analytics (should use managed users)',
-      'If client needs Lifecycle/Analytics, MUST ask for managed user count'
+      'Common mistake: Using MAU for Lifecycle (should use managed users)',
+      'If client needs Lifecycle, MUST ask for managed user count'
     ]
   },
   {
@@ -189,7 +187,7 @@ export const VERIFY_TUTORIAL_STEPS: VerifyTutorialStep[] = [
   {
     step: 2,
     title: 'Identify Required Capabilities',
-    description: 'Determine which of the 5 capabilities the client needs: SSO, MFA, Adaptive, Lifecycle, Analytics.',
+    description: 'Determine which of the 4 capabilities the client needs: SSO, MFA, Adaptive, Lifecycle.',
     example: 'Client needs SSO for 50 apps, MFA for security, and Adaptive for risk-based auth → Select SSO, MFA, Adaptive',
     commonMistakes: [
       'Only asking about SSO, missing MFA/Adaptive needs',
@@ -200,11 +198,11 @@ export const VERIFY_TUTORIAL_STEPS: VerifyTutorialStep[] = [
   {
     step: 3,
     title: 'Determine Managed Users (if needed)',
-    description: 'If client needs Lifecycle or Analytics, ask how many users Verify will actively manage.',
+    description: 'If client needs Lifecycle, ask how many users Verify will actively manage.',
     example: 'Client has 100,000 customers (MAU) but only 2,000 employees managed by Verify → 2,000 managed users for Lifecycle',
     commonMistakes: [
-      'Using MAU for Lifecycle/Analytics (should use managed users)',
-      'Not asking about managed users when Lifecycle/Analytics selected',
+      'Using MAU for Lifecycle (should use managed users)',
+      'Not asking about managed users when Lifecycle is selected',
       'Confusing managed users with total population'
     ]
   },
@@ -266,7 +264,7 @@ export const VERIFY_QUICK_REFERENCE: VerifyQuickReference[] = [
   },
   {
     topic: 'Capabilities',
-    content: 'SSO/MFA/Adaptive: Use MAU | Lifecycle/Analytics: Use Managed Users | Select only what client needs | Multiple capabilities add up RU'
+    content: 'SSO/MFA/Adaptive: Use MAU | Lifecycle: Use Managed Users | Select only what client needs | Multiple capabilities add up RU'
   },
   {
     topic: 'RU Pricing',
