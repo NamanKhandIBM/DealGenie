@@ -1,10 +1,19 @@
 // NS1 Part Numbers and Pricing Data
-// Source: CPQ + Tony Nicolakis / Nick Lammert validation
+// Source: IBM NS1 Connect Sales Kit (sourced via Seismic, 2025)
+// List prices: PENDING — confirm in IBM Software CPQ (not hardware CPQ Hub)
+// Part number structure: base subscription + committed add-ons + overage SKUs
+//
+// TODO: Get list prices from IBM Software CPQ — ask Dennis Weru or Tony Nicolakis
+//       for the correct CPQ URL (NOT the IBM CPQ Hub hardware tool).
+//       Once prices are confirmed, remove all listPrice: 0 entries below.
+//
+// GSLB bundles D0GZ0ZX / D0GYYZX and Hybrid bundles D0GYUZX / D0GYWZX —
+// pricing not found in Seismic docs. Confirm with Tony Nicolakis / Nick Lammert.
 
 export interface NS1Part {
   partNumber: string;
   description: string;
-  listPrice: number;
+  listPrice: number;       // 0 = price pending; confirm in IBM Software CPQ
   unit: string;
   category: "Core" | "Add-on" | "Premium";
   notes?: string;
@@ -14,95 +23,146 @@ export interface NS1Part {
   };
 }
 
-// Core NS1 Managed DNS Parts
+// ── Core: Base access + query volume ─────────────────────────────────────────
+// NS1 uses a base subscription + committed add-on + overage model.
+// Every deal starts with D10AYZX (base access), then D10AZZX per 10M committed
+// queries, and D10B0ZX fires for any queries above the committed band.
 export const NS1_CORE_PARTS: NS1Part[] = [
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 Managed DNS - Query Volume",
-    listPrice: 0, // Tiered pricing - see NS1_PRICING_TIERS
-    unit: "per million queries/month",
+    partNumber: "D10AYZX",
+    description: "IBM NS1 Connect Standard Access Per Month",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per month (base fee)",
     category: "Core",
-    notes: "Tiered pricing based on query volume. First 3,000 DNS records included free."
+    notes: "Required base subscription for every NS1 deal. Add query volume via D10AZZX."
   },
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 DNS Records (beyond 3,000)",
-    listPrice: 0, // Variable pricing
-    unit: "per record/month",
+    partNumber: "D10AZZX",
+    description: "IBM NS1 Connect Standard 10M Query Add-On Per Month",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per 10M queries/month (committed)",
     category: "Core",
-    notes: "First 3,000 records are included free with Managed DNS"
+    notes: "Committed query volume in 10M increments. Quantity = CEIL(effectiveMQ / 10)."
+  },
+  {
+    partNumber: "D10B0ZX",
+    description: "IBM NS1 Connect Standard 10M Query Add-On Overage",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per 10M queries/month (overage)",
+    category: "Core",
+    notes: "Overage SKU — fires when actual queries exceed committed D10AZZX band. Include for reference."
+  },
+  {
+    partNumber: "D1250ZX",
+    description: "IBM NS1 Connect Standard Access 10M Queries Pay Per Use",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per 10M queries (pay-per-use)",
+    category: "Core",
+    notes: "Pay-per-use alternative to committed D10AZZX. Use for short-term or variable workloads."
+  },
+  {
+    partNumber: "D10AWZX",
+    description: "IBM NS1 Connect Standard Records Add-On 1000 Records Per Month",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per 1,000 records/month (committed)",
+    category: "Core",
+    notes: "First 3,000 records free. Quantity = CEIL(billableRecords / 1000)."
+  },
+  {
+    partNumber: "D10AXZX",
+    description: "IBM NS1 Connect Standard Records Add-On 1000 Records Overage",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per 1,000 records/month (overage)",
+    category: "Core",
+    notes: "Overage SKU for records. Include for reference alongside D10AWZX."
   }
 ];
 
-// NS1 GSLB (Global Server Load Balancing) Parts
+// ── GSLB: Filter chains, monitors, RUM ───────────────────────────────────────
 export const NS1_GSLB_PARTS: NS1Part[] = [
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 GSLB - Filter Chains",
-    listPrice: 0,
-    unit: "per filter chain/month",
+    partNumber: "D10AUZX",
+    description: "IBM NS1 Connect Standard Filter Chains Add-On Resource Unit Per Month",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per filter chain/month (committed)",
     category: "Add-on",
-    notes: "Requires Managed DNS. Used for traffic steering and intelligent routing."
+    notes: "One filter chain = one traffic steering policy. Requires base D10AYZX."
   },
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 GSLB - RUM (Real User Monitoring) Packs",
-    listPrice: 0,
-    unit: "per 5M query pack/month",
+    partNumber: "D10AVZX",
+    description: "IBM NS1 Connect Standard Filter Chains Add-On Resource Unit Overage",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per filter chain/month (overage)",
     category: "Add-on",
-    notes: "Required when using RUM-based filter chains. Sold in 5M query increments."
+    notes: "Overage SKU for filter chains. Include for reference alongside D10AUZX."
   },
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 GSLB - Up/Down Monitors",
-    listPrice: 0,
-    unit: "per monitor/month",
+    partNumber: "D0GZ0ZX",
+    description: "NS1 GSLB Standard (using NS1 Real User Monitoring data)",
+    listPrice: 0, // PENDING — confirm pricing with Tony Nicolakis / Nick Lammert
+    unit: "per month",
     category: "Add-on",
-    notes: "Health check monitors for endpoints"
+    notes: "GSLB with NS1-provided RUM data. Pricing not found in Seismic docs — confirm with Tony/Nick."
+  },
+  {
+    partNumber: "D0GYYZX",
+    description: "NS1 GSLB Advanced (customer-configured private RUM tests)",
+    listPrice: 0, // PENDING — confirm pricing with Tony Nicolakis / Nick Lammert
+    unit: "per month",
+    category: "Add-on",
+    notes: "GSLB with customer's own private RUM data. Pricing not found in Seismic docs — confirm with Tony/Nick."
+  },
+  {
+    partNumber: "D10B2ZX",
+    description: "IBM NS1 Connect Standard Monitors Add-On Job Per Month",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per monitor/month (committed)",
+    category: "Add-on",
+    notes: "One monitor = one health-checked hostname or IP."
+  },
+  {
+    partNumber: "D10B3ZX",
+    description: "IBM NS1 Connect Standard Monitors Add-On Job Overage",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per monitor/month (overage)",
+    category: "Add-on",
+    notes: "Overage SKU for monitors. Include for reference alongside D10B2ZX."
   }
 ];
 
-// NS1 Premium Add-ons
+// ── Premium: Dedicated DNS, China, Spike Protection ──────────────────────────
 export const NS1_PREMIUM_PARTS: NS1Part[] = [
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 Dedicated DNS",
-    listPrice: 0,
-    unit: "per PoP/month",
+    partNumber: "D0GYUZX",
+    description: "NS1 Hybrid Cloud DNS Enterprise Bundle (under 200k DNS records)",
+    listPrice: 0, // PENDING — confirm pricing with Tony Nicolakis / Nick Lammert
+    unit: "per month",
     category: "Premium",
-    notes: "Dedicated infrastructure for high-volume or compliance needs",
+    notes: "Dedicated/Hybrid DNS bundle for <200k records. Confirm scope and PoP count with Tony/Nick.",
     minimums: {
       quantity: 3,
-      description: "Minimum 3 PoPs required. Maximum 12 PoPs available."
+      description: "Minimum 3 PoPs required. Maximum 12 PoPs."
     }
   },
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 DNS for China",
-    listPrice: 0,
-    unit: "per million queries/month",
+    partNumber: "D0GYWZX",
+    description: "NS1 Hybrid Cloud DNS Enterprise Plus Bundle (200k–2M DNS records)",
+    listPrice: 0, // PENDING — confirm pricing with Tony Nicolakis / Nick Lammert
+    unit: "per month",
     category: "Premium",
-    notes: "Specialized routing for China-origin queries",
+    notes: "Dedicated/Hybrid DNS bundle for 200k–2M records. Confirm scope and PoP count with Tony/Nick.",
     minimums: {
-      quantity: 50,
-      description: "Minimum 50M queries/month required"
+      quantity: 3,
+      description: "Minimum 3 PoPs required. Maximum 12 PoPs."
     }
   },
   {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 DNS Insights",
-    listPrice: 0,
-    unit: "per million queries/month",
+    partNumber: "D10ATZX",
+    description: "IBM NS1 Connect Standard Spike Protection Add-On Per Month",
+    listPrice: 0, // PENDING — confirm in IBM Software CPQ
+    unit: "per month",
     category: "Premium",
-    notes: "Analytics and visibility. Typically ~20% of total query volume (list), negotiable to ~10%"
-  },
-  {
-    partNumber: "D0XXXZX", // PLACEHOLDER - Get from CPQ
-    description: "NS1 DDoS / Spike Protection",
-    listPrice: 0,
-    unit: "per instance/month",
-    category: "Premium",
-    notes: "Protection against traffic spikes and DDoS attacks. Pricing varies by requirements."
+    notes: "DDoS and traffic spike protection. Pricing varies by threat profile — confirm with NS1 team."
   }
 ];
 
@@ -295,7 +355,7 @@ export const NS1_TUTORIAL_STEPS: NS1TutorialStep[] = [
     title: "Document and Transfer to CPQ",
     description: "Create a clear summary for CPQ entry and customer records.",
     action: "Document all part numbers, quantities, and the rationale behind each line item.",
-    example: "Part D0XXXZX: 200M queries/month (150M actual + 33% growth headroom), Part D0XXXZX: 2,000 records (5,000 total - 3,000 free)",
+    example: "D10AYZX: 1 (base), D10AZZX: 20 × 10M blocks (200M MQ with headroom), D10AWZX: 2 × 1,000-record blocks (5,000 total - 3,000 free)",
     commonMistakes: [
       "Not documenting the customer's actual requirements vs. what was quoted",
       "Not noting growth assumptions",
@@ -315,10 +375,11 @@ export const NS1_QUICK_REFERENCE: NS1QuickRef[] = [
   {
     topic: "Pricing Model",
     keyPoints: [
-      "Tiered pricing based on query volume (millions/month)",
-      "First 3,000 DNS records included free",
-      "GSLB components priced separately (filter chains, monitors, RUM packs)",
-      "Premium add-ons have minimums (China: 50M queries, Dedicated: 3 PoPs)"
+      "Base subscription (D10AYZX) + committed add-ons + overage SKUs",
+      "Query volume: D10AZZX per 10M committed blocks + D10B0ZX overage",
+      "First 3,000 DNS records free; D10AWZX per 1,000 additional records",
+      "GSLB: D10AUZX filter chains, D0GZ0ZX/D0GYYZX RUM, D10B2ZX monitors",
+      "List prices PENDING — confirm in IBM Software CPQ"
     ]
   },
   {
