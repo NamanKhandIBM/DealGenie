@@ -642,17 +642,6 @@ function formatNS1BestPractices(): string {
 <div class="result-section-label">📚 BEST PRACTICES FOR NS1 QUOTING</div>
 ${practicesHTML}
 
-<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
-  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
-    ✅ Ready to start quoting?
-  </p>
-  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
-    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
-  </p>
-  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-    📋 Need part numbers? Type "restart" and select "View Part Numbers"
-  </p>
-</div>
 </div>`;
 }
 
@@ -704,16 +693,6 @@ function formatNS1PartNumbers(): string {
   <tbody>${partsHTML}</tbody>
 </table>
 
-<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
-  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
-    ✅ Ready to start quoting?
-  </p>
-  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
-    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
-  </p>
-  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-    📚 Need best practices? Type "restart" and select "View Best Practices"
-  </p>
 </div>
 </div>`;
 }
@@ -748,17 +727,6 @@ function formatVaultBestPractices(): string {
   Essential questions and guidance for accurate Vault quotes
 </p>
 ${practicesHTML}
-<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
-  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
-    ✅ Ready to start quoting?
-  </p>
-  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
-    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
-  </p>
-  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-    📋 Need part numbers? Type "restart" and select "View Part Numbers"
-  </p>
-</div>
 </div>`;
 }
 
@@ -800,17 +768,6 @@ function formatVaultPartNumbers(): string {
     </tbody>
   </table>
 </div>
-<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2); margin-top: 24px;">
-  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
-    ✅ Ready to start quoting?
-  </p>
-  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
-    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
-  </p>
-  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-    📚 Need best practices? Type "restart" and select "View Best Practices"
-  </p>
-</div>
 </div>`;
 }
 
@@ -845,17 +802,6 @@ function formatVerifyBestPractices(): string {
   Essential questions and guidance for accurate Verify quotes
 </p>
 ${practicesHTML}
-<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2);">
-  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
-    ✅ Ready to start quoting?
-  </p>
-  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
-    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
-  </p>
-  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-    📋 Need part numbers? Type "restart" and select "View Part Numbers"
-  </p>
-</div>
 </div>`;
 }
 
@@ -894,17 +840,6 @@ function formatVerifyPartNumbers(): string {
       ${partsHTML}
     </tbody>
   </table>
-</div>
-<div class="result-next" style="display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(15,98,254,0.05) 0%, rgba(0,67,206,0.05) 100%); border-radius: 12px; border: 2px solid rgba(15,98,254,0.2); margin-top: 24px;">
-  <p style="margin: 0; text-align: center; font-size: 18px; font-weight: 600; color: #1e293b;">
-    ✅ Ready to start quoting?
-  </p>
-  <p style="margin: 0; text-align: center; font-size: 14px; color: #64748b;">
-    Type <strong style="color: #0f62fe; font-family: monospace; background: rgba(15,98,254,0.1); padding: 2px 8px; border-radius: 4px;">quote</strong> in the text box below and press Enter
-  </p>
-  <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-    📚 Need best practices? Type "restart" and select "View Best Practices"
-  </p>
 </div>
 </div>`;
 }

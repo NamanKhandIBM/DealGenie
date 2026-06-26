@@ -86,6 +86,14 @@ export default function ChatPage() {
   const [freeText, setFreeText] = useState("");
   // Best-practices AI chat history (for follow-up context)
   const [bpHistory, setBpHistory] = useState<BestPracticesMessage[]>([]);
+  // History stack for the Back button — each entry is a snapshot before a send()
+  const [history, setHistory] = useState<Array<{
+    messages: Message[];
+    state: ConversationState;
+    activeQuestion: ActiveQuestion | null;
+  }>>([]);
+  // Tracks whether the current result screen came from a quote or a parts/guide action
+  const [resultSource, setResultSource] = useState<"quote" | "parts" | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -93,9 +101,22 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, activeQuestion]);
 
+  const goBack = () => {
+    const prev = history[history.length - 1];
+    if (!prev) return;
+    setHistory((h) => h.slice(0, -1));
+    setMessages(prev.messages);
+    setState(prev.state);
+    setActiveQuestion(prev.activeQuestion);
+    setFreeText("");
+  };
+
   const send = useCallback(
     async (text: string) => {
       if (!text.trim() || loading) return;
+
+      // Snapshot current state before every action so Back can restore it
+      setHistory((h) => [...h, { messages, state, activeQuestion }]);
 
       const userMsg: Message = {
         id: crypto.randomUUID(),
@@ -116,30 +137,6 @@ export default function ChatPage() {
       try {
         // ── Best-practices follow-up Q&A ──────────────────────────────────────
         if (state.phase === "best-practices" && state.product) {
-          // Let user escape to quoting by typing "quote" or "start quoting"
-          if (/^(quote|start quoting|start quote|begin quote)/i.test(text.trim())) {
-            const switchMsg = text.trim();
-            const res = await fetch("/api/chat", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                message: switchMsg,
-                state: { ...state, phase: "product-select", answers: {}, discoveryStep: 0 },
-              }),
-            });
-            const json = await res.json();
-            if (json.reply) {
-              setMessages((m) => [
-                ...m,
-                { id: crypto.randomUUID(), role: "assistant", content: json.reply, timestamp: Date.now() },
-              ]);
-            }
-            setState(json.state);
-            setActiveQuestion(json.activeQuestion ?? null);
-            setBpHistory([]);
-            return;
-          }
-
           const newHistory: BestPracticesMessage[] = [
             ...bpHistory,
             { role: "user", content: text },
@@ -230,6 +227,8 @@ export default function ChatPage() {
 
         setState(json.state);
         setActiveQuestion(json.activeQuestion ?? null);
+        // Track what kind of result was produced so the action bar shows the right buttons
+        if (json.state?.phase === "result") setResultSource("quote");
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
         setMessages((m) => [
@@ -245,8 +244,80 @@ export default function ChatPage() {
         setLoading(false);
       }
     },
-    [loading, state, activeQuestion]
+    [loading, state, activeQuestion, messages, bpHistory]
   );
+
+  // ── Shared helper: send a top-level action (quote/parts/guide) for the current product ──
+  const sendProductAction = async (action: "quote" | "parts" | "guide") => {
+    if (!state.product || loading) return;
+    setHistory((h) => [...h, { messages, state, activeQuestion }]);
+    setLoading(true);
+    try {
+      // Start at discoveryStep 0 (the action-select question) in discovery phase
+      // so the server routes "parts"/"guide"/"quote" through the correct handler.
+      const actionKey =
+        state.product === "Verify" ? "verifyAction" :
+        state.product === "NS1"    ? "ns1Action"    : "vaultAction";
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: action,
+          state: {
+            ...state,
+            phase: "discovery",
+            answers: { [actionKey]: action },
+            discoveryStep: 0,
+          },
+        }),
+      });
+      const json = await res.json();
+
+      // Best-practices init sentinel — fetch the AI intro
+      if (json.reply === "__BEST_PRACTICES_INIT__" && json.state?.product) {
+        setState(json.state);
+        setActiveQuestion(null);
+        setBpHistory([]);
+        setResultSource(null);
+        const bpRes = await fetch("/api/best-practices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ product: json.state.product, history: [] }),
+        });
+        const bpJson = await bpRes.json();
+        const intro = bpJson.reply ?? "Ask me anything about this product.";
+        setBpHistory([{ role: "assistant", content: intro }]);
+        setMessages((m) => [
+          ...m,
+          { id: crypto.randomUUID(), role: "assistant", content: intro, timestamp: Date.now() },
+        ]);
+        return;
+      }
+
+      if (json.reply) {
+        setMessages((m) => [
+          ...m,
+          { id: crypto.randomUUID(), role: "assistant", content: json.reply, timestamp: Date.now() },
+        ]);
+      }
+      setState(json.state);
+      setActiveQuestion(json.activeQuestion ?? null);
+      setBpHistory([]);
+      setResultSource(action === "parts" ? "parts" : "quote");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Something went wrong.";
+      setMessages((m) => [
+        ...m,
+        { id: crypto.randomUUID(), role: "assistant", content: `⚠️ ${errMsg}`, timestamp: Date.now() },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startQuoting      = () => sendProductAction("quote");
+  const startPartNumbers  = () => sendProductAction("parts");
+  const startBestPractices = () => sendProductAction("guide");
 
   const reset = () => {
     setMessages([WELCOME_MESSAGE]);
@@ -254,11 +325,15 @@ export default function ChatPage() {
     setActiveQuestion(null);
     setFreeText("");
     setBpHistory([]);
+    setHistory([]);
+    setResultSource(null);
   };
 
   const showProductPicker = state.phase === "welcome" || state.phase === "product-select";
-  const showFreeInput = !activeQuestion && state.phase !== "welcome" && state.phase !== "product-select";
+  // Show the free-text bar during discovery (plain language input) and best-practices (follow-up questions)
+  const showFreeInput = !activeQuestion && state.phase !== "welcome" && state.phase !== "product-select" && state.phase !== "result";
   const isBestPracticesMode = state.phase === "best-practices";
+  const showActionBar = !loading && !activeQuestion && (state.phase === "result" || state.phase === "best-practices") && state.product !== null;
 
   return (
     <>
@@ -360,11 +435,146 @@ export default function ChatPage() {
             {/* Active question card */}
             {activeQuestion && !loading && (
               <div className="flex justify-start ml-10">
-                <QuestionCard
-                  question={activeQuestion.question}
-                  onAnswer={send}
-                  disabled={loading}
-                />
+                <div className="space-y-2">
+                  {history.length > 0 && (
+                    <button
+                      onClick={goBack}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(147,180,253,0.7)",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M10 4L6 8l4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Back
+                    </button>
+                  )}
+                  <QuestionCard
+                    question={activeQuestion.question}
+                    onAnswer={send}
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Action bar — shown after parts, best-practices, or quote result */}
+            {showActionBar && (
+              <div className="flex flex-wrap items-center gap-2 ml-10">
+                {/* Back button — always first when history exists */}
+                {history.length > 0 && (
+                  <button
+                    onClick={goBack}
+                    disabled={loading}
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                    style={{
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "rgba(147,180,253,0.7)",
+                    }}
+                  >
+                    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M10 4L6 8l4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Back
+                  </button>
+                )}
+
+                {/* After viewing PART NUMBERS → offer Best Practices + Start Quoting */}
+                {state.phase === "result" && resultSource === "parts" && (
+                  <>
+                    <button
+                      onClick={startBestPractices}
+                      disabled={loading}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(147,180,253,0.7)",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M2 4h12M2 8h9M2 12h6" strokeLinecap="round"/>
+                      </svg>
+                      Best Practices
+                    </button>
+                    <button
+                      onClick={startQuoting}
+                      disabled={loading}
+                      className="btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Start Quoting
+                    </button>
+                  </>
+                )}
+
+                {/* After BEST PRACTICES → offer Part Numbers + Start Quoting */}
+                {state.phase === "best-practices" && (
+                  <>
+                    <button
+                      onClick={startPartNumbers}
+                      disabled={loading}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(147,180,253,0.7)",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zM5 6h6M5 9h4" strokeLinecap="round"/>
+                      </svg>
+                      Part Numbers
+                    </button>
+                    <button
+                      onClick={startQuoting}
+                      disabled={loading}
+                      className="btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Start Quoting
+                    </button>
+                  </>
+                )}
+
+                {/* After a QUOTE RESULT → Best Practices + Start Quoting */}
+                {state.phase === "result" && resultSource === "quote" && (
+                  <>
+                    <button
+                      onClick={startBestPractices}
+                      disabled={loading}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(147,180,253,0.7)",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M2 4h12M2 8h9M2 12h6" strokeLinecap="round"/>
+                      </svg>
+                      Best Practices
+                    </button>
+                    <button
+                      onClick={startQuoting}
+                      disabled={loading}
+                      className="btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Start Quoting
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
