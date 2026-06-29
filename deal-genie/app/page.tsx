@@ -94,6 +94,8 @@ export default function ChatPage() {
   }>>([]);
   // Tracks whether the current result screen came from a quote or a parts/guide action
   const [resultSource, setResultSource] = useState<"quote" | "parts" | null>(null);
+  // Client mode — AI SME speaks directly to the client instead of the seller
+  const [clientMode, setClientMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -148,6 +150,7 @@ export default function ChatPage() {
               product: state.product,
               history: bpHistory,
               message: text,
+              clientMode,
             }),
           });
           const bpJson = await bpRes.json();
@@ -192,7 +195,7 @@ export default function ChatPage() {
           const bpRes = await fetch("/api/best-practices", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ product: json.state.product, history: [] }),
+            body: JSON.stringify({ product: json.state.product, history: [], clientMode }),
           });
           const bpJson = await bpRes.json();
           if (!bpRes.ok) {
@@ -282,7 +285,7 @@ export default function ChatPage() {
         const bpRes = await fetch("/api/best-practices", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: json.state.product, history: [] }),
+          body: JSON.stringify({ product: json.state.product, history: [], clientMode }),
         });
         const bpJson = await bpRes.json();
         const intro = bpJson.reply ?? "Ask me anything about this product.";
@@ -319,6 +322,30 @@ export default function ChatPage() {
   const startPartNumbers  = () => sendProductAction("parts");
   const startBestPractices = () => sendProductAction("guide");
 
+  const toggleClientMode = async () => {
+    if (!state.product || state.phase !== "best-practices") return;
+    const next = !clientMode;
+    setClientMode(next);
+    setLoading(true);
+    setBpHistory([]);
+    try {
+      const bpRes = await fetch("/api/best-practices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product: state.product, history: [], clientMode: next }),
+      });
+      const bpJson = await bpRes.json();
+      const intro = bpJson.reply ?? "Ready.";
+      setBpHistory([{ role: "assistant", content: intro }]);
+      setMessages((m) => [
+        ...m,
+        { id: crypto.randomUUID(), role: "assistant", content: intro, timestamp: Date.now() },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const reset = () => {
     setMessages([WELCOME_MESSAGE]);
     setState(initialState);
@@ -327,6 +354,7 @@ export default function ChatPage() {
     setBpHistory([]);
     setHistory([]);
     setResultSource(null);
+    setClientMode(false);
   };
 
   const showProductPicker = state.phase === "welcome" || state.phase === "product-select";
@@ -499,7 +527,7 @@ export default function ChatPage() {
                       <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M2 4h12M2 8h9M2 12h6" strokeLinecap="round"/>
                       </svg>
-                      Best Practices
+                      AI SME
                     </button>
                     <button
                       onClick={startQuoting}
@@ -514,9 +542,31 @@ export default function ChatPage() {
                   </>
                 )}
 
-                {/* After BEST PRACTICES → offer Part Numbers + Start Quoting */}
+                {/* After AI SME → toggle client mode + Part Numbers + Start Quoting */}
                 {state.phase === "best-practices" && (
                   <>
+                    {/* Walk Client Through toggle */}
+                    <button
+                      onClick={toggleClientMode}
+                      disabled={loading}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={clientMode ? {
+                        background: "rgba(8,189,186,0.18)",
+                        border: "1px solid rgba(8,189,186,0.5)",
+                        color: "#5eead4",
+                        fontWeight: 600,
+                      } : {
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(147,180,253,0.7)",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <circle cx="8" cy="5" r="2.5"/>
+                        <path d="M2.5 13.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" strokeLinecap="round"/>
+                      </svg>
+                      {clientMode ? "● Client Mode" : "Walk Client Through"}
+                    </button>
                     <button
                       onClick={startPartNumbers}
                       disabled={loading}
@@ -545,7 +595,7 @@ export default function ChatPage() {
                   </>
                 )}
 
-                {/* After a QUOTE RESULT → Best Practices + Start Quoting */}
+                {/* After a QUOTE RESULT → AI SME + Start Quoting */}
                 {state.phase === "result" && resultSource === "quote" && (
                   <>
                     <button
@@ -561,7 +611,7 @@ export default function ChatPage() {
                       <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M2 4h12M2 8h9M2 12h6" strokeLinecap="round"/>
                       </svg>
-                      Best Practices
+                      AI SME
                     </button>
                     <button
                       onClick={startQuoting}
@@ -628,7 +678,9 @@ export default function ChatPage() {
                   }}
                   placeholder={
                    isBestPracticesMode
-                     ? "Ask a follow-up question about this product…"
+                     ? clientMode
+                       ? "Client: type your response or question…"
+                       : "Ask the AI SME a follow-up question…"
                      : state.phase === "result"
                      ? "Say 'restart' or type a product to quote again…"
                      : "Or describe the client's needs in plain language…"

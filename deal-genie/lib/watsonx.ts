@@ -99,14 +99,23 @@ export async function watsonxGenerate(opts: GenerateOptions): Promise<GenerateRe
     project_id: projectId,
   };
 
-  const res = await fetch(`${url}/ml/v1/text/generation?version=2023-05-29`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
+  const fetchGenerate = () =>
+    fetch(`${url}/ml/v1/text/generation?version=2023-05-29`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+  let res = await fetchGenerate();
+
+  // Retry once on 429 (rate limit) after a short back-off
+  if (res.status === 429) {
+    await new Promise((r) => setTimeout(r, 3000));
+    res = await fetchGenerate();
+  }
 
   if (!res.ok) {
     const text = await res.text();

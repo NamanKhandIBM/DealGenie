@@ -30,7 +30,8 @@ export const VERIFY_QUESTIONS: Question[] = [
     subtext: "Choose an option to get started with Verify quoting",
     type: "single",
     options: [
-      { label: "📚 View Best Practices", value: "guide", hint: "Learn what to ask clients" },
+      { label: "🤖 AI SME", value: "guide", hint: "Chat with an AI subject matter expert" },
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Static discovery guide" },
       { label: "📋 View Part Numbers", value: "parts", hint: "See all Verify SKUs" },
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
     ],
@@ -113,7 +114,8 @@ export const NS1_QUESTIONS: Question[] = [
     subtext: "View the guide first, or jump straight into quoting?",
     type: "single",
     options: [
-      { label: "📚 View Best Practices & Tutorial", value: "guide", hint: "Learn how to gather requirements" },
+      { label: "🤖 AI SME", value: "guide", hint: "Chat with an AI subject matter expert" },
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Static discovery guide" },
       { label: "📋 View Part Numbers Reference", value: "parts", hint: "See all NS1 part numbers" },
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the discovery questions" },
     ],
@@ -273,7 +275,8 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
     subtext: "Choose an option to get started with Vault quoting",
     type: "single",
     options: [
-      { label: "📚 View Best Practices", value: "guide", hint: "Learn what to ask clients" },
+      { label: "🤖 AI SME", value: "guide", hint: "Chat with an AI subject matter expert" },
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Static discovery guide" },
       { label: "📋 View Part Numbers", value: "parts", hint: "See all Vault SKUs" },
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
     ],

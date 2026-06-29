@@ -1,14 +1,65 @@
 /**
  * AI-powered best practices subject matter expert.
  *
- * Uses watsonx.ai (Granite) with rich product knowledge as grounding.
- * The AI generates best practices and answers follow-up questions.
+ * Provider priority (checked at runtime):
+ *   1. OpenAI  — if OPENAI_API_KEY is set
+ *   2. watsonx — if WATSONX_API_KEY is set
+ *   3. Static fallback — always works, no API needed
+ *
  * It never calculates prices or generates part numbers — that stays in the
  * deterministic engines.
  */
 
 import { watsonxGenerate } from "./watsonx";
 import type { Product } from "./types";
+
+// ─── OpenAI provider ──────────────────────────────────────────────────────────
+
+async function openaiGenerate(systemPrompt: string, userMessage: string): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user",   content: userMessage },
+      ],
+      max_tokens: 600,
+      temperature: 0.4,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`OpenAI failed (${res.status}): ${text}`);
+  }
+
+  const json = await res.json();
+  return json.choices?.[0]?.message?.content?.trim() ?? "";
+}
+
+// ─── Unified generate — tries providers in priority order ────────────────────
+
+async function generate(systemPrompt: string, userMessage: string): Promise<string> {
+  // 1. OpenAI
+  if (process.env.OPENAI_API_KEY) {
+    return openaiGenerate(systemPrompt, userMessage);
+  }
+  // 2. watsonx
+  if (process.env.WATSONX_API_KEY) {
+    const { text } = await watsonxGenerate({ systemPrompt, userMessage, maxNewTokens: 512 });
+    return text;
+  }
+  // 3. No provider configured — caller handles fallback
+  throw new Error("NO_PROVIDER");
+}
 
 // ─── Per-product knowledge base (system prompt grounding) ─────────────────────
 
@@ -63,59 +114,101 @@ SIZING EXAMPLES:
 
 const NS1_KNOWLEDGE = `
 NS1 Connect is IBM's managed authoritative DNS and intelligent traffic management product.
+Source: NS1 Sales Decoder Ring – CPQ.pdf (IBM Seismic, 2025)
+
+PRODUCT TIERS — THREE DISTINCT PRODUCTS (different part numbers, different CPQ flows):
+1. NS1 Connect Standard (Product ID 5900B4J, D10A*/D10B* parts) — ARR $4K–$40K
+   - Up to 1B queries/month, 10K records, 100 monitors/filter chains
+   - Self-serve: IBM.com, partners, AWS Marketplace
+   - Includes Spike Protection by default
+
+2. NS1 Connect Premium (Product ID 5900B4J, D0GN* parts) — ARR $45K+ ASP
+   - A la carte menu, fully customizable
+   - Seller-assisted. Target: mid-market, new IBM customers
+   - Key parts: D0GNDZX (SLA, required), D0GNEZX (Requests/queries), D0GNGZX (Records), D0GNIZX (Monitors/Jobs), D0GNKZX (Filter chains/Resource Units)
+
+3. Hybrid Cloud DNS (Product ID 5900B5C, D0GY*/D0GZ* parts) — ARR $250K–$1M+
+   - Pre-packaged bundles for whale-scale deals
+   - Enterprise (D0GYUZX): <200K records, min 10B QPM, ~$350K ACV pre-discount
+   - Enterprise Plus (D0GYWZX): 200K–2M records, min 10B QPM, ~$670K ACV pre-discount
+   - GSLB Standard (D0GZ0ZX): NS1 RUM data, min 1B queries, ~$55K ACV
+   - GSLB Advanced (D0GYYZX): Customer RUM data, min 5B queries, ~$87K ACV
+
+CRITICAL: NEVER mix D10A* and D0GN* parts on the same quote. Pick one tier and stay in it.
+
+IBM METRIC CONVERSIONS (CPQ auto-converts — sellers enter raw numbers):
+- 1 IBM Request = 10 million DNS queries/month
+- 1 IBM Record = 1,000 DNS records
+- 1 IBM Interaction = 1 million RUM/GSLB queries/month
+- 1 IBM Job = 1 monitor
+- 1 IBM Resource Unit = 1 filter chain
 
 PRICING MODEL:
-- Primary driver: Monthly DNS query volume (priced in millions of queries/month — "MQ")
-- Secondary: DNS record count (first 3,000 records free)
-- Add-ons: GSLB (filter chains, monitors, RUM packs), Dedicated DNS, China DNS, Insights, DDoS protection
-- Terms: 12-month or 3-year
-
-CORE COMPONENTS:
-- Managed DNS: Query volume (tiered pricing) + records beyond 3,000
-- GSLB / Traffic Steering: Requires filter chains (one per routing policy)
-  - RUM-based routing: Needs RUM packs (sold in 5M query increments)
-  - Health monitoring: Up/Down monitors (per endpoint)
-- Dedicated DNS: Dedicated PoP infrastructure, minimum 3 PoPs, maximum 12 PoPs. For compliance or very high volume.
-- China DNS: Specialized routing for China-origin traffic. Minimum 50M queries/month.
-- DNS Insights: Analytics and query visibility. Priced at ~20% of total query volume (negotiable to ~10%).
-- DDoS / Spike Protection: Variable pricing based on threat profile. Requires NS1 security team consultation.
+- Tiered: more queries/records purchased = cheaper per-unit price
+- Contract terms: 12–60 months. Auto-renewal default. Annual billing preferred.
+- Discounting: up to 35% pre-authorized; +10% with sales leadership justification; >45% requires product team approval
+- Overage charges can often be waived for seasonal/one-time spikes (upsell opportunity)
 
 DISCOVERY BEST PRACTICES:
-1. Query Volume (most important): Always ask for BOTH average AND peak monthly query volumes.
-   - Request historical data from current provider (CloudFlare, Route53, Akamai, etc.)
-   - If they don't know: estimate from web traffic (page views × DNS lookups per page, typically 5-10)
-   - Add 20-30% growth headroom to avoid overages in the first year
-   - Consider seasonal spikes (retail during holidays, sports events, etc.)
-2. Current DNS Provider: Who are they using now? This helps establish migration complexity.
-3. DNS Records: Ask for count from current provider. First 3,000 free. Count ALL types: A, AAAA, CNAME, MX, TXT, SRV, etc.
-4. GSLB Needs: Ask about multi-region deployments, CDN, geographic/latency-based routing, failover.
-   - Each routing policy = 1 filter chain
-   - RUM routing requires separate RUM packs
-5. Geographic Requirements: China users? Compliance/data residency needs for dedicated infrastructure?
-6. Analytics: Does security or ops team need DNS query visibility? Useful for capacity planning.
-7. DDoS History: Have they been attacked before? Any existing DDoS protection?
+1. Tier Selection FIRST: Estimate ARR to pick the right tier before entering CPQ.
+   - <$40K → Standard; $45K–$200K → Premium; $250K+ → Hybrid bundles
+   - For Hybrid, confirm customer exceeds 10B QPM minimum before quoting bundles
+2. Query Volume (most important): Always ask average AND peak monthly query volumes.
+   - 1 Request = 10M queries. Add 20–30% growth headroom.
+   - If unknown: estimate from web traffic (page views × 5–10 DNS lookups per page)
+   - Consider seasonal spikes (retail holidays, sports events, product launches)
+3. DNS Records: Ask for export from current provider. Count ALL types (A, AAAA, CNAME, MX, TXT, SRV).
+   - 1 IBM Record = 1,000 DNS records
+   - Zones ≠ records — count individual resource records, not zones
+   - Under 200K → Enterprise bundle; 200K–2M → Enterprise Plus; 2M+ → Premium a la carte
+4. GSLB Needs: Basic filter chains vs RUM-based routing?
+   - Standard filter chains: D0GNKZX (Premium) — 1 Resource Unit = 1 filter chain
+   - RUM Standard (NS1 data): D0GNQZX/D0GZ0ZX — 1 Interaction = 1M queries, min 1M
+   - RUM Advanced (customer data): D0GNNZX/D0GYYZX — min 5M queries, must be multiple of 5
+   - RUM queries must be a subset of total Managed DNS query count
+5. China DNS (D0GN8ZX): Minimum 50M queries/month. Check China box in CPQ BEFORE Managed DNS section.
+6. Dedicated DNS: Small (D0GNBZX, 8GB/4-core) or Large (D0GNAZX, 64GB/16-core). Min 3, max 12 PoPs. Already included in Hybrid bundles.
+7. DNS Insights (D0GN6ZX): Quantity must equal Managed DNS Requests. CPQ auto-calculates. Included in both Hybrid bundles.
+8. Services: Always recommend adding architecture + design, implementation, and/or training services.
+
+CPQ ORDERING RULES (Premium):
+- Check China/Insights boxes BEFORE entering Managed DNS section
+- DDoS Overage Protection (D0GN5ZX) and NXD Waiver (D0GNMZX) quantities must equal D0GNEZX
+- DNS Insights quantity must equal D0GNEZX
+- Enhanced Monitor Interval (D0GNCZX) and Vanity Name Server (D0GNRZX): quantity 0 or 1
+- Required on every Premium order: D0GNDZX (SLA), D0GNGZX (Records), D0GNEZX (Requests)
+
+CPQ ORDERING RULES (Hybrid):
+- Required: D0GZ2ZX (SLA)
+- Choose bundle based on records: D0GYUZX (<200K) or D0GYWZX (200K–2M)
+- Enter queries → CPQ auto-generates Requests (1 Request = 10M queries)
+- Add GSLB upsell separately: D0GZ0ZX (Standard) or D0GYYZX (Advanced)
 
 COMMON MISTAKES:
-- Not asking about peak vs average (undersizing leads to overage charges)
-- Not adding growth headroom (20-30% recommended)
-- Confusing web traffic page views with DNS queries
-- Counting zones instead of individual DNS records
-- Missing RUM pack requirements for RUM-based GSLB
-- Not flagging China DNS minimum (50M MQ)
-- Not flagging Dedicated DNS minimum (3 PoPs)
+- Mixing D10A* (Standard) and D0GN* (Premium) parts on same quote
+- Quoting Hybrid bundles for customers under 10B QPM minimum
+- Counting DNS zones instead of individual records
+- Not adding 20–30% query growth headroom
+- Confusing web page views with DNS queries
+- Checking China/Insights boxes after entering Managed DNS in CPQ (must be before)
+- Forgetting required SLA parts (D0GNDZX for Premium, D0GZ2ZX for Hybrid)
+- Not adding services to the quote
 
-PART NUMBER NOTE:
-NS1 part numbers in CPQ are placeholder "D0XXXZX" in this tool — actual part numbers must come from SAP CPQ or be validated with Tony Nicolakis / Nick Lammert.
+BUNDLE CONTENTS (Hybrid Cloud DNS):
+Enterprise (D0GYUZX): up to 200K records, 250 filter chains, 500 monitors, 5× Dedicated DNS Standard (8GB/4-core, 2.5M records, 10B QPM), DNS Insights + 10 policies, NXD Waiver, DDoS Overage Protection, Enhanced Monitor Interval (5s), Vanity Name Server
+Enterprise Plus (D0GYWZX): up to 2M records, 1,000 filter chains, 2,000 monitors, 5× Dedicated DNS Large (64GB/16-core, 50M records, 75B QPM), DNS Insights + 10 policies, NXD Waiver, DDoS Overage Protection, Enhanced Monitor Interval (5s), Vanity Name Server
 
 SIZING EXAMPLES:
-- Small business: 5-25M queries/month, <3,000 records, no GSLB → Core DNS only
-- Mid-market: 50-200M queries/month, 3,000-10,000 records, basic GSLB (3-5 filter chains)
-- Enterprise: 500M+ queries/month, 10,000+ records, full GSLB + Insights
-- Global enterprise: 1B+ queries/month, Dedicated DNS, China DNS, full analytics + DDoS
+- Startup/SMB: 25M queries, 500 records, no GSLB → Standard tier (D10A* parts), ARR ~$4K–$8K
+- Mid-market: 200M queries, 8K records, 5 filter chains → Premium a la carte (D0GN* parts), ARR ~$50K–$80K
+- Enterprise: 500M queries, 50K records, RUM GSLB, Insights → Premium, ARR ~$150K–$200K
+- Whale: 15B queries, 180K records → Hybrid Enterprise bundle (D0GYUZX), ARR ~$350K+ pre-discount
+- Whale+: 15B queries, 350K records → Hybrid Enterprise Plus bundle (D0GYWZX), ARR ~$670K+ pre-discount
 
 MIGRATION TIMING:
-- DNS migrations should be planned carefully — TTL changes, propagation time, testing period
-- Recommend 30-60 day migration timeline for large customers
+- DNS migrations require careful planning — TTL changes, propagation, testing period
+- Recommend 30–60 day migration timeline for large customers
+- Services packages significantly reduce migration risk
 `;
 
 const VAULT_KNOWLEDGE = `
@@ -180,7 +273,7 @@ SIZING EXAMPLES:
 - Enterprise with DR (Model B Premium): 200 clients, 3 installs (primary + DR + non-prod) → 200 clients × Premium rate
 `;
 
-// ─── Per-product system prompt builder ────────────────────────────────────────
+// ─── Per-product system prompt builders ───────────────────────────────────────
 
 function buildSystemPrompt(product: Product): string {
   const knowledge =
@@ -193,30 +286,71 @@ function buildSystemPrompt(product: Product): string {
     product === "NS1"    ? "NS1 Connect" :
                            "IBM HashiCorp Vault";
 
-  return `You are DealGenie, an expert IBM seller assistant specialising in ${productName}.
-You help IBM sellers and business partners understand how to quote this product accurately.
+  return `You are an AI Subject Matter Expert (AI SME) for ${productName}, built into IBM's DealGenie quoting assistant.
+You help IBM sellers and business partners deeply understand this product so they can run better discovery conversations with customers — and build accurate quotes.
 
 Your role:
 - Answer questions about ${productName} quoting, discovery, sizing, and best practices
-- Help sellers understand what questions to ask customers
-- Explain pricing models, calculations, and common pitfalls
-- Be conversational, practical, and concise
-- Use bullet points and clear formatting in your answers
+- Help sellers understand what questions to ask customers and why
+- Explain pricing models, tier selection, part numbers, CPQ rules, and common pitfalls
+- Walk sellers through customer scenarios and help them size deals
+- Be conversational, practical, and direct — sellers are in the middle of deals
 
 Your boundaries:
-- You do NOT generate exact prices (those come from CPQ)
+- You do NOT generate exact net prices (those come from CPQ after discounting)
 - You do NOT invent part numbers beyond what is in your knowledge base
-- If asked something outside your knowledge, say so clearly and suggest consulting the IBM product team
+- If asked something outside your knowledge, say so clearly and suggest the IBM product team
 
 Your product knowledge for ${productName}:
 ${knowledge}
 
 Conversation style:
-- Be direct and practical — sellers are busy
-- Use examples wherever helpful
-- If the seller describes a specific customer scenario, tailor your advice to it
-- Keep responses concise but complete (aim for 3-6 bullet points or a short paragraph per answer)
-- After your initial best practices overview, invite follow-up questions`;
+- Be direct and practical — sellers are busy, often in front of a customer
+- Lead with the answer, then explain
+- Use examples and real scenarios wherever helpful
+- If the seller describes a specific customer, tailor your advice to that scenario
+- Keep responses concise but complete (3–6 bullet points or a short paragraph)
+- Proactively flag gotchas, minimums, and CPQ ordering rules
+- After your initial overview, invite follow-up questions`;
+}
+
+function buildClientModeSystemPrompt(product: Product): string {
+  const knowledge =
+    product === "Verify" ? VERIFY_KNOWLEDGE :
+    product === "NS1"    ? NS1_KNOWLEDGE :
+                           VAULT_KNOWLEDGE;
+
+  const productName =
+    product === "Verify" ? "IBM Security Verify" :
+    product === "NS1"    ? "NS1 Connect" :
+                           "IBM HashiCorp Vault";
+
+  return `You are Genie, an AI assistant helping a prospective customer understand ${productName} and whether it is a good fit for their needs.
+You are being used live in a conversation between an IBM seller and their client. Speak directly to the client in plain, friendly, non-technical business language.
+
+Your role:
+- Help the client understand what ${productName} does and the value it delivers
+- Ask them clear, open-ended questions to understand their current situation and pain points
+- Explain how the product addresses their specific challenges
+- Make the conversation feel natural and consultative — not a sales pitch
+- Guide the client toward understanding their own requirements (query volume, users, use cases, etc.)
+
+Your boundaries:
+- Do NOT quote specific list prices or discount levels — those are handled separately
+- Do NOT use internal IBM jargon (RU, MAU, MQ, CPQ, SKU, ARR) — use plain English equivalents
+- Do NOT mention part numbers or internal metrics
+- If a technical question is beyond the scope of this conversation, say "that's a great question for our technical team"
+
+Your product knowledge (use this to inform answers — do NOT recite it verbatim):
+${knowledge}
+
+Conversation style:
+- Warm, clear, and consultative — you are helping them, not selling to them
+- Ask one focused question at a time
+- Acknowledge what they say before responding or asking the next question
+- Use analogies and plain English to explain technical concepts
+- Keep responses short — 2–4 sentences or a few bullet points maximum
+- Your goal is for the client to feel heard and understood, and to naturally arrive at their own requirements`;
 }
 
 // ─── Conversation history type ────────────────────────────────────────────────
@@ -232,69 +366,106 @@ export interface BestPracticesMessage {
  * Generates an initial best practices overview for the given product.
  * Called once when the user selects "View Best Practices".
  */
-export async function generateBestPracticesIntro(product: Product): Promise<string> {
+export async function generateBestPracticesIntro(product: Product, clientMode = false): Promise<string> {
   const productName =
     product === "Verify" ? "IBM Security Verify" :
     product === "NS1"    ? "NS1 Connect" :
                            "IBM HashiCorp Vault";
 
-  const userMessage = `Give me a concise best practices overview for quoting ${productName}. Cover: the top 4-5 discovery questions to ask a customer, the most common mistakes sellers make, and one quick sizing example. End with an invitation to ask follow-up questions.`;
-
-  try {
-    const { text } = await watsonxGenerate({
-      systemPrompt: buildSystemPrompt(product),
-      userMessage,
-      maxNewTokens: 512,
-    });
-    return text || fallbackIntro(product);
-  } catch (err) {
-    // Log the real error server-side, return static fallback so the UI is still useful
-    console.error("[best-practices-ai] generateBestPracticesIntro failed:", err instanceof Error ? err.message : err);
-    return fallbackIntro(product);
+  if (clientMode) {
+    return `👋 Hi, I'm Genie — an AI assistant here to help you understand **${productName}** and whether it's a good fit for your needs.\n\nTell me a bit about what you're trying to solve, and we can explore it together. What's driving your interest in this area?`;
   }
+
+  return `👋 Hi, I'm Genie — your AI SME for **${productName}**.\n\nAsk me anything: discovery questions to ask your client, how to size a deal, which tier or part number to use, CPQ gotchas, or how to handle a specific customer scenario.\n\nWhat would you like to know?`;
 }
 
 /**
- * Continues a best practices conversation — handles follow-up questions.
+ * Continues a best practices / client-mode conversation.
  * Only the last 4 turns of history are included to stay within token limits.
  * Errors propagate to the route handler (not swallowed here).
  */
 export async function continueBestPracticesChat(
   product: Product,
   history: BestPracticesMessage[],
-  userMessage: string
+  userMessage: string,
+  clientMode = false
 ): Promise<string> {
   // Keep only the last 4 messages (2 turns) to avoid blowing the input token budget.
-  // The system prompt already carries the full product knowledge.
   const recentHistory = history.slice(-4);
 
+  const speakerLabel = clientMode ? "Client" : "Seller";
   const historyText = recentHistory
-    .map((m) => `${m.role === "user" ? "Seller" : "DealGenie"}: ${m.content}`)
+    .map((m) => `${m.role === "user" ? speakerLabel : "Genie"}: ${m.content}`)
     .join("\n\n");
 
   const fullUserMessage = historyText
-    ? `Prior context:\n${historyText}\n\nSeller: ${userMessage}`
+    ? `Prior context:\n${historyText}\n\n${speakerLabel}: ${userMessage}`
     : userMessage;
 
+  const systemPrompt = clientMode
+    ? buildClientModeSystemPrompt(product)
+    : buildSystemPrompt(product);
+
   try {
-    const { text } = await watsonxGenerate({
-      systemPrompt: buildSystemPrompt(product),
-      userMessage: fullUserMessage,
-      maxNewTokens: 512,
-    });
-    return text || "I'm not sure about that — try rephrasing or check with the IBM product team.";
+    const text = await generate(systemPrompt, fullUserMessage);
+    return text || staticFollowUp(product, userMessage);
   } catch (err) {
     const errDetail = err instanceof Error ? err.message : String(err);
     console.error("[best-practices-ai] continueBestPracticesChat failed:", errDetail);
-    // Return a user-friendly message that also hints at the underlying issue
-    if (errDetail.includes("no_associated_service_instance")) {
-      return "⚠️ The watsonx.ai project is not linked to a Watson Machine Learning instance. Ask your IBM Cloud admin to associate a WML service with the project in watsonx.ai, then try again.";
-    }
-    if (errDetail.includes("403") || errDetail.includes("401")) {
-      return `⚠️ AI unavailable — authentication error (${errDetail.slice(0, 120)}). Check WATSONX credentials.`;
-    }
-    return `⚠️ AI unavailable — ${errDetail.slice(0, 200)}`;
+    // Always return something useful — never show a raw error to the user
+    return staticFollowUp(product, userMessage);
   }
+}
+
+// ─── Static follow-up fallback ────────────────────────────────────────────────
+// Returns a helpful canned response when no AI provider is available.
+
+function staticFollowUp(product: Product, question: string): string {
+  const q = question.toLowerCase();
+
+  if (product === "NS1") {
+    if (q.includes("query") || q.includes("volume") || q.includes("mq")) {
+      return `**Query Volume Sizing**\n\n- 1 IBM "Request" = 10 million DNS queries/month\n- Always size to peak, not average — add 20–30% growth headroom\n- Starter: <50M QPM → Standard tier. Mid-market: 50M–1B → Premium. Enterprise: 1B+ → Hybrid bundle (min 10B QPM)\n- Ask the customer to pull a 3-month history from their current provider (Route53, Cloudflare, etc.)`;
+    }
+    if (q.includes("record") || q.includes("zone")) {
+      return `**DNS Records**\n\n- 1 IBM "Record" = 1,000 DNS records\n- Count all types: A, AAAA, CNAME, MX, TXT, SRV — not just zones\n- Under 200K records → Enterprise bundle (D0GYUZX). 200K–2M → Enterprise Plus (D0GYWZX). 2M+ → Premium a la carte`;
+    }
+    if (q.includes("gslb") || q.includes("traffic") || q.includes("rum") || q.includes("steering")) {
+      return `**GSLB / Traffic Steering**\n\n- Standard filter chains (non-RUM): D0GNKZX — 1 Resource Unit = 1 filter chain\n- RUM Standard (NS1 data): D0GNQZX — 1 Interaction = 1M queries, min 1M\n- RUM Advanced (customer data): D0GNNZX — min 5M queries, must be multiple of 5\n- RUM queries must be a subset of total Managed DNS query count`;
+    }
+    if (q.includes("price") || q.includes("cost") || q.includes("discount")) {
+      return `**NS1 Pricing**\n\n- Standard tier: $349–$3,429/month\n- Premium: ~$45K ASP ARR (a la carte)\n- Hybrid Enterprise: ~$350K ACV pre-discount\n- Hybrid Enterprise Plus: ~$670K ACV pre-discount\n- Discounts: up to 35% pre-authorised; +10% with sales leadership; >45% needs product team approval`;
+    }
+  }
+
+  if (product === "Verify") {
+    if (q.includes("mau") || q.includes("user") || q.includes("population")) {
+      return `**MAU Calculation**\n\n- MAU = ROUNDUP(population × MIN(avgLoginsPerYear, 12) ÷ 12)\n- A user active once or 100× in a month counts the same — it's monthly active, not login count\n- 10,000 employees active every month → MAU = 10,000\n- 50,000 seasonal customers active 6 months/year → MAU = 25,000`;
+    }
+    if (q.includes("lifecycle") || q.includes("managed")) {
+      return `**Lifecycle Management**\n\n- Uses "Managed Users" not MAU — the accounts Verify actively provisions/deprovisions\n- Always ≤ total population, often much smaller (e.g. only HR-managed employees)\n- Part: D0231ZX (same RU SKU, different quantity driver)`;
+    }
+    if (q.includes("price") || q.includes("cost") || q.includes("ru")) {
+      return `**Verify Pricing**\n\n- Priced in Resource Units (RU) at $281.40/RU/year\n- RU tiers are graduated (like tax brackets) — first 500 RU at full rate, then cheaper\n- SSO + MFA for 10,000 MAU ≈ 180 RU ≈ $50,600/year list\n- 3-year term gives better pricing than 12-month`;
+    }
+  }
+
+  if (product === "Vault") {
+    if (q.includes("model") || q.includes("model a") || q.includes("model b")) {
+      return `**Model Selection**\n\n- Model A (Platform/RU): Dynamic workloads, new deployments, variable usage. RU = high-water mark of secrets/roles/certs in use\n- Model B (Clients/RVU): Stable known app count, renewals. Count unique apps/services — NOT instances\n- Cannot mix models for the same customer`;
+    }
+    if (q.includes("client") || q.includes("rvu")) {
+      return `**Client Counting (Model B)**\n\n- 1 Client = any unique app, service, or user that authenticates to Vault\n- 10 containers running the same app = 1 client\n- Each unique microservice = 1 client\n- CI/CD pipelines, monitoring tools count too\n- Editions: Essentials / Standard (most common) / Premium (needs ≥2 installs for DR)`;
+    }
+    if (q.includes("price") || q.includes("cost")) {
+      return `**Vault Pricing**\n\n- Model A: $96,000/install/year + $48/RU/month\n- Model B Standard: $90,000/install/year + $1,296/client/year\n- Model B Premium: $99,960/install/year (buy ≥2 for DR replication)\n- Non-prod: $48,000/install (Model A) or $12,480/install (Model B)`;
+    }
+  }
+
+  // Generic fallback
+  return `I'm not able to connect to the AI right now, but I can help with specific questions about ${
+    product === "Verify" ? "IBM Security Verify" : product === "NS1" ? "NS1 Connect" : "IBM HashiCorp Vault"
+  }. Try asking about pricing, specific part numbers, sizing, or common mistakes.`;
 }
 
 // ─── Fallback static intro (used when watsonx is unreachable) ─────────────────

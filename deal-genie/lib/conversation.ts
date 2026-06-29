@@ -235,57 +235,57 @@ export function processUserMessage(
       storeAnswer(s, currentQ, msg);
     }
 
-    // Handle NS1 action selection (guide/parts/quote)
+    // Handle NS1 action selection
     if (s.product === "NS1" && currentQ?.key === "ns1Action") {
       const action = msg.trim();
-      
       if (action === "guide") {
-        // Switch to AI-powered best practices mode
         s.phase = "best-practices";
         return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
       }
-      
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatNS1BestPractices(), activeQuestion: null };
+      }
       if (action === "parts") {
         s.phase = "result";
         return { state: s, reply: formatNS1PartNumbers(), activeQuestion: null };
       }
-      
       // If "quote", continue with normal flow
     }
 
-    // Handle Vault action selection (guide/parts/quote)
+    // Handle Vault action selection
     if (s.product === "Vault" && currentQ?.key === "vaultAction") {
       const action = msg.trim();
-      
       if (action === "guide") {
-        // Switch to AI-powered best practices mode
         s.phase = "best-practices";
         return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
       }
-      
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatVaultBestPractices(), activeQuestion: null };
+      }
       if (action === "parts") {
         s.phase = "result";
         return { state: s, reply: formatVaultPartNumbers(), activeQuestion: null };
       }
-      
       // If "quote", continue with normal flow
     }
 
-    // Handle Verify action selection (guide/parts/quote)
+    // Handle Verify action selection
     if (s.product === "Verify" && currentQ?.key === "verifyAction") {
       const action = msg.trim();
-      
       if (action === "guide") {
-        // Switch to AI-powered best practices mode
         s.phase = "best-practices";
         return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
       }
-      
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatVerifyBestPractices(), activeQuestion: null };
+      }
       if (action === "parts") {
         s.phase = "result";
         return { state: s, reply: formatVerifyPartNumbers(), activeQuestion: null };
       }
-      
       // If "quote", continue with normal flow
     }
 
@@ -646,18 +646,21 @@ ${practicesHTML}
 }
 
 function formatNS1PartNumbers(): string {
+  const categoryStyle = (cat: string) => {
+    if (cat === 'Core' || cat === 'Standard') return 'background:rgba(15,98,254,0.2);color:#93b4fd;border:1px solid rgba(15,98,254,0.35)';
+    if (cat === 'Add-on') return 'background:rgba(8,189,186,0.15);color:#5eead4;border:1px solid rgba(8,189,186,0.3)';
+    if (cat === 'GSLB') return 'background:rgba(139,92,246,0.2);color:#c4b5fd;border:1px solid rgba(139,92,246,0.35)';
+    return 'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)';
+  };
+
   const partsHTML = NS1_ALL_PARTS.map(part => `
     <tr>
-      <td><code class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">${part.partNumber}</code></td>
-      <td class="text-sm">${part.description}</td>
-      <td class="text-sm">${part.unit}</td>
-      <td class="text-sm"><span class="px-2 py-1 rounded text-xs ${
-        part.category === 'Core' ? 'bg-blue-100 text-blue-800' :
-        part.category === 'Add-on' ? 'bg-green-100 text-green-800' :
-        'bg-purple-100 text-purple-800'
-      }">${part.category}</span></td>
-      <td class="text-sm text-gray-600">${part.notes || '-'}</td>
-      ${part.minimums ? `<td class="text-sm text-orange-600">${part.minimums.description || `Min: ${part.minimums.quantity}`}</td>` : '<td class="text-sm">-</td>'}
+      <td><code>${part.partNumber}</code></td>
+      <td>${part.description}</td>
+      <td>${part.unit}</td>
+      <td><span style="padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;${categoryStyle(part.category)}">${part.category}</span></td>
+      <td>${part.notes || '—'}</td>
+      <td>${part.minimums?.description ?? '—'}</td>
     </tr>
   `).join('');
 
@@ -666,108 +669,67 @@ function formatNS1PartNumbers(): string {
   <span class="result-product">NS1 Part Numbers Reference</span>
   <span class="result-badge ns1">NS1</span>
 </div>
-
-<div class="result-inputs">
-  Complete catalog of NS1 part numbers for SAP CPQ
-</div>
-
-<div class="result-section-label">📋 NS1 PART NUMBERS</div>
-<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-  <p class="text-sm text-yellow-900">
-    ⚠️ <strong>Important:</strong> Part numbers marked as <code>D0XXXZX</code> are placeholders.
-    Get actual part numbers from SAP CPQ or contact <strong>Tony Nicolakis</strong> / <strong>Nick Lammert</strong>.
-  </p>
-</div>
-
+<div class="result-inputs">Complete catalog of NS1 part numbers — Standard, Premium &amp; Hybrid Cloud DNS</div>
+<ul class="result-flags" style="margin-bottom:8px">
+  <li>List prices pending — confirm all rates in IBM Software CPQ before quoting</li>
+</ul>
 <table class="result-table">
-  <thead>
-    <tr>
-      <th>Part #</th>
-      <th>Description</th>
-      <th>Unit</th>
-      <th>Category</th>
-      <th>Notes</th>
-      <th>Minimums</th>
-    </tr>
-  </thead>
+  <thead><tr><th>Part #</th><th>Description</th><th>Unit</th><th>Category</th><th>Notes</th><th>Minimums</th></tr></thead>
   <tbody>${partsHTML}</tbody>
 </table>
-
-</div>
 </div>`;
 }
 // ─── VAULT FORMATTING ────────────────────────────────────────────────────────
 
 function formatVaultBestPractices(): string {
   const practicesHTML = VAULT_BEST_PRACTICES.map((practice, idx) => `
-    <div style="margin-bottom: 24px; padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #0f62fe;">
-      <h3 style="margin: 0 0 12px 0; color: #0f62fe; font-size: 18px;">
-        ${idx + 1}. ${practice.category}
-      </h3>
-      <p style="margin: 0 0 12px 0; font-weight: 600; color: #1e293b;">
-        ❓ ${practice.question}
-      </p>
-      <p style="margin: 0 0 16px 0; color: #64748b; line-height: 1.6;">
-        <strong>Why it matters:</strong> ${practice.rationale}
-      </p>
-      <div style="background: #f8fafc; padding: 16px; border-radius: 8px;">
-        <p style="margin: 0 0 8px 0; font-weight: 600; color: #475569;">💡 Tips:</p>
-        <ul style="margin: 0; padding-left: 20px; color: #64748b;">
-          ${practice.tips.map(tip => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
-        </ul>
-      </div>
+    <div style="margin-bottom:16px;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-left:3px solid #0f62fe;border-radius:10px;">
+      <p style="margin:0 0 8px 0;font-weight:700;color:#e8eaed;font-size:13.5px;">${idx + 1}. ${practice.category}</p>
+      <p style="margin:0 0 10px 0;font-size:12.5px;color:#93b4fd;">❓ ${practice.question}</p>
+      <p style="margin:0 0 10px 0;font-size:12px;color:#cbd5e1;line-height:1.5;"><strong style="color:#e8eaed;">Why it matters:</strong> ${practice.rationale}</p>
+      <ul style="margin:0;padding-left:18px;color:#94a3b8;font-size:12px;">
+        ${practice.tips.map(tip => `<li style="margin-bottom:5px;">${tip}</li>`).join('')}
+      </ul>
     </div>
   `).join('');
 
-  return `<div class="result-card" style="max-width: 900px; margin: 0 auto;">
-<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
-  📚 Vault Quoting Best Practices
-</h2>
-<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
-  Essential questions and guidance for accurate Vault quotes
-</p>
+  return `<div class="result-card">
+<div class="result-header">
+  <span class="result-product">IBM HashiCorp Vault — Best Practices</span>
+  <span class="result-badge">Vault</span>
+</div>
+<div class="result-inputs">Essential questions and guidance for accurate Vault quotes</div>
 ${practicesHTML}
 </div>`;
 }
 
 function formatVaultPartNumbers(): string {
+  const categoryStyle = (cat: string) => {
+    if (cat === 'Model A - Platform/RU') return 'background:rgba(15,98,254,0.2);color:#93b4fd;border:1px solid rgba(15,98,254,0.35)';
+    if (cat === 'Model B - Clients/RVU') return 'background:rgba(8,189,186,0.15);color:#5eead4;border:1px solid rgba(8,189,186,0.3)';
+    return 'background:rgba(139,92,246,0.2);color:#c4b5fd;border:1px solid rgba(139,92,246,0.35)';
+  };
+
   const partsHTML = VAULT_ALL_PARTS.map(part => `
     <tr>
-      <td><code class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">${part.partNumber}</code></td>
-      <td class="text-sm">${part.description}</td>
-      <td class="text-sm">${part.unit}</td>
-      <td class="text-sm"><span class="px-2 py-1 rounded text-xs ${
-        part.category === 'Model A - Platform/RU' ? 'bg-blue-100 text-blue-800' :
-        part.category === 'Model B - Clients/RVU' ? 'bg-green-100 text-green-800' :
-        'bg-purple-100 text-purple-800'
-      }">${part.category}</span></td>
-      <td class="text-sm text-gray-600">${part.notes || '-'}</td>
+      <td><code>${part.partNumber}</code></td>
+      <td>${part.description}</td>
+      <td>${part.unit}</td>
+      <td><span style="padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;${categoryStyle(part.category)}">${part.category}</span></td>
+      <td>${part.notes || '—'}</td>
     </tr>
   `).join('');
 
-  return `<div class="result-card" style="max-width: 1200px; margin: 0 auto;">
-<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
-  📋 Vault Part Numbers & Pricing
-</h2>
-<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
-  Complete catalog of Vault SKUs for SAP CPQ
-</p>
-<div style="overflow-x: auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-  <table style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr style="border-bottom: 2px solid #e2e8f0;">
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Part Number</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Description</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Unit</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Category</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${partsHTML}
-    </tbody>
-  </table>
+  return `<div class="result-card">
+<div class="result-header">
+  <span class="result-product">IBM HashiCorp Vault Part Numbers</span>
+  <span class="result-badge">Vault</span>
 </div>
+<div class="result-inputs">Complete catalog of Vault SKUs for SAP CPQ</div>
+<table class="result-table">
+  <thead><tr><th>Part #</th><th>Description</th><th>Unit</th><th>Category</th><th>Notes</th></tr></thead>
+  <tbody>${partsHTML}</tbody>
+</table>
 </div>`;
 }
 
@@ -775,72 +737,52 @@ function formatVaultPartNumbers(): string {
 
 function formatVerifyBestPractices(): string {
   const practicesHTML = VERIFY_BEST_PRACTICES.map((practice, idx) => `
-    <div style="margin-bottom: 24px; padding: 20px; background: white; border-radius: 12px; border-left: 4px solid #0f62fe;">
-      <h3 style="margin: 0 0 12px 0; color: #0f62fe; font-size: 18px;">
-        ${idx + 1}. ${practice.category}
-      </h3>
-      <p style="margin: 0 0 12px 0; font-weight: 600; color: #1e293b;">
-        ❓ ${practice.question}
-      </p>
-      <p style="margin: 0 0 16px 0; color: #64748b; line-height: 1.6;">
-        <strong>Why it matters:</strong> ${practice.rationale}
-      </p>
-      <div style="background: #f8fafc; padding: 16px; border-radius: 8px;">
-        <p style="margin: 0 0 8px 0; font-weight: 600; color: #475569;">💡 Tips:</p>
-        <ul style="margin: 0; padding-left: 20px; color: #64748b;">
-          ${practice.tips.map(tip => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
-        </ul>
-      </div>
+    <div style="margin-bottom:16px;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-left:3px solid #0f62fe;border-radius:10px;">
+      <p style="margin:0 0 8px 0;font-weight:700;color:#e8eaed;font-size:13.5px;">${idx + 1}. ${practice.category}</p>
+      <p style="margin:0 0 10px 0;font-size:12.5px;color:#93b4fd;">❓ ${practice.question}</p>
+      <p style="margin:0 0 10px 0;font-size:12px;color:#cbd5e1;line-height:1.5;"><strong style="color:#e8eaed;">Why it matters:</strong> ${practice.rationale}</p>
+      <ul style="margin:0;padding-left:18px;color:#94a3b8;font-size:12px;">
+        ${practice.tips.map(tip => `<li style="margin-bottom:5px;">${tip}</li>`).join('')}
+      </ul>
     </div>
   `).join('');
 
-  return `<div class="result-card" style="max-width: 900px; margin: 0 auto;">
-<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
-  📚 Verify Quoting Best Practices
-</h2>
-<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
-  Essential questions and guidance for accurate Verify quotes
-</p>
+  return `<div class="result-card">
+<div class="result-header">
+  <span class="result-product">IBM Security Verify — Best Practices</span>
+  <span class="result-badge">Verify</span>
+</div>
+<div class="result-inputs">Essential questions and guidance for accurate Verify quotes</div>
 ${practicesHTML}
 </div>`;
 }
 
 function formatVerifyPartNumbers(): string {
+  const categoryStyle = (cat: string) =>
+    cat === 'Core'
+      ? 'background:rgba(15,98,254,0.2);color:#93b4fd;border:1px solid rgba(15,98,254,0.35)'
+      : 'background:rgba(139,92,246,0.2);color:#c4b5fd;border:1px solid rgba(139,92,246,0.35)';
+
   const partsHTML = VERIFY_ALL_PARTS.map(part => `
     <tr>
-      <td><code class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">${part.partNumber}</code></td>
-      <td class="text-sm">${part.description}</td>
-      <td class="text-sm">${part.unit}</td>
-      <td class="text-sm"><span class="px-2 py-1 rounded text-xs ${
-        part.category === 'Core' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
-      }">${part.category}</span></td>
-      <td class="text-sm text-gray-600">${part.notes || '-'}</td>
+      <td><code>${part.partNumber}</code></td>
+      <td>${part.description}</td>
+      <td>${part.unit}</td>
+      <td><span style="padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;${categoryStyle(part.category)}">${part.category}</span></td>
+      <td>${part.notes || '—'}</td>
     </tr>
   `).join('');
 
-  return `<div class="result-card" style="max-width: 1200px; margin: 0 auto;">
-<h2 style="color: #0f62fe; margin-bottom: 24px; font-size: 24px; text-align: center;">
-  📋 Verify Part Numbers & Pricing
-</h2>
-<p style="text-align: center; color: #64748b; margin-bottom: 32px; font-size: 16px;">
-  Complete catalog of Verify SKUs for SAP CPQ
-</p>
-<div style="overflow-x: auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-  <table style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr style="border-bottom: 2px solid #e2e8f0;">
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Part Number</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Description</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Unit</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Category</th>
-        <th style="text-align: left; padding: 12px; font-weight: 600; color: #475569;">Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${partsHTML}
-    </tbody>
-  </table>
+  return `<div class="result-card">
+<div class="result-header">
+  <span class="result-product">IBM Security Verify Part Numbers</span>
+  <span class="result-badge">Verify</span>
 </div>
+<div class="result-inputs">Complete catalog of Verify SKUs for SAP CPQ</div>
+<table class="result-table">
+  <thead><tr><th>Part #</th><th>Description</th><th>Unit</th><th>Category</th><th>Notes</th></tr></thead>
+  <tbody>${partsHTML}</tbody>
+</table>
 </div>`;
 }
 

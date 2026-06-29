@@ -25,6 +25,8 @@ export interface ConversationState {
   // Which discovery question step we're on
   discoveryStep: number;
   messages: Message[];
+  // When true, AI SME speaks directly to the client (customer-facing language)
+  clientMode?: boolean;
 }
 
 export const initialState: ConversationState = {
@@ -33,4 +35,5 @@ export const initialState: ConversationState = {
   answers: {},
   discoveryStep: 0,
   messages: [],
+  clientMode: false,
 };
