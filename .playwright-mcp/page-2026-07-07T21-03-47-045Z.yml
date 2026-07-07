@@ -1,0 +1,743 @@
+- generic [active] [ref=f75e1]:
+  - blockquote [ref=f75e2]:
+    - heading [level=2] [ref=f75e3]: Documentation Index
+    - paragraph [ref=f75e4]:
+      - text: "Fetch the complete documentation index at:"
+      - link [ref=f75e5] [cursor=pointer]:
+        - /url: /llms.txt
+        - text: /llms.txt
+    - paragraph [ref=f75e6]: Use this file to discover all available pages before exploring further.
+  - generic:
+    - link "Skip to main content" [ref=f75e7] [cursor=pointer]:
+      - /url: "#content-area"
+    - generic:
+      - generic:
+        - banner [ref=f75e8]:
+          - generic [ref=f75e14]:
+            - generic [ref=f75e15]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f75e16] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f75e17]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f75e18]
+              - button "2.x" [ref=f75e20] [cursor=pointer]:
+                - generic [ref=f75e21]: 2.x
+                - img [ref=f75e22]
+            - navigation "Main" [ref=f75e26]:
+              - list [ref=f75e27]:
+                - listitem [ref=f75e28]:
+                  - link "Support" [ref=f75e29] [cursor=pointer]:
+                    - /url: https://www.ibm.com/mysupport/s/topic/0TO3p000000A6YLGA0/watsonx-orchestrate?productId=01t3p00000SsRnhAAF&language=en_US
+                    - generic [ref=f75e30]: Support
+                - listitem [ref=f75e31]:
+                  - link "GitHub" [ref=f75e32] [cursor=pointer]:
+                    - /url: https://github.com/ibm/ibm-watsonx-orchestrate-adk/
+                    - generic [ref=f75e33]: GitHub
+        - generic [ref=f75e34]:
+          - navigation "Pages" [ref=f75e35]:
+            - generic [ref=f75e37]:
+              - button "Open search" [ref=f75e39] [cursor=pointer]:
+                - generic [ref=f75e40]:
+                  - img [ref=f75e41]
+                  - generic [ref=f75e44]: Search...
+                - generic [ref=f75e45]: ⌘K
+              - generic [ref=f75e46]:
+                - generic [ref=f75e47]:
+                  - heading "Release Notes" [level=3] [ref=f75e49]
+                  - list [ref=f75e50]:
+                    - listitem [ref=f75e51]:
+                      - link "What's new" [ref=f75e52] [cursor=pointer]:
+                        - /url: /release/release
+                        - img [ref=f75e54]
+                        - generic [ref=f75e57]: What's new
+                    - listitem [ref=f75e58]:
+                      - link "Known issues" [ref=f75e59] [cursor=pointer]:
+                        - /url: /release/knownissues
+                        - img [ref=f75e61]
+                        - generic [ref=f75e64]: Known issues
+                    - listitem [ref=f75e65]:
+                      - link "Troubleshooting" [ref=f75e66] [cursor=pointer]:
+                        - /url: /release/troubleshooting
+                        - img [ref=f75e68]
+                        - generic [ref=f75e71]: Troubleshooting
+                - generic [ref=f75e72]:
+                  - heading "Get Started" [level=3] [ref=f75e74]
+                  - list [ref=f75e75]:
+                    - listitem [ref=f75e76]:
+                      - link "Welcome" [ref=f75e77] [cursor=pointer]:
+                        - /url: /
+                        - img [ref=f75e79]
+                        - generic [ref=f75e82]: Welcome
+                    - listitem [ref=f75e83]:
+                      - link "What is ADK?" [ref=f75e84] [cursor=pointer]:
+                        - /url: /getting_started/what_is
+                        - img [ref=f75e86]
+                        - generic [ref=f75e89]: What is ADK?
+                    - listitem [ref=f75e90]:
+                      - link "Getting started with the ADK" [ref=f75e91] [cursor=pointer]:
+                        - /url: /getting_started/installing
+                        - img [ref=f75e93]
+                        - generic [ref=f75e96]: Getting started with the ADK
+                    - listitem [ref=f75e97]:
+                      - button "Tutorials" [ref=f75e98] [cursor=pointer]:
+                        - img [ref=f75e100]
+                        - generic [ref=f75e102]: Tutorials
+                        - img [ref=f75e104]
+                    - listitem [ref=f75e106]:
+                      - link "Examples" [ref=f75e107] [cursor=pointer]:
+                        - /url: /getting_started/examples
+                        - img [ref=f75e109]
+                        - generic [ref=f75e112]: Examples
+                    - listitem [ref=f75e113]:
+                      - button "Configuring environments" [ref=f75e114] [cursor=pointer]:
+                        - img [ref=f75e116]
+                        - generic [ref=f75e118]: Configuring environments
+                        - img [ref=f75e120]
+                    - listitem [ref=f75e122]:
+                      - link "Useful CLI commands" [ref=f75e123] [cursor=pointer]:
+                        - /url: /getting_started/cli
+                        - img [ref=f75e125]
+                        - generic [ref=f75e128]: Useful CLI commands
+                - generic [ref=f75e129]:
+                  - heading "Build" [level=3] [ref=f75e131]
+                  - list [ref=f75e132]:
+                    - listitem [ref=f75e133]:
+                      - button "Workspaces" [ref=f75e134] [cursor=pointer]:
+                        - img [ref=f75e136]
+                        - generic [ref=f75e138]: Workspaces
+                        - img [ref=f75e140]
+                    - listitem [ref=f75e142]:
+                      - button "Agents" [ref=f75e143] [cursor=pointer]:
+                        - img [ref=f75e145]
+                        - generic [ref=f75e147]: Agents
+                        - img [ref=f75e149]
+                    - listitem [ref=f75e151]:
+                      - button "Large Language Models (LLMs)" [ref=f75e152] [cursor=pointer]:
+                        - img [ref=f75e154]
+                        - generic [ref=f75e156]: Large Language Models (LLMs)
+                        - img [ref=f75e158]
+                    - listitem [ref=f75e160]:
+                      - button "Agentic Workflows" [ref=f75e161] [cursor=pointer]:
+                        - img [ref=f75e163]
+                        - generic [ref=f75e165]: Agentic Workflows
+                        - img [ref=f75e167]
+                    - listitem [ref=f75e169]:
+                      - button "Tools" [ref=f75e170] [cursor=pointer]:
+                        - img [ref=f75e172]
+                        - generic [ref=f75e174]: Tools
+                        - img [ref=f75e176]
+                    - listitem [ref=f75e178]:
+                      - button "Toolkits" [ref=f75e179] [cursor=pointer]:
+                        - img [ref=f75e181]
+                        - generic [ref=f75e183]: Toolkits
+                        - img [ref=f75e185]
+                    - listitem [ref=f75e187]:
+                      - button "Connections" [ref=f75e188] [cursor=pointer]:
+                        - img [ref=f75e190]
+                        - generic [ref=f75e192]: Connections
+                        - img [ref=f75e194]
+                    - listitem [ref=f75e196]:
+                      - button "Knowledge Bases" [ref=f75e197] [cursor=pointer]:
+                        - img [ref=f75e199]
+                        - generic [ref=f75e201]: Knowledge Bases
+                        - img [ref=f75e203]
+                    - listitem [ref=f75e205]:
+                      - button "Plug-ins" [ref=f75e206] [cursor=pointer]:
+                        - img [ref=f75e208]
+                        - generic [ref=f75e210]: Plug-ins
+                        - img [ref=f75e212]
+                    - listitem [ref=f75e214]:
+                      - button "Channels" [ref=f75e215] [cursor=pointer]:
+                        - img [ref=f75e217]
+                        - generic [ref=f75e219]: Channels
+                        - img [ref=f75e221]
+                    - listitem [ref=f75e223]:
+                      - button "Phone" [ref=f75e224] [cursor=pointer]:
+                        - img [ref=f75e226]
+                        - generic [ref=f75e228]: Phone
+                        - img [ref=f75e230]
+                    - listitem [ref=f75e232]:
+                      - button "Voice" [ref=f75e233] [cursor=pointer]:
+                        - img [ref=f75e235]
+                        - generic [ref=f75e237]: Voice
+                        - img [ref=f75e239]
+                    - listitem [ref=f75e241]:
+                      - button "Scheduling" [ref=f75e242] [cursor=pointer]:
+                        - img [ref=f75e244]
+                        - generic [ref=f75e246]: Scheduling
+                        - img [ref=f75e248]
+                    - listitem [ref=f75e250]:
+                      - link "IBM Agent Connect" [ref=f75e251] [cursor=pointer]:
+                        - /url: /partners/partners
+                        - img [ref=f75e253]
+                        - generic [ref=f75e256]: IBM Agent Connect
+                - generic [ref=f75e257]:
+                  - heading "Deploy" [level=3] [ref=f75e259]
+                  - list [ref=f75e260]:
+                    - listitem [ref=f75e261]:
+                      - button "Embedded chat" [ref=f75e262] [cursor=pointer]:
+                        - img [ref=f75e264]
+                        - generic [ref=f75e266]: Embedded chat
+                        - img [ref=f75e268]
+                - generic [ref=f75e270]:
+                  - heading "Analyze" [level=3] [ref=f75e272]
+                  - list [ref=f75e273]:
+                    - listitem [ref=f75e274]:
+                      - button "Evaluation Framework" [ref=f75e275] [cursor=pointer]:
+                        - img [ref=f75e277]
+                        - generic [ref=f75e279]: Evaluation Framework
+                        - img [ref=f75e281]
+                    - listitem [ref=f75e283]:
+                      - button "Langfuse" [ref=f75e284] [cursor=pointer]:
+                        - img [ref=f75e286]
+                        - generic [ref=f75e288]: Langfuse
+                        - img [ref=f75e290]
+                    - listitem [ref=f75e292]:
+                      - button "Traces" [ref=f75e293] [cursor=pointer]:
+                        - img [ref=f75e295]
+                        - generic [ref=f75e297]: Traces
+                        - img [ref=f75e299]
+                - generic [ref=f75e301]:
+                  - heading "Developer experience" [level=3] [ref=f75e303]
+                  - list [ref=f75e304]:
+                    - listitem [ref=f75e305]:
+                      - button "Developer Edition" [ref=f75e306] [cursor=pointer]:
+                        - img [ref=f75e308]
+                        - generic [ref=f75e310]: Developer Edition
+                        - img [ref=f75e312]
+                    - listitem [ref=f75e314]:
+                      - button "VS Code ADK extension" [ref=f75e315] [cursor=pointer]:
+                        - img [ref=f75e317]
+                        - generic [ref=f75e319]: VS Code ADK extension
+                        - img [ref=f75e321]
+                    - listitem [ref=f75e323]:
+                      - button "ADK MCP Server" [ref=f75e324] [cursor=pointer]:
+                        - img [ref=f75e326]
+                        - generic [ref=f75e328]: ADK MCP Server
+                        - img [ref=f75e330]
+                    - listitem [ref=f75e332]:
+                      - button "Agentic SDK Guide" [ref=f75e333] [cursor=pointer]:
+                        - img [ref=f75e335]
+                        - generic [ref=f75e337]: Agentic SDK Guide
+                        - img [ref=f75e339]
+                - generic [ref=f75e341]:
+                  - heading "Legal notices" [level=3] [ref=f75e343]
+                  - list [ref=f75e344]:
+                    - listitem [ref=f75e345]:
+                      - link "Notices" [ref=f75e346] [cursor=pointer]:
+                        - /url: /notices/notices
+                        - img [ref=f75e348]
+                        - generic [ref=f75e351]: Notices
+                    - listitem [ref=f75e352]:
+                      - link "Security and Privacy by Design (SPbD)" [ref=f75e353] [cursor=pointer]:
+                        - /url: /notices/spbd
+                        - img [ref=f75e355]
+                        - generic [ref=f75e358]: Security and Privacy by Design (SPbD)
+                    - listitem [ref=f75e359]:
+                      - button "ADK license reference" [ref=f75e360] [cursor=pointer]:
+                        - img [ref=f75e362]
+                        - generic [ref=f75e364]: ADK license reference
+                        - img [ref=f75e366]
+            - button "Toggle dark mode" [ref=f75e371] [cursor=pointer]:
+              - generic [ref=f75e372]:
+                - img [ref=f75e373]
+                - img [ref=f75e380]
+          - main [ref=f75e385]:
+            - generic [ref=f75e386]:
+              - navigation "On this page" [ref=f75e390]:
+                - heading "On this page" [level=2] [ref=f75e391]:
+                  - button "On this page" [ref=f75e392] [cursor=pointer]:
+                    - img [ref=f75e393]
+                    - generic [ref=f75e394]: On this page
+                - list [ref=f75e396]:
+                  - listitem [ref=f75e397]:
+                    - link "Before you begin" [ref=f75e398] [cursor=pointer]:
+                      - /url: "#before-you-begin"
+                    - list [ref=f75e399]:
+                      - listitem [ref=f75e400]:
+                        - link "Required software" [ref=f75e401] [cursor=pointer]:
+                          - /url: "#required-software"
+                      - listitem [ref=f75e402]:
+                        - link "watsonx Orchestrate account" [ref=f75e403] [cursor=pointer]:
+                          - /url: "#watsonx-orchestrate-account"
+                  - listitem [ref=f75e404]:
+                    - link "Setting up and installing the ADK" [ref=f75e405] [cursor=pointer]:
+                      - /url: "#setting-up-and-installing-the-adk"
+                  - listitem [ref=f75e406]:
+                    - link "Creating your first agent" [ref=f75e407] [cursor=pointer]:
+                      - /url: "#creating-your-first-agent"
+                  - listitem [ref=f75e408]:
+                    - link "What’s next?" [ref=f75e409] [cursor=pointer]:
+                      - /url: "#what%E2%80%99s-next"
+              - generic [ref=f75e410]:
+                - generic [ref=f75e412]:
+                  - generic [ref=f75e413]: Get Started
+                  - heading "Getting started with the ADK" [level=1] [ref=f75e415]
+                - generic [ref=f75e416]:
+                  - generic [ref=f75e417]: The Agent Development Kit (ADK) gives you a set of developer-focused tools to build, test, and manage agents in watsonx Orchestrate. With the ADK, you take full control of agent design using a lightweight framework and a simple CLI.
+                  - generic [ref=f75e418]: Define agents in clear YAML or JSON files, create custom Python tools, and manage the entire agent lifecycle with just a few commands.
+                  - generic [ref=f75e419]: This guide walks you through installing the ADK, setting up your local development environment, and deploying your first agent to a watsonx Orchestrate SaaS instance. Start building flexible, reusable AI agents right away.
+                  - heading "Navigate to header Before you begin" [level=2] [ref=f75e420]:
+                    - link "Navigate to header" [ref=f75e421] [cursor=pointer]:
+                      - /url: "#before-you-begin"
+                      - img [ref=f75e423]
+                    - generic [ref=f75e425] [cursor=pointer]: Before you begin
+                  - heading "Navigate to header Required software" [level=3] [ref=f75e426]:
+                    - link "Navigate to header" [ref=f75e427] [cursor=pointer]:
+                      - /url: "#required-software"
+                      - img [ref=f75e429]
+                    - generic [ref=f75e431] [cursor=pointer]: Required software
+                  - generic [ref=f75e432]:
+                    - text: Make sure you have
+                    - strong [ref=f75e433]: Python 3.11
+                    - text: "or later installed on your system. To check your current Python version, open a terminal and run:"
+                  - generic [ref=f75e434]:
+                    - generic [ref=f75e435]:
+                      - button "Report incorrect code" [ref=f75e437] [cursor=pointer]:
+                        - img [ref=f75e438]
+                      - button "Copy the contents from the code block" [ref=f75e441] [cursor=pointer]:
+                        - img [ref=f75e442]
+                    - code [ref=f75e448]:
+                      - generic [ref=f75e449]: python --version
+                  - generic [ref=f75e450]: "If you have an older version of Python, you have a few options to install a newer Python version:"
+                  - generic [ref=f75e451]:
+                    - group [ref=f75e452]:
+                      - generic "Windows" [ref=f75e453] [cursor=pointer]:
+                        - img [ref=f75e455]
+                        - paragraph [ref=f75e457]: Windows
+                    - group [ref=f75e458]:
+                      - generic "Linux" [ref=f75e459] [cursor=pointer]:
+                        - img [ref=f75e461]
+                        - paragraph [ref=f75e463]: Linux
+                    - group [ref=f75e464]:
+                      - generic "macOS" [ref=f75e465] [cursor=pointer]:
+                        - img [ref=f75e467]
+                        - paragraph [ref=f75e469]: macOS
+                  - heading "Navigate to header watsonx Orchestrate account" [level=3] [ref=f75e470]:
+                    - link "Navigate to header" [ref=f75e471] [cursor=pointer]:
+                      - /url: "#watsonx-orchestrate-account"
+                      - img [ref=f75e473]
+                    - generic [ref=f75e475] [cursor=pointer]: watsonx Orchestrate account
+                  - list [ref=f75e476]:
+                    - listitem [ref=f75e477]:
+                      - text: To use the ADK, you must connect it to an existing watsonx Orchestrate environment. If you don’t have a watsonx Orchestrate account, you can
+                      - link "sign up for a free 30-day trial" [ref=f75e478] [cursor=pointer]:
+                        - /url: https://www.ibm.com/account/reg/us-en/signup?formid=urx-52753
+                      - text: .
+                    - listitem [ref=f75e479]: If you already have a watsonx Orchestrate account, you can use your existing account to provide an environment to use with the ADK.
+                  - heading "Navigate to header Setting up and installing the ADK" [level=2] [ref=f75e480]:
+                    - link "Navigate to header" [ref=f75e481] [cursor=pointer]:
+                      - /url: "#setting-up-and-installing-the-adk"
+                      - img [ref=f75e483]
+                    - generic [ref=f75e485] [cursor=pointer]: Setting up and installing the ADK
+                  - list [ref=f75e486]:
+                    - listitem [ref=f75e487]:
+                      - generic [ref=f75e490]:
+                        - generic [ref=f75e491]: "1"
+                        - link "Navigate to header" [ref=f75e493] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e495]
+                      - generic [ref=f75e497]:
+                        - paragraph [ref=f75e498]: Installing the ADK
+                        - generic [ref=f75e499]:
+                          - generic [ref=f75e500]: "Use the following command to install the ADK with pip:"
+                          - generic [ref=f75e501]:
+                            - generic [ref=f75e502]:
+                              - generic "BASH" [ref=f75e504]
+                              - generic [ref=f75e505]:
+                                - button "Report incorrect code" [ref=f75e507] [cursor=pointer]:
+                                  - img [ref=f75e508]
+                                - button "Copy the contents from the code block" [ref=f75e511] [cursor=pointer]:
+                                  - img [ref=f75e512]
+                            - code [ref=f75e518]:
+                              - generic [ref=f75e519]: pip install --upgrade ibm-watsonx-orchestrate
+                          - generic [ref=f75e520]:
+                            - text: You can optionally use a
+                            - strong [ref=f75e521]: virtual environment
+                            - text: (venv) or a version manager like
+                            - strong [ref=f75e522]: uv
+                            - text: to control the packages you install. This setup makes it easier to share and distribute your agents and tools with others.
+                          - generic [ref=f75e523]: "To learn how to install the ADK in these situations, see the following steps:"
+                          - generic [ref=f75e524]:
+                            - tablist [ref=f75e525]:
+                              - tab "System installation" [selected] [ref=f75e526] [cursor=pointer]:
+                                - generic [ref=f75e527]: System installation
+                              - tab "Virtual environments" [ref=f75e528] [cursor=pointer]:
+                                - generic [ref=f75e529]: Virtual environments
+                              - tab "uv" [ref=f75e530] [cursor=pointer]:
+                                - generic [ref=f75e531]: uv
+                            - 'tabpanel "System installation Virtual environments uv Install the ADK on your system with the following command: Report incorrect code Copy the contents from the code block pip install --upgrade ibm-watsonx-orchestrate" [ref=f75e533]':
+                              - generic [ref=f75e534]: "Install the ADK on your system with the following command:"
+                              - generic [ref=f75e535]:
+                                - generic [ref=f75e536]:
+                                  - button "Report incorrect code" [ref=f75e538] [cursor=pointer]:
+                                    - img [ref=f75e539]
+                                  - button "Copy the contents from the code block" [ref=f75e542] [cursor=pointer]:
+                                    - img [ref=f75e543]
+                                - code [ref=f75e549]:
+                                  - generic [ref=f75e550]: pip install --upgrade ibm-watsonx-orchestrate
+                    - listitem [ref=f75e551]:
+                      - generic [ref=f75e554]:
+                        - generic [ref=f75e555]: "2"
+                        - link "Navigate to header" [ref=f75e557] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e559]
+                      - generic [ref=f75e561]:
+                        - paragraph [ref=f75e562]: Configure your environment in the ADK
+                        - generic [ref=f75e563]:
+                          - generic [ref=f75e564]: Configure your watsonx Orchestrate environment in the ADK. Use this environment to create your agents.
+                          - generic [ref=f75e565]:
+                            - text: In this step, you need access to specific credentials for your environment. If you don’t know the type of environment you have, see
+                            - link "Logging in to IBM watsonx Orchestrate" [ref=f75e566] [cursor=pointer]:
+                              - /url: https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base?topic=orchestrate-logging-in-watsonx
+                            - text: .
+                          - generic [ref=f75e567]:
+                            - group [ref=f75e568]:
+                              - generic "IBM Cloud" [ref=f75e569] [cursor=pointer]:
+                                - img [ref=f75e571]
+                                - paragraph [ref=f75e573]: IBM Cloud
+                            - group [ref=f75e574]:
+                              - generic "AWS" [ref=f75e575] [cursor=pointer]:
+                                - img [ref=f75e577]
+                                - paragraph [ref=f75e579]: AWS
+                            - group [ref=f75e580]:
+                              - generic "On-premises" [ref=f75e581] [cursor=pointer]:
+                                - img [ref=f75e583]
+                                - paragraph [ref=f75e585]: On-premises
+                          - generic [ref=f75e586]: To add your environment, run the following.
+                          - generic [ref=f75e587]:
+                            - generic [ref=f75e588]:
+                              - generic "BASH" [ref=f75e590]
+                              - generic [ref=f75e591]:
+                                - button "Report incorrect code" [ref=f75e593] [cursor=pointer]:
+                                  - img [ref=f75e594]
+                                - button "Copy the contents from the code block" [ref=f75e597] [cursor=pointer]:
+                                  - img [ref=f75e598]
+                            - code [ref=f75e604]:
+                              - generic [ref=f75e605]: orchestrate env add -n <environment-name> -u <service-instance-url>
+                          - generic [ref=f75e606]:
+                            - img "Note" [ref=f75e608]
+                            - generic [ref=f75e610]:
+                              - strong [ref=f75e612]: "Note:"
+                              - generic [ref=f75e613]: You can set any name you prefer for the environment.
+                              - generic [ref=f75e614]:
+                                - text: In the rare case when the watsonx Orchestrate ADK does not automatically infer the correct authentication type for your url please add the following to the
+                                - code [ref=f75e615]: orchestrate env add
+                                - text: "command:"
+                              - list [ref=f75e616]:
+                                - listitem [ref=f75e617]:
+                                  - text: "IBM Cloud:"
+                                  - code [ref=f75e618]: "--type ibm_iam"
+                                - listitem [ref=f75e619]:
+                                  - text: "AWS:"
+                                  - code [ref=f75e620]: "--type mcsp"
+                                - listitem [ref=f75e621]:
+                                  - text: "On-premises:"
+                                  - code [ref=f75e622]: "--type cpd"
+                    - listitem [ref=f75e623]:
+                      - generic [ref=f75e626]:
+                        - generic [ref=f75e627]: "3"
+                        - link "Navigate to header" [ref=f75e629] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e631]
+                      - generic [ref=f75e633]:
+                        - paragraph [ref=f75e634]: Activate your environment
+                        - generic [ref=f75e635]:
+                          - generic [ref=f75e636]: "Run the following command to activate the environment you created:"
+                          - generic [ref=f75e637]:
+                            - generic [ref=f75e638]:
+                              - button "Report incorrect code" [ref=f75e640] [cursor=pointer]:
+                                - img [ref=f75e641]
+                              - button "Copy the contents from the code block" [ref=f75e644] [cursor=pointer]:
+                                - img [ref=f75e645]
+                            - code [ref=f75e651]:
+                              - generic [ref=f75e652]: orchestrate env activate <environment-name>
+                          - group [ref=f75e653]:
+                            - generic "Environments on AWS GovCloud" [ref=f75e654] [cursor=pointer]:
+                              - img [ref=f75e656]
+                              - paragraph [ref=f75e658]: Environments on AWS GovCloud
+                          - generic [ref=f75e659]:
+                            - text: If you need to change your environment, see
+                            - link "Configuring your environments" [ref=f75e660] [cursor=pointer]:
+                              - /url: /environment/initiate_environment
+                            - text: .
+                          - generic [ref=f75e661]:
+                            - img "Note" [ref=f75e663]
+                            - generic [ref=f75e666]:
+                              - strong [ref=f75e667]: "Note:"
+                              - text: You can also activate a local development environment. This environment is provided by the
+                              - strong [ref=f75e668]: watsonx Orchestrate Developer Edition
+                              - text: ", a stripped-down version of watsonx Orchestrate that runs under a Docker container to be used as a development server. To learn more about it, see"
+                              - link "watsonx Orchestrate Developer Edition" [ref=f75e669] [cursor=pointer]:
+                                - /url: /developer_edition/wxOde_overview
+                              - text: .
+                  - heading "Navigate to header Creating your first agent" [level=2] [ref=f75e670]:
+                    - link "Navigate to header" [ref=f75e671] [cursor=pointer]:
+                      - /url: "#creating-your-first-agent"
+                      - img [ref=f75e673]
+                    - generic [ref=f75e675] [cursor=pointer]: Creating your first agent
+                  - generic [ref=f75e676]: With your ADK connected to your watsonx Orchestrate instance, you’re ready to test your setup by publishing a simple agent.
+                  - generic [ref=f75e677]: In watsonx Orchestrate, you define agents using YAML or JSON files. The agent specification file includes key details like the agent’s name, kind, instructions for the LLM, and the tools it can use.
+                  - generic [ref=f75e678]: When you build agents with the ADK, you write this specification yourself. This approach gives you full control over your agent’s behavior and capabilities. You can create advanced agents with custom tools, collaborators, or integrations. For now, start with a minimal Hello World agent to verify your setup.
+                  - generic [ref=f75e679]:
+                    - img "Note" [ref=f75e681]
+                    - generic [ref=f75e684]:
+                      - text: "For internal GovCloud environments (staging, pre-prod), specify the IAM URL:"
+                      - code [ref=f75e685]: ./fedramp_activate fedramp --api-key <your_api_key> --iam-url dai.prep.ibmforusgov.com
+                  - list [ref=f75e686]:
+                    - listitem [ref=f75e687]:
+                      - generic [ref=f75e690]:
+                        - generic [ref=f75e691]: "1"
+                        - link "Navigate to header" [ref=f75e693] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e695]
+                      - generic [ref=f75e697]:
+                        - paragraph [ref=f75e698]: Starting your ADK project
+                        - generic [ref=f75e699]:
+                          - generic [ref=f75e700]: As a Python project, it’s a good practice to create a folder that stores your agents, tools, and other resources.
+                          - strong [ref=f75e702]: "Example of folder structure:"
+                          - generic [ref=f75e703]:
+                            - generic [ref=f75e704]:
+                              - button "Report incorrect code" [ref=f75e706] [cursor=pointer]:
+                                - img [ref=f75e707]
+                              - button "Copy the contents from the code block" [ref=f75e710] [cursor=pointer]:
+                                - img [ref=f75e711]
+                            - code [ref=f75e717]:
+                              - generic [ref=f75e718]: .
+                              - generic [ref=f75e719]: └── adk-project/
+                              - generic [ref=f75e720]: ├── agents/
+                              - generic [ref=f75e721]: ├── tools/
+                              - generic [ref=f75e722]: ├── knowledge/
+                              - generic [ref=f75e723]: ├── flows/
+                              - generic [ref=f75e724]: └── ...
+                          - generic [ref=f75e725]:
+                            - generic [ref=f75e726]:
+                              - tablist [ref=f75e727]:
+                                - tab "macOS & Linux" [selected] [ref=f75e728] [cursor=pointer]:
+                                  - generic [ref=f75e729]: macOS & Linux
+                                - tab "Windows" [ref=f75e731] [cursor=pointer]:
+                                  - generic [ref=f75e732]: Windows
+                              - generic [ref=f75e733]:
+                                - button "Report incorrect code" [ref=f75e735] [cursor=pointer]:
+                                  - img [ref=f75e736]
+                                - button "Copy the contents from the code block" [ref=f75e739] [cursor=pointer]:
+                                  - img [ref=f75e740]
+                            - tabpanel "macOS & Linux" [ref=f75e744]:
+                              - code [ref=f75e748]:
+                                - generic [ref=f75e749]: "mkdir -p adk-project/{agents,tools,knowledge,flows}"
+                    - listitem [ref=f75e750]:
+                      - generic [ref=f75e753]:
+                        - generic [ref=f75e754]: "2"
+                        - link "Navigate to header" [ref=f75e756] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e758]
+                      - generic [ref=f75e760]:
+                        - paragraph [ref=f75e761]: Creating the agent specification
+                        - generic [ref=f75e762]:
+                          - generic [ref=f75e763]:
+                            - text: Start by creating the YAML file for the agent and name the file as
+                            - code [ref=f75e764]: hello-world-agent.yaml
+                            - text: . Open the created file with the text editor of your choice, then copy and paste the following code.
+                          - generic [ref=f75e765]:
+                            - generic [ref=f75e766]:
+                              - generic "hello-world-agent.yaml" [ref=f75e768]
+                              - generic [ref=f75e769]:
+                                - button "Report incorrect code" [ref=f75e771] [cursor=pointer]:
+                                  - img [ref=f75e772]
+                                - button "Copy the contents from the code block" [ref=f75e775] [cursor=pointer]:
+                                  - img [ref=f75e776]
+                            - code [ref=f75e782]:
+                              - generic [ref=f75e783]: "spec_version: v1"
+                              - generic [ref=f75e784]: "kind: native"
+                              - generic [ref=f75e785]: "name: Hello_World_Agent"
+                              - generic [ref=f75e786]: "description: A simple Hello World agent"
+                              - generic [ref=f75e787]: "instructions: \"You are a test agent created for a tutorial on how to get started with watsonx Orchestrate ADK. When the user asks 'who are you', respond with: I'm the Hello World Agent. Congratulations on completing the Getting Started with watsonx Orchestrate ADK tutorial!\""
+                              - generic [ref=f75e788]: "llm: groq/openai/gpt-oss-120b"
+                              - generic [ref=f75e789]: "style: default"
+                              - generic [ref=f75e790]: "collaborators: []"
+                              - generic [ref=f75e791]: "tools: []"
+                            - button "See all 9 lines" [ref=f75e793] [cursor=pointer]:
+                              - img [ref=f75e794]
+                              - text: See all 9 lines
+                          - generic [ref=f75e798]:
+                            - text: And save the file in the
+                            - code [ref=f75e799]: agents
+                            - text: folder.
+                    - listitem [ref=f75e800]:
+                      - generic [ref=f75e803]:
+                        - generic [ref=f75e804]: "3"
+                        - link "Navigate to header" [ref=f75e806] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e808]
+                      - generic [ref=f75e810]:
+                        - paragraph [ref=f75e811]: Import the agent
+                        - generic [ref=f75e812]:
+                          - generic [ref=f75e813]: "Open your terminal and navigate to the folder where you created the YAML file. Then run the following command to publish your agent:"
+                          - generic [ref=f75e814]:
+                            - generic [ref=f75e815]:
+                              - button "Report incorrect code" [ref=f75e817] [cursor=pointer]:
+                                - img [ref=f75e818]
+                              - button "Copy the contents from the code block" [ref=f75e821] [cursor=pointer]:
+                                - img [ref=f75e822]
+                            - code [ref=f75e828]:
+                              - generic [ref=f75e829]: orchestrate agents import -f hello-world-agent.yaml
+                          - generic [ref=f75e830]: "If the import is successful, you get the following confirmation message:"
+                          - generic [ref=f75e831]:
+                            - generic [ref=f75e832]:
+                              - button "Report incorrect code" [ref=f75e834] [cursor=pointer]:
+                                - img [ref=f75e835]
+                              - button "Copy the contents from the code block" [ref=f75e838] [cursor=pointer]:
+                                - img [ref=f75e839]
+                            - code [ref=f75e845]:
+                              - generic [ref=f75e846]: "[INFO] - Agent 'Hello World Agent' imported successfully"
+                    - listitem [ref=f75e847]:
+                      - generic [ref=f75e850]:
+                        - generic [ref=f75e851]: "4"
+                        - link "Navigate to header" [ref=f75e853] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e855]
+                      - generic [ref=f75e857]:
+                        - paragraph [ref=f75e858]: Open the Agent Builder
+                        - generic [ref=f75e859]:
+                          - generic [ref=f75e860]:
+                            - text: Log in to your watsonx Orchestrate instance and open the
+                            - strong [ref=f75e861]: Agent Builder
+                            - text: ":"
+                          - img "Open the Agent Builder" [ref=f75e865]
+                    - listitem [ref=f75e866]:
+                      - generic [ref=f75e869]:
+                        - generic [ref=f75e870]: "5"
+                        - link "Navigate to header" [ref=f75e872] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e874]
+                      - generic [ref=f75e876]:
+                        - paragraph [ref=f75e877]: Select the Hello World agent
+                        - generic [ref=f75e878]:
+                          - generic [ref=f75e879]:
+                            - text: In the
+                            - strong [ref=f75e880]: Build agents and tools
+                            - text: page, select the
+                            - strong [ref=f75e881]: Hello_World_Agent
+                            - text: .
+                          - img "Select the agent" [ref=f75e885]
+                    - listitem [ref=f75e886]:
+                      - generic [ref=f75e889]:
+                        - generic [ref=f75e890]: "6"
+                        - link "Navigate to header" [ref=f75e892] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f75e894]
+                      - generic [ref=f75e896]:
+                        - paragraph [ref=f75e897]: Test your agent
+                        - generic [ref=f75e898]:
+                          - generic [ref=f75e899]: In this page, you can customize your agent’s behavior. Use the test chat to test your agent.
+                          - img "Test your chat" [ref=f75e903]
+                  - heading "Navigate to header What’s next?" [level=2] [ref=f75e904]:
+                    - link "Navigate to header" [ref=f75e905] [cursor=pointer]:
+                      - /url: "#what’s-next"
+                      - img [ref=f75e907]
+                    - generic [ref=f75e909] [cursor=pointer]: What’s next?
+                  - generic [ref=f75e910]: You have now created your first agent with the ADK and successfully imported it into your watsonx Orchestrate instance.
+                  - generic [ref=f75e911]:
+                    - text: To extend your agent’s behavior, you can use
+                    - link "tools" [ref=f75e912] [cursor=pointer]:
+                      - /url: /tools/overview
+                      - strong [ref=f75e913]: tools
+                    - text: ","
+                    - link "knowledge bases" [ref=f75e914] [cursor=pointer]:
+                      - /url: /knowledge_base/overview
+                      - strong [ref=f75e915]: knowledge bases
+                    - text: and
+                    - link "agentic workflows" [ref=f75e916] [cursor=pointer]:
+                      - /url: /tools/flows/overview
+                      - strong [ref=f75e917]: agentic workflows
+                    - text: . To connect to services, you must create
+                    - link "Connections" [ref=f75e918] [cursor=pointer]:
+                      - /url: /connections/overview
+                      - strong [ref=f75e919]: Connections
+                    - text: to safely store credentials and sensitive data. You can also change the agent’s
+                    - link "large language model" [ref=f75e920] [cursor=pointer]:
+                      - /url: /llm/managing_llm
+                      - strong [ref=f75e921]: large language model
+                    - text: and
+                    - link "style" [ref=f75e922] [cursor=pointer]:
+                      - /url: /agents/overview
+                      - strong [ref=f75e923]: style
+                    - text: by changing the
+                    - link "agent specification" [ref=f75e924] [cursor=pointer]:
+                      - /url: /agents/build_agent
+                      - strong [ref=f75e925]: agent specification
+                    - text: ", and you can test and evaluate the agent with the"
+                    - link "Evaluation Framework" [ref=f75e926] [cursor=pointer]:
+                      - /url: /evaluate/overview
+                      - strong [ref=f75e927]: Evaluation Framework
+                    - text: .
+                  - generic [ref=f75e928]: "See the following cards to learn more about what you can do with the ADK:"
+                  - generic [ref=f75e929]:
+                    - link "Agents Learn more about what you can do with agents, how you can change your agent style and how to customize your agent’s large language model." [ref=f75e930] [cursor=pointer]:
+                      - generic [ref=f75e931]:
+                        - img [ref=f75e933]
+                        - generic [ref=f75e934]:
+                          - heading "Agents" [level=2] [ref=f75e935]
+                          - generic [ref=f75e937]: Learn more about what you can do with agents, how you can change your agent style and how to customize your agent’s large language model.
+                    - link "Environments Learn how to change your watsonx Orchestrate environments to import your agents developed with the ADK." [ref=f75e938] [cursor=pointer]:
+                      - generic [ref=f75e939]:
+                        - img [ref=f75e941]
+                        - generic [ref=f75e942]:
+                          - heading "Environments" [level=2] [ref=f75e943]
+                          - generic [ref=f75e945]: Learn how to change your watsonx Orchestrate environments to import your agents developed with the ADK.
+                    - link "Tools Learn more about how to use tools to extend your agent’s capabilities and how to integrate with external services." [ref=f75e946] [cursor=pointer]:
+                      - generic [ref=f75e947]:
+                        - img [ref=f75e949]
+                        - generic [ref=f75e950]:
+                          - heading "Tools" [level=2] [ref=f75e951]
+                          - generic [ref=f75e953]: Learn more about how to use tools to extend your agent’s capabilities and how to integrate with external services.
+                    - link "Connections Learn more about how to safely store credentials and connect to external services." [ref=f75e954] [cursor=pointer]:
+                      - generic [ref=f75e955]:
+                        - img [ref=f75e957]
+                        - generic [ref=f75e958]:
+                          - heading "Connections" [level=2] [ref=f75e959]
+                          - generic [ref=f75e961]: Learn more about how to safely store credentials and connect to external services.
+                    - link "Knowledge Base Learn how to use knowledge bases to provide more accurate responses and improve your agent’s knowledge in specific situations." [ref=f75e962] [cursor=pointer]:
+                      - generic [ref=f75e963]:
+                        - img [ref=f75e965]
+                        - generic [ref=f75e966]:
+                          - heading "Knowledge Base" [level=2] [ref=f75e967]
+                          - generic [ref=f75e969]: Learn how to use knowledge bases to provide more accurate responses and improve your agent’s knowledge in specific situations.
+                    - link "Evaluation Framework Assess your agent’s behavior by comparing simulated agent interactions with a predefined set of reference data." [ref=f75e970] [cursor=pointer]:
+                      - generic [ref=f75e971]:
+                        - img [ref=f75e973]
+                        - generic [ref=f75e974]:
+                          - heading "Evaluation Framework" [level=2] [ref=f75e975]
+                          - generic [ref=f75e977]: Assess your agent’s behavior by comparing simulated agent interactions with a predefined set of reference data.
+                - generic [ref=f75e978]:
+                  - link "What is watsonx Orchestrate ADK Previous" [ref=f75e979] [cursor=pointer]:
+                    - /url: /getting_started/what_is
+                    - generic [ref=f75e980]:
+                      - generic [ref=f75e981]: What is watsonx Orchestrate ADK
+                      - generic [ref=f75e982]:
+                        - img [ref=f75e983]
+                        - generic [ref=f75e985]: Previous
+                  - 'link "Tutorial: Creating your first agent with the Agent builder Next" [ref=f75e986] [cursor=pointer]':
+                    - /url: /tutorials/tutorial_1_hello_world
+                    - generic [ref=f75e987]:
+                      - generic [ref=f75e988]: "Tutorial: Creating your first agent with the Agent builder"
+                      - generic [ref=f75e989]:
+                        - img [ref=f75e990]
+                        - generic [ref=f75e992]: Next
+            - generic [ref=f75e995]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f75e997] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f75e998]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f75e999]
+              - generic [ref=f75e1000]:
+                - generic [ref=f75e1002]:
+                  - paragraph [ref=f75e1003]: Copyright information
+                  - link "© Copyright IBM Corporation 2025" [ref=f75e1004] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal/copyright-trademark
+                - generic [ref=f75e1006]:
+                  - paragraph [ref=f75e1007]: Privacy and accessibility
+                  - link "Privacy" [ref=f75e1008] [cursor=pointer]:
+                    - /url: https://www.ibm.com/privacy
+                  - link "Accessibility" [ref=f75e1009] [cursor=pointer]:
+                    - /url: https://www.ibm.com/able?lnk=flg-acce-usen
+                  - link "Terms of use" [ref=f75e1010] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal?lnk=flg-tous-usen

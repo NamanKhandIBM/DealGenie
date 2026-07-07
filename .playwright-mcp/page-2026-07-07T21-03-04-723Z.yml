@@ -1,0 +1,1731 @@
+- generic [active] [ref=e1]:
+  - heading "SSAVQO - Documentation Index" [level=1] [ref=e2]
+  - generic [ref=e3]:
+    - heading "Resources" [level=2] [ref=e4]
+    - list [ref=e5]:
+      - listitem [ref=e6]:
+        - link "Feedback" [ref=e7] [cursor=pointer]:
+          - /url: https://watson-orchestrate.ideas.ibm.com/
+        - paragraph [ref=e8]: Shape the future of Watson Orchestrate by sharing your ideas.
+      - listitem [ref=e9]:
+        - link "Community" [ref=e10] [cursor=pointer]:
+          - /url: https://community.ibm.com/community/user/automation/watson-orchestrate
+        - paragraph [ref=e11]: Share and discover information in this forum for like-minded users.
+      - listitem [ref=e12]:
+        - link "Support" [ref=e13] [cursor=pointer]:
+          - /url: https://www.ibm.com/mysupport/s/my-cases
+        - paragraph [ref=e14]: Access your existing support cases.
+  - generic [ref=e15]:
+    - heading "Table of Contents" [level=2] [ref=e16]
+    - list [ref=e17]:
+      - listitem [ref=e18]:
+        - link "Release notes" [ref=e19] [cursor=pointer]:
+          - /url: SSAVQO/releases/release-notes.html
+        - list [ref=e20]:
+          - listitem [ref=e21]:
+            - link "What's new" [ref=e22] [cursor=pointer]:
+              - /url: SSAVQO/releases/whats-new.html
+            - list [ref=e23]:
+              - listitem [ref=e24]:
+                - link "Previous releases" [ref=e25] [cursor=pointer]:
+                  - /url: SSAVQO/releases/previous-releases.html
+                - list [ref=e26]:
+                  - listitem [ref=e27]:
+                    - link "Release notes for May 2026" [ref=e28] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive/release-may-2026.html
+                  - listitem [ref=e29]:
+                    - link "Release notes for April 2026" [ref=e30] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive/release-apr-2026.html
+                  - listitem [ref=e31]:
+                    - link "Release notes for March 2026" [ref=e32] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive/what-s-new-in-ibm-watsonx-orchestrate.html
+                  - listitem [ref=e33]:
+                    - link "Release notes for February 2026" [ref=e34] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive/release-feb-2026.html
+                  - listitem [ref=e35]:
+                    - link "Release notes for January 2026" [ref=e36] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive/release-jan-2026.html
+                  - listitem [ref=e37]:
+                    - link "Release notes for 2025" [ref=e38] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive-per-year/releases-2025.html
+                  - listitem [ref=e39]:
+                    - link "Release notes for 2024" [ref=e40] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive-per-year/releases-2024.html
+                  - listitem [ref=e41]:
+                    - link "Release notes for 2023" [ref=e42] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive-per-year/releases-2023.html
+                  - listitem [ref=e43]:
+                    - link "Release notes for 2022" [ref=e44] [cursor=pointer]:
+                      - /url: SSAVQO/releases/archive-per-year/releases-2022.html
+          - listitem [ref=e45]:
+            - link "Known issues and limitations" [ref=e46] [cursor=pointer]:
+              - /url: SSAVQO/about/wo_knownis.html
+            - list [ref=e47]:
+              - listitem [ref=e48]:
+                - link "Control plane" [ref=e49] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/control-plane.html
+              - listitem [ref=e50]:
+                - link "Building agents" [ref=e51] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/building_agents.html
+              - listitem [ref=e52]:
+                - link "Connections and authentication" [ref=e53] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/connecting_integrating.html
+              - listitem [ref=e54]:
+                - link "Building tools" [ref=e55] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/building-tools.html
+              - listitem [ref=e56]:
+                - link "Deploying and channels" [ref=e57] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/deploying-channels.html
+              - listitem [ref=e58]:
+                - link "Using Orchestrate Chat" [ref=e59] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/orchestrate-chat.html
+              - listitem [ref=e60]:
+                - link "Evaluation" [ref=e61] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/evaluation.html
+              - listitem [ref=e62]:
+                - link "Monitoring and analytics" [ref=e63] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/monitoring-analytics.html
+              - listitem [ref=e64]:
+                - link "Administration" [ref=e65] [cursor=pointer]:
+                  - /url: SSAVQO/about/knownissues/platform-admin.html
+          - listitem [ref=e66]:
+            - link "Feature parity across deployments" [ref=e67] [cursor=pointer]:
+              - /url: SSAVQO/getting_started/agentic-experience/feature_parity_agentic_experience.html
+          - listitem [ref=e68]:
+            - link "Prebuilt agent feature parity across deployments" [ref=e69] [cursor=pointer]:
+              - /url: SSAVQO/catalog/supported_deployments/parity.html
+          - listitem [ref=e70]:
+            - link "Deprecations" [ref=e71] [cursor=pointer]:
+              - /url: SSAVQO/releases/deprecations.html
+            - list [ref=e72]:
+              - listitem [ref=e73]:
+                - link "Deprecated and withdrawn functions" [ref=e74] [cursor=pointer]:
+                  - /url: SSAVQO/releases/deprecated_withdrawn_functions.html
+              - listitem [ref=e75]:
+                - link "Deprecated and withdrawn models" [ref=e76] [cursor=pointer]:
+                  - /url: SSAVQO/releases/deprecated-llm-models.html
+          - listitem [ref=e77]:
+            - link "Release notes for ADK" [ref=e78] [cursor=pointer]:
+              - /url: https://developer.watson-orchestrate.ibm.com/release/release
+          - listitem [ref=e79]:
+            - link "Release notes for On-premises" [ref=e80] [cursor=pointer]:
+              - /url: SSAVQO/releases/release-notes-on-prem.html
+          - listitem [ref=e81]:
+            - link "Regional availability and outbound IP addresses" [ref=e82] [cursor=pointer]:
+              - /url: SSAVQO/administering/network/ip_address_reference.html
+          - listitem [ref=e83]:
+            - link "Regulatory compliance" [ref=e84] [cursor=pointer]:
+              - /url: SSAVQO/about/wo_regcomp.html
+            - list [ref=e85]:
+              - listitem [ref=e86]:
+                - link "Accessibility features" [ref=e87] [cursor=pointer]:
+                  - /url: SSAVQO/about/accessibility.html
+              - listitem [ref=e88]:
+                - link "Security and Privacy by Design (SPbD) overview" [ref=e89] [cursor=pointer]:
+                  - /url: SSAVQO/about/wo_spbd.html
+              - listitem [ref=e90]:
+                - link "Notices" [ref=e91] [cursor=pointer]:
+                  - /url: SSAVQO/about/notices.html
+          - listitem [ref=e92]:
+            - link "Licenses and entitlements" [ref=e93] [cursor=pointer]:
+              - /url: SSAVQO/license/license_overview.html
+            - list [ref=e94]:
+              - listitem [ref=e95]:
+                - link "Licenses and entitlements on Amazon Web Services" [ref=e96] [cursor=pointer]:
+                  - /url: SSAVQO/license/license_wxo_saas.html
+              - listitem [ref=e97]:
+                - link "Licenses and entitlements on Amazon Web Services GovCloud (US)" [ref=e98] [cursor=pointer]:
+                  - /url: SSAVQO/license/license_aws_govcloud.html
+              - listitem [ref=e99]:
+                - link "Licenses and entitlements on Groq" [ref=e100] [cursor=pointer]:
+                  - /url: SSAVQO/license/license_groq.html
+              - listitem [ref=e101]:
+                - link "Licenses and entitlements on IBM Cloud" [ref=e102] [cursor=pointer]:
+                  - /url: SSAVQO/license/license_wxo_ibmcloud.html
+                - list [ref=e103]:
+                  - listitem [ref=e104]:
+                    - link "Managing service usage on IBM Cloud" [ref=e105] [cursor=pointer]:
+                      - /url: SSAVQO/license/cost_estimate.html
+              - listitem [ref=e106]:
+                - link "Licenses and entitlements for third-party models" [ref=e107] [cursor=pointer]:
+                  - /url: SSAVQO/license/licenses-and-entitlements-for-third-party-models.html
+              - listitem [ref=e108]:
+                - link "Understanding billing and usage tracking" [ref=e109] [cursor=pointer]:
+                  - /url: SSAVQO/license/managing_your_plan.html
+      - listitem [ref=e110]:
+        - link "Getting started" [ref=e111] [cursor=pointer]:
+          - /url: SSAVQO/getting_started/getting-started.html
+        - list [ref=e112]:
+          - listitem [ref=e113]:
+            - link "Logging in to IBM watsonx Orchestrate" [ref=e114] [cursor=pointer]:
+              - /url: SSAVQO/getting_started/first_access_reference.html
+            - list [ref=e115]:
+              - listitem [ref=e116]:
+                - link "Understanding authentication in AWS and regulated environments" [ref=e117] [cursor=pointer]:
+                  - /url: SSAVQO/getting_started/mcsp.html
+              - listitem [ref=e118]:
+                - link "Using the IBM SaaS Console with accounts" [ref=e119] [cursor=pointer]:
+                  - /url: module_1649961524734/doc-files/2024.html?cp=SSAVQO
+                - list [ref=e120]:
+                  - listitem [ref=e121]:
+                    - link "Getting started with the IBM SaaS Console with accounts" [ref=e122] [cursor=pointer]:
+                      - /url: module_1649961524734/doc-files/saas_console2.html?cp=SSAVQO
+                  - listitem [ref=e123]:
+                    - link "Granting access through service IDs and API keys from the IBM SaaS Console" [ref=e124] [cursor=pointer]:
+                      - /url: module_1649961524734/doc-files/serviceids_apikeys_console.html?cp=SSAVQO
+                  - listitem [ref=e125]:
+                    - link "Email notifications" [ref=e126] [cursor=pointer]:
+                      - /url: module_1649961524734/doc-files/email_notifications.html?cp=SSAVQO
+              - listitem [ref=e127]:
+                - link "Using the IBM SaaS Console" [ref=e128] [cursor=pointer]:
+                  - /url: module_1649961524734/doc-files/2023.html?cp=SSAVQO
+                - list [ref=e129]:
+                  - listitem [ref=e130]:
+                    - link "Getting started with the IBM SaaS Console" [ref=e131] [cursor=pointer]:
+                      - /url: module_1649961524734/doc-files/saas_console.html?cp=SSAVQO
+              - listitem [ref=e132]:
+                - link "Accessing the IBM watsonx Orchestrate trial version" [ref=e133] [cursor=pointer]:
+                  - /url: SSAVQO/getting_started/getting_access_trial.html
+          - listitem [ref=e134]:
+            - link "Explore documentation sources" [ref=e135] [cursor=pointer]:
+              - /url: SSAVQO/about/doc_landing.html
+          - listitem [ref=e136]:
+            - link "Getting help and support" [ref=e137] [cursor=pointer]:
+              - /url: SSAVQO/support/support.html
+            - list [ref=e138]:
+              - listitem [ref=e139]:
+                - link "Collecting diagnostic data for performance issues" [ref=e140] [cursor=pointer]:
+                  - /url: SSAVQO/support/perf_issues.html
+          - listitem [ref=e141]:
+            - link "Installing IBM watsonx Orchestrate On-premises" [ref=e142] [cursor=pointer]:
+              - /url: SSAVQO/on_prem/operator_versioning.html
+          - listitem [ref=e143]:
+            - link "Tutorials to get started with the agents" [ref=e144] [cursor=pointer]:
+              - /url: SSAVQO/tutorials/tutorials.html
+            - list [ref=e145]:
+              - listitem [ref=e146]:
+                - link "Sales Contract Management agent" [ref=e147] [cursor=pointer]:
+                  - /url: SSAVQO/tutorials/sales.proposal.tutorial.html
+                - list [ref=e148]:
+                  - listitem [ref=e149]:
+                    - link "Connecting Microsoft for Sales Contract Management agent" [ref=e150] [cursor=pointer]:
+                      - /url: SSAVQO/tutorials/connecting-ms-sales-proposal-agent.html
+                  - listitem [ref=e151]:
+                    - link "Creating the Sales Contract Management agent" [ref=e152] [cursor=pointer]:
+                      - /url: SSAVQO/tutorials/creating-sales-proposal-agent.html
+                  - listitem [ref=e153]:
+                    - link "Monitoring the Sales Contract Management agent" [ref=e154] [cursor=pointer]:
+                      - /url: SSAVQO/tutorials/monitoring-sales-proposal-agent.html
+      - listitem [ref=e155]:
+        - link "Designing" [ref=e156] [cursor=pointer]:
+          - /url: SSAVQO/agent_builder/Designing/designing.html
+        - list [ref=e157]:
+          - listitem [ref=e158]:
+            - link "Discovering the catalog" [ref=e159] [cursor=pointer]:
+              - /url: SSAVQO/catalog/exploring_the_catalog.html
+            - list [ref=e160]:
+              - listitem [ref=e161]:
+                - link "Prebuilt agents" [ref=e162] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/domain_agents/agents_list.html
+                - list [ref=e163]:
+                  - listitem [ref=e164]:
+                    - link "Agents for finance operations" [ref=e165] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/finance_domain_agent.html
+                  - listitem [ref=e166]:
+                    - link "Agents for HR operations" [ref=e167] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/hr_domain_agent.html
+                    - list [ref=e168]:
+                      - listitem [ref=e169]:
+                        - link "Connecting watsonx Employee Support agents to Slack" [ref=e170] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/agents/connect_hr_agents_slack.html
+                  - listitem [ref=e171]:
+                    - link "Agents for IT operations" [ref=e172] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/it_agents.html
+                  - listitem [ref=e173]:
+                    - link "Agents for legal operations" [ref=e174] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/legal_domain_agent.html
+                  - listitem [ref=e175]:
+                    - link "Agents for procurement operations" [ref=e176] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/procurement_domain_agent.html
+                  - listitem [ref=e177]:
+                    - link "Agents for productivity" [ref=e178] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/productivity_agents.html
+                  - listitem [ref=e179]:
+                    - link "Agents for sales operations" [ref=e180] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/sales_domain_agent.html
+                    - list [ref=e181]:
+                      - listitem [ref=e182]:
+                        - link "IBM watsonx Sales Prospecting Manager" [ref=e183] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/domain_agents/sales_agentforce.html
+                  - listitem [ref=e184]:
+                    - link "Agents for supply chain operations" [ref=e185] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/supply_chain_domain_agent.html
+                  - listitem [ref=e186]:
+                    - link "Prebuilt agents videos" [ref=e187] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/domain_agents/prebuilt_agents_videos.html
+                  - listitem [ref=e188]:
+                    - link "Visualizing artifact hierarchy" [ref=e189] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/artifact-hierarchy.html
+              - listitem [ref=e190]:
+                - link "Prebuilt tools" [ref=e191] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/tools/tools_list.html
+                - list [ref=e192]:
+                  - listitem [ref=e193]:
+                    - link "Tools for finance operations" [ref=e194] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/finance_tools.html
+                  - listitem [ref=e195]:
+                    - link "Tools for HR operations" [ref=e196] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/hr_tools.html
+                  - listitem [ref=e197]:
+                    - link "Tools for IT operations" [ref=e198] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/it_tools.html
+                  - listitem [ref=e199]:
+                    - link "Tools for legal operations" [ref=e200] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/legal_tools.html
+                  - listitem [ref=e201]:
+                    - link "Tools for procurement operations" [ref=e202] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/procurement_tools.html
+                  - listitem [ref=e203]:
+                    - link "Tools for productivity" [ref=e204] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/productivity_tools.html
+                  - listitem [ref=e205]:
+                    - link "Tools for sales operations" [ref=e206] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/sales_tools.html
+                  - listitem [ref=e207]:
+                    - link "Tools for sales operations" [ref=e208] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/tools/supply_chain_tools.html
+              - listitem [ref=e209]:
+                - link "Managing agent and tool versions" [ref=e210] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/agent_version.html
+              - listitem [ref=e211]:
+                - link "Categories" [ref=e212] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/categories/categories.html
+                - list [ref=e213]:
+                  - listitem [ref=e214]:
+                    - link "Finance" [ref=e215] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/finance_cat.html
+                  - listitem [ref=e216]:
+                    - link "HR" [ref=e217] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/hr_cat.html
+                  - listitem [ref=e218]:
+                    - link "IT" [ref=e219] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/it_cat.html
+                  - listitem [ref=e220]:
+                    - link "Legal" [ref=e221] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/legal_cat.html
+                  - listitem [ref=e222]:
+                    - link "Procurement" [ref=e223] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/procurement_cat.html
+                  - listitem [ref=e224]:
+                    - link "Productivity" [ref=e225] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/productivity_cat.html
+                  - listitem [ref=e226]:
+                    - link "Sales" [ref=e227] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/sales_cat.html
+                  - listitem [ref=e228]:
+                    - link "Supply Chain" [ref=e229] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/categories/supply_chain_cat.html
+              - listitem [ref=e230]:
+                - link "Partner agents" [ref=e231] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/partner_agents.html
+                - list [ref=e232]:
+                  - listitem [ref=e233]:
+                    - link "Partner native agents" [ref=e234] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/partner_native_agents.html
+                  - listitem [ref=e235]:
+                    - link "External partner agents" [ref=e236] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/external_agents.html
+                  - listitem [ref=e237]:
+                    - link "Partner A2A (Agent2Agent) agents" [ref=e238] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/partner_a2a.html
+                  - listitem [ref=e239]:
+                    - link "Purchasing partner agents" [ref=e240] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/purchase-partner-agents.html
+              - listitem [ref=e241]:
+                - link "Apps" [ref=e242] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/agentic_apps/available_apps.html
+              - listitem [ref=e243]:
+                - link "Catalog onboarding tutorials" [ref=e244] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/onboarding_tutorials_catalog.html
+              - listitem [ref=e245]:
+                - link "Exploring MCP servers" [ref=e246] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/exploring-mcp-servers.html
+              - listitem [ref=e247]:
+                - link "Exploring OpenAPI tools" [ref=e248] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/exploring-openapi-tools.html
+          - listitem [ref=e249]:
+            - link "Preparing to build AI agents" [ref=e250] [cursor=pointer]:
+              - /url: SSAVQO/agent_builder/overview/building_overview.html
+            - list [ref=e251]:
+              - listitem [ref=e252]:
+                - link "Introduction to AI agents" [ref=e253] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/overview/what_are_agents.html
+              - listitem [ref=e254]:
+                - link "Understanding the core components of an AI agent" [ref=e255] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/overview/core_components.html
+              - listitem [ref=e256]:
+                - link "Designing high-performance AI agents" [ref=e257] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/overview/arch_considerations.html
+      - listitem [ref=e258]:
+        - link "Building" [ref=e259] [cursor=pointer]:
+          - /url: SSAVQO/agent_builder/building.html
+        - list [ref=e260]:
+          - listitem [ref=e261]:
+            - link "Building agents" [ref=e262] [cursor=pointer]:
+              - /url: SSAVQO/agent_builder/lp_agent_builder.html
+            - list [ref=e263]:
+              - listitem [ref=e264]:
+                - link "Creating and customizing agents" [ref=e265] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/creating-agents.html
+                - list [ref=e266]:
+                  - listitem [ref=e267]:
+                    - link "Working with agent and tool versions" [ref=e268] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/version_control.html
+                  - listitem [ref=e269]:
+                    - link "Recommendations for agent descriptions" [ref=e270] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/guidelines_routing.html
+                  - listitem [ref=e271]:
+                    - link "Choosing an AI model for the agent" [ref=e272] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/models-for-aiagent.html
+                    - list [ref=e273]:
+                      - listitem [ref=e274]:
+                        - link "Considerations for choosing an AI model" [ref=e275] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/plan_model.html
+                      - listitem [ref=e276]:
+                        - link "Available AI models" [ref=e277] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/ai-models.html
+                        - list [ref=e278]:
+                          - listitem [ref=e279]:
+                            - link "GPT-OSS model behavior and instruction guidelines" [ref=e280] [cursor=pointer]:
+                              - /url: SSAVQO/agent_builder/gpt-oss-model.html
+                      - listitem [ref=e281]:
+                        - link "Adding custom AI models" [ref=e282] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/ai-model-gateway.html
+                  - listitem [ref=e283]:
+                    - link "Choosing a style for the agent" [ref=e284] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/agent-style.html
+                  - listitem [ref=e285]:
+                    - link "Customizing the welcome message and starter prompts" [ref=e286] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/customize_welcome_message.html
+                  - listitem [ref=e287]:
+                    - link "Configuring agent behavior" [ref=e288] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/configuring_agent_behavior.html
+                    - list [ref=e289]:
+                      - listitem [ref=e290]:
+                        - link "Adding instructions" [ref=e291] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/adding-instructions-to-agents.html
+                      - listitem [ref=e292]:
+                        - link "Adding guidelines" [ref=e293] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/agent_guidelines.html
+                      - listitem [ref=e294]:
+                        - link "Enabling document-based interactions in chat" [ref=e295] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/document-upload-chat.html
+                      - listitem [ref=e296]:
+                        - link "Enabling scheduling for agents" [ref=e297] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/enabling-scheduling-for-agents.html
+                  - listitem [ref=e298]:
+                    - link "Enhancing agents with rich responses" [ref=e299] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/enabling_rich_responses.html
+              - listitem [ref=e300]:
+                - link "Orchestrating agents" [ref=e301] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/agents_orchestration.html
+                - list [ref=e302]:
+                  - listitem [ref=e303]:
+                    - link "Understanding agent orchestration" [ref=e304] [cursor=pointer]:
+                      - /url: SSAVQO/agent-orchestration/core-concepts.html
+                  - listitem [ref=e305]:
+                    - link "Context sharing with collaborator agents" [ref=e306] [cursor=pointer]:
+                      - /url: SSAVQO/agent-orchestration/context-sharing-with-collaborator-agents.html
+                  - listitem [ref=e307]:
+                    - link "Adding agents from catalog" [ref=e308] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/agent-catalog.html
+                  - listitem [ref=e309]:
+                    - link "Adding an agent from a local instance" [ref=e310] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/agent-local.html
+                  - listitem [ref=e311]:
+                    - link "Importing LangGraph agents" [ref=e312] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/import-agent-langgraph.html
+                    - list [ref=e313]:
+                      - listitem [ref=e314]:
+                        - link "Creating a LangGraph package for import" [ref=e315] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/creating-a-langgraph-package-for-import.html
+                      - listitem [ref=e316]:
+                        - link "Creating connections for LangGraph agents" [ref=e317] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/creating-connections-for-langgraph-agents.html
+                      - listitem [ref=e318]:
+                        - link "Enabling state persistence for LangGraph agents" [ref=e319] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/enabling-state-persistence-for-langgraph-agents.html
+                  - listitem [ref=e320]:
+                    - link "Importing agents from external platforms" [ref=e321] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/import_external_agents.html
+                    - list [ref=e322]:
+                      - listitem [ref=e323]:
+                        - link "Adding agents from third-party platforms" [ref=e324] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/third-party.html
+                      - listitem [ref=e325]:
+                        - link "Adding watsonx Orchestrate assistants as collaborator agents" [ref=e326] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/watsonxai-agent.html
+                      - listitem [ref=e327]:
+                        - link "Adding AI assistants as collaborator agents" [ref=e328] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/ai-assistants.html
+              - listitem [ref=e329]:
+                - link "Overview of workspaces" [ref=e330] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/workspace/workspaces_overview.html
+                - list [ref=e331]:
+                  - listitem [ref=e332]:
+                    - link "Managing access with trusted profiles" [ref=e333] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/workspace/trusted_profiles.html
+                  - listitem [ref=e334]:
+                    - link "Working with workspaces" [ref=e335] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/workspace/working_with_workspaces.html
+                  - listitem [ref=e336]:
+                    - link "Managing workspace artifacts" [ref=e337] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/workspace/managing-workspace-artifacts.html
+                  - listitem [ref=e338]:
+                    - link "Workspace privacy and collaboration" [ref=e339] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/workspace/workspace-privacy-and-collaboration.html
+                  - listitem [ref=e340]:
+                    - link "Workspace naming and limits" [ref=e341] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/workspace/workspace-naming-and-limits.html
+              - listitem [ref=e342]:
+                - link "Building agents using the ADK" [ref=e343] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/creating_agents_adk.html
+              - listitem [ref=e344]:
+                - link "Agents onboarding tutorials" [ref=e345] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/onboarding_tutorials_agents.html
+          - listitem [ref=e346]:
+            - link "Building tools" [ref=e347] [cursor=pointer]:
+              - /url: SSAVQO/tools/agent_tool_builder.html
+            - list [ref=e348]:
+              - listitem [ref=e349]:
+                - link "Agentic workflows" [ref=e350] [cursor=pointer]:
+                  - /url: SSAVQO/tools/flows.html
+                - list [ref=e351]:
+                  - listitem [ref=e352]:
+                    - link "Creating agentic workflows in the workflow builder" [ref=e353] [cursor=pointer]:
+                      - /url: SSAVQO/tools/agent_creating_flows.html
+                    - list [ref=e354]:
+                      - listitem [ref=e355]:
+                        - link "Adding tools" [ref=e356] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_add_tool_flow.html
+                      - listitem [ref=e357]:
+                        - link "Adding agents" [ref=e358] [cursor=pointer]:
+                          - /url: SSAVQO/tools/add_agent_flow.html
+                      - listitem [ref=e359]:
+                        - link "Adding user activities" [ref=e360] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_flow_user_activity.html
+                        - list [ref=e361]:
+                          - listitem [ref=e362]:
+                            - link "Configuring multiple languages for user interactions" [ref=e363] [cursor=pointer]:
+                              - /url: SSAVQO/tools/multilanguage.html
+                      - listitem [ref=e364]:
+                        - link "Adding logic blocks" [ref=e365] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_flow_codeblocks.html
+                      - listitem [ref=e366]:
+                        - link "Adding generative prompts" [ref=e367] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_gen_ai.html
+                      - listitem [ref=e368]:
+                        - link "Adding decision" [ref=e369] [cursor=pointer]:
+                          - /url: SSAVQO/tools/add-decision-tables.html
+                      - listitem [ref=e370]:
+                        - link "Adding document classifiers" [ref=e371] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_doc_classifier.html
+                      - listitem [ref=e372]:
+                        - link "Adding document extractors" [ref=e373] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_doc_extractor.html
+                      - listitem [ref=e374]:
+                        - link "Adding text extractors" [ref=e375] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_text_extractor.html
+                      - listitem [ref=e376]:
+                        - link "Inspecting agentic workflows" [ref=e377] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_inspector.html
+                      - listitem [ref=e378]:
+                        - link "Getting started with document processing" [ref=e379] [cursor=pointer]:
+                          - /url: SSAVQO/tools/agent_doc_proc.html
+                      - listitem [ref=e380]:
+                        - link "Consuming intermediate context updates in agentic workflows" [ref=e381] [cursor=pointer]:
+                          - /url: SSAVQO/tools/consuming-intermediate-context-updates-in-agentic-workflow.html
+                      - listitem [ref=e382]:
+                        - link "Scheduling agentic workflows in chat" [ref=e383] [cursor=pointer]:
+                          - /url: SSAVQO/tools/scheduling-agentic-workflows-in-chat.html
+                      - listitem [ref=e384]:
+                        - link "Masking sensitive information in agentic workflows" [ref=e385] [cursor=pointer]:
+                          - /url: SSAVQO/tools/masking-sensitive-information-in-agentic-workflow.html
+                  - listitem [ref=e386]:
+                    - link "Logic blocks" [ref=e387] [cursor=pointer]:
+                      - /url: SSAVQO/tools/code_block_usage.html
+                  - listitem [ref=e388]:
+                    - link "Videos" [ref=e389] [cursor=pointer]:
+                      - /url: SSAVQO/tools/videos.html
+                  - listitem [ref=e390]:
+                    - link "View and edit pro-code workflows in the workflow builder" [ref=e391] [cursor=pointer]:
+                      - /url: SSAVQO/tools/viewing-pro-code-workflows-in-the-workflow-builder.html
+                  - listitem [ref=e392]:
+                    - link "Arranging a workflow layout automatically" [ref=e393] [cursor=pointer]:
+                      - /url: SSAVQO/tools/arranging-workflows-automatically.html
+              - listitem [ref=e394]:
+                - link "OpenAPI tools" [ref=e395] [cursor=pointer]:
+                  - /url: SSAVQO/tools/openapi_tools.html
+                - list [ref=e396]:
+                  - listitem [ref=e397]:
+                    - link "Importing from an OpenAPI" [ref=e398] [cursor=pointer]:
+                      - /url: SSAVQO/tools/import_from_openapi.html
+              - listitem [ref=e399]:
+                - link "MCP servers" [ref=e400] [cursor=pointer]:
+                  - /url: SSAVQO/tools/agent_mcp_servers.html
+                - list [ref=e401]:
+                  - listitem [ref=e402]:
+                    - link "Importing tools from an MCP server" [ref=e403] [cursor=pointer]:
+                      - /url: SSAVQO/tools/import_mcp_server.html
+                    - list [ref=e404]:
+                      - listitem [ref=e405]:
+                        - link "Adding MCP server tools to multiple agents" [ref=e406] [cursor=pointer]:
+                          - /url: SSAVQO/tools/adding-mcp-server-tools-to-multiple-agents.html
+                      - listitem [ref=e407]:
+                        - link "Adding MCP server tools to a single agent" [ref=e408] [cursor=pointer]:
+                          - /url: SSAVQO/tools/adding-mcp-server-tools-to-a-single-agent.html
+                      - listitem [ref=e409]:
+                        - link "Adding MCP server tools from the catalog to an agent" [ref=e410] [cursor=pointer]:
+                          - /url: SSAVQO/tools/adding-mcp-server-tools-from-the-catalog-to-an-agent.html
+                      - listitem [ref=e411]:
+                        - link "Adding MCP server tools from your local instance to an agent" [ref=e412] [cursor=pointer]:
+                          - /url: SSAVQO/tools/adding-mcp-server-tools-from-your-local-instance-to-an-agent.html
+                      - listitem [ref=e413]:
+                        - link "Managing MCP servers" [ref=e414] [cursor=pointer]:
+                          - /url: SSAVQO/tools/managing-mcp-servers.html
+                  - listitem [ref=e415]:
+                    - link "Configuring MCP server connections" [ref=e416] [cursor=pointer]:
+                      - /url: SSAVQO/tools/configuring-mcp-servers-with-dual-environments.html
+              - listitem [ref=e417]:
+                - link "Tools onboarding tutorials" [ref=e418] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/onboarding_tutorials_tools.html
+              - listitem [ref=e419]:
+                - link "Customizing input-output schemas of prebuilt tools" [ref=e420] [cursor=pointer]:
+                  - /url: SSAVQO/tools/agent_tool_custom_schema.html
+          - listitem [ref=e421]:
+            - link "Building AI assistants" [ref=e422] [cursor=pointer]:
+              - /url: SSAVQO/assistant/about.html
+            - list [ref=e423]:
+              - listitem [ref=e424]:
+                - link "Accessing AI assistant builder" [ref=e425] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/accessing-ai-assistant-builder.html
+              - listitem [ref=e426]:
+                - link "Building your AI assistant with actions" [ref=e427] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/build-actions-overview.html
+                - list [ref=e428]:
+                  - listitem [ref=e429]:
+                    - link "Understanding your users' questions or requests" [ref=e430] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/understand-questions.html
+                  - listitem [ref=e431]:
+                    - link "Boost words" [ref=e432] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/boost-words.html
+                  - listitem [ref=e433]:
+                    - link "Adding AI assistant responses" [ref=e434] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/respond.html
+                  - listitem [ref=e435]:
+                    - link "Collecting information from your customers" [ref=e436] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/collect-info.html
+                  - listitem [ref=e437]:
+                    - link "Using variables to manage conversation information" [ref=e438] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/manage-info.html
+                  - listitem [ref=e439]:
+                    - link "Adding conditions to an action" [ref=e440] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/action-conditions.html
+                  - listitem [ref=e441]:
+                    - link "Adding conditions to a step" [ref=e442] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/step-conditions.html
+                  - listitem [ref=e443]:
+                    - link "Choosing what to do at the end of a step" [ref=e444] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/step-what-next.html
+                  - listitem [ref=e445]:
+                    - link "Adding support for global audiences" [ref=e446] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/admin-language-support.html
+                  - listitem [ref=e447]:
+                    - link "Adding actions from web-based automation flows" [ref=e448] [cursor=pointer]:
+                      - /url: SSAVQO/developer_docs/building-assistants/enrolling_uiagent.html
+              - listitem [ref=e449]:
+                - link "Managing and organizing your actions" [ref=e450] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/manage-actions.html
+                - list [ref=e451]:
+                  - listitem [ref=e452]:
+                    - link "Duplicating an action" [ref=e453] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/duplicate-action.html
+                  - listitem [ref=e454]:
+                    - link "Copying an action" [ref=e455] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/copy-action.html
+                  - listitem [ref=e456]:
+                    - link "Uploading or downloading all actions" [ref=e457] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/upload-download-actions.html
+                  - listitem [ref=e458]:
+                    - link "Filtering actions" [ref=e459] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/filter-actions.html
+                  - listitem [ref=e460]:
+                    - link "Organizing actions in collections" [ref=e461] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/collections.html
+                  - listitem [ref=e462]:
+                    - link "Calling a custom extension" [ref=e463] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/call-extension.html
+                  - listitem [ref=e464]:
+                    - link "Allowing your customers to change the topic of the conversation" [ref=e465] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/change-topic.html
+                  - listitem [ref=e466]:
+                    - link "Providing options when a question or request cannot be answered" [ref=e467] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/handle-errors.html
+                  - listitem [ref=e468]:
+                    - link "Connecting to a live agent" [ref=e469] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/human-agent.html
+                  - listitem [ref=e470]:
+                    - link "Detecting trigger words" [ref=e471] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/trigger-phrases.html
+                  - listitem [ref=e472]:
+                    - link "Saving your actions" [ref=e473] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/save-actions.html
+                  - listitem [ref=e474]:
+                    - link "Reviewing and debugging your actions" [ref=e475] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/review.html
+                  - listitem [ref=e476]:
+                    - link "Global settings for actions" [ref=e477] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/actions-global-settings.html
+                  - listitem [ref=e478]:
+                    - link "Response modes" [ref=e479] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/action-response-modes.html
+                  - listitem [ref=e480]:
+                    - link "Autocorrecting user input" [ref=e481] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/autocorrection.html
+                  - listitem [ref=e482]:
+                    - link "Algorithm version and training" [ref=e483] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/algorithm-version.html
+              - listitem [ref=e484]:
+                - link "Using watsonx.ai for generative AI capabilities" [ref=e485] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/generative-ai.html
+                - list [ref=e486]:
+                  - listitem [ref=e487]:
+                    - link "Information gathering" [ref=e488] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/information-gathering.html
+                  - listitem [ref=e489]:
+                    - link "Hate, Abuse, and Profanity Filter" [ref=e490] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/hap-filter.html
+                  - listitem [ref=e491]:
+                    - link "Conversational search" [ref=e492] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/conversational-search.html
+              - listitem [ref=e493]:
+                - 'link "Overview: Customizing and developing" [ref=e494] [cursor=pointer]':
+                  - /url: SSAVQO/assistant/develop-overview.html
+                - list [ref=e495]:
+                  - listitem [ref=e496]:
+                    - link "Configuring base LLM" [ref=e497] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/base-llm.html
+                  - listitem [ref=e498]:
+                    - link "Defining responses by using the JSON editor" [ref=e499] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/assistant-responses-json.html
+                  - listitem [ref=e500]:
+                    - link "Dynamic options" [ref=e501] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/dynamic-options.html
+                  - listitem [ref=e502]:
+                    - link "Guiding customers with journeys" [ref=e503] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/journeys.html
+                  - listitem [ref=e504]:
+                    - link "Writing expressions" [ref=e505] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/expressions.html
+                  - listitem [ref=e506]:
+                    - link "Extending your assistant with webhooks" [ref=e507] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/webhook-overview.html
+                    - list [ref=e508]:
+                      - listitem [ref=e509]:
+                        - link "Making a call before processing a message" [ref=e510] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/webhook-pre.html
+                        - list [ref=e511]:
+                          - listitem [ref=e512]:
+                            - link "Calling a service before processing a message for IBM Cloud Pak for Data" [ref=e513] [cursor=pointer]:
+                              - /url: SSAVQO/assistant/webhook-pre-cp4d.html
+                          - listitem [ref=e514]:
+                            - link "Calling a service before processing a message for IBM Cloud Pak for Data - classic experience" [ref=e515] [cursor=pointer]:
+                              - /url: SSAVQO/assistant/webhook-pre-cp4d-classic.html
+                          - listitem [ref=e516]:
+                            - link "Calling a service before processing a message for watsonx Orchestrate" [ref=e517] [cursor=pointer]:
+                              - /url: SSAVQO/assistant/webhook-pre-orchestrate.html
+                      - listitem [ref=e518]:
+                        - link "Making a call after processing a message" [ref=e519] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/webhook-post.html
+                        - list [ref=e520]:
+                          - listitem [ref=e521]:
+                            - link "Calling a service after processing a message for IBM Cloud Pak for Data" [ref=e522] [cursor=pointer]:
+                              - /url: SSAVQO/assistant/webhook-post-cp4d.html
+                          - listitem [ref=e523]:
+                            - link "Calling a service after processing a message for IBM Cloud Pak for Data - classic experience" [ref=e524] [cursor=pointer]:
+                              - /url: SSAVQO/assistant/webhook-post-cp4d-classic.html
+                          - listitem [ref=e525]:
+                            - link "Calling a service after processing a message for watsonx Orchestrate" [ref=e526] [cursor=pointer]:
+                              - /url: SSAVQO/assistant/webhook-post-orchestrate.html
+                      - listitem [ref=e527]:
+                        - link "Authentication method for webhooks" [ref=e528] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/define-webhook-auth.html
+                      - listitem [ref=e529]:
+                        - link "Defining an audio webhook" [ref=e530] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/define-webhook-audio.html
+                      - listitem [ref=e531]:
+                        - link "Recording a caller's utterance" [ref=e532] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/record-caller-utterance.html
+                  - listitem [ref=e533]:
+                    - link "Logging activity with a webhook" [ref=e534] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/webhook-log.html
+                  - listitem [ref=e535]:
+                    - link "Building a custom extension" [ref=e536] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/build-custom-extension.html
+                  - listitem [ref=e537]:
+                    - link "Adding an extension to your assistant" [ref=e538] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/add-custom-extension.html
+                  - listitem [ref=e539]:
+                    - link "Understanding extension matching during action migration" [ref=e540] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/understanding-extension-matching.html
+                  - listitem [ref=e541]:
+                    - link "Adding search" [ref=e542] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/search-overview.html
+                    - list [ref=e543]:
+                      - listitem [ref=e544]:
+                        - link "Elasticsearch search integration set up" [ref=e545] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/search-elasticsearch-add.html
+                      - listitem [ref=e546]:
+                        - link "Custom service integration setup" [ref=e547] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/search-customsearch-add.html
+                      - listitem [ref=e548]:
+                        - link "Milvus search integration setup" [ref=e549] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/search-milvus-add.html
+                      - listitem [ref=e550]:
+                        - link "Search integration enhancement" [ref=e551] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/search-integration-enhancement.html
+                  - listitem [ref=e552]:
+                    - link "AI assistant builder API overview" [ref=e553] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/api-overview.html
+                    - list [ref=e554]:
+                      - listitem [ref=e555]:
+                        - link "Generating an API key for AI assistant builder" [ref=e556] [cursor=pointer]:
+                          - /url: SSAVQO/developer_docs/building-assistants/generating_an_api_key.html
+                      - listitem [ref=e557]:
+                        - link "API methods summary" [ref=e558] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/api-methods.html
+                      - listitem [ref=e559]:
+                        - link "Building a custom client by using the API" [ref=e560] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/api-client.html
+                      - listitem [ref=e561]:
+                        - link "Processing input attachments" [ref=e562] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/api-input-attachments.html
+              - listitem [ref=e563]:
+                - 'link "Overview: Previewing and publishing" [ref=e564] [cursor=pointer]':
+                  - /url: SSAVQO/assistant/publish-deploy-overview.html
+                - list [ref=e565]:
+                  - listitem [ref=e566]:
+                    - link "Previewing and sharing your assistant" [ref=e567] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/preview-share.html
+                  - listitem [ref=e568]:
+                    - link "Publishing your content" [ref=e569] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/publish.html
+                  - listitem [ref=e570]:
+                    - link "Adding and using multiple environments" [ref=e571] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/multiple-environments.html
+              - listitem [ref=e572]:
+                - link "Deploying your AI assistant" [ref=e573] [cursor=pointer]:
+                  - /url: SSAVQO/developer_docs/building-assistants/deploying_your_assistant.html
+                - list [ref=e574]:
+                  - listitem [ref=e575]:
+                    - link "Deploying your assistant" [ref=e576] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/deploy.html
+                  - listitem [ref=e577]:
+                    - link "Web chat overview" [ref=e578] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/web-chat-overview.html
+                    - list [ref=e579]:
+                      - listitem [ref=e580]:
+                        - link "How the web chat works" [ref=e581] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-architecture.html
+                      - listitem [ref=e582]:
+                        - link "Web chat development overview" [ref=e583] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-develop.html
+                      - listitem [ref=e584]:
+                        - link "Web chat development tutorials" [ref=e585] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-develop-tutorials.html
+                        - list [ref=e586]:
+                          - listitem [ref=e587]:
+                            - 'link "Tutorial: Customizing the size and position of the web chat" [ref=e588] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-size-position.html
+                          - listitem [ref=e589]:
+                            - 'link "Tutorial: Setting context variables for actions from the web chat" [ref=e590] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-set-context.html
+                          - listitem [ref=e591]:
+                            - 'link "Tutorial: Authenticating a user in the middle of a session" [ref=e592] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-security.html
+                          - listitem [ref=e593]:
+                            - 'link "Tutorial: Rendering a custom response as a content carousel" [ref=e594] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-content-carousel.html
+                          - listitem [ref=e595]:
+                            - 'link "Tutorial: Customizing the greeting action based on the current page" [ref=e596] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-custom-action-for-page.html
+                          - listitem [ref=e597]:
+                            - 'link "Tutorial: implementing custom option buttons in the web chat" [ref=e598] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-custom-buttons.html
+                          - listitem [ref=e599]:
+                            - 'link "Tutorial: Customizing text elements based on the current page" [ref=e600] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-custom-text-for-page.html
+                          - listitem [ref=e601]:
+                            - 'link "Tutorial: Providing a downloadable conversation transcript" [ref=e602] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-download-transcript.html
+                          - listitem [ref=e603]:
+                            - 'link "Tutorial: Interacting with the host web page" [ref=e604] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-page-interaction.html
+                          - listitem [ref=e605]:
+                            - 'link "Tutorial: Displaying a pre-chat or post-chat form" [ref=e606] [cursor=pointer]':
+                              - /url: SSAVQO/assistant/web-chat-develop-pre-chat.html
+                      - listitem [ref=e607]:
+                        - link "Embedding the web chat on your page" [ref=e608] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-web-chat.html
+                      - listitem [ref=e609]:
+                        - link "Web chat setup overview" [ref=e610] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-config.html
+                      - listitem [ref=e611]:
+                        - link "Configuring style and appearance" [ref=e612] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-style.html
+                      - listitem [ref=e613]:
+                        - link "Configuring the home screen" [ref=e614] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-home-screen.html
+                      - listitem [ref=e615]:
+                        - link "Configuring suggestions" [ref=e616] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-suggestions.html
+                      - listitem [ref=e617]:
+                        - link "Supporting global audiences in web chat" [ref=e618] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-develop-global.html
+                      - listitem [ref=e619]:
+                        - link "Controlling the web chat version" [ref=e620] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-develop-versions.html
+                      - listitem [ref=e621]:
+                        - link "Adding contact center support" [ref=e622] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-service-desk.html
+                  - listitem [ref=e623]:
+                    - link "Adding integrations" [ref=e624] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/deploy-integration-add.html
+                    - list [ref=e625]:
+                      - listitem [ref=e626]:
+                        - link "Integrating with Genesys" [ref=e627] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-genesys.html
+                      - listitem [ref=e628]:
+                        - link "Integrating with Salesforce" [ref=e629] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-salesforce.html
+                      - listitem [ref=e630]:
+                        - link "Integrating with Zendesk" [ref=e631] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-zendesk.html
+                      - listitem [ref=e632]:
+                        - link "Integrating with Facebook Messenger" [ref=e633] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-facebook.html
+                      - listitem [ref=e634]:
+                        - link "Integrating with Genesys Bot Connector" [ref=e635] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-genesys-botconnector.html
+                      - listitem [ref=e636]:
+                        - link "Integrating with Genesys Audio Connector" [ref=e637] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-genesys-audioconnector.html
+                      - listitem [ref=e638]:
+                        - link "Integrating with Microsoft Teams" [ref=e639] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-microsoft-teams.html
+                      - listitem [ref=e640]:
+                        - link "Integrating with Slack" [ref=e641] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-slack.html
+                      - listitem [ref=e642]:
+                        - link "Integrating with WhatsApp" [ref=e643] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-whatsapp.html
+                      - listitem [ref=e644]:
+                        - link "Integrating with a custom client app" [ref=e645] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-custom-app.html
+                  - listitem [ref=e646]:
+                    - link "Deploying for phone" [ref=e647] [cursor=pointer]:
+                      - /url: SSAVQO/developer_docs/building-assistants/deploying_for_phone.html
+                    - list [ref=e648]:
+                      - listitem [ref=e649]:
+                        - link "Integrating with phone" [ref=e650] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-phone.html
+                      - listitem [ref=e651]:
+                        - link "Phone integration configuration" [ref=e652] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/phone-config.html
+                      - listitem [ref=e653]:
+                        - link "Integrating with phone and Genesys Cloud" [ref=e654] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-phone-genesys.html
+                      - listitem [ref=e655]:
+                        - link "Integrating with phone and Twilio Flex" [ref=e656] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-phone-flex.html
+                      - listitem [ref=e657]:
+                        - link "Integrating with SMS" [ref=e658] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/deploy-sms.html
+                      - listitem [ref=e659]:
+                        - link "Handling phone interactions" [ref=e660] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/phone-actions.html
+                      - listitem [ref=e661]:
+                        - link "Troubleshooting and Logs" [ref=e662] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/phone-troubleshooting.html
+                      - listitem [ref=e663]:
+                        - link "Phone integration context variables" [ref=e664] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/phone-context.html
+                  - listitem [ref=e665]:
+                    - link "Adding more assistants" [ref=e666] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/assistant-add.html
+                  - listitem [ref=e667]:
+                    - link "Deleting assistants" [ref=e668] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/assistant-delete.html
+              - listitem [ref=e669]:
+                - link "Use analytics to review your entire assistant at a glance" [ref=e670] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/analytics-overview.html
+                - list [ref=e671]:
+                  - listitem [ref=e672]:
+                    - link "Conversational search analytics" [ref=e673] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/conversational-search-analytics.html
+                  - listitem [ref=e674]:
+                    - link "Evaluating the assistant" [ref=e675] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/evaluating-the-assistant.html
+                  - listitem [ref=e676]:
+                    - link "Understand your most and least successful actions" [ref=e677] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/analytics-action-completion.html
+                  - listitem [ref=e678]:
+                    - link "Use unrecognized requests to get action recommendations" [ref=e679] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/analytics-recognition.html
+                  - listitem [ref=e680]:
+                    - link "Review customer conversations" [ref=e681] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/analytics-conversations.html
+                  - listitem [ref=e682]:
+                    - link "Sending events to Segment" [ref=e683] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/segment-add.html
+              - listitem [ref=e684]:
+                - link "Browser support" [ref=e685] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/browser-support.html
+              - listitem [ref=e686]:
+                - link "Securing your AI assistant" [ref=e687] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/admin-securing.html
+                - list [ref=e688]:
+                  - listitem [ref=e689]:
+                    - link "Securing your web chat" [ref=e690] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/web-chat-security.html
+                    - list [ref=e691]:
+                      - listitem [ref=e692]:
+                        - link "Enabling web chat security" [ref=e693] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-security-enable.html
+                      - listitem [ref=e694]:
+                        - link "Authenticating users in web chat" [ref=e695] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-security-authenticate.html
+                      - listitem [ref=e696]:
+                        - link "Encrypting sensitive data in web chat" [ref=e697] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-security-encrypt.html
+                      - listitem [ref=e698]:
+                        - link "Adding the web chat to your mobile application" [ref=e699] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-develop-mobile.html
+                      - listitem [ref=e700]:
+                        - link "Managing user identity information in web chat" [ref=e701] [cursor=pointer]:
+                          - /url: SSAVQO/assistant/web-chat-develop-userid.html
+          - listitem [ref=e702]:
+            - link "Configuring" [ref=e703] [cursor=pointer]:
+              - /url: SSAVQO/agent_builder/configuring/configuring.html
+            - list [ref=e704]:
+              - listitem [ref=e705]:
+                - link "Adding knowledge to agents" [ref=e706] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/knowledge_to_agents.html
+                - list [ref=e707]:
+                  - listitem [ref=e708]:
+                    - link "Creating knowledge descriptions" [ref=e709] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/knowledge_description.html
+                  - listitem [ref=e710]:
+                    - link "Customizing knowledge settings" [ref=e711] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/knowledge_configuration.html
+                  - listitem [ref=e712]:
+                    - link "Building a knowledge source" [ref=e713] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/knowledge_builder.html
+                  - listitem [ref=e714]:
+                    - link "Connecting to an Astra DB content repository" [ref=e715] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting_astradb_instance.html
+                  - listitem [ref=e716]:
+                    - link "Connecting to an Elasticsearch content repository" [ref=e717] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting_elasticsearch_instance.html
+                    - list [ref=e718]:
+                      - listitem [ref=e719]:
+                        - link "Configuring custom filters for Elasticsearch" [ref=e720] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/elasticsearch_custom_filters.html
+                      - listitem [ref=e721]:
+                        - link "Configuring query body for Elasticsearch" [ref=e722] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/elasticsearch_queries.html
+                  - listitem [ref=e723]:
+                    - link "Connecting to an OpenSearch content repository" [ref=e724] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-to-an-opensearch-content-repository.html
+                  - listitem [ref=e725]:
+                    - link "Connecting to a Milvus content repository" [ref=e726] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting_milvus_instance.html
+                    - list [ref=e727]:
+                      - listitem [ref=e728]:
+                        - link "Enabling granular access control for Milvus" [ref=e729] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/enabling-milvus-access.html
+                  - listitem [ref=e730]:
+                    - link "Connecting to a custom content service" [ref=e731] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting_custom_service.html
+                  - listitem [ref=e732]:
+                    - link "Uploading files as a knowledge source" [ref=e733] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/upload_knowledge.html
+                    - list [ref=e734]:
+                      - listitem [ref=e735]:
+                        - link "Using Tiny Milvus for On-premises" [ref=e736] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/using_tinymilvus_onprem.html
+              - listitem [ref=e737]:
+                - link "Managing tools" [ref=e738] [cursor=pointer]:
+                  - /url: SSAVQO/tools/agent_add_tool.html
+                - list [ref=e739]:
+                  - listitem [ref=e740]:
+                    - link "Adding from a catalog" [ref=e741] [cursor=pointer]:
+                      - /url: SSAVQO/tools/add_tool_from_catalog.html
+                  - listitem [ref=e742]:
+                    - link "Adding from a local instance" [ref=e743] [cursor=pointer]:
+                      - /url: SSAVQO/tools/add_tool_from_local_instance.html
+              - listitem [ref=e744]:
+                - link "Configuring voice" [ref=e745] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/configuring-voice.html
+                - list [ref=e746]:
+                  - listitem [ref=e747]:
+                    - link "Configuring voice settings for agents" [ref=e748] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/voice_configuration.html
+                  - listitem [ref=e749]:
+                    - link "Connecting agents to Phone" [ref=e750] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/lp-connecting-to-phone.html
+                    - list [ref=e751]:
+                      - listitem [ref=e752]:
+                        - link "Connecting to Phone with Genesys Audio Connector" [ref=e753] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/connecting-to-phone.html
+                      - listitem [ref=e754]:
+                        - link "Connecting to Phone with SIP trunk" [ref=e755] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/connecting-to-phone-sip.html
+                        - list [ref=e756]:
+                          - listitem [ref=e757]:
+                            - link "Configuring Tenant ID for service providers" [ref=e758] [cursor=pointer]:
+                              - /url: SSAVQO/agent_builder/phone-sip-confiure-tenant.html
+                  - listitem [ref=e759]:
+                    - link "Enabling real-time voice agents" [ref=e760] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/real-time-voice-agents.html
+              - listitem [ref=e761]:
+                - link "Connecting to channels" [ref=e762] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/connecting-to-channels.html
+                - list [ref=e763]:
+                  - listitem [ref=e764]:
+                    - link "Connecting agents to Orchestrate Chat" [ref=e765] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-agents-to-chat.html
+                  - listitem [ref=e766]:
+                    - link "Customizing Orchestrate Chat using agents" [ref=e767] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/customise_orchestrate_chat.html
+                  - listitem [ref=e768]:
+                    - link "Channel-specific context variables" [ref=e769] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/channel-specific-context-variables.html
+                  - listitem [ref=e770]:
+                    - link "Connecting to Facebook Messenger" [ref=e771] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-to-fb.html
+                  - listitem [ref=e772]:
+                    - link "Connecting to Genesys Bot Connector" [ref=e773] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-to-genesys.html
+                  - listitem [ref=e774]:
+                    - link "Connecting to Microsoft Teams" [ref=e775] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-to-teams.html
+                  - listitem [ref=e776]:
+                    - link "Connecting to Slack" [ref=e777] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting_to_slack.html
+                    - list [ref=e778]:
+                      - listitem [ref=e779]:
+                        - link "Enabling form interaction within Slack" [ref=e780] [cursor=pointer]:
+                          - /url: SSAVQO/agent_builder/connecting_to_slack_flow_forms.html
+                  - listitem [ref=e781]:
+                    - link "Connecting to SMS with Twilio" [ref=e782] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-to-sms.html
+                  - listitem [ref=e783]:
+                    - link "Connecting to WhatsApp with Twilio" [ref=e784] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/connecting-to-whatsapp.html
+              - listitem [ref=e785]:
+                - link "Connecting to a live agent" [ref=e786] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/connecting-to-live-agent.html
+                - list [ref=e787]:
+                  - listitem [ref=e788]:
+                    - link "Adding a custom service desk" [ref=e789] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/adding_custom_service_desk.html
+              - listitem [ref=e790]:
+                - link "Enabling Agent Assist in Genesys platform" [ref=e791] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/Genesys/genesys-platform.html
+                - list [ref=e792]:
+                  - listitem [ref=e793]:
+                    - link "Integration with the Genesys platform" [ref=e794] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Genesys/integration-genesys-platform.html
+                  - listitem [ref=e795]:
+                    - link "Getting values from browser developer tools" [ref=e796] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Genesys/getting-values-from-browser.html
+                  - listitem [ref=e797]:
+                    - link "Owning a conversation redirected by an agent" [ref=e798] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Genesys/owning-conversation-redirected-agent.html
+                  - listitem [ref=e799]:
+                    - link "Accessing summaries" [ref=e800] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Genesys/accessing-summaries.html
+              - listitem [ref=e801]:
+                - link "Managing app connections and credentials" [ref=e802] [cursor=pointer]:
+                  - /url: SSAVQO/manage/connections.html
+                - list [ref=e803]:
+                  - listitem [ref=e804]:
+                    - link "Connection overview" [ref=e805] [cursor=pointer]:
+                      - /url: SSAVQO/manage/connectintroduction.html
+                  - listitem [ref=e806]:
+                    - link "Connection architecture and lifecycle" [ref=e807] [cursor=pointer]:
+                      - /url: SSAVQO/manage/architecture.html
+                  - listitem [ref=e808]:
+                    - link "Authentication types overview" [ref=e809] [cursor=pointer]:
+                      - /url: SSAVQO/manage/authentication_types.html
+                  - listitem [ref=e810]:
+                    - link "Credentials overview" [ref=e811] [cursor=pointer]:
+                      - /url: SSAVQO/manage/credentials.html
+                  - listitem [ref=e812]:
+                    - link "Connections across environments and deployments" [ref=e813] [cursor=pointer]:
+                      - /url: SSAVQO/manage/channel_behavior_across_environments.html
+                  - listitem [ref=e814]:
+                    - link "Creating and managing connections" [ref=e815] [cursor=pointer]:
+                      - /url: SSAVQO/manage/creating_and_managing_connections.html
+                    - list [ref=e816]:
+                      - listitem [ref=e817]:
+                        - 'link "Connection status: definition and connect behavior" [ref=e818] [cursor=pointer]':
+                          - /url: SSAVQO/manage/connection-status--definition-and-connect-behavior.html
+                      - listitem [ref=e819]:
+                        - link "Managing app credentials" [ref=e820] [cursor=pointer]:
+                          - /url: SSAVQO/manage/managing_credentials.html
+                        - list [ref=e821]:
+                          - listitem [ref=e822]:
+                            - link "Managing team credentials" [ref=e823] [cursor=pointer]:
+                              - /url: SSAVQO/manage/managing-team-credentials.html
+                          - listitem [ref=e824]:
+                            - link "Managing member credentials" [ref=e825] [cursor=pointer]:
+                              - /url: SSAVQO/manage/managing-member-credentials.html
+                  - listitem [ref=e826]:
+                    - link "Binding and deploying connections" [ref=e827] [cursor=pointer]:
+                      - /url: SSAVQO/manage/binding_and_deploying.html
+                  - listitem [ref=e828]:
+                    - link "Connecting apps for prebuilt agents" [ref=e829] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/connections/connecting_to_agents.html
+                    - list [ref=e830]:
+                      - listitem [ref=e831]:
+                        - link "Adobe Workfront" [ref=e832] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/adobe.html
+                      - listitem [ref=e833]:
+                        - link "Box" [ref=e834] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/box.html
+                      - listitem [ref=e835]:
+                        - link "Coupa" [ref=e836] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/coupa.html
+                      - listitem [ref=e837]:
+                        - link "Dun & Bradstreet for Sales" [ref=e838] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/dnbsales.html
+                      - listitem [ref=e839]:
+                        - link "Dun & Bradstreet" [ref=e840] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/dnb.html
+                      - listitem [ref=e841]:
+                        - link "Dropbox" [ref=e842] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/dropbox.html
+                      - listitem [ref=e843]:
+                        - link "Dynamics 365" [ref=e844] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/dynamics_365.html
+                      - listitem [ref=e845]:
+                        - link "GitLab" [ref=e846] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/gitlab.html
+                      - listitem [ref=e847]:
+                        - link "Gmail" [ref=e848] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/gmail.html
+                      - listitem [ref=e849]:
+                        - link "Google Drive" [ref=e850] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/googledrive.html
+                      - listitem [ref=e851]:
+                        - link "HubSpot" [ref=e852] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/hubspot.html
+                      - listitem [ref=e853]:
+                        - link "IBM Cloud Object Storage" [ref=e854] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/object_storage.html
+                      - listitem [ref=e855]:
+                        - link "IBM Planning Analytics" [ref=e856] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/planning_analytics.html
+                      - listitem [ref=e857]:
+                        - link "IBM Targetprocess" [ref=e858] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/target_process.html
+                      - listitem [ref=e859]:
+                        - link "Jenkins" [ref=e860] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/jenkins.html
+                      - listitem [ref=e861]:
+                        - link "Jira" [ref=e862] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/jira.html
+                      - listitem [ref=e863]:
+                        - link "Maximo IT" [ref=e864] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/maximo.html
+                      - listitem [ref=e865]:
+                        - link "Microsoft Outlook" [ref=e866] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/msoutlook.html
+                      - listitem [ref=e867]:
+                        - link "Microsoft SharePoint" [ref=e868] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/mssharepoint.html
+                      - listitem [ref=e869]:
+                        - link "Microsoft Teams" [ref=e870] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/msteams.html
+                      - listitem [ref=e871]:
+                        - link "MySQL" [ref=e872] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/mysql.html
+                      - listitem [ref=e873]:
+                        - link "Onit" [ref=e874] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/onit.html
+                      - listitem [ref=e875]:
+                        - link "Oracle Fusion" [ref=e876] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/oracle_fusion.html
+                      - listitem [ref=e877]:
+                        - link "Oracle HCM" [ref=e878] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/oracle_hcm.html
+                      - listitem [ref=e879]:
+                        - link "Red Hat Ansible" [ref=e880] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/red_hat_ansible.html
+                      - listitem [ref=e881]:
+                        - link "Salesforce" [ref=e882] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/salesforce.html
+                      - listitem [ref=e883]:
+                        - link "SAP Ariba" [ref=e884] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/sap_ariba.html
+                      - listitem [ref=e885]:
+                        - link "SAP S/4HANA" [ref=e886] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/sap_s4_hana.html
+                      - listitem [ref=e887]:
+                        - link "SAP SuccessFactors" [ref=e888] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/sap.html
+                      - listitem [ref=e889]:
+                        - link "Salesloft" [ref=e890] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/salesloft.html
+                      - listitem [ref=e891]:
+                        - link "Seismic" [ref=e892] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/seismic.html
+                      - listitem [ref=e893]:
+                        - link "ServiceNow" [ref=e894] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/servicenow.html
+                      - listitem [ref=e895]:
+                        - link "Slack" [ref=e896] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/slack.html
+                      - listitem [ref=e897]:
+                        - link "Sterling Order Management System (OMS)" [ref=e898] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/sterling.html
+                      - listitem [ref=e899]:
+                        - link "Supply chain IBM SIP" [ref=e900] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/ibm-sip.html
+                      - listitem [ref=e901]:
+                        - link "TestRail" [ref=e902] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/test_rail.html
+                      - listitem [ref=e903]:
+                        - link "Twilio" [ref=e904] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/twilio.html
+                      - listitem [ref=e905]:
+                        - link "Workday HCM" [ref=e906] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/workday.html
+                      - listitem [ref=e907]:
+                        - link "Zendesk" [ref=e908] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/zendesk.html
+                      - listitem [ref=e909]:
+                        - link "ZoomInfo" [ref=e910] [cursor=pointer]:
+                          - /url: SSAVQO/catalog/connections/zoominfo.html
+                  - listitem [ref=e911]:
+                    - link "Authenticating your users with single sign-on" [ref=e912] [cursor=pointer]:
+                      - /url: SSAVQO/manage/sso_apps.html
+                    - list [ref=e913]:
+                      - listitem [ref=e914]:
+                        - link "OAuth2 On Behalf Of Flow" [ref=e915] [cursor=pointer]:
+                          - /url: SSAVQO/manage/sso_behalf_of_flow.html
+                      - listitem [ref=e916]:
+                        - link "OAuth2 Token Exchange" [ref=e917] [cursor=pointer]:
+                          - /url: SSAVQO/manage/sso_token_exchange.html
+                      - listitem [ref=e918]:
+                        - link "OAuth2 Direct Access Token" [ref=e919] [cursor=pointer]:
+                          - /url: SSAVQO/manage/oauth2-direct-access-token.html
+                  - listitem [ref=e920]:
+                    - link "Managing agent access using the security control center" [ref=e921] [cursor=pointer]:
+                      - /url: SSAVQO/agentic_control_plane/using-the-security-control-center.html
+          - listitem [ref=e922]:
+            - link "Testing" [ref=e923] [cursor=pointer]:
+              - /url: SSAVQO/agent_builder/testing/testing.html
+            - list [ref=e924]:
+              - listitem [ref=e925]:
+                - link "Debugging your agent" [ref=e926] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/debugging-your-agent.html
+              - listitem [ref=e927]:
+                - link "Evaluating with simulated users" [ref=e928] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/Evaluation/recording_test_cases.html
+                - list [ref=e929]:
+                  - listitem [ref=e930]:
+                    - link "Recording and managing test cases" [ref=e931] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Evaluation/record_manage_test_cases.html
+                  - listitem [ref=e932]:
+                    - link "Running evaluations" [ref=e933] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Evaluation/run-and-review-evaluations.html
+                  - listitem [ref=e934]:
+                    - link "Understanding evaluation metrics" [ref=e935] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/Evaluation/evaluation-metrics.html
+          - listitem [ref=e936]:
+            - link "Deploying" [ref=e937] [cursor=pointer]:
+              - /url: SSAVQO/deploy/deploying.html
+            - list [ref=e938]:
+              - listitem [ref=e939]:
+                - link "Environments" [ref=e940] [cursor=pointer]:
+                  - /url: SSAVQO/deploy/environment.html
+              - listitem [ref=e941]:
+                - link "Deploying agents to live environment" [ref=e942] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/deploy_agent.html
+              - listitem [ref=e943]:
+                - link "Publishing to Catalog" [ref=e944] [cursor=pointer]:
+                  - /url: SSAVQO/catalog/publishtocatalog/publish-to-catalog.html
+                - list [ref=e945]:
+                  - listitem [ref=e946]:
+                    - link "Design guidelines for agent icons" [ref=e947] [cursor=pointer]:
+                      - /url: SSAVQO/catalog/publishtocatalog/logo-guidelines.html
+              - listitem [ref=e948]:
+                - link "Integrating agents with web applications" [ref=e949] [cursor=pointer]:
+                  - /url: SSAVQO/deploy/web_chat_agent/web_chat_lp.html
+                - list [ref=e950]:
+                  - listitem [ref=e951]:
+                    - link "Embedding the agent to web applications" [ref=e952] [cursor=pointer]:
+                      - /url: SSAVQO/deploy/web_chat_agent/web_chat_how_embed.html
+                  - listitem [ref=e953]:
+                    - link "Enabling voice capabilities in the embedded agent" [ref=e954] [cursor=pointer]:
+                      - /url: SSAVQO/agent_builder/voice-embed-agent.html
+                  - listitem [ref=e955]:
+                    - link "Securing the embedded chat" [ref=e956] [cursor=pointer]:
+                      - /url: SSAVQO/deploy/web_chat_agent/web_chat_securing.html
+                    - list [ref=e957]:
+                      - listitem [ref=e958]:
+                        - link "Configuring security for embedded chat" [ref=e959] [cursor=pointer]:
+                          - /url: SSAVQO/deploy/web_chat_agent/web_chat_configuring_security.html
+                        - list [ref=e960]:
+                          - listitem [ref=e961]:
+                            - link "Configuring security with scripting" [ref=e962] [cursor=pointer]:
+                              - /url: SSAVQO/deploy/web_chat_agent/web_chat_configuring_security_script.html
+                  - listitem [ref=e963]:
+                    - link "Embedded chat tutorials" [ref=e964] [cursor=pointer]:
+                      - /url: SSAVQO/deploy/web_chat_agent/tutorials/tutorials_lp.html
+                    - list [ref=e965]:
+                      - listitem [ref=e966]:
+                        - link "Creating a language selector in the chat header" [ref=e967] [cursor=pointer]:
+                          - /url: SSAVQO/deploy/web_chat_agent/tutorials/language_selection_handling.html
+                      - listitem [ref=e968]:
+                        - link "Loading an existing conversation thread" [ref=e969] [cursor=pointer]:
+                          - /url: SSAVQO/deploy/web_chat_agent/tutorials/loading-an-existing-conversation-thread.html
+                      - listitem [ref=e970]:
+                        - link "Sending silent messages to trigger agent responses" [ref=e971] [cursor=pointer]:
+                          - /url: SSAVQO/deploy/web_chat_agent/tutorials/sending-silent-messages-to-trigger-agent-responses.html
+                      - listitem [ref=e972]:
+                        - link "Triggering messages from URL parameters" [ref=e973] [cursor=pointer]:
+                          - /url: SSAVQO/deploy/web_chat_agent/tutorials/deep_linking.html
+                      - listitem [ref=e974]:
+                        - link "Display custom content with writeable elements" [ref=e975] [cursor=pointer]:
+                          - /url: SSAVQO/deploy/web_chat_agent/tutorials/add-custom-content-to-embedded-chat.html
+      - listitem [ref=e976]:
+        - link "Using" [ref=e977] [cursor=pointer]:
+          - /url: SSAVQO/chat/using.html
+        - list [ref=e978]:
+          - listitem [ref=e979]:
+            - link "Using Orchestrate Chat" [ref=e980] [cursor=pointer]:
+              - /url: SSAVQO/agent_builder/using-agents-in-orchestrate-chat.html
+            - list [ref=e981]:
+              - listitem [ref=e982]:
+                - link "Providing feedback on agent responses" [ref=e983] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/capturing-user-feedback.html
+              - listitem [ref=e984]:
+                - link "Uploading files during a conversation" [ref=e985] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/uploading-document-in-a-conversation.html
+              - listitem [ref=e986]:
+                - link "Scheduling tasks" [ref=e987] [cursor=pointer]:
+                  - /url: SSAVQO/agent_builder/scheduling-tasks.html
+              - listitem [ref=e988]:
+                - link "Understanding agent memory" [ref=e989] [cursor=pointer]:
+                  - /url: SSAVQO/chat/Agent-memory/understanding-agent-memory.html
+                - list [ref=e990]:
+                  - listitem [ref=e991]:
+                    - link "Agent memory retention policy" [ref=e992] [cursor=pointer]:
+                      - /url: SSAVQO/chat/Agent-memory/managing-agent-memory.html
+                  - listitem [ref=e993]:
+                    - link "Using agent memory in conversations" [ref=e994] [cursor=pointer]:
+                      - /url: SSAVQO/chat/Agent-memory/using-agent-memory-in-conversations.html
+                  - listitem [ref=e995]:
+                    - link "Managing agent memory" [ref=e996] [cursor=pointer]:
+                      - /url: SSAVQO/chat/Agent-memory/agent-memory-retention-policy.html
+                  - listitem [ref=e997]:
+                    - link "Memory behavior and limits" [ref=e998] [cursor=pointer]:
+                      - /url: SSAVQO/chat/Agent-memory/memory-behavior-and-limits.html
+                  - listitem [ref=e999]:
+                    - link "Frequently asked questions" [ref=e1000] [cursor=pointer]:
+                      - /url: SSAVQO/chat/Agent-memory/requently-asked-questions-about-agent-memory.html
+      - listitem [ref=e1001]:
+        - link "Operating" [ref=e1002] [cursor=pointer]:
+          - /url: SSAVQO/operating/operating.html
+        - list [ref=e1003]:
+          - listitem [ref=e1004]:
+            - link "Agentic control plane overview" [ref=e1005] [cursor=pointer]:
+              - /url: SSAVQO/agentic_control_plane/control_plane_overview.html
+            - list [ref=e1006]:
+              - listitem [ref=e1007]:
+                - link "Getting started with the control plane dashboard" [ref=e1008] [cursor=pointer]:
+                  - /url: SSAVQO/agentic_control_plane/getting_started_cp.html
+              - listitem [ref=e1009]:
+                - link "Control plane agent" [ref=e1010] [cursor=pointer]:
+                  - /url: SSAVQO/agentic_control_plane/agentic-control-plane-agent.html
+              - listitem [ref=e1011]:
+                - link "Managing operational alerts" [ref=e1012] [cursor=pointer]:
+                  - /url: SSAVQO/agentic_control_plane/operational-health-alerts.html
+              - listitem [ref=e1013]:
+                - link "Controls overview" [ref=e1014] [cursor=pointer]:
+                  - /url: SSAVQO/agentic_control_plane/working-with-controls.html
+                - list [ref=e1015]:
+                  - listitem [ref=e1016]:
+                    - link "Managing controls" [ref=e1017] [cursor=pointer]:
+                      - /url: SSAVQO/agentic_control_plane/managing-controls.html
+              - listitem [ref=e1018]:
+                - link "Reviewing agent fleet health" [ref=e1019] [cursor=pointer]:
+                  - /url: SSAVQO/agentic_control_plane/reviewing-agent-fleet-health.html
+          - listitem [ref=e1020]:
+            - link "Agent analytics and monitoring" [ref=e1021] [cursor=pointer]:
+              - /url: SSAVQO/administering/Agent-observability/monitoring_agents_new.html
+            - list [ref=e1022]:
+              - listitem [ref=e1023]:
+                - link "Analytics dashboard" [ref=e1024] [cursor=pointer]:
+                  - /url: SSAVQO/administering/Agent-observability/analyze_dashboard.html
+              - listitem [ref=e1025]:
+                - link "Agent-level metrics" [ref=e1026] [cursor=pointer]:
+                  - /url: SSAVQO/administering/Agent-observability/agent_level_metrics.html
+              - listitem [ref=e1027]:
+                - link "Metrics overview" [ref=e1028] [cursor=pointer]:
+                  - /url: SSAVQO/administering/Agent-observability/analytics_metrics.html
+              - listitem [ref=e1029]:
+                - link "Understanding metrics" [ref=e1030] [cursor=pointer]:
+                  - /url: SSAVQO/administering/Agent-observability/understanding_metrics.html
+              - listitem [ref=e1031]:
+                - link "Monitoring agents (legacy experience)" [ref=e1032] [cursor=pointer]:
+                  - /url: SSAVQO/administering/agent_observability.html
+                - list [ref=e1033]:
+                  - listitem [ref=e1034]:
+                    - link "Understanding trace details" [ref=e1035] [cursor=pointer]:
+                      - /url: SSAVQO/administering/trace_details.html
+                  - listitem [ref=e1036]:
+                    - link "Practical guidance for reading traces" [ref=e1037] [cursor=pointer]:
+                      - /url: SSAVQO/administering/reading_traces.html
+      - listitem [ref=e1038]:
+        - link "Administering" [ref=e1039] [cursor=pointer]:
+          - /url: SSAVQO/administering/administering.html
+        - list [ref=e1040]:
+          - listitem [ref=e1041]:
+            - link "Administering your instance" [ref=e1042] [cursor=pointer]:
+              - /url: SSAVQO/administering/lp_administering.html
+            - list [ref=e1043]:
+              - listitem [ref=e1044]:
+                - link "Managing users" [ref=e1045] [cursor=pointer]:
+                  - /url: SSAVQO/teams/lp_managing_team.html
+                - list [ref=e1046]:
+                  - listitem [ref=e1047]:
+                    - link "Roles on IBM watsonx Orchestrate" [ref=e1048] [cursor=pointer]:
+                      - /url: SSAVQO/about/wo_personas.html
+                  - listitem [ref=e1049]:
+                    - link "Managing users on AWS" [ref=e1050] [cursor=pointer]:
+                      - /url: SSAVQO/teams/teams_roles.html
+                  - listitem [ref=e1051]:
+                    - link "Managing users on AWS (GovCloud, HIPAA, Premium)" [ref=e1052] [cursor=pointer]:
+                      - /url: SSAVQO/teams/managing_users_govcloud.html
+                  - listitem [ref=e1053]:
+                    - link "Managing users on IBM Cloud" [ref=e1054] [cursor=pointer]:
+                      - /url: SSAVQO/security/iam.html
+              - listitem [ref=e1055]:
+                - link "Managing account access" [ref=e1056] [cursor=pointer]:
+                  - /url: SSAVQO/administering/managing-account-access.html
+                - list [ref=e1057]:
+                  - listitem [ref=e1058]:
+                    - link "Configuring SSO for platform access" [ref=e1059] [cursor=pointer]:
+                      - /url: SSAVQO/administering/configuring_sso.html
+                  - listitem [ref=e1060]:
+                    - link "Managing your account" [ref=e1061] [cursor=pointer]:
+                      - /url: SSAVQO/getting_started/managing_accounts.html
+              - listitem [ref=e1062]:
+                - link "Managing instance settings" [ref=e1063] [cursor=pointer]:
+                  - /url: SSAVQO/administering/manage_settings_agentic_experience.html
+                - list [ref=e1064]:
+                  - listitem [ref=e1065]:
+                    - link "Managing language preferences" [ref=e1066] [cursor=pointer]:
+                      - /url: SSAVQO/administering/platform_languages_agentic_experience.html
+                  - listitem [ref=e1067]:
+                    - link "Managing credentials" [ref=e1068] [cursor=pointer]:
+                      - /url: SSAVQO/administering/managing_credentials.html
+                  - listitem [ref=e1069]:
+                    - link "Managing agent analytics settings" [ref=e1070] [cursor=pointer]:
+                      - /url: SSAVQO/administering/manage_analytics.html
+                  - listitem [ref=e1071]:
+                    - link "Managing model selection settings" [ref=e1072] [cursor=pointer]:
+                      - /url: SSAVQO/administering/model_selection_settings.html
+                  - listitem [ref=e1073]:
+                    - link "Restricting builder access to security settings" [ref=e1074] [cursor=pointer]:
+                      - /url: SSAVQO/administering/restricting_builder_security.html
+              - listitem [ref=e1075]:
+                - link "Managing resilience and availability" [ref=e1076] [cursor=pointer]:
+                  - /url: SSAVQO/administering/managing-resilience-and-availability.html
+                - list [ref=e1077]:
+                  - listitem [ref=e1078]:
+                    - link "Managing data retention" [ref=e1079] [cursor=pointer]:
+                      - /url: SSAVQO/administering/data_retention_agentic_experience.html
+                  - listitem [ref=e1080]:
+                    - link "Configuring instances for multi-region active deployment" [ref=e1081] [cursor=pointer]:
+                      - /url: SSAVQO/security/seed_config_active_active_deployments.html
+                  - listitem [ref=e1082]:
+                    - link "High availability, business continuity, backups and disaster recovery on AWS" [ref=e1083] [cursor=pointer]:
+                      - /url: SSAVQO/high_availability_recovery/ha_dr_aws.html
+                  - listitem [ref=e1084]:
+                    - link "High availability, business continuity, backups and disaster recovery on IBM Cloud" [ref=e1085] [cursor=pointer]:
+                      - /url: SSAVQO/high_availability_recovery/ha-dr-overview.html
+                  - listitem [ref=e1086]:
+                    - link "Data isolation on watsonx Orchestrate" [ref=e1087] [cursor=pointer]:
+                      - /url: SSAVQO/security/data_isolation.html
+                  - listitem [ref=e1088]:
+                    - link "Backing up and restoring AI assistant data" [ref=e1089] [cursor=pointer]:
+                      - /url: SSAVQO/assistant/admin-backup-restore.html
+              - listitem [ref=e1090]:
+                - link "Securing your instance" [ref=e1091] [cursor=pointer]:
+                  - /url: SSAVQO/security/lp_security.html
+                - list [ref=e1092]:
+                  - listitem [ref=e1093]:
+                    - link "Chat privacy and data protection" [ref=e1094] [cursor=pointer]:
+                      - /url: SSAVQO/security/chat-privacy-and-data-protection.html
+                  - listitem [ref=e1095]:
+                    - link "Creating private paths using AWS PrivateLink" [ref=e1096] [cursor=pointer]:
+                      - /url: SSAVQO/security/creating-private-paths-using-aws-private-link.html
+                  - listitem [ref=e1097]:
+                    - link "Enhancing security for instances on IBM Cloud" [ref=e1098] [cursor=pointer]:
+                      - /url: SSAVQO/security/enhancing_security_ld_page.html
+                    - list [ref=e1099]:
+                      - listitem [ref=e1100]:
+                        - link "Allowing specific IP addresses" [ref=e1101] [cursor=pointer]:
+                          - /url: SSAVQO/security/allowing_specific_ip_addresses.html
+                      - listitem [ref=e1102]:
+                        - link "Configuring TLS tunnel" [ref=e1103] [cursor=pointer]:
+                          - /url: SSAVQO/security/tls_tunneling.html
+                  - listitem [ref=e1104]:
+                    - link "Enhancing security for instances on AWS" [ref=e1105] [cursor=pointer]:
+                      - /url: SSAVQO/security/enhancing_security_aws_ld_page.html
+                    - list [ref=e1106]:
+                      - listitem [ref=e1107]:
+                        - link "Security, privacy, and data protection" [ref=e1108] [cursor=pointer]:
+                          - /url: SSAVQO/security/data_privacy_protection.html
+                  - listitem [ref=e1109]:
+                    - link "Monitoring and auditing platform activity" [ref=e1110] [cursor=pointer]:
+                      - /url: SSAVQO/security/auditing_logs_agenticexp.html
+                    - list [ref=e1111]:
+                      - listitem [ref=e1112]:
+                        - link "Activity tracking events on IBM Cloud" [ref=e1113] [cursor=pointer]:
+                          - /url: SSAVQO/security/activity_tracker.html
+                      - listitem [ref=e1114]:
+                        - link "Enabling external logging for AWS" [ref=e1115] [cursor=pointer]:
+                          - /url: SSAVQO/security/external_loging_aws.html
+                      - listitem [ref=e1116]:
+                        - link "Migration for existing users" [ref=e1117] [cursor=pointer]:
+                          - /url: SSAVQO/security/external-logging-migration.html
+                      - listitem [ref=e1118]:
+                        - link "List of events for activity tracking" [ref=e1119] [cursor=pointer]:
+                          - /url: SSAVQO/security/events_at.html
+                  - listitem [ref=e1120]:
+                    - link "Using private network endpoints" [ref=e1121] [cursor=pointer]:
+                      - /url: SSAVQO/security/private_endpoints.html
+          - listitem [ref=e1122]:
+            - link "Migrating from watsonx Assistant" [ref=e1123] [cursor=pointer]:
+              - /url: SSAVQO/migration/landing_page.html
+            - list [ref=e1124]:
+              - listitem [ref=e1125]:
+                - link "Migration overview" [ref=e1126] [cursor=pointer]:
+                  - /url: SSAVQO/migration/overview.html
+              - listitem [ref=e1127]:
+                - link "Planning your migration" [ref=e1128] [cursor=pointer]:
+                  - /url: SSAVQO/migration/planning.html
+              - listitem [ref=e1129]:
+                - link "Migrating to watsonx Orchestrate" [ref=e1130] [cursor=pointer]:
+                  - /url: SSAVQO/migration/migrating.html
+              - listitem [ref=e1131]:
+                - link "Automatic migration" [ref=e1132] [cursor=pointer]:
+                  - /url: SSAVQO/migration/automigration.html
+              - listitem [ref=e1133]:
+                - link "Modernizing AI assistants into AI Agents" [ref=e1134] [cursor=pointer]:
+                  - /url: SSAVQO/migration/modernization.html
+      - listitem [ref=e1135]:
+        - link "Learning resources" [ref=e1136] [cursor=pointer]:
+          - /url: SSAVQO/learning_resources/learning-resources.html
+      - listitem [ref=e1137]:
+        - link "Reference" [ref=e1138] [cursor=pointer]:
+          - /url: SSAVQO/about/overview_ref.html
+        - list [ref=e1139]:
+          - listitem [ref=e1140]:
+            - link "AI assistant reference" [ref=e1141] [cursor=pointer]:
+              - /url: SSAVQO/about/assistant_references.html
+            - list [ref=e1142]:
+              - listitem [ref=e1143]:
+                - link "Response types reference" [ref=e1144] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/response-types-reference.html
+              - listitem [ref=e1145]:
+                - link "Preview runtime errors" [ref=e1146] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/preview-runtime-errors.html
+              - listitem [ref=e1147]:
+                - link "Built-in global variables" [ref=e1148] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/global-variables.html
+              - listitem [ref=e1149]:
+                - link "Security certificates reference" [ref=e1150] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/ssl-certificates-configuration-reference.html
+              - listitem [ref=e1151]:
+                - link "Integration variables" [ref=e1152] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/integration-variables.html
+              - listitem [ref=e1153]:
+                - link "Expression language methods for actions" [ref=e1154] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/expression-methods-actions.html
+              - listitem [ref=e1155]:
+                - link "Phone integration context variables" [ref=e1156] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/phone-context.html?pos=2
+              - listitem [ref=e1157]:
+                - link "SMS integration reference" [ref=e1158] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/sms-reference.html
+              - listitem [ref=e1159]:
+                - link "CDR log event reference" [ref=e1160] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/cdr-log-reference.html
+              - listitem [ref=e1161]:
+                - link "Segment event reference" [ref=e1162] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/segment-event-reference.html
+              - listitem [ref=e1163]:
+                - link "Web chat API reference" [ref=e1164] [cursor=pointer]:
+                  - /url: https://web-chat.global.assistant.watson.cloud.ibm.com/docs.html
+              - listitem [ref=e1165]:
+                - link "REST API reference" [ref=e1166] [cursor=pointer]:
+                  - /url: https://cloud.ibm.com/apidocs/assistant/assistant-v2
+              - listitem [ref=e1167]:
+                - link "Filter query reference" [ref=e1168] [cursor=pointer]:
+                  - /url: SSAVQO/assistant/filter-reference.html
+          - listitem [ref=e1169]:
+            - link "IBM watsonx Orchestrate API" [ref=e1170] [cursor=pointer]:
+              - /url: SSAVQO/api_key/calling_skills_through_api.html
+            - list [ref=e1171]:
+              - listitem [ref=e1172]:
+                - link "Getting started with the API" [ref=e1173] [cursor=pointer]:
+                  - /url: SSAVQO/api_key/getting_started.html
+                - list [ref=e1174]:
+                  - listitem [ref=e1175]:
+                    - link "Getting the API endpoint" [ref=e1176] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/get_api_endpoint.html
+                  - listitem [ref=e1177]:
+                    - link "Generating an API key for AWS" [ref=e1178] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/managing_api_key.html
+                  - listitem [ref=e1179]:
+                    - link "Getting service instance URL" [ref=e1180] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/getting-service-instance-url.html
+                  - listitem [ref=e1181]:
+                    - link "Generating a JWT for AWS" [ref=e1182] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/authenticate_aws.html
+                  - listitem [ref=e1183]:
+                    - link "Generating an API key for IBM Cloud" [ref=e1184] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/generating_iam_api_key.html
+                  - listitem [ref=e1185]:
+                    - link "Generating an access token for IBM Cloud" [ref=e1186] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/authenticate_ibm_cloud.html
+                  - listitem [ref=e1187]:
+                    - link "Generating an API key for on-premises" [ref=e1188] [cursor=pointer]:
+                      - /url: SSAVQO/api_key/generating_zen_api_key.html
+              - listitem [ref=e1189]:
+                - link "API reference" [ref=e1190] [cursor=pointer]:
+                  - /url: https://developer.ibm.com/apis/catalog/watsonorchestrate--custom-assistants/Introduction
+          - listitem [ref=e1191]:
+            - link "Using the skill-based experience" [ref=e1192] [cursor=pointer]:
+              - /url: SSAVQO/about/skill_based_experience_pdf.html
+          - listitem [ref=e1193]:
+            - link "Glossary of terms" [ref=e1194] [cursor=pointer]:
+              - /url: SSAVQO/about/gloss_wo.html

@@ -1,0 +1,34 @@
+- generic [active] [ref=f135e1]:
+  - generic [ref=f135e2]:
+    - banner [ref=f135e3]:
+      - heading "w3id on IBM Verify" [level=1] [ref=f135e4]
+    - main [ref=f135e5]:
+      - paragraph [ref=f135e8]: Sign in with w3id
+      - paragraph [ref=f135e11]: Choose a Single-Sign On method.
+      - generic [ref=f135e12]:
+        - generic [ref=f135e15]:
+          - button "Passkey (IBM preferred)  Use your PIN, fingerprint, or face to log in with your passkey. Before using a passkey to sign-in, you must configure a passkey in your w3id security settings. After you log in, go to ibm.biz/passkeys for more information." [ref=f135e17] [cursor=pointer]:
+            - text: Passkey (IBM preferred)
+            - generic [ref=f135e19]: 
+            - generic [ref=f135e20]: Use your PIN, fingerprint, or face to log in with your passkey.
+            - generic [ref=f135e21]: Before using a passkey to sign-in, you must configure a passkey in your w3id security settings. After you log in, go to ibm.biz/passkeys for more information.
+          - button " w3id Password  Use your w3id and password if you can't use a passkey." [ref=f135e23] [cursor=pointer]:
+            - generic [ref=f135e24]: 
+            - text: w3id Password
+            - generic [ref=f135e25]: 
+            - generic [ref=f135e26]: Use your w3id and password if you can't use a passkey.
+          - button " IBM Verify  Use your IBM Verify mobile app if you can't use a passkey. App must be configured in your w3id security settings before use." [ref=f135e29] [cursor=pointer]:
+            - generic [ref=f135e30]: 
+            - text: IBM Verify
+            - generic [ref=f135e31]: 
+            - generic [ref=f135e32]: Use your IBM Verify mobile app if you can't use a passkey.
+            - generic [ref=f135e33]: App must be configured in your w3id security settings before use.
+        - generic "Passkey video" [ref=f135e35]
+      - text: ▾
+  - contentinfo [ref=f135e36]:
+    - generic [ref=f135e38]:
+      - generic [ref=f135e39]:
+        - img "IBM Logo" [ref=f135e40]
+        - img "IBM Logo" [ref=f135e41]
+      - link "Privacy Policy" [ref=f135e42] [cursor=pointer]:
+        - /url: https://w3.ibm.com/w3publisher/w3-privacy-notice

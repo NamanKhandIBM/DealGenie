@@ -1,0 +1,2 @@
+[    1302ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://developer.watson-orchestrate.ibm.com/apis/generative-ai:0
+[    3146ms] [LOG] Creating new element with ID root @ https://dl.watson-orchestrate.ibm.com/wxochat/wxoLoader.js?embed=true:2

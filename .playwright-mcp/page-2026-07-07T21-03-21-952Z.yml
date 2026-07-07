@@ -1,0 +1,995 @@
+- generic [active] [ref=f27e1]:
+  - blockquote [ref=f27e2]:
+    - heading [level=2] [ref=f27e3]: Documentation Index
+    - paragraph [ref=f27e4]:
+      - text: "Fetch the complete documentation index at:"
+      - link [ref=f27e5] [cursor=pointer]:
+        - /url: /llms.txt
+        - text: /llms.txt
+    - paragraph [ref=f27e6]: Use this file to discover all available pages before exploring further.
+  - generic:
+    - link "Skip to main content" [ref=f27e7] [cursor=pointer]:
+      - /url: "#content-area"
+    - generic:
+      - generic:
+        - banner [ref=f27e8]:
+          - generic [ref=f27e14]:
+            - generic [ref=f27e15]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f27e16] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f27e17]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f27e18]
+              - button "2.x" [ref=f27e20] [cursor=pointer]:
+                - generic [ref=f27e21]: 2.x
+                - img [ref=f27e22]
+            - navigation "Main" [ref=f27e26]:
+              - list [ref=f27e27]:
+                - listitem [ref=f27e28]:
+                  - link "Support" [ref=f27e29] [cursor=pointer]:
+                    - /url: https://www.ibm.com/mysupport/s/topic/0TO3p000000A6YLGA0/watsonx-orchestrate?productId=01t3p00000SsRnhAAF&language=en_US
+                    - generic [ref=f27e30]: Support
+                - listitem [ref=f27e31]:
+                  - link "GitHub" [ref=f27e32] [cursor=pointer]:
+                    - /url: https://github.com/ibm/ibm-watsonx-orchestrate-adk/
+                    - generic [ref=f27e33]: GitHub
+        - generic [ref=f27e34]:
+          - navigation "Pages" [ref=f27e35]:
+            - generic [ref=f27e37]:
+              - button "Open search" [ref=f27e39] [cursor=pointer]:
+                - generic [ref=f27e40]:
+                  - img [ref=f27e41]
+                  - generic [ref=f27e44]: Search...
+                - generic [ref=f27e45]: ⌘K
+              - generic [ref=f27e46]:
+                - generic [ref=f27e47]:
+                  - heading "Release Notes" [level=3] [ref=f27e49]
+                  - list [ref=f27e50]:
+                    - listitem [ref=f27e51]:
+                      - link "What's new" [ref=f27e52] [cursor=pointer]:
+                        - /url: /release/release
+                        - img [ref=f27e54]
+                        - generic [ref=f27e57]: What's new
+                    - listitem [ref=f27e58]:
+                      - link "Known issues" [ref=f27e59] [cursor=pointer]:
+                        - /url: /release/knownissues
+                        - img [ref=f27e61]
+                        - generic [ref=f27e64]: Known issues
+                    - listitem [ref=f27e65]:
+                      - link "Troubleshooting" [ref=f27e66] [cursor=pointer]:
+                        - /url: /release/troubleshooting
+                        - img [ref=f27e68]
+                        - generic [ref=f27e71]: Troubleshooting
+                - generic [ref=f27e72]:
+                  - heading "Get Started" [level=3] [ref=f27e74]
+                  - list [ref=f27e75]:
+                    - listitem [ref=f27e76]:
+                      - link "Welcome" [ref=f27e77] [cursor=pointer]:
+                        - /url: /
+                        - img [ref=f27e79]
+                        - generic [ref=f27e82]: Welcome
+                    - listitem [ref=f27e83]:
+                      - link "What is ADK?" [ref=f27e84] [cursor=pointer]:
+                        - /url: /getting_started/what_is
+                        - img [ref=f27e86]
+                        - generic [ref=f27e89]: What is ADK?
+                    - listitem [ref=f27e90]:
+                      - link "Getting started with the ADK" [ref=f27e91] [cursor=pointer]:
+                        - /url: /getting_started/installing
+                        - img [ref=f27e93]
+                        - generic [ref=f27e96]: Getting started with the ADK
+                    - listitem [ref=f27e97]:
+                      - button "Tutorials" [ref=f27e98] [cursor=pointer]:
+                        - img [ref=f27e100]
+                        - generic [ref=f27e102]: Tutorials
+                        - img [ref=f27e104]
+                    - listitem [ref=f27e106]:
+                      - link "Examples" [ref=f27e107] [cursor=pointer]:
+                        - /url: /getting_started/examples
+                        - img [ref=f27e109]
+                        - generic [ref=f27e112]: Examples
+                    - listitem [ref=f27e113]:
+                      - button "Configuring environments" [ref=f27e114] [cursor=pointer]:
+                        - img [ref=f27e116]
+                        - generic [ref=f27e118]: Configuring environments
+                        - img [ref=f27e120]
+                    - listitem [ref=f27e122]:
+                      - link "Useful CLI commands" [ref=f27e123] [cursor=pointer]:
+                        - /url: /getting_started/cli
+                        - img [ref=f27e125]
+                        - generic [ref=f27e128]: Useful CLI commands
+                - generic [ref=f27e129]:
+                  - heading "Build" [level=3] [ref=f27e131]
+                  - list [ref=f27e132]:
+                    - listitem [ref=f27e133]:
+                      - button "Workspaces" [ref=f27e134] [cursor=pointer]:
+                        - img [ref=f27e136]
+                        - generic [ref=f27e138]: Workspaces
+                        - img [ref=f27e140]
+                    - listitem [ref=f27e142]:
+                      - button "Agents" [ref=f27e143] [cursor=pointer]:
+                        - img [ref=f27e145]
+                        - generic [ref=f27e147]: Agents
+                        - img [ref=f27e149]
+                    - listitem [ref=f27e151]:
+                      - button "Large Language Models (LLMs)" [ref=f27e152] [cursor=pointer]:
+                        - img [ref=f27e154]
+                        - generic [ref=f27e156]: Large Language Models (LLMs)
+                        - img [ref=f27e158]
+                    - listitem [ref=f27e160]:
+                      - button "Agentic Workflows" [ref=f27e161] [cursor=pointer]:
+                        - img [ref=f27e163]
+                        - generic [ref=f27e165]: Agentic Workflows
+                        - img [ref=f27e167]
+                    - listitem [ref=f27e169]:
+                      - button "Tools" [ref=f27e170] [cursor=pointer]:
+                        - img [ref=f27e172]
+                        - generic [ref=f27e174]: Tools
+                        - img [ref=f27e176]
+                    - listitem [ref=f27e178]:
+                      - button "Toolkits" [ref=f27e179] [cursor=pointer]:
+                        - img [ref=f27e181]
+                        - generic [ref=f27e183]: Toolkits
+                        - img [ref=f27e185]
+                    - listitem [ref=f27e187]:
+                      - button "Connections" [ref=f27e188] [cursor=pointer]:
+                        - img [ref=f27e190]
+                        - generic [ref=f27e192]: Connections
+                        - img [ref=f27e194]
+                    - listitem [ref=f27e196]:
+                      - button "Knowledge Bases" [ref=f27e197] [cursor=pointer]:
+                        - img [ref=f27e199]
+                        - generic [ref=f27e201]: Knowledge Bases
+                        - img [ref=f27e203]
+                    - listitem [ref=f27e205]:
+                      - button "Plug-ins" [ref=f27e206] [cursor=pointer]:
+                        - img [ref=f27e208]
+                        - generic [ref=f27e210]: Plug-ins
+                        - img [ref=f27e212]
+                    - listitem [ref=f27e214]:
+                      - button "Channels" [ref=f27e215] [cursor=pointer]:
+                        - img [ref=f27e217]
+                        - generic [ref=f27e219]: Channels
+                        - img [ref=f27e221]
+                    - listitem [ref=f27e223]:
+                      - button "Phone" [ref=f27e224] [cursor=pointer]:
+                        - img [ref=f27e226]
+                        - generic [ref=f27e228]: Phone
+                        - img [ref=f27e230]
+                    - listitem [ref=f27e232]:
+                      - button "Voice" [ref=f27e233] [cursor=pointer]:
+                        - img [ref=f27e235]
+                        - generic [ref=f27e237]: Voice
+                        - img [ref=f27e239]
+                    - listitem [ref=f27e241]:
+                      - button "Scheduling" [ref=f27e242] [cursor=pointer]:
+                        - img [ref=f27e244]
+                        - generic [ref=f27e246]: Scheduling
+                        - img [ref=f27e248]
+                    - listitem [ref=f27e250]:
+                      - link "IBM Agent Connect" [ref=f27e251] [cursor=pointer]:
+                        - /url: /partners/partners
+                        - img [ref=f27e253]
+                        - generic [ref=f27e256]: IBM Agent Connect
+                - generic [ref=f27e257]:
+                  - heading "Deploy" [level=3] [ref=f27e259]
+                  - list [ref=f27e260]:
+                    - listitem [ref=f27e261]:
+                      - button "Embedded chat" [ref=f27e262] [cursor=pointer]:
+                        - img [ref=f27e264]
+                        - generic [ref=f27e266]: Embedded chat
+                        - img [ref=f27e268]
+                - generic [ref=f27e270]:
+                  - heading "Analyze" [level=3] [ref=f27e272]
+                  - list [ref=f27e273]:
+                    - listitem [ref=f27e274]:
+                      - button "Evaluation Framework" [ref=f27e275] [cursor=pointer]:
+                        - img [ref=f27e277]
+                        - generic [ref=f27e279]: Evaluation Framework
+                        - img [ref=f27e281]
+                    - listitem [ref=f27e283]:
+                      - button "Langfuse" [ref=f27e284] [cursor=pointer]:
+                        - img [ref=f27e286]
+                        - generic [ref=f27e288]: Langfuse
+                        - img [ref=f27e290]
+                    - listitem [ref=f27e292]:
+                      - button "Traces" [ref=f27e293] [cursor=pointer]:
+                        - img [ref=f27e295]
+                        - generic [ref=f27e297]: Traces
+                        - img [ref=f27e299]
+                - generic [ref=f27e301]:
+                  - heading "Developer experience" [level=3] [ref=f27e303]
+                  - list [ref=f27e304]:
+                    - listitem [ref=f27e305]:
+                      - button "Developer Edition" [expanded] [ref=f27e306] [cursor=pointer]:
+                        - img [ref=f27e308]
+                        - generic [ref=f27e310]: Developer Edition
+                        - img [ref=f27e312]
+                      - list [ref=f27e314]:
+                        - listitem [ref=f27e315]:
+                          - link "What is Developer Edition?" [ref=f27e316] [cursor=pointer]:
+                            - /url: /developer_edition/wxOde_overview
+                            - img [ref=f27e318]
+                            - generic [ref=f27e321]: What is Developer Edition?
+                        - listitem [ref=f27e322]:
+                          - button "Installing Developer Edition" [ref=f27e323] [cursor=pointer]:
+                            - img [ref=f27e325]
+                            - generic [ref=f27e327]: Installing Developer Edition
+                            - img [ref=f27e329]
+                        - listitem [ref=f27e331]:
+                          - button "Managing Developer Edition" [ref=f27e332] [cursor=pointer]:
+                            - img [ref=f27e334]
+                            - generic [ref=f27e336]: Managing Developer Edition
+                            - img [ref=f27e338]
+                        - listitem [ref=f27e340]:
+                          - link "Subscribing to security bulletins" [ref=f27e341] [cursor=pointer]:
+                            - /url: /developer_edition/security_bulletins
+                            - img [ref=f27e343]
+                            - generic [ref=f27e346]: Subscribing to security bulletins
+                        - listitem [ref=f27e347]:
+                          - button "Developer Edition API" [expanded] [ref=f27e348] [cursor=pointer]:
+                            - img [ref=f27e350]
+                            - generic [ref=f27e352]: Developer Edition API
+                            - img [ref=f27e354]
+                          - list [ref=f27e356]:
+                            - listitem [ref=f27e357]:
+                              - button "Orchestrate Agent" [expanded] [ref=f27e358] [cursor=pointer]:
+                                - img [ref=f27e360]
+                                - generic [ref=f27e362]: Orchestrate Agent
+                                - img [ref=f27e364]
+                              - list [ref=f27e366]:
+                                - listitem [ref=f27e367]:
+                                  - link "POST Chat With Orchestrate Assistant As Stream" [ref=f27e368] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/chat-with-orchestrate-assistant-as-stream
+                                    - generic [ref=f27e371]: POST
+                                    - generic [ref=f27e374]: Chat With Orchestrate Assistant As Stream
+                                - listitem [ref=f27e375]:
+                                  - link "GET List Orchestrate Assistant Runs" [ref=f27e376] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/list-orchestrate-assistant-runs
+                                    - generic [ref=f27e379]: GET
+                                    - generic [ref=f27e382]: List Orchestrate Assistant Runs
+                                - listitem [ref=f27e383]:
+                                  - link "POST Chat With Orchestrate Assistant" [ref=f27e384] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/chat-with-orchestrate-assistant
+                                    - generic [ref=f27e387]: POST
+                                    - generic [ref=f27e390]: Chat With Orchestrate Assistant
+                                - listitem [ref=f27e391]:
+                                  - link "POST Upload To S3" [ref=f27e392] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/upload-to-s3
+                                    - generic [ref=f27e395]: POST
+                                    - generic [ref=f27e398]: Upload To S3
+                                - listitem [ref=f27e399]:
+                                  - link "POST Cancel An Orchestrate Assistant Run" [ref=f27e400] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/cancel-an-orchestrate-assistant-run
+                                    - generic [ref=f27e403]: POST
+                                    - generic [ref=f27e406]: Cancel An Orchestrate Assistant Run
+                                - listitem [ref=f27e407]:
+                                  - link "GET Get Orchestrate Assistant Run" [ref=f27e408] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/get-orchestrate-assistant-run
+                                    - generic [ref=f27e411]: GET
+                                    - generic [ref=f27e414]: Get Orchestrate Assistant Run
+                                - listitem [ref=f27e415]:
+                                  - link "GET Get Orchestrate Assistant Run Events" [ref=f27e416] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/get-orchestrate-assistant-run-events
+                                    - generic [ref=f27e419]: GET
+                                    - generic [ref=f27e422]: Get Orchestrate Assistant Run Events
+                                - listitem [ref=f27e423]:
+                                  - link "POST Chat With Agents" [ref=f27e424] [cursor=pointer]:
+                                    - /url: /apis/orchestrate-agent/chat-with-agents
+                                    - generic [ref=f27e427]: POST
+                                    - generic [ref=f27e430]: Chat With Agents
+                            - listitem [ref=f27e431]:
+                              - button "Assistants Runs" [ref=f27e432] [cursor=pointer]:
+                                - img [ref=f27e434]
+                                - generic [ref=f27e436]: Assistants Runs
+                                - img [ref=f27e438]
+                            - listitem [ref=f27e440]:
+                              - button "Custom Assistants" [ref=f27e441] [cursor=pointer]:
+                                - img [ref=f27e443]
+                                - generic [ref=f27e445]: Custom Assistants
+                                - img [ref=f27e447]
+                            - listitem [ref=f27e449]:
+                              - button "watsonx Assistant" [ref=f27e450] [cursor=pointer]:
+                                - img [ref=f27e452]
+                                - generic [ref=f27e454]: watsonx Assistant
+                                - img [ref=f27e456]
+                            - listitem [ref=f27e458]:
+                              - button "External Chat Agents" [ref=f27e459] [cursor=pointer]:
+                                - img [ref=f27e461]
+                                - generic [ref=f27e463]: External Chat Agents
+                                - img [ref=f27e465]
+                            - listitem [ref=f27e467]:
+                              - button "A2A Protocol" [ref=f27e468] [cursor=pointer]:
+                                - img [ref=f27e470]
+                                - generic [ref=f27e472]: A2A Protocol
+                                - img [ref=f27e474]
+                            - listitem [ref=f27e476]:
+                              - button "Message Threads" [ref=f27e477] [cursor=pointer]:
+                                - img [ref=f27e479]
+                                - generic [ref=f27e481]: Message Threads
+                                - img [ref=f27e483]
+                            - listitem [ref=f27e485]:
+                              - button "Catalog Management" [ref=f27e486] [cursor=pointer]:
+                                - img [ref=f27e488]
+                                - generic [ref=f27e490]: Catalog Management
+                                - img [ref=f27e492]
+                            - listitem [ref=f27e494]:
+                              - button "Tenant Management" [ref=f27e495] [cursor=pointer]:
+                                - img [ref=f27e497]
+                                - generic [ref=f27e499]: Tenant Management
+                                - img [ref=f27e501]
+                            - listitem [ref=f27e503]:
+                              - button "Provisioning Lite" [ref=f27e504] [cursor=pointer]:
+                                - img [ref=f27e506]
+                                - generic [ref=f27e508]: Provisioning Lite
+                                - img [ref=f27e510]
+                            - listitem [ref=f27e512]:
+                              - button "Embed settings" [ref=f27e513] [cursor=pointer]:
+                                - img [ref=f27e515]
+                                - generic [ref=f27e517]: Embed settings
+                                - img [ref=f27e519]
+                            - listitem [ref=f27e521]:
+                              - button "User Profiles" [ref=f27e522] [cursor=pointer]:
+                                - img [ref=f27e524]
+                                - generic [ref=f27e526]: User Profiles
+                                - img [ref=f27e528]
+                            - listitem [ref=f27e530]:
+                              - button "Completions" [ref=f27e531] [cursor=pointer]:
+                                - img [ref=f27e533]
+                                - generic [ref=f27e535]: Completions
+                                - img [ref=f27e537]
+                            - listitem [ref=f27e539]:
+                              - button "Background Tasks" [ref=f27e540] [cursor=pointer]:
+                                - img [ref=f27e542]
+                                - generic [ref=f27e544]: Background Tasks
+                                - img [ref=f27e546]
+                            - listitem [ref=f27e548]:
+                              - button "Auth" [ref=f27e549] [cursor=pointer]:
+                                - img [ref=f27e551]
+                                - generic [ref=f27e553]: Auth
+                                - img [ref=f27e555]
+                            - listitem [ref=f27e557]:
+                              - button "Orchestrate Assistant" [ref=f27e558] [cursor=pointer]:
+                                - img [ref=f27e560]
+                                - generic [ref=f27e562]: Orchestrate Assistant
+                                - img [ref=f27e564]
+                            - listitem [ref=f27e566]:
+                              - button "Notifications" [ref=f27e567] [cursor=pointer]:
+                                - img [ref=f27e569]
+                                - generic [ref=f27e571]: Notifications
+                                - img [ref=f27e573]
+                            - listitem [ref=f27e575]:
+                              - button "IBM unique ID mapping" [ref=f27e576] [cursor=pointer]:
+                                - img [ref=f27e578]
+                                - generic [ref=f27e580]: IBM unique ID mapping
+                                - img [ref=f27e582]
+                            - listitem [ref=f27e584]:
+                              - button "Prompts" [ref=f27e585] [cursor=pointer]:
+                                - img [ref=f27e587]
+                                - generic [ref=f27e589]: Prompts
+                                - img [ref=f27e591]
+                            - listitem [ref=f27e593]:
+                              - button "Artifact Management" [ref=f27e594] [cursor=pointer]:
+                                - img [ref=f27e596]
+                                - generic [ref=f27e598]: Artifact Management
+                                - img [ref=f27e600]
+                            - listitem [ref=f27e602]:
+                              - button "all journey types" [ref=f27e603] [cursor=pointer]:
+                                - img [ref=f27e605]
+                                - generic [ref=f27e607]: all journey types
+                                - img [ref=f27e609]
+                            - listitem [ref=f27e611]:
+                              - button "Connections" [ref=f27e612] [cursor=pointer]:
+                                - img [ref=f27e614]
+                                - generic [ref=f27e616]: Connections
+                                - img [ref=f27e618]
+                            - listitem [ref=f27e620]:
+                              - button "Tools" [ref=f27e621] [cursor=pointer]:
+                                - img [ref=f27e623]
+                                - generic [ref=f27e625]: Tools
+                                - img [ref=f27e627]
+                            - listitem [ref=f27e629]:
+                              - button "Tools V2" [ref=f27e630] [cursor=pointer]:
+                                - img [ref=f27e632]
+                                - generic [ref=f27e634]: Tools V2
+                                - img [ref=f27e636]
+                            - listitem [ref=f27e638]:
+                              - button "LLM Analytics" [ref=f27e639] [cursor=pointer]:
+                                - img [ref=f27e641]
+                                - generic [ref=f27e643]: LLM Analytics
+                                - img [ref=f27e645]
+                            - listitem [ref=f27e647]:
+                              - button "Agents" [ref=f27e648] [cursor=pointer]:
+                                - img [ref=f27e650]
+                                - generic [ref=f27e652]: Agents
+                                - img [ref=f27e654]
+                            - listitem [ref=f27e656]:
+                              - button "Agents V2" [ref=f27e657] [cursor=pointer]:
+                                - img [ref=f27e659]
+                                - generic [ref=f27e661]: Agents V2
+                                - img [ref=f27e663]
+                            - listitem [ref=f27e665]:
+                              - button "Agent Releases" [ref=f27e666] [cursor=pointer]:
+                                - img [ref=f27e668]
+                                - generic [ref=f27e670]: Agent Releases
+                                - img [ref=f27e672]
+                            - listitem [ref=f27e674]:
+                              - button "Agent Release Environments" [ref=f27e675] [cursor=pointer]:
+                                - img [ref=f27e677]
+                                - generic [ref=f27e679]: Agent Release Environments
+                                - img [ref=f27e681]
+                            - listitem [ref=f27e683]:
+                              - button "Agent Chat Starter Settings" [ref=f27e684] [cursor=pointer]:
+                                - img [ref=f27e686]
+                                - generic [ref=f27e688]: Agent Chat Starter Settings
+                                - img [ref=f27e690]
+                            - listitem [ref=f27e692]:
+                              - button "API Reference" [ref=f27e693] [cursor=pointer]:
+                                - img [ref=f27e695]
+                                - generic [ref=f27e697]: API Reference
+                                - img [ref=f27e699]
+                            - listitem [ref=f27e701]:
+                              - button "channel integration" [ref=f27e702] [cursor=pointer]:
+                                - img [ref=f27e704]
+                                - generic [ref=f27e706]: channel integration
+                                - img [ref=f27e708]
+                            - listitem [ref=f27e710]:
+                              - button "Toolkits" [ref=f27e711] [cursor=pointer]:
+                                - img [ref=f27e713]
+                                - generic [ref=f27e715]: Toolkits
+                                - img [ref=f27e717]
+                            - listitem [ref=f27e719]:
+                              - button "Models" [ref=f27e720] [cursor=pointer]:
+                                - img [ref=f27e722]
+                                - generic [ref=f27e724]: Models
+                                - img [ref=f27e726]
+                            - listitem [ref=f27e728]:
+                              - button "Model-Policy" [ref=f27e729] [cursor=pointer]:
+                                - img [ref=f27e731]
+                                - generic [ref=f27e733]: Model-Policy
+                                - img [ref=f27e735]
+                            - listitem [ref=f27e737]:
+                              - button "Voice Configurations" [ref=f27e738] [cursor=pointer]:
+                                - img [ref=f27e740]
+                                - generic [ref=f27e742]: Voice Configurations
+                                - img [ref=f27e744]
+                            - listitem [ref=f27e746]:
+                              - button "Credentials" [ref=f27e747] [cursor=pointer]:
+                                - img [ref=f27e749]
+                                - generic [ref=f27e751]: Credentials
+                                - img [ref=f27e753]
+                            - listitem [ref=f27e755]:
+                              - button "General Channel" [ref=f27e756] [cursor=pointer]:
+                                - img [ref=f27e758]
+                                - generic [ref=f27e760]: General Channel
+                                - img [ref=f27e762]
+                            - listitem [ref=f27e764]:
+                              - button "Genesys Bot Connector Channel" [ref=f27e765] [cursor=pointer]:
+                                - img [ref=f27e767]
+                                - generic [ref=f27e769]: Genesys Bot Connector Channel
+                                - img [ref=f27e771]
+                            - listitem [ref=f27e773]:
+                              - button "Teams Channel" [ref=f27e774] [cursor=pointer]:
+                                - img [ref=f27e776]
+                                - generic [ref=f27e778]: Teams Channel
+                                - img [ref=f27e780]
+                            - listitem [ref=f27e782]:
+                              - button "Twilio WhatsApp Channel" [ref=f27e783] [cursor=pointer]:
+                                - img [ref=f27e785]
+                                - generic [ref=f27e787]: Twilio WhatsApp Channel
+                                - img [ref=f27e789]
+                            - listitem [ref=f27e791]:
+                              - button "Twilio SMS Channel" [ref=f27e792] [cursor=pointer]:
+                                - img [ref=f27e794]
+                                - generic [ref=f27e796]: Twilio SMS Channel
+                                - img [ref=f27e798]
+                            - listitem [ref=f27e800]:
+                              - button "Facebook Channel" [ref=f27e801] [cursor=pointer]:
+                                - img [ref=f27e803]
+                                - generic [ref=f27e805]: Facebook Channel
+                                - img [ref=f27e807]
+                            - listitem [ref=f27e809]:
+                              - button "GenesysAudioConnector Channel" [ref=f27e810] [cursor=pointer]:
+                                - img [ref=f27e812]
+                                - generic [ref=f27e814]: GenesysAudioConnector Channel
+                                - img [ref=f27e816]
+                            - listitem [ref=f27e818]:
+                              - button "Slack Channel" [ref=f27e819] [cursor=pointer]:
+                                - img [ref=f27e821]
+                                - generic [ref=f27e823]: Slack Channel
+                                - img [ref=f27e825]
+                            - listitem [ref=f27e827]:
+                              - button "Phone channel global" [ref=f27e828] [cursor=pointer]:
+                                - img [ref=f27e830]
+                                - generic [ref=f27e832]: Phone channel global
+                                - img [ref=f27e834]
+                            - listitem [ref=f27e836]:
+                              - button "Flows" [ref=f27e837] [cursor=pointer]:
+                                - img [ref=f27e839]
+                                - generic [ref=f27e841]: Flows
+                                - img [ref=f27e843]
+                            - listitem [ref=f27e845]:
+                              - button "Agent Evaluation" [ref=f27e846] [cursor=pointer]:
+                                - img [ref=f27e848]
+                                - generic [ref=f27e850]: Agent Evaluation
+                                - img [ref=f27e852]
+                            - listitem [ref=f27e854]:
+                              - button "Governance monitoring" [ref=f27e855] [cursor=pointer]:
+                                - img [ref=f27e857]
+                                - generic [ref=f27e859]: Governance monitoring
+                                - img [ref=f27e861]
+                            - listitem [ref=f27e863]:
+                              - button "Outbound Policies" [ref=f27e864] [cursor=pointer]:
+                                - img [ref=f27e866]
+                                - generic [ref=f27e868]: Outbound Policies
+                                - img [ref=f27e870]
+                            - listitem [ref=f27e872]:
+                              - button "Agent embedded chat config" [ref=f27e873] [cursor=pointer]:
+                                - img [ref=f27e875]
+                                - generic [ref=f27e877]: Agent embedded chat config
+                                - img [ref=f27e879]
+                    - listitem [ref=f27e881]:
+                      - button "VS Code ADK extension" [ref=f27e882] [cursor=pointer]:
+                        - img [ref=f27e884]
+                        - generic [ref=f27e886]: VS Code ADK extension
+                        - img [ref=f27e888]
+                    - listitem [ref=f27e890]:
+                      - button "ADK MCP Server" [ref=f27e891] [cursor=pointer]:
+                        - img [ref=f27e893]
+                        - generic [ref=f27e895]: ADK MCP Server
+                        - img [ref=f27e897]
+                    - listitem [ref=f27e899]:
+                      - button "Agentic SDK Guide" [ref=f27e900] [cursor=pointer]:
+                        - img [ref=f27e902]
+                        - generic [ref=f27e904]: Agentic SDK Guide
+                        - img [ref=f27e906]
+                - generic [ref=f27e908]:
+                  - heading "Legal notices" [level=3] [ref=f27e910]
+                  - list [ref=f27e911]:
+                    - listitem [ref=f27e912]:
+                      - link "Notices" [ref=f27e913] [cursor=pointer]:
+                        - /url: /notices/notices
+                        - img [ref=f27e915]
+                        - generic [ref=f27e918]: Notices
+                    - listitem [ref=f27e919]:
+                      - link "Security and Privacy by Design (SPbD)" [ref=f27e920] [cursor=pointer]:
+                        - /url: /notices/spbd
+                        - img [ref=f27e922]
+                        - generic [ref=f27e925]: Security and Privacy by Design (SPbD)
+                    - listitem [ref=f27e926]:
+                      - button "ADK license reference" [ref=f27e927] [cursor=pointer]:
+                        - img [ref=f27e929]
+                        - generic [ref=f27e931]: ADK license reference
+                        - img [ref=f27e933]
+            - button "Toggle dark mode" [ref=f27e938] [cursor=pointer]:
+              - generic [ref=f27e939]:
+                - img [ref=f27e940]
+                - img [ref=f27e947]
+          - main [ref=f27e952]:
+            - generic [ref=f27e953]:
+              - generic [ref=f27e955]:
+                - generic [ref=f27e956]:
+                  - generic [ref=f27e957]:
+                    - generic "Chat With Orchestrate Assistant As Stream" [ref=f27e959]
+                    - generic [ref=f27e960]:
+                      - button "cURL" [ref=f27e961]:
+                        - generic [ref=f27e962] [cursor=pointer]:
+                          - img [ref=f27e963]
+                          - paragraph [ref=f27e964]: cURL
+                          - img [ref=f27e965]
+                      - button "Copy the contents from the code block" [ref=f27e969] [cursor=pointer]:
+                        - img [ref=f27e970]
+                  - tabpanel [ref=f27e974]:
+                    - code [ref=f27e978]:
+                      - generic [ref=f27e979]: curl --request POST \
+                      - generic [ref=f27e980]: "--url https://{api_endpoint}/v1/orchestrate/runs/stream \\"
+                      - generic [ref=f27e981]: "--header 'Authorization: Bearer <token>' \\"
+                      - generic [ref=f27e982]: "--header 'Content-Type: application/json' \\"
+                      - generic [ref=f27e983]: "--data '"
+                      - generic [ref=f27e984]: "{"
+                      - generic [ref=f27e985]: "\"message\": {"
+                      - generic [ref=f27e986]: "\"role\": \"<string>\","
+                      - generic [ref=f27e987]: "\"content\": ["
+                      - generic [ref=f27e988]: "{"
+                      - generic [ref=f27e989]: "\"json_schema\": {},"
+                      - generic [ref=f27e990]: "\"ui_schema\": {},"
+                      - generic [ref=f27e991]: "\"form_data\": {},"
+                      - generic [ref=f27e992]: "\"id\": \"<string>\","
+                      - generic [ref=f27e993]: "\"form_operation\": \"<string>\","
+                      - generic [ref=f27e994]: "\"sub_type\": \"<string>\","
+                      - generic [ref=f27e995]: "\"event_type\": \"<string>\","
+                      - generic [ref=f27e996]: "\"dps_payload_id\": \"<string>\""
+                      - generic [ref=f27e997]: "}"
+                      - generic [ref=f27e998]: "],"
+                      - generic [ref=f27e999]: "\"mentions\": ["
+                      - generic [ref=f27e1000]: "{"
+                      - generic [ref=f27e1001]: "\"type\": \"<string>\","
+                      - generic [ref=f27e1002]: "\"id\": \"3c90c3cc-0d44-4b50-8888-8dd25736052a\","
+                      - generic [ref=f27e1003]: "\"name\": \"<string>\""
+                      - generic [ref=f27e1004]: "}"
+                      - generic [ref=f27e1005]: "],"
+                      - generic [ref=f27e1006]: "\"document_ids\": ["
+                      - generic [ref=f27e1007]: "\"3c90c3cc-0d44-4b50-8888-8dd25736052a\""
+                      - generic [ref=f27e1008]: "],"
+                      - generic [ref=f27e1009]: "\"parent_message_id\": \"3c90c3cc-0d44-4b50-8888-8dd25736052a\","
+                      - generic [ref=f27e1010]: "\"additional_properties\": {"
+                      - generic [ref=f27e1011]: "\"wxa_message\": {},"
+                      - generic [ref=f27e1012]: "\"display_properties\": {"
+                      - generic [ref=f27e1013]: "\"skip_render\": false,"
+                      - generic [ref=f27e1014]: "\"is_async\": false,"
+                      - generic [ref=f27e1015]: "\"form_operation\": \"\""
+                      - generic [ref=f27e1016]: "},"
+                      - generic [ref=f27e1017]: "\"tool_calls\": ["
+                      - generic [ref=f27e1018]: "{}"
+                      - generic [ref=f27e1019]: "],"
+                      - generic [ref=f27e1020]: "\"tool_call_id\": \"<string>\","
+                      - generic [ref=f27e1021]: "\"tool_name\": \"<string>\","
+                      - generic [ref=f27e1022]: "\"wxo_connection_status\": {"
+                      - generic [ref=f27e1023]: "\"connection_status\": \"<string>\","
+                      - generic [ref=f27e1024]: "\"connection_message\": \"<string>\""
+                      - generic [ref=f27e1025]: "}"
+                      - generic [ref=f27e1026]: "},"
+                      - generic [ref=f27e1027]: "\"assistant_id\": \"3c90c3cc-0d44-4b50-8888-8dd25736052a\","
+                      - generic [ref=f27e1028]: "\"context\": {"
+                      - generic [ref=f27e1029]: "\"values\": []"
+                      - generic [ref=f27e1030]: "},"
+                      - generic [ref=f27e1031]: "\"step_history\": ["
+                      - generic [ref=f27e1032]: "{}"
+                      - generic [ref=f27e1033]: "],"
+                      - generic [ref=f27e1034]: "\"message_state\": {}"
+                      - generic [ref=f27e1035]: "},"
+                      - generic [ref=f27e1036]: "\"thread_id\": \"3c90c3cc-0d44-4b50-8888-8dd25736052a\","
+                      - generic [ref=f27e1037]: "\"llm_params\": {"
+                      - generic [ref=f27e1038]: "\"beam_width\": 1,"
+                      - generic [ref=f27e1039]: "\"include_stop_sequence\": true,"
+                      - generic [ref=f27e1040]: "\"length_penalty\": {"
+                      - generic [ref=f27e1041]: "\"decay_factor\": 2,"
+                      - generic [ref=f27e1042]: "\"start_index\": 2"
+                      - generic [ref=f27e1043]: "},"
+                      - generic [ref=f27e1044]: "\"max_new_tokens\": 1,"
+                      - generic [ref=f27e1045]: "\"min_new_tokens\": 1,"
+                      - generic [ref=f27e1046]: "\"random_seed\": 2147483648,"
+                      - generic [ref=f27e1047]: "\"repetition_penalty\": 1.5,"
+                      - generic [ref=f27e1048]: "\"return_options\": {"
+                      - generic [ref=f27e1049]: "\"generated_tokens\": false,"
+                      - generic [ref=f27e1050]: "\"input_parameters\": true,"
+                      - generic [ref=f27e1051]: "\"input_text\": false,"
+                      - generic [ref=f27e1052]: "\"input_tokens\": false,"
+                      - generic [ref=f27e1053]: "\"token_logprobs\": false,"
+                      - generic [ref=f27e1054]: "\"token_ranks\": false,"
+                      - generic [ref=f27e1055]: "\"top_n_tokens\": 2"
+                      - generic [ref=f27e1056]: "},"
+                      - generic [ref=f27e1057]: "\"stop_sequences\": \"[\\\" and \\\"]\","
+                      - generic [ref=f27e1058]: "\"temperature\": 1,"
+                      - generic [ref=f27e1059]: "\"time_limit\": 123,"
+                      - generic [ref=f27e1060]: "\"top_k\": 50,"
+                      - generic [ref=f27e1061]: "\"top_p\": 0.5,"
+                      - generic [ref=f27e1062]: "\"truncate_input_tokens\": 1,"
+                      - generic [ref=f27e1063]: "\"typical_p\": 0.505"
+                      - generic [ref=f27e1064]: "},"
+                      - generic [ref=f27e1065]: "\"guardrails\": {"
+                      - generic [ref=f27e1066]: "\"hap\": {"
+                      - generic [ref=f27e1067]: "\"input\": {"
+                      - generic [ref=f27e1068]: "\"enabled\": false,"
+                      - generic [ref=f27e1069]: "\"threshold\": 0.5"
+                      - generic [ref=f27e1070]: "},"
+                      - generic [ref=f27e1071]: "\"output\": {"
+                      - generic [ref=f27e1072]: "\"enabled\": false,"
+                      - generic [ref=f27e1073]: "\"threshold\": 0.5"
+                      - generic [ref=f27e1074]: "},"
+                      - generic [ref=f27e1075]: "\"mask\": {"
+                      - generic [ref=f27e1076]: "\"remove_entity_value\": false"
+                      - generic [ref=f27e1077]: "}"
+                      - generic [ref=f27e1078]: "},"
+                      - generic [ref=f27e1079]: "\"social_bias\": {"
+                      - generic [ref=f27e1080]: "\"input\": {"
+                      - generic [ref=f27e1081]: "\"enabled\": false,"
+                      - generic [ref=f27e1082]: "\"threshold\": 0.5"
+                      - generic [ref=f27e1083]: "},"
+                      - generic [ref=f27e1084]: "\"output\": {"
+                      - generic [ref=f27e1085]: "\"enabled\": false,"
+                      - generic [ref=f27e1086]: "\"threshold\": 0.5"
+                      - generic [ref=f27e1087]: "},"
+                      - generic [ref=f27e1088]: "\"mask\": {"
+                      - generic [ref=f27e1089]: "\"remove_entity_value\": false"
+                      - generic [ref=f27e1090]: "}"
+                      - generic [ref=f27e1091]: "},"
+                      - generic [ref=f27e1092]: "\"pii\": {"
+                      - generic [ref=f27e1093]: "\"input\": {"
+                      - generic [ref=f27e1094]: "\"enabled\": false,"
+                      - generic [ref=f27e1095]: "\"threshold\": 0.5"
+                      - generic [ref=f27e1096]: "},"
+                      - generic [ref=f27e1097]: "\"output\": {"
+                      - generic [ref=f27e1098]: "\"enabled\": false,"
+                      - generic [ref=f27e1099]: "\"threshold\": 0.5"
+                      - generic [ref=f27e1100]: "},"
+                      - generic [ref=f27e1101]: "\"mask\": {"
+                      - generic [ref=f27e1102]: "\"remove_entity_value\": false"
+                      - generic [ref=f27e1103]: "}"
+                      - generic [ref=f27e1104]: "}"
+                      - generic [ref=f27e1105]: "},"
+                      - generic [ref=f27e1106]: "\"context\": {},"
+                      - generic [ref=f27e1107]: "\"agent_id\": \"<string>\","
+                      - generic [ref=f27e1108]: "\"additional_parameters\": {},"
+                      - generic [ref=f27e1109]: "\"environment_id\": \"<string>\","
+                      - generic [ref=f27e1110]: "\"version\": 123,"
+                      - generic [ref=f27e1111]: "\"context_variables\": {}"
+                      - generic [ref=f27e1112]: "}"
+                      - generic [ref=f27e1113]: "'"
+                - generic [ref=f27e1114]:
+                  - generic [ref=f27e1115]:
+                    - tablist [ref=f27e1116]:
+                      - tab "200" [selected] [ref=f27e1117] [cursor=pointer]:
+                        - generic [ref=f27e1118]: "200"
+                      - tab "422" [ref=f27e1120] [cursor=pointer]:
+                        - generic [ref=f27e1121]: "422"
+                    - button "Copy the contents from the code block" [ref=f27e1124] [cursor=pointer]:
+                      - img [ref=f27e1125]
+                  - tabpanel "200" [ref=f27e1129]:
+                    - code [ref=f27e1133]:
+                      - generic [ref=f27e1134]: "{"
+                      - generic [ref=f27e1135]: "\"id\": \"<string>\","
+                      - generic [ref=f27e1136]: "\"data\": {}"
+                      - generic [ref=f27e1137]: "}"
+              - generic [ref=f27e1138]:
+                - generic [ref=f27e1140]:
+                  - generic [ref=f27e1141]: Orchestrate Agent
+                  - heading "Chat With Orchestrate Assistant As Stream" [level=1] [ref=f27e1143]
+                - generic [ref=f27e1146]:
+                  - generic [ref=f27e1147]:
+                    - heading "Authorizations" [level=4] [ref=f27e1150]
+                    - generic [ref=f27e1152]:
+                      - generic [ref=f27e1155]:
+                        - link "Navigate to header" [ref=f27e1156] [cursor=pointer]:
+                          - /url: "#authorization-authorization"
+                          - img [ref=f27e1158]
+                        - generic [ref=f27e1161] [cursor=pointer]: Authorization
+                        - generic [ref=f27e1162]:
+                          - generic [ref=f27e1163]: string
+                          - generic [ref=f27e1164]: header
+                          - text: required
+                      - paragraph [ref=f27e1167]:
+                        - text: Bearer authentication header of the form
+                        - code [ref=f27e1168]: Bearer <token>
+                        - text: ", where"
+                        - code [ref=f27e1169]: <token>
+                        - text: is your auth token.
+                  - generic [ref=f27e1170]:
+                    - heading "Query Parameters" [level=4] [ref=f27e1173]
+                    - generic [ref=f27e1178]:
+                      - link "Navigate to header" [ref=f27e1179] [cursor=pointer]:
+                        - /url: "#parameter-stream-timeout"
+                        - img [ref=f27e1181]
+                      - generic [ref=f27e1184] [cursor=pointer]: stream_timeout
+                      - generic [ref=f27e1185]:
+                        - generic [ref=f27e1186]: integer
+                        - generic [ref=f27e1187]: default:60000
+                    - generic [ref=f27e1192]:
+                      - link "Navigate to header" [ref=f27e1193] [cursor=pointer]:
+                        - /url: "#parameter-multiple-content"
+                        - img [ref=f27e1195]
+                      - generic [ref=f27e1198] [cursor=pointer]: multiple_content
+                      - generic [ref=f27e1199]:
+                        - generic [ref=f27e1200]: boolean
+                        - generic [ref=f27e1201]: default:false
+                  - generic [ref=f27e1202]:
+                    - generic [ref=f27e1204]:
+                      - heading "Body" [level=4] [ref=f27e1205]
+                      - generic [ref=f27e1207]: application/json
+                    - generic [ref=f27e1212]:
+                      - generic [ref=f27e1214]:
+                        - generic [ref=f27e1217]:
+                          - link "Navigate to header" [ref=f27e1218] [cursor=pointer]:
+                            - /url: "#body-message-one-of-0"
+                            - img [ref=f27e1220]
+                          - generic [ref=f27e1223] [cursor=pointer]: message
+                          - generic [ref=f27e1225]: CreateMessage · object | null
+                        - group [ref=f27e1229]:
+                          - generic "Show child attributes" [ref=f27e1230] [cursor=pointer]:
+                            - img [ref=f27e1231]
+                            - paragraph [ref=f27e1233]: Show child attributes
+                      - generic [ref=f27e1238]:
+                        - link "Navigate to header" [ref=f27e1239] [cursor=pointer]:
+                          - /url: "#body-thread-id-one-of-0"
+                          - img [ref=f27e1241]
+                        - generic [ref=f27e1244] [cursor=pointer]: thread_id
+                        - generic [ref=f27e1246]: string<uuid> | null
+                      - generic [ref=f27e1248]:
+                        - generic [ref=f27e1251]:
+                          - link "Navigate to header" [ref=f27e1252] [cursor=pointer]:
+                            - /url: "#body-llm-params-one-of-0"
+                            - img [ref=f27e1254]
+                          - generic [ref=f27e1257] [cursor=pointer]: llm_params
+                          - generic [ref=f27e1259]: TextGenerationParameters · object | null
+                        - group [ref=f27e1263]:
+                          - generic "Show child attributes" [ref=f27e1264] [cursor=pointer]:
+                            - img [ref=f27e1265]
+                            - paragraph [ref=f27e1267]: Show child attributes
+                      - generic [ref=f27e1269]:
+                        - generic [ref=f27e1272]:
+                          - link "Navigate to header" [ref=f27e1273] [cursor=pointer]:
+                            - /url: "#body-guardrails-one-of-0"
+                            - img [ref=f27e1275]
+                          - generic [ref=f27e1278] [cursor=pointer]: guardrails
+                          - generic [ref=f27e1280]: Guardrails · object | null
+                        - group [ref=f27e1284]:
+                          - generic "Show child attributes" [ref=f27e1285] [cursor=pointer]:
+                            - img [ref=f27e1286]
+                            - paragraph [ref=f27e1288]: Show child attributes
+                      - generic [ref=f27e1293]:
+                        - link "Navigate to header" [ref=f27e1294] [cursor=pointer]:
+                          - /url: "#body-context-one-of-0"
+                          - img [ref=f27e1296]
+                        - generic [ref=f27e1299] [cursor=pointer]: context
+                        - generic [ref=f27e1301]: Context · object | null
+                      - generic [ref=f27e1306]:
+                        - link "Navigate to header" [ref=f27e1307] [cursor=pointer]:
+                          - /url: "#body-agent-id-one-of-0"
+                          - img [ref=f27e1309]
+                        - generic [ref=f27e1312] [cursor=pointer]: agent_id
+                        - generic [ref=f27e1314]: string | null
+                      - generic [ref=f27e1319]:
+                        - link "Navigate to header" [ref=f27e1320] [cursor=pointer]:
+                          - /url: "#body-additional-parameters-one-of-0"
+                          - img [ref=f27e1322]
+                        - generic [ref=f27e1325] [cursor=pointer]: additional_parameters
+                        - generic [ref=f27e1327]: Additional Parameters · object | null
+                      - generic [ref=f27e1332]:
+                        - link "Navigate to header" [ref=f27e1333] [cursor=pointer]:
+                          - /url: "#body-environment-id-one-of-0"
+                          - img [ref=f27e1335]
+                        - generic [ref=f27e1338] [cursor=pointer]: environment_id
+                        - generic [ref=f27e1340]: string | null
+                      - generic [ref=f27e1345]:
+                        - link "Navigate to header" [ref=f27e1346] [cursor=pointer]:
+                          - /url: "#body-version-one-of-0"
+                          - img [ref=f27e1348]
+                        - generic [ref=f27e1351] [cursor=pointer]: version
+                        - generic [ref=f27e1353]: integer | null
+                      - generic [ref=f27e1355]:
+                        - generic [ref=f27e1358]:
+                          - link "Navigate to header" [ref=f27e1359] [cursor=pointer]:
+                            - /url: "#body-context-variables-one-of-0"
+                            - img [ref=f27e1361]
+                          - generic [ref=f27e1364] [cursor=pointer]: context_variables
+                          - generic [ref=f27e1366]: Context Variables · object | null
+                        - paragraph [ref=f27e1371]:
+                          - text: "Context variables for the agent execution (e.g., {'wxo_email_id': '"
+                          - link "user@domain.com" [ref=f27e1372] [cursor=pointer]:
+                            - /url: mailto:user@domain.com
+                          - text: "', 'wxo_user_name': 'John Doe'})"
+                  - generic [ref=f27e1373]:
+                    - generic [ref=f27e1374]:
+                      - generic [ref=f27e1375]:
+                        - heading "Response" [level=4] [ref=f27e1376]
+                        - generic [ref=f27e1378]:
+                          - button "200" [ref=f27e1380] [cursor=pointer]:
+                            - generic [ref=f27e1381]:
+                              - generic [ref=f27e1382]: "200"
+                              - img [ref=f27e1383]
+                          - generic [ref=f27e1385]:
+                            - button "application/json" [disabled]:
+                              - generic:
+                                - generic: application/json
+                      - paragraph [ref=f27e1388]: Successful Response
+                    - generic [ref=f27e1393]:
+                      - generic [ref=f27e1398]:
+                        - link "Navigate to header" [ref=f27e1399] [cursor=pointer]:
+                          - /url: "#response-id"
+                          - img [ref=f27e1401]
+                        - generic [ref=f27e1404] [cursor=pointer]: id
+                        - generic [ref=f27e1405]:
+                          - generic [ref=f27e1406]: string
+                          - text: required
+                      - generic [ref=f27e1408]:
+                        - generic [ref=f27e1411]:
+                          - link "Navigate to header" [ref=f27e1412] [cursor=pointer]:
+                            - /url: "#response-event"
+                            - img [ref=f27e1414]
+                          - generic [ref=f27e1417] [cursor=pointer]: event
+                          - generic [ref=f27e1418]:
+                            - generic [ref=f27e1419]: enum<string>
+                            - text: required
+                        - generic [ref=f27e1421]:
+                          - text: "Available options:"
+                          - generic [ref=f27e1422]:
+                            - code [ref=f27e1423]: run.started
+                            - text: ","
+                          - generic [ref=f27e1424]:
+                            - code [ref=f27e1425]: run.completed
+                            - text: ","
+                          - generic [ref=f27e1426]:
+                            - code [ref=f27e1427]: run.failed
+                            - text: ","
+                          - generic [ref=f27e1428]:
+                            - code [ref=f27e1429]: run.expired
+                            - text: ","
+                          - generic [ref=f27e1430]:
+                            - code [ref=f27e1431]: run.cancelled
+                            - text: ","
+                          - generic [ref=f27e1432]:
+                            - code [ref=f27e1433]: run.step.started
+                            - text: ","
+                          - generic [ref=f27e1434]:
+                            - code [ref=f27e1435]: run.step.completed
+                            - text: ","
+                          - generic [ref=f27e1436]:
+                            - code [ref=f27e1437]: run.step.failed
+                            - text: ","
+                          - generic [ref=f27e1438]:
+                            - code [ref=f27e1439]: run.step.delta
+                            - text: ","
+                          - generic [ref=f27e1440]:
+                            - code [ref=f27e1441]: message.created
+                            - text: ","
+                          - generic [ref=f27e1442]:
+                            - code [ref=f27e1443]: message.started
+                            - text: ","
+                          - generic [ref=f27e1444]:
+                            - code [ref=f27e1445]: message.delta
+                            - text: ","
+                          - generic [ref=f27e1446]:
+                            - code [ref=f27e1447]: message.completed
+                            - text: ","
+                          - generic [ref=f27e1448]:
+                            - code [ref=f27e1449]: run.step.thinking
+                            - text: ","
+                          - generic [ref=f27e1450]:
+                            - code [ref=f27e1451]: message.interrupt
+                            - text: ","
+                          - generic [ref=f27e1452]:
+                            - code [ref=f27e1453]: transcription
+                            - text: ","
+                          - generic [ref=f27e1454]:
+                            - code [ref=f27e1455]: summary
+                            - text: ","
+                          - generic [ref=f27e1456]:
+                            - code [ref=f27e1457]: error
+                            - text: ","
+                          - generic [ref=f27e1458]:
+                            - code [ref=f27e1459]: done
+                            - text: ","
+                          - generic [ref=f27e1460]:
+                            - code [ref=f27e1461]: planning
+                            - text: ","
+                          - code [ref=f27e1463]: flow.slot.listen
+                      - generic [ref=f27e1468]:
+                        - link "Navigate to header" [ref=f27e1469] [cursor=pointer]:
+                          - /url: "#response-data"
+                          - img [ref=f27e1471]
+                        - generic [ref=f27e1474] [cursor=pointer]: data
+                        - generic [ref=f27e1475]:
+                          - generic [ref=f27e1476]: Data · object
+                          - text: required
+                - generic [ref=f27e1477]:
+                  - link "Subscribing to security bulletins Previous" [ref=f27e1478] [cursor=pointer]:
+                    - /url: /developer_edition/security_bulletins
+                    - generic [ref=f27e1479]:
+                      - generic [ref=f27e1480]: Subscribing to security bulletins
+                      - generic [ref=f27e1481]:
+                        - img [ref=f27e1482]
+                        - generic [ref=f27e1484]: Previous
+                  - link "List Orchestrate Assistant Runs Next" [ref=f27e1485] [cursor=pointer]:
+                    - /url: /apis/orchestrate-agent/list-orchestrate-assistant-runs
+                    - generic [ref=f27e1486]:
+                      - generic [ref=f27e1487]: List Orchestrate Assistant Runs
+                      - generic [ref=f27e1488]:
+                        - img [ref=f27e1489]
+                        - generic [ref=f27e1491]: Next
+            - generic [ref=f27e1494]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f27e1496] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f27e1497]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f27e1498]
+              - generic [ref=f27e1499]:
+                - generic [ref=f27e1501]:
+                  - paragraph [ref=f27e1502]: Copyright information
+                  - link "© Copyright IBM Corporation 2025" [ref=f27e1503] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal/copyright-trademark
+                - generic [ref=f27e1505]:
+                  - paragraph [ref=f27e1506]: Privacy and accessibility
+                  - link "Privacy" [ref=f27e1507] [cursor=pointer]:
+                    - /url: https://www.ibm.com/privacy
+                  - link "Accessibility" [ref=f27e1508] [cursor=pointer]:
+                    - /url: https://www.ibm.com/able?lnk=flg-acce-usen
+                  - link "Terms of use" [ref=f27e1509] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal?lnk=flg-tous-usen

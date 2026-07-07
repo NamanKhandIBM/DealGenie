@@ -1,0 +1,822 @@
+- generic [active] [ref=f76e1]:
+  - blockquote [ref=f76e2]:
+    - heading [level=2] [ref=f76e3]: Documentation Index
+    - paragraph [ref=f76e4]:
+      - text: "Fetch the complete documentation index at:"
+      - link [ref=f76e5] [cursor=pointer]:
+        - /url: /llms.txt
+        - text: /llms.txt
+    - paragraph [ref=f76e6]: Use this file to discover all available pages before exploring further.
+  - generic:
+    - link "Skip to main content" [ref=f76e7] [cursor=pointer]:
+      - /url: "#content-area"
+    - generic:
+      - generic:
+        - banner [ref=f76e8]:
+          - generic [ref=f76e14]:
+            - generic [ref=f76e15]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f76e16] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f76e17]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f76e18]
+              - button "2.x" [ref=f76e20] [cursor=pointer]:
+                - generic [ref=f76e21]: 2.x
+                - img [ref=f76e22]
+            - navigation "Main" [ref=f76e26]:
+              - list [ref=f76e27]:
+                - listitem [ref=f76e28]:
+                  - link "Support" [ref=f76e29] [cursor=pointer]:
+                    - /url: https://www.ibm.com/mysupport/s/topic/0TO3p000000A6YLGA0/watsonx-orchestrate?productId=01t3p00000SsRnhAAF&language=en_US
+                    - generic [ref=f76e30]: Support
+                - listitem [ref=f76e31]:
+                  - link "GitHub" [ref=f76e32] [cursor=pointer]:
+                    - /url: https://github.com/ibm/ibm-watsonx-orchestrate-adk/
+                    - generic [ref=f76e33]: GitHub
+        - generic [ref=f76e34]:
+          - navigation "Pages" [ref=f76e35]:
+            - generic [ref=f76e37]:
+              - button "Open search" [ref=f76e39] [cursor=pointer]:
+                - generic [ref=f76e40]:
+                  - img [ref=f76e41]
+                  - generic [ref=f76e44]: Search...
+                - generic [ref=f76e45]: ⌘K
+              - generic [ref=f76e46]:
+                - generic [ref=f76e47]:
+                  - heading "Release Notes" [level=3] [ref=f76e49]
+                  - list [ref=f76e50]:
+                    - listitem [ref=f76e51]:
+                      - link "What's new" [ref=f76e52] [cursor=pointer]:
+                        - /url: /release/release
+                        - img [ref=f76e54]
+                        - generic [ref=f76e57]: What's new
+                    - listitem [ref=f76e58]:
+                      - link "Known issues" [ref=f76e59] [cursor=pointer]:
+                        - /url: /release/knownissues
+                        - img [ref=f76e61]
+                        - generic [ref=f76e64]: Known issues
+                    - listitem [ref=f76e65]:
+                      - link "Troubleshooting" [ref=f76e66] [cursor=pointer]:
+                        - /url: /release/troubleshooting
+                        - img [ref=f76e68]
+                        - generic [ref=f76e71]: Troubleshooting
+                - generic [ref=f76e72]:
+                  - heading "Get Started" [level=3] [ref=f76e74]
+                  - list [ref=f76e75]:
+                    - listitem [ref=f76e76]:
+                      - link "Welcome" [ref=f76e77] [cursor=pointer]:
+                        - /url: /
+                        - img [ref=f76e79]
+                        - generic [ref=f76e82]: Welcome
+                    - listitem [ref=f76e83]:
+                      - link "What is ADK?" [ref=f76e84] [cursor=pointer]:
+                        - /url: /getting_started/what_is
+                        - img [ref=f76e86]
+                        - generic [ref=f76e89]: What is ADK?
+                    - listitem [ref=f76e90]:
+                      - link "Getting started with the ADK" [ref=f76e91] [cursor=pointer]:
+                        - /url: /getting_started/installing
+                        - img [ref=f76e93]
+                        - generic [ref=f76e96]: Getting started with the ADK
+                    - listitem [ref=f76e97]:
+                      - button "Tutorials" [ref=f76e98] [cursor=pointer]:
+                        - img [ref=f76e100]
+                        - generic [ref=f76e102]: Tutorials
+                        - img [ref=f76e104]
+                    - listitem [ref=f76e106]:
+                      - link "Examples" [ref=f76e107] [cursor=pointer]:
+                        - /url: /getting_started/examples
+                        - img [ref=f76e109]
+                        - generic [ref=f76e112]: Examples
+                    - listitem [ref=f76e113]:
+                      - button "Configuring environments" [ref=f76e114] [cursor=pointer]:
+                        - img [ref=f76e116]
+                        - generic [ref=f76e118]: Configuring environments
+                        - img [ref=f76e120]
+                    - listitem [ref=f76e122]:
+                      - link "Useful CLI commands" [ref=f76e123] [cursor=pointer]:
+                        - /url: /getting_started/cli
+                        - img [ref=f76e125]
+                        - generic [ref=f76e128]: Useful CLI commands
+                - generic [ref=f76e129]:
+                  - heading "Build" [level=3] [ref=f76e131]
+                  - list [ref=f76e132]:
+                    - listitem [ref=f76e133]:
+                      - button "Workspaces" [ref=f76e134] [cursor=pointer]:
+                        - img [ref=f76e136]
+                        - generic [ref=f76e138]: Workspaces
+                        - img [ref=f76e140]
+                    - listitem [ref=f76e142]:
+                      - button "Agents" [ref=f76e143] [cursor=pointer]:
+                        - img [ref=f76e145]
+                        - generic [ref=f76e147]: Agents
+                        - img [ref=f76e149]
+                    - listitem [ref=f76e151]:
+                      - button "Large Language Models (LLMs)" [ref=f76e152] [cursor=pointer]:
+                        - img [ref=f76e154]
+                        - generic [ref=f76e156]: Large Language Models (LLMs)
+                        - img [ref=f76e158]
+                    - listitem [ref=f76e160]:
+                      - button "Agentic Workflows" [ref=f76e161] [cursor=pointer]:
+                        - img [ref=f76e163]
+                        - generic [ref=f76e165]: Agentic Workflows
+                        - img [ref=f76e167]
+                    - listitem [ref=f76e169]:
+                      - button "Tools" [ref=f76e170] [cursor=pointer]:
+                        - img [ref=f76e172]
+                        - generic [ref=f76e174]: Tools
+                        - img [ref=f76e176]
+                    - listitem [ref=f76e178]:
+                      - button "Toolkits" [ref=f76e179] [cursor=pointer]:
+                        - img [ref=f76e181]
+                        - generic [ref=f76e183]: Toolkits
+                        - img [ref=f76e185]
+                    - listitem [ref=f76e187]:
+                      - button "Connections" [ref=f76e188] [cursor=pointer]:
+                        - img [ref=f76e190]
+                        - generic [ref=f76e192]: Connections
+                        - img [ref=f76e194]
+                    - listitem [ref=f76e196]:
+                      - button "Knowledge Bases" [ref=f76e197] [cursor=pointer]:
+                        - img [ref=f76e199]
+                        - generic [ref=f76e201]: Knowledge Bases
+                        - img [ref=f76e203]
+                    - listitem [ref=f76e205]:
+                      - button "Plug-ins" [ref=f76e206] [cursor=pointer]:
+                        - img [ref=f76e208]
+                        - generic [ref=f76e210]: Plug-ins
+                        - img [ref=f76e212]
+                    - listitem [ref=f76e214]:
+                      - button "Channels" [ref=f76e215] [cursor=pointer]:
+                        - img [ref=f76e217]
+                        - generic [ref=f76e219]: Channels
+                        - img [ref=f76e221]
+                    - listitem [ref=f76e223]:
+                      - button "Phone" [ref=f76e224] [cursor=pointer]:
+                        - img [ref=f76e226]
+                        - generic [ref=f76e228]: Phone
+                        - img [ref=f76e230]
+                    - listitem [ref=f76e232]:
+                      - button "Voice" [ref=f76e233] [cursor=pointer]:
+                        - img [ref=f76e235]
+                        - generic [ref=f76e237]: Voice
+                        - img [ref=f76e239]
+                    - listitem [ref=f76e241]:
+                      - button "Scheduling" [ref=f76e242] [cursor=pointer]:
+                        - img [ref=f76e244]
+                        - generic [ref=f76e246]: Scheduling
+                        - img [ref=f76e248]
+                    - listitem [ref=f76e250]:
+                      - link "IBM Agent Connect" [ref=f76e251] [cursor=pointer]:
+                        - /url: /partners/partners
+                        - img [ref=f76e253]
+                        - generic [ref=f76e256]: IBM Agent Connect
+                - generic [ref=f76e257]:
+                  - heading "Deploy" [level=3] [ref=f76e259]
+                  - list [ref=f76e260]:
+                    - listitem [ref=f76e261]:
+                      - button "Embedded chat" [ref=f76e262] [cursor=pointer]:
+                        - img [ref=f76e264]
+                        - generic [ref=f76e266]: Embedded chat
+                        - img [ref=f76e268]
+                - generic [ref=f76e270]:
+                  - heading "Analyze" [level=3] [ref=f76e272]
+                  - list [ref=f76e273]:
+                    - listitem [ref=f76e274]:
+                      - button "Evaluation Framework" [ref=f76e275] [cursor=pointer]:
+                        - img [ref=f76e277]
+                        - generic [ref=f76e279]: Evaluation Framework
+                        - img [ref=f76e281]
+                    - listitem [ref=f76e283]:
+                      - button "Langfuse" [ref=f76e284] [cursor=pointer]:
+                        - img [ref=f76e286]
+                        - generic [ref=f76e288]: Langfuse
+                        - img [ref=f76e290]
+                    - listitem [ref=f76e292]:
+                      - button "Traces" [ref=f76e293] [cursor=pointer]:
+                        - img [ref=f76e295]
+                        - generic [ref=f76e297]: Traces
+                        - img [ref=f76e299]
+                - generic [ref=f76e301]:
+                  - heading "Developer experience" [level=3] [ref=f76e303]
+                  - list [ref=f76e304]:
+                    - listitem [ref=f76e305]:
+                      - button "Developer Edition" [expanded] [ref=f76e306] [cursor=pointer]:
+                        - img [ref=f76e308]
+                        - generic [ref=f76e310]: Developer Edition
+                        - img [ref=f76e312]
+                      - list [ref=f76e314]:
+                        - listitem [ref=f76e315]:
+                          - link "What is Developer Edition?" [ref=f76e316] [cursor=pointer]:
+                            - /url: /developer_edition/wxOde_overview
+                            - img [ref=f76e318]
+                            - generic [ref=f76e321]: What is Developer Edition?
+                        - listitem [ref=f76e322]:
+                          - button "Installing Developer Edition" [ref=f76e323] [cursor=pointer]:
+                            - img [ref=f76e325]
+                            - generic [ref=f76e327]: Installing Developer Edition
+                            - img [ref=f76e329]
+                        - listitem [ref=f76e331]:
+                          - button "Managing Developer Edition" [ref=f76e332] [cursor=pointer]:
+                            - img [ref=f76e334]
+                            - generic [ref=f76e336]: Managing Developer Edition
+                            - img [ref=f76e338]
+                        - listitem [ref=f76e340]:
+                          - link "Subscribing to security bulletins" [ref=f76e341] [cursor=pointer]:
+                            - /url: /developer_edition/security_bulletins
+                            - img [ref=f76e343]
+                            - generic [ref=f76e346]: Subscribing to security bulletins
+                        - listitem [ref=f76e347]:
+                          - button "Developer Edition API" [expanded] [ref=f76e348] [cursor=pointer]:
+                            - img [ref=f76e350]
+                            - generic [ref=f76e352]: Developer Edition API
+                            - img [ref=f76e354]
+                          - list [ref=f76e356]:
+                            - listitem [ref=f76e357]:
+                              - button "Orchestrate Agent" [ref=f76e358] [cursor=pointer]:
+                                - img [ref=f76e360]
+                                - generic [ref=f76e362]: Orchestrate Agent
+                                - img [ref=f76e364]
+                            - listitem [ref=f76e366]:
+                              - button "Assistants Runs" [ref=f76e367] [cursor=pointer]:
+                                - img [ref=f76e369]
+                                - generic [ref=f76e371]: Assistants Runs
+                                - img [ref=f76e373]
+                            - listitem [ref=f76e375]:
+                              - button "Custom Assistants" [ref=f76e376] [cursor=pointer]:
+                                - img [ref=f76e378]
+                                - generic [ref=f76e380]: Custom Assistants
+                                - img [ref=f76e382]
+                            - listitem [ref=f76e384]:
+                              - button "watsonx Assistant" [ref=f76e385] [cursor=pointer]:
+                                - img [ref=f76e387]
+                                - generic [ref=f76e389]: watsonx Assistant
+                                - img [ref=f76e391]
+                            - listitem [ref=f76e393]:
+                              - button "External Chat Agents" [ref=f76e394] [cursor=pointer]:
+                                - img [ref=f76e396]
+                                - generic [ref=f76e398]: External Chat Agents
+                                - img [ref=f76e400]
+                            - listitem [ref=f76e402]:
+                              - button "A2A Protocol" [ref=f76e403] [cursor=pointer]:
+                                - img [ref=f76e405]
+                                - generic [ref=f76e407]: A2A Protocol
+                                - img [ref=f76e409]
+                            - listitem [ref=f76e411]:
+                              - button "Message Threads" [ref=f76e412] [cursor=pointer]:
+                                - img [ref=f76e414]
+                                - generic [ref=f76e416]: Message Threads
+                                - img [ref=f76e418]
+                            - listitem [ref=f76e420]:
+                              - button "Catalog Management" [ref=f76e421] [cursor=pointer]:
+                                - img [ref=f76e423]
+                                - generic [ref=f76e425]: Catalog Management
+                                - img [ref=f76e427]
+                            - listitem [ref=f76e429]:
+                              - button "Tenant Management" [ref=f76e430] [cursor=pointer]:
+                                - img [ref=f76e432]
+                                - generic [ref=f76e434]: Tenant Management
+                                - img [ref=f76e436]
+                            - listitem [ref=f76e438]:
+                              - button "Provisioning Lite" [ref=f76e439] [cursor=pointer]:
+                                - img [ref=f76e441]
+                                - generic [ref=f76e443]: Provisioning Lite
+                                - img [ref=f76e445]
+                            - listitem [ref=f76e447]:
+                              - button "Embed settings" [ref=f76e448] [cursor=pointer]:
+                                - img [ref=f76e450]
+                                - generic [ref=f76e452]: Embed settings
+                                - img [ref=f76e454]
+                            - listitem [ref=f76e456]:
+                              - button "User Profiles" [ref=f76e457] [cursor=pointer]:
+                                - img [ref=f76e459]
+                                - generic [ref=f76e461]: User Profiles
+                                - img [ref=f76e463]
+                            - listitem [ref=f76e465]:
+                              - button "Completions" [expanded] [ref=f76e466] [cursor=pointer]:
+                                - img [ref=f76e468]
+                                - generic [ref=f76e470]: Completions
+                                - img [ref=f76e472]
+                              - list [ref=f76e474]:
+                                - listitem [ref=f76e475]:
+                                  - link "POST Create Completion" [ref=f76e476] [cursor=pointer]:
+                                    - /url: /apis/completions/create-completion
+                                    - generic [ref=f76e479]: POST
+                                    - generic [ref=f76e482]: Create Completion
+                                - listitem [ref=f76e483]:
+                                  - link "POST Create Chat Completion" [ref=f76e484] [cursor=pointer]:
+                                    - /url: /apis/completions/create-chat-completion
+                                    - generic [ref=f76e487]: POST
+                                    - generic [ref=f76e490]: Create Chat Completion
+                            - listitem [ref=f76e491]:
+                              - button "Background Tasks" [ref=f76e492] [cursor=pointer]:
+                                - img [ref=f76e494]
+                                - generic [ref=f76e496]: Background Tasks
+                                - img [ref=f76e498]
+                            - listitem [ref=f76e500]:
+                              - button "Auth" [ref=f76e501] [cursor=pointer]:
+                                - img [ref=f76e503]
+                                - generic [ref=f76e505]: Auth
+                                - img [ref=f76e507]
+                            - listitem [ref=f76e509]:
+                              - button "Orchestrate Assistant" [ref=f76e510] [cursor=pointer]:
+                                - img [ref=f76e512]
+                                - generic [ref=f76e514]: Orchestrate Assistant
+                                - img [ref=f76e516]
+                            - listitem [ref=f76e518]:
+                              - button "Notifications" [ref=f76e519] [cursor=pointer]:
+                                - img [ref=f76e521]
+                                - generic [ref=f76e523]: Notifications
+                                - img [ref=f76e525]
+                            - listitem [ref=f76e527]:
+                              - button "IBM unique ID mapping" [ref=f76e528] [cursor=pointer]:
+                                - img [ref=f76e530]
+                                - generic [ref=f76e532]: IBM unique ID mapping
+                                - img [ref=f76e534]
+                            - listitem [ref=f76e536]:
+                              - button "Prompts" [ref=f76e537] [cursor=pointer]:
+                                - img [ref=f76e539]
+                                - generic [ref=f76e541]: Prompts
+                                - img [ref=f76e543]
+                            - listitem [ref=f76e545]:
+                              - button "Artifact Management" [ref=f76e546] [cursor=pointer]:
+                                - img [ref=f76e548]
+                                - generic [ref=f76e550]: Artifact Management
+                                - img [ref=f76e552]
+                            - listitem [ref=f76e554]:
+                              - button "all journey types" [ref=f76e555] [cursor=pointer]:
+                                - img [ref=f76e557]
+                                - generic [ref=f76e559]: all journey types
+                                - img [ref=f76e561]
+                            - listitem [ref=f76e563]:
+                              - button "Connections" [ref=f76e564] [cursor=pointer]:
+                                - img [ref=f76e566]
+                                - generic [ref=f76e568]: Connections
+                                - img [ref=f76e570]
+                            - listitem [ref=f76e572]:
+                              - button "Tools" [ref=f76e573] [cursor=pointer]:
+                                - img [ref=f76e575]
+                                - generic [ref=f76e577]: Tools
+                                - img [ref=f76e579]
+                            - listitem [ref=f76e581]:
+                              - button "Tools V2" [ref=f76e582] [cursor=pointer]:
+                                - img [ref=f76e584]
+                                - generic [ref=f76e586]: Tools V2
+                                - img [ref=f76e588]
+                            - listitem [ref=f76e590]:
+                              - button "LLM Analytics" [ref=f76e591] [cursor=pointer]:
+                                - img [ref=f76e593]
+                                - generic [ref=f76e595]: LLM Analytics
+                                - img [ref=f76e597]
+                            - listitem [ref=f76e599]:
+                              - button "Agents" [ref=f76e600] [cursor=pointer]:
+                                - img [ref=f76e602]
+                                - generic [ref=f76e604]: Agents
+                                - img [ref=f76e606]
+                            - listitem [ref=f76e608]:
+                              - button "Agents V2" [ref=f76e609] [cursor=pointer]:
+                                - img [ref=f76e611]
+                                - generic [ref=f76e613]: Agents V2
+                                - img [ref=f76e615]
+                            - listitem [ref=f76e617]:
+                              - button "Agent Releases" [ref=f76e618] [cursor=pointer]:
+                                - img [ref=f76e620]
+                                - generic [ref=f76e622]: Agent Releases
+                                - img [ref=f76e624]
+                            - listitem [ref=f76e626]:
+                              - button "Agent Release Environments" [ref=f76e627] [cursor=pointer]:
+                                - img [ref=f76e629]
+                                - generic [ref=f76e631]: Agent Release Environments
+                                - img [ref=f76e633]
+                            - listitem [ref=f76e635]:
+                              - button "Agent Chat Starter Settings" [ref=f76e636] [cursor=pointer]:
+                                - img [ref=f76e638]
+                                - generic [ref=f76e640]: Agent Chat Starter Settings
+                                - img [ref=f76e642]
+                            - listitem [ref=f76e644]:
+                              - button "API Reference" [ref=f76e645] [cursor=pointer]:
+                                - img [ref=f76e647]
+                                - generic [ref=f76e649]: API Reference
+                                - img [ref=f76e651]
+                            - listitem [ref=f76e653]:
+                              - button "channel integration" [ref=f76e654] [cursor=pointer]:
+                                - img [ref=f76e656]
+                                - generic [ref=f76e658]: channel integration
+                                - img [ref=f76e660]
+                            - listitem [ref=f76e662]:
+                              - button "Toolkits" [ref=f76e663] [cursor=pointer]:
+                                - img [ref=f76e665]
+                                - generic [ref=f76e667]: Toolkits
+                                - img [ref=f76e669]
+                            - listitem [ref=f76e671]:
+                              - button "Models" [ref=f76e672] [cursor=pointer]:
+                                - img [ref=f76e674]
+                                - generic [ref=f76e676]: Models
+                                - img [ref=f76e678]
+                            - listitem [ref=f76e680]:
+                              - button "Model-Policy" [ref=f76e681] [cursor=pointer]:
+                                - img [ref=f76e683]
+                                - generic [ref=f76e685]: Model-Policy
+                                - img [ref=f76e687]
+                            - listitem [ref=f76e689]:
+                              - button "Voice Configurations" [ref=f76e690] [cursor=pointer]:
+                                - img [ref=f76e692]
+                                - generic [ref=f76e694]: Voice Configurations
+                                - img [ref=f76e696]
+                            - listitem [ref=f76e698]:
+                              - button "Credentials" [ref=f76e699] [cursor=pointer]:
+                                - img [ref=f76e701]
+                                - generic [ref=f76e703]: Credentials
+                                - img [ref=f76e705]
+                            - listitem [ref=f76e707]:
+                              - button "General Channel" [ref=f76e708] [cursor=pointer]:
+                                - img [ref=f76e710]
+                                - generic [ref=f76e712]: General Channel
+                                - img [ref=f76e714]
+                            - listitem [ref=f76e716]:
+                              - button "Genesys Bot Connector Channel" [ref=f76e717] [cursor=pointer]:
+                                - img [ref=f76e719]
+                                - generic [ref=f76e721]: Genesys Bot Connector Channel
+                                - img [ref=f76e723]
+                            - listitem [ref=f76e725]:
+                              - button "Teams Channel" [ref=f76e726] [cursor=pointer]:
+                                - img [ref=f76e728]
+                                - generic [ref=f76e730]: Teams Channel
+                                - img [ref=f76e732]
+                            - listitem [ref=f76e734]:
+                              - button "Twilio WhatsApp Channel" [ref=f76e735] [cursor=pointer]:
+                                - img [ref=f76e737]
+                                - generic [ref=f76e739]: Twilio WhatsApp Channel
+                                - img [ref=f76e741]
+                            - listitem [ref=f76e743]:
+                              - button "Twilio SMS Channel" [ref=f76e744] [cursor=pointer]:
+                                - img [ref=f76e746]
+                                - generic [ref=f76e748]: Twilio SMS Channel
+                                - img [ref=f76e750]
+                            - listitem [ref=f76e752]:
+                              - button "Facebook Channel" [ref=f76e753] [cursor=pointer]:
+                                - img [ref=f76e755]
+                                - generic [ref=f76e757]: Facebook Channel
+                                - img [ref=f76e759]
+                            - listitem [ref=f76e761]:
+                              - button "GenesysAudioConnector Channel" [ref=f76e762] [cursor=pointer]:
+                                - img [ref=f76e764]
+                                - generic [ref=f76e766]: GenesysAudioConnector Channel
+                                - img [ref=f76e768]
+                            - listitem [ref=f76e770]:
+                              - button "Slack Channel" [ref=f76e771] [cursor=pointer]:
+                                - img [ref=f76e773]
+                                - generic [ref=f76e775]: Slack Channel
+                                - img [ref=f76e777]
+                            - listitem [ref=f76e779]:
+                              - button "Phone channel global" [ref=f76e780] [cursor=pointer]:
+                                - img [ref=f76e782]
+                                - generic [ref=f76e784]: Phone channel global
+                                - img [ref=f76e786]
+                            - listitem [ref=f76e788]:
+                              - button "Flows" [ref=f76e789] [cursor=pointer]:
+                                - img [ref=f76e791]
+                                - generic [ref=f76e793]: Flows
+                                - img [ref=f76e795]
+                            - listitem [ref=f76e797]:
+                              - button "Agent Evaluation" [ref=f76e798] [cursor=pointer]:
+                                - img [ref=f76e800]
+                                - generic [ref=f76e802]: Agent Evaluation
+                                - img [ref=f76e804]
+                            - listitem [ref=f76e806]:
+                              - button "Governance monitoring" [ref=f76e807] [cursor=pointer]:
+                                - img [ref=f76e809]
+                                - generic [ref=f76e811]: Governance monitoring
+                                - img [ref=f76e813]
+                            - listitem [ref=f76e815]:
+                              - button "Outbound Policies" [ref=f76e816] [cursor=pointer]:
+                                - img [ref=f76e818]
+                                - generic [ref=f76e820]: Outbound Policies
+                                - img [ref=f76e822]
+                            - listitem [ref=f76e824]:
+                              - button "Agent embedded chat config" [ref=f76e825] [cursor=pointer]:
+                                - img [ref=f76e827]
+                                - generic [ref=f76e829]: Agent embedded chat config
+                                - img [ref=f76e831]
+                    - listitem [ref=f76e833]:
+                      - button "VS Code ADK extension" [ref=f76e834] [cursor=pointer]:
+                        - img [ref=f76e836]
+                        - generic [ref=f76e838]: VS Code ADK extension
+                        - img [ref=f76e840]
+                    - listitem [ref=f76e842]:
+                      - button "ADK MCP Server" [ref=f76e843] [cursor=pointer]:
+                        - img [ref=f76e845]
+                        - generic [ref=f76e847]: ADK MCP Server
+                        - img [ref=f76e849]
+                    - listitem [ref=f76e851]:
+                      - button "Agentic SDK Guide" [ref=f76e852] [cursor=pointer]:
+                        - img [ref=f76e854]
+                        - generic [ref=f76e856]: Agentic SDK Guide
+                        - img [ref=f76e858]
+                - generic [ref=f76e860]:
+                  - heading "Legal notices" [level=3] [ref=f76e862]
+                  - list [ref=f76e863]:
+                    - listitem [ref=f76e864]:
+                      - link "Notices" [ref=f76e865] [cursor=pointer]:
+                        - /url: /notices/notices
+                        - img [ref=f76e867]
+                        - generic [ref=f76e870]: Notices
+                    - listitem [ref=f76e871]:
+                      - link "Security and Privacy by Design (SPbD)" [ref=f76e872] [cursor=pointer]:
+                        - /url: /notices/spbd
+                        - img [ref=f76e874]
+                        - generic [ref=f76e877]: Security and Privacy by Design (SPbD)
+                    - listitem [ref=f76e878]:
+                      - button "ADK license reference" [ref=f76e879] [cursor=pointer]:
+                        - img [ref=f76e881]
+                        - generic [ref=f76e883]: ADK license reference
+                        - img [ref=f76e885]
+            - button "Toggle dark mode" [ref=f76e890] [cursor=pointer]:
+              - generic [ref=f76e891]:
+                - img [ref=f76e892]
+                - img [ref=f76e899]
+          - main [ref=f76e904]:
+            - generic [ref=f76e905]:
+              - generic [ref=f76e907]:
+                - generic [ref=f76e908]:
+                  - generic [ref=f76e909]:
+                    - generic "Create Chat Completion" [ref=f76e911]
+                    - generic [ref=f76e912]:
+                      - button "cURL" [ref=f76e913]:
+                        - generic [ref=f76e914] [cursor=pointer]:
+                          - img [ref=f76e915]
+                          - paragraph [ref=f76e916]: cURL
+                          - img [ref=f76e917]
+                      - button "Copy the contents from the code block" [ref=f76e921] [cursor=pointer]:
+                        - img [ref=f76e922]
+                  - tabpanel [ref=f76e926]:
+                    - code [ref=f76e930]:
+                      - generic [ref=f76e931]: curl --request POST \
+                      - generic [ref=f76e932]: "--url https://{api_endpoint}/v1/completions/chat \\"
+                      - generic [ref=f76e933]: "--header 'Authorization: Bearer <token>' \\"
+                      - generic [ref=f76e934]: "--header 'Content-Type: application/json' \\"
+                      - generic [ref=f76e935]: "--data '"
+                      - generic [ref=f76e936]: "{"
+                      - generic [ref=f76e937]: "\"model\": \"<string>\","
+                      - generic [ref=f76e938]: "\"messages\": ["
+                      - generic [ref=f76e939]: "{"
+                      - generic [ref=f76e940]: "\"role\": \"<string>\","
+                      - generic [ref=f76e941]: "\"content\": \"<string>\","
+                      - generic [ref=f76e942]: "\"name\": \"<string>\""
+                      - generic [ref=f76e943]: "}"
+                      - generic [ref=f76e944]: "],"
+                      - generic [ref=f76e945]: "\"frequency_penalty\": 0,"
+                      - generic [ref=f76e946]: "\"presence_penalty\": 0,"
+                      - generic [ref=f76e947]: "\"logit_bias\": {},"
+                      - generic [ref=f76e948]: "\"temperature\": 1,"
+                      - generic [ref=f76e949]: "\"n\": 1,"
+                      - generic [ref=f76e950]: "\"seed\": 123,"
+                      - generic [ref=f76e951]: "\"stop\": ["
+                      - generic [ref=f76e952]: "\"<string>\""
+                      - generic [ref=f76e953]: "],"
+                      - generic [ref=f76e954]: "\"stream\": false,"
+                      - generic [ref=f76e955]: "\"top_p\": 1,"
+                      - generic [ref=f76e956]: "\"max_tokens\": 123,"
+                      - generic [ref=f76e957]: "\"tools\": ["
+                      - generic [ref=f76e958]: "{"
+                      - generic [ref=f76e959]: "\"function\": {"
+                      - generic [ref=f76e960]: "\"name\": \"<string>\","
+                      - generic [ref=f76e961]: "\"description\": \"<string>\","
+                      - generic [ref=f76e962]: "\"parameters\": {}"
+                      - generic [ref=f76e963]: "},"
+                      - generic [ref=f76e964]: "\"type\": \"function\""
+                      - generic [ref=f76e965]: "}"
+                      - generic [ref=f76e966]: "],"
+                      - generic [ref=f76e967]: "\"tool_choice\": \"auto\","
+                      - generic [ref=f76e968]: "\"user\": \"<string>\","
+                      - generic [ref=f76e969]: "\"extra_model_args\": {}"
+                      - generic [ref=f76e970]: "}"
+                      - generic [ref=f76e971]: "'"
+                - generic [ref=f76e972]:
+                  - generic [ref=f76e973]:
+                    - tablist [ref=f76e974]:
+                      - tab "200" [selected] [ref=f76e975] [cursor=pointer]:
+                        - generic [ref=f76e976]: "200"
+                      - tab "422" [ref=f76e978] [cursor=pointer]:
+                        - generic [ref=f76e979]: "422"
+                    - button "Copy the contents from the code block" [ref=f76e982] [cursor=pointer]:
+                      - img [ref=f76e983]
+                  - tabpanel "200" [ref=f76e987]:
+                    - code [ref=f76e991]:
+                      - generic [ref=f76e992]: "{"
+                      - generic [ref=f76e993]: "\"content\": \"<string>\","
+                      - generic [ref=f76e994]: "\"response_metadata\": {}"
+                      - generic [ref=f76e995]: "}"
+              - generic [ref=f76e996]:
+                - generic [ref=f76e998]:
+                  - generic [ref=f76e999]: Completions
+                  - heading "Create Chat Completion" [level=1] [ref=f76e1001]
+                - generic [ref=f76e1004]:
+                  - generic [ref=f76e1005]:
+                    - heading "Authorizations" [level=4] [ref=f76e1008]
+                    - generic [ref=f76e1010]:
+                      - generic [ref=f76e1013]:
+                        - link "Navigate to header" [ref=f76e1014] [cursor=pointer]:
+                          - /url: "#authorization-authorization"
+                          - img [ref=f76e1016]
+                        - generic [ref=f76e1019] [cursor=pointer]: Authorization
+                        - generic [ref=f76e1020]:
+                          - generic [ref=f76e1021]: string
+                          - generic [ref=f76e1022]: header
+                          - text: required
+                      - paragraph [ref=f76e1025]:
+                        - text: Bearer authentication header of the form
+                        - code [ref=f76e1026]: Bearer <token>
+                        - text: ", where"
+                        - code [ref=f76e1027]: <token>
+                        - text: is your auth token.
+                  - generic [ref=f76e1028]:
+                    - generic [ref=f76e1030]:
+                      - heading "Body" [level=4] [ref=f76e1031]
+                      - generic [ref=f76e1033]: application/json
+                    - generic [ref=f76e1038]:
+                      - generic [ref=f76e1043]:
+                        - link "Navigate to header" [ref=f76e1044] [cursor=pointer]:
+                          - /url: "#body-model"
+                          - img [ref=f76e1046]
+                        - generic [ref=f76e1049] [cursor=pointer]: model
+                        - generic [ref=f76e1050]:
+                          - generic [ref=f76e1051]: string
+                          - text: required
+                      - generic [ref=f76e1053]:
+                        - generic [ref=f76e1056]:
+                          - link "Navigate to header" [ref=f76e1057] [cursor=pointer]:
+                            - /url: "#body-messages"
+                            - img [ref=f76e1059]
+                          - generic [ref=f76e1062] [cursor=pointer]: messages
+                          - generic [ref=f76e1063]:
+                            - generic [ref=f76e1064]: ChatMessage · object[]
+                            - text: required
+                        - group [ref=f76e1071]:
+                          - generic "Show child attributes" [ref=f76e1072] [cursor=pointer]:
+                            - img [ref=f76e1073]
+                            - paragraph [ref=f76e1075]: Show child attributes
+                      - generic [ref=f76e1080]:
+                        - link "Navigate to header" [ref=f76e1081] [cursor=pointer]:
+                          - /url: "#body-frequency-penalty-one-of-0"
+                          - img [ref=f76e1083]
+                        - generic [ref=f76e1086] [cursor=pointer]: frequency_penalty
+                        - generic [ref=f76e1087]:
+                          - generic [ref=f76e1088]: number | null
+                          - generic [ref=f76e1089]: default:0
+                      - generic [ref=f76e1094]:
+                        - link "Navigate to header" [ref=f76e1095] [cursor=pointer]:
+                          - /url: "#body-presence-penalty-one-of-0"
+                          - img [ref=f76e1097]
+                        - generic [ref=f76e1100] [cursor=pointer]: presence_penalty
+                        - generic [ref=f76e1101]:
+                          - generic [ref=f76e1102]: number | null
+                          - generic [ref=f76e1103]: default:0
+                      - generic [ref=f76e1108]:
+                        - link "Navigate to header" [ref=f76e1109] [cursor=pointer]:
+                          - /url: "#body-logit-bias-one-of-0"
+                          - img [ref=f76e1111]
+                        - generic [ref=f76e1114] [cursor=pointer]: logit_bias
+                        - generic [ref=f76e1116]: Logit Bias · object | null
+                      - generic [ref=f76e1121]:
+                        - link "Navigate to header" [ref=f76e1122] [cursor=pointer]:
+                          - /url: "#body-temperature-one-of-0"
+                          - img [ref=f76e1124]
+                        - generic [ref=f76e1127] [cursor=pointer]: temperature
+                        - generic [ref=f76e1128]:
+                          - generic [ref=f76e1129]: number | null
+                          - generic [ref=f76e1130]: default:1
+                      - generic [ref=f76e1135]:
+                        - link "Navigate to header" [ref=f76e1136] [cursor=pointer]:
+                          - /url: "#body-n-one-of-0"
+                          - img [ref=f76e1138]
+                        - generic [ref=f76e1141] [cursor=pointer]: "n"
+                        - generic [ref=f76e1142]:
+                          - generic [ref=f76e1143]: integer | null
+                          - generic [ref=f76e1144]: default:1
+                      - generic [ref=f76e1149]:
+                        - link "Navigate to header" [ref=f76e1150] [cursor=pointer]:
+                          - /url: "#body-seed-one-of-0"
+                          - img [ref=f76e1152]
+                        - generic [ref=f76e1155] [cursor=pointer]: seed
+                        - generic [ref=f76e1157]: integer | null
+                      - generic [ref=f76e1162]:
+                        - link "Navigate to header" [ref=f76e1163] [cursor=pointer]:
+                          - /url: "#body-stop-one-of-0"
+                          - img [ref=f76e1165]
+                        - generic [ref=f76e1168] [cursor=pointer]: stop
+                        - generic [ref=f76e1170]: string[] | null
+                      - generic [ref=f76e1175]:
+                        - link "Navigate to header" [ref=f76e1176] [cursor=pointer]:
+                          - /url: "#body-stream-one-of-0"
+                          - img [ref=f76e1178]
+                        - generic [ref=f76e1181] [cursor=pointer]: stream
+                        - generic [ref=f76e1182]:
+                          - generic [ref=f76e1183]: boolean | null
+                          - generic [ref=f76e1184]: default:false
+                      - generic [ref=f76e1189]:
+                        - link "Navigate to header" [ref=f76e1190] [cursor=pointer]:
+                          - /url: "#body-top-p-one-of-0"
+                          - img [ref=f76e1192]
+                        - generic [ref=f76e1195] [cursor=pointer]: top_p
+                        - generic [ref=f76e1196]:
+                          - generic [ref=f76e1197]: number | null
+                          - generic [ref=f76e1198]: default:1
+                      - generic [ref=f76e1203]:
+                        - link "Navigate to header" [ref=f76e1204] [cursor=pointer]:
+                          - /url: "#body-max-tokens-one-of-0"
+                          - img [ref=f76e1206]
+                        - generic [ref=f76e1209] [cursor=pointer]: max_tokens
+                        - generic [ref=f76e1211]: integer | null
+                      - generic [ref=f76e1213]:
+                        - generic [ref=f76e1216]:
+                          - link "Navigate to header" [ref=f76e1217] [cursor=pointer]:
+                            - /url: "#body-tools-one-of-0"
+                            - img [ref=f76e1219]
+                          - generic [ref=f76e1222] [cursor=pointer]: tools
+                          - generic [ref=f76e1224]: Tool · object[] | null
+                        - group [ref=f76e1231]:
+                          - generic "Show child attributes" [ref=f76e1232] [cursor=pointer]:
+                            - img [ref=f76e1233]
+                            - paragraph [ref=f76e1235]: Show child attributes
+                      - generic [ref=f76e1240]:
+                        - link "Navigate to header" [ref=f76e1241] [cursor=pointer]:
+                          - /url: "#body-tool-choice-one-of-0"
+                          - img [ref=f76e1243]
+                        - generic [ref=f76e1246] [cursor=pointer]: tool_choice
+                        - generic [ref=f76e1247]:
+                          - generic [ref=f76e1248]: string | null
+                          - generic [ref=f76e1249]: default:auto
+                      - generic [ref=f76e1254]:
+                        - link "Navigate to header" [ref=f76e1255] [cursor=pointer]:
+                          - /url: "#body-user-one-of-0"
+                          - img [ref=f76e1257]
+                        - generic [ref=f76e1260] [cursor=pointer]: user
+                        - generic [ref=f76e1262]: string | null
+                      - generic [ref=f76e1267]:
+                        - link "Navigate to header" [ref=f76e1268] [cursor=pointer]:
+                          - /url: "#body-extra-model-args-one-of-0"
+                          - img [ref=f76e1270]
+                        - generic [ref=f76e1273] [cursor=pointer]: extra_model_args
+                        - generic [ref=f76e1275]: Extra Model Args · object | null
+                  - generic [ref=f76e1276]:
+                    - generic [ref=f76e1277]:
+                      - generic [ref=f76e1278]:
+                        - heading "Response" [level=4] [ref=f76e1279]
+                        - generic [ref=f76e1281]:
+                          - button "200" [ref=f76e1283] [cursor=pointer]:
+                            - generic [ref=f76e1284]:
+                              - generic [ref=f76e1285]: "200"
+                              - img [ref=f76e1286]
+                          - generic [ref=f76e1288]:
+                            - button "application/json" [disabled]:
+                              - generic:
+                                - generic: application/json
+                      - paragraph [ref=f76e1291]: Successful Response
+                    - generic [ref=f76e1296]:
+                      - generic [ref=f76e1301]:
+                        - link "Navigate to header" [ref=f76e1302] [cursor=pointer]:
+                          - /url: "#response-content"
+                          - img [ref=f76e1304]
+                        - generic [ref=f76e1307] [cursor=pointer]: content
+                        - generic [ref=f76e1308]:
+                          - generic [ref=f76e1309]: string
+                          - text: required
+                      - generic [ref=f76e1314]:
+                        - link "Navigate to header" [ref=f76e1315] [cursor=pointer]:
+                          - /url: "#response-response-metadata-one-of-0"
+                          - img [ref=f76e1317]
+                        - generic [ref=f76e1320] [cursor=pointer]: response_metadata
+                        - generic [ref=f76e1322]: Response Metadata · object | null
+                - generic [ref=f76e1323]:
+                  - link "Create Completion Previous" [ref=f76e1324] [cursor=pointer]:
+                    - /url: /apis/completions/create-completion
+                    - generic [ref=f76e1325]:
+                      - generic [ref=f76e1326]: Create Completion
+                      - generic [ref=f76e1327]:
+                        - img [ref=f76e1328]
+                        - generic [ref=f76e1330]: Previous
+                  - link "List Background Tasks Next" [ref=f76e1331] [cursor=pointer]:
+                    - /url: /apis/background-tasks/list-background-tasks
+                    - generic [ref=f76e1332]:
+                      - generic [ref=f76e1333]: List Background Tasks
+                      - generic [ref=f76e1334]:
+                        - img [ref=f76e1335]
+                        - generic [ref=f76e1337]: Next
+            - generic [ref=f76e1340]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f76e1342] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f76e1343]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f76e1344]
+              - generic [ref=f76e1345]:
+                - generic [ref=f76e1347]:
+                  - paragraph [ref=f76e1348]: Copyright information
+                  - link "© Copyright IBM Corporation 2025" [ref=f76e1349] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal/copyright-trademark
+                - generic [ref=f76e1351]:
+                  - paragraph [ref=f76e1352]: Privacy and accessibility
+                  - link "Privacy" [ref=f76e1353] [cursor=pointer]:
+                    - /url: https://www.ibm.com/privacy
+                  - link "Accessibility" [ref=f76e1354] [cursor=pointer]:
+                    - /url: https://www.ibm.com/able?lnk=flg-acce-usen
+                  - link "Terms of use" [ref=f76e1355] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal?lnk=flg-tous-usen

@@ -1,0 +1,443 @@
+- generic [active] [ref=f49e1]:
+  - generic [ref=f49e4]:
+    - generic [ref=f49e9]:
+      - generic:
+        - navigation "Skip to content":
+          - link "Skip to content" [ref=f49e10] [cursor=pointer]:
+            - /url: "#main-content"
+            - generic [ref=f49e11]: Skip to content
+        - link "IBM logo" [ref=f49e13] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img [ref=f49e15]
+      - generic [ref=f49e19]:
+        - navigation "Primary navigation" [ref=f49e23]:
+          - generic [ref=f49e25]:
+            - generic:
+              - button "Software" [ref=f49e27] [cursor=pointer]:
+                - text: Software
+                - img [ref=f49e28]
+              - button "Infrastructure" [ref=f49e31] [cursor=pointer]:
+                - text: Infrastructure
+                - img [ref=f49e32]
+              - generic "Consulting" [ref=f49e34]:
+                - link "Consulting" [ref=f49e35] [cursor=pointer]:
+                  - /url: https://www.ibm.com/consulting?lnk=L0G
+                  - generic [ref=f49e37]: Consulting
+              - button "Support" [ref=f49e39] [cursor=pointer]:
+                - text: Support
+                - img [ref=f49e40]
+              - generic "Think" [ref=f49e42]:
+                - link "Think" [ref=f49e43] [cursor=pointer]:
+                  - /url: https://www.ibm.com/think
+                  - generic [ref=f49e45]: Think
+        - button "Open IBM search field" [ref=f49e48] [cursor=pointer]:
+          - img [ref=f49e49]
+      - generic [ref=f49e51]:
+        - generic:
+          - generic:
+            - link "Contact" [ref=f49e53] [cursor=pointer]:
+              - /url: javascript:void 0
+              - img [ref=f49e54]
+            - button [ref=f49e57] [cursor=pointer]:
+              - img [ref=f49e58]
+            - generic [ref=f49e60]:
+              - button "User profile" [ref=f49e61] [cursor=pointer]:
+                - img [ref=f49e62]
+              - generic: My IBM
+              - generic: Log in
+    - generic [ref=f49e70]:
+      - generic [ref=f49e72]:
+        - generic [ref=f49e73]:
+          - navigation "Breadcrumb" [ref=f49e74]:
+            - list [ref=f49e75]:
+              - listitem [ref=f49e76]:
+                - link "Home" [ref=f49e77] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=f49e78]: Home
+                - text: /
+              - listitem [ref=f49e79]:
+                - link "Products" [ref=f49e80] [cursor=pointer]:
+                  - /url: /products
+                  - generic [ref=f49e81]: Products
+                - text: /
+              - listitem [ref=f49e82]:
+                - link "watsonx Orchestrate" [ref=f49e83] [cursor=pointer]:
+                  - /url: /products/watsonx-orchestrate
+                  - generic [ref=f49e84]: watsonx Orchestrate
+                - text: /
+              - listitem [ref=f49e85]:
+                - generic [ref=f49e86]: Pricing
+          - heading "Pricing" [level=1] [ref=f49e87]
+        - paragraph [ref=f49e93]: Build and deploy AI agents that intelligently automate work, connect systems and adapt to your business
+      - img "Illustration of watsonx Orchestrate dashboard workflow" [ref=f49e100]
+    - generic [ref=f49e106]:
+      - generic [ref=f49e107]:
+        - generic [ref=f49e109]:
+          - heading "Features" [level=2] [ref=f49e111]
+          - generic [ref=f49e113]:
+            - list
+        - generic [ref=f49e119]:
+          - generic:
+            - generic [ref=f49e120]:
+              - img [ref=f49e122]
+              - heading "Orchestrate real business outcomes" [level=4] [ref=f49e124]:
+                - generic: Orchestrate real business outcomes
+              - paragraph [ref=f49e128]: Coordinate agents, tools and systems to complete complex work end-to-end—with shared context and seamless agent-to-agent collaboration.
+            - generic [ref=f49e129]:
+              - img [ref=f49e131]
+              - heading "Agent Builder" [level=4] [ref=f49e133]:
+                - generic: Agent Builder
+              - paragraph [ref=f49e137]: Create agents with no-code or pro-code tools, or bring your own—so you can move from idea to production without constraints or rework.
+            - generic [ref=f49e138]:
+              - img [ref=f49e140]
+              - heading "Use the agents you already have" [level=4] [ref=f49e142]:
+                - generic: Use the agents you already have
+              - paragraph [ref=f49e146]: Import agents from frameworks like Langflow or LangGraph and run them seamlessly across your business—no rebuilding required
+            - generic [ref=f49e147]:
+              - img [ref=f49e149]
+              - heading "Connect everything through a unified gateway" [level=4] [ref=f49e151]:
+                - generic: Connect everything through a unified gateway
+              - paragraph [ref=f49e155]: Give every agent consistent, secure access to models, data and tools—through APIs and MCP servers—without custom integrations or lock-in.
+            - generic [ref=f49e156]:
+              - img [ref=f49e158]
+              - heading "Reuse what works—with control" [level=4] [ref=f49e160]:
+                - generic: Reuse what works—with control
+              - paragraph [ref=f49e164]: Find and reuse agents, tools and templates—while controlling access, updates and usage across your ecosystem.
+            - generic [ref=f49e165]:
+              - img [ref=f49e167]
+              - heading "Govern every agent at scale" [level=4] [ref=f49e169]:
+                - generic: Govern every agent at scale
+              - paragraph [ref=f49e173]: Monitor activity, enforce policies and manage the full lifecycle of your agents—with enterprise-grade compliance built in.
+            - generic [ref=f49e174]:
+              - img [ref=f49e176]
+              - heading "Scale across teams and workflows" [level=4] [ref=f49e178]:
+                - generic: Scale across teams and workflows
+              - paragraph [ref=f49e182]: Ensure performance, reliability and security as your agent ecosystem grows across your organization.
+            - generic [ref=f49e183]:
+              - img [ref=f49e185]
+              - heading "Turn agents into a revenue channel" [level=4] [ref=f49e187]:
+                - generic: Turn agents into a revenue channel
+              - paragraph [ref=f49e191]: Publish and monetize your agents through a governed ecosystem with built-in go-to-market support
+      - generic [ref=f49e195]:
+        - generic [ref=f49e196]:
+          - generic:
+            - text: Announcing eCommerce pilot for select partner agents
+            - generic [ref=f49e197]: watsonx Orchestrate is launching a limited time eCommerce pilot that allows customers to purchase select partner-built AI agents directly from IBM.com—bundled with a watsonx Orchestrate subscription.
+        - link "Explore piloted agents" [ref=f49e199] [cursor=pointer]:
+          - /url: https://www.ibm.com/products/watsonx-orchestrate/agent-catalog#pilot
+          - button "Explore piloted agents" [ref=f49e201]:
+            - generic [ref=f49e202]: Explore piloted agents
+            - img [ref=f49e205]: ","
+      - generic [ref=f49e209]:
+        - generic [ref=f49e210]: Use cloud credits
+        - list [ref=f49e212]:
+          - listitem [ref=f49e213]:
+            - link "AWS Cloud Logo Buy on AWS" [ref=f49e214] [cursor=pointer]:
+              - /url: https://aws.amazon.com/marketplace/pp/prodview-ua5rm53wrx7hm
+              - img "AWS Cloud Logo" [ref=f49e217]
+              - generic [ref=f49e218]:
+                - generic [ref=f49e219]: Buy on AWS
+                - img [ref=f49e221]
+      - generic [ref=f49e226]:
+        - heading "Buy from IBM" [level=2] [ref=f49e228]
+        - generic [ref=f49e230]:
+          - generic [ref=f49e231]:
+            - generic [ref=f49e232]:
+              - generic [ref=f49e233]: Most popular
+              - generic [ref=f49e234]:
+                - generic [ref=f49e235]: Essentials
+                - generic [ref=f49e236]:
+                  - generic [ref=f49e237]: Starting at
+                  - text: $530.00
+                  - generic [ref=f49e238]: USD Per month*
+                - link "Buy now" [ref=f49e239] [cursor=pointer]:
+                  - /url: https://www.ibm.com/store/en/us/products/EIDS2PRM
+                  - button "Buy now" [ref=f49e241]:
+                    - generic: Buy now
+                    - img [ref=f49e244]: ","
+              - generic [ref=f49e246]:
+                - generic [ref=f49e247]: Design, orchestrate and govern AI agents for real work, with built-in security and control.
+                - list [ref=f49e248]:
+                  - listitem [ref=f49e249]:
+                    - img [ref=f49e250]
+                    - generic [ref=f49e253]: Agent building/orchestration
+                  - listitem [ref=f49e254]:
+                    - img [ref=f49e255]
+                    - generic [ref=f49e258]: Workflow and doc processing
+                  - listitem [ref=f49e259]:
+                    - img [ref=f49e260]
+                    - generic [ref=f49e263]: Agents and tools catalog
+                  - listitem [ref=f49e264]:
+                    - img [ref=f49e265]
+                    - generic [ref=f49e268]: Custom tool creation
+                  - listitem [ref=f49e269]:
+                    - img [ref=f49e270]
+                    - generic [ref=f49e273]: Core AI and LLMs
+                  - listitem [ref=f49e274]:
+                    - img [ref=f49e275]
+                    - generic [ref=f49e278]: Security and access control
+            - generic [ref=f49e279]:
+              - generic [ref=f49e280]:
+                - generic [ref=f49e281]: Standard
+                - generic [ref=f49e282]:
+                  - generic [ref=f49e283]: Starting at
+                  - text: $6,360.00
+                  - generic [ref=f49e284]: USD Per month*
+                - link "Buy now" [ref=f49e285] [cursor=pointer]:
+                  - /url: https://www.ibm.com/store/en/us/products/EID3A7Y2
+                  - button "Buy now" [ref=f49e287]:
+                    - generic: Buy now
+                    - img [ref=f49e290]: ","
+              - generic [ref=f49e292]:
+                - generic [ref=f49e293]: Everything in Essentials, with expanded capacity and ready-to-use domain agents to scale automation across more teams.
+                - list [ref=f49e294]:
+                  - listitem [ref=f49e295]:
+                    - img [ref=f49e296]
+                    - generic [ref=f49e299]: "Essentials plan, plus:"
+                  - listitem [ref=f49e300]:
+                    - img [ref=f49e301]
+                    - generic [ref=f49e304]: Higher usage limits
+                  - listitem [ref=f49e305]:
+                    - img [ref=f49e306]
+                    - generic [ref=f49e309]: Higher document volumes
+                  - listitem [ref=f49e310]:
+                    - img [ref=f49e311]
+                    - generic [ref=f49e314]: Higher message throughput
+                  - listitem [ref=f49e315]:
+                    - img [ref=f49e316]
+                    - generic [ref=f49e319]: Higher concurrent usage
+                  - listitem [ref=f49e320]:
+                    - img [ref=f49e321]
+                    - generic [ref=f49e324]: Higher capacity ceilings
+            - generic [ref=f49e325]:
+              - generic [ref=f49e326]:
+                - generic [ref=f49e327]: Premium
+                - link "Contact us" [ref=f49e328] [cursor=pointer]:
+                  - /url: https://www.ibm.com/account/reg/signup?formid=MAIL-ibmbuy
+                  - button "Contact us" [ref=f49e330]:
+                    - generic: Contact us
+              - generic [ref=f49e331]:
+                - generic [ref=f49e332]: Everything in Standard, with data isolation for sensitive workflows and regulated environments.
+                - list [ref=f49e333]:
+                  - listitem [ref=f49e334]:
+                    - img [ref=f49e335]
+                    - generic [ref=f49e338]: "Standard plan, plus:"
+                  - listitem [ref=f49e339]:
+                    - img [ref=f49e340]
+                    - generic [ref=f49e343]: Data isolation
+                  - listitem [ref=f49e344]:
+                    - img [ref=f49e345]
+                    - generic [ref=f49e348]: Dedicated data space
+                  - listitem [ref=f49e349]:
+                    - img [ref=f49e350]
+                    - generic [ref=f49e353]: End-to-end protection
+                  - listitem [ref=f49e354]:
+                    - img [ref=f49e355]
+                    - generic [ref=f49e358]: HIPAA-ready option
+                  - listitem [ref=f49e359]:
+                    - img [ref=f49e360]
+                    - generic [ref=f49e363]: Enterprise-grade scale
+          - paragraph [ref=f49e365]: "*Prices shown are indicative, may vary by country, exclude any applicable taxes and duties, and are subject to product offering availability in a locale."
+      - generic [ref=f49e367]:
+        - generic [ref=f49e369]:
+          - heading "FAQ" [level=2] [ref=f49e371]
+          - generic [ref=f49e373]:
+            - list
+        - list [ref=f49e375]:
+          - listitem [ref=f49e376]:
+            - button "Can I deploy IBM watsonx Orchestrate across different environments?" [ref=f49e378] [cursor=pointer]:
+              - img [ref=f49e379]
+              - strong [ref=f49e382]: Can I deploy IBM watsonx Orchestrate across different environments?
+            - text: 
+          - listitem [ref=f49e383]:
+            - button "What pricing options are available?" [ref=f49e385] [cursor=pointer]:
+              - img [ref=f49e386]
+              - strong [ref=f49e389]: What pricing options are available?
+          - listitem [ref=f49e390]:
+            - button "Where can I purchase it?" [ref=f49e392] [cursor=pointer]:
+              - img [ref=f49e393]
+              - strong [ref=f49e396]: Where can I purchase it?
+            - text: 
+      - generic [ref=f49e401]:
+        - heading "Take the next step" [level=2] [ref=f49e402]
+        - paragraph [ref=f49e406]: Try IBM watsonx Orchestrate at no cost or book a consultation with an IBM expert
+        - list [ref=f49e407]:
+          - listitem [ref=f49e408]:
+            - link "Start free trial" [ref=f49e409] [cursor=pointer]:
+              - /url: https://www.ibm.com/account/reg/signup?formid=urx-52753
+              - generic [ref=f49e410]: Start free trial
+              - img [ref=f49e411]
+          - listitem [ref=f49e413]:
+            - link "Contact us" [ref=f49e414] [cursor=pointer]:
+              - /url: https://www.ibm.com/forms/mkt-mail-ibmbuy
+              - generic [ref=f49e415]: Contact us
+              - img [ref=f49e416]
+    - contentinfo "footer" [ref=f49e421]:
+      - generic [ref=f49e425]:
+        - link "IBM logo" [ref=f49e427] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img [ref=f49e428]
+        - navigation "Footer navigation" [ref=f49e430]:
+          - list [ref=f49e431]:
+            - generic:
+              - listitem [ref=f49e432]:
+                - heading "Discover" [level=2] [ref=f49e433]:
+                  - generic [ref=f49e434]: Discover
+                - list [ref=f49e436]:
+                  - generic:
+                    - listitem [ref=f49e437]:
+                      - link "Products" [ref=f49e438] [cursor=pointer]:
+                        - /url: https://www.ibm.com/products?lnk=flatitem
+                        - generic: Products
+                    - listitem [ref=f49e439]:
+                      - link "Consulting services" [ref=f49e440] [cursor=pointer]:
+                        - /url: https://www.ibm.com/consulting?lnk=flatitem
+                        - generic: Consulting services
+                    - listitem [ref=f49e441]:
+                      - link "Industries" [ref=f49e442] [cursor=pointer]:
+                        - /url: https://www.ibm.com/industries?lnk=flatitem
+                        - generic: Industries
+                    - listitem [ref=f49e443]:
+                      - link "Case studies" [ref=f49e444] [cursor=pointer]:
+                        - /url: https://www.ibm.com/case-studies?lnk=flatitem
+                        - generic: Case studies
+                    - listitem [ref=f49e445]:
+                      - link "Financing" [ref=f49e446] [cursor=pointer]:
+                        - /url: https://www.ibm.com/financing?lnk=flatitem
+                        - generic: Financing
+                    - listitem [ref=f49e447]:
+                      - link "Research" [ref=f49e448] [cursor=pointer]:
+                        - /url: https://research.ibm.com/?lnk=flatitem
+                        - generic: Research
+              - listitem [ref=f49e449]:
+                - heading "Follow" [level=2] [ref=f49e450]:
+                  - generic [ref=f49e451]: Follow
+                - list [ref=f49e453]:
+                  - generic:
+                    - listitem [ref=f49e454]:
+                      - link "LinkedIn" [ref=f49e455] [cursor=pointer]:
+                        - /url: https://www.linkedin.com/company/ibm
+                        - generic: LinkedIn
+                    - listitem [ref=f49e456]:
+                      - link "X" [ref=f49e457] [cursor=pointer]:
+                        - /url: https://www.twitter.com/ibm
+                        - generic: X
+                    - listitem [ref=f49e458]:
+                      - link "Instagram" [ref=f49e459] [cursor=pointer]:
+                        - /url: https://www.instagram.com/ibm
+                        - generic: Instagram
+                    - listitem [ref=f49e460]:
+                      - link "YouTube" [ref=f49e461] [cursor=pointer]:
+                        - /url: https://www.youtube.com/@IBM
+                        - generic: YouTube
+                    - listitem [ref=f49e462]:
+                      - link "Podcasts" [ref=f49e463] [cursor=pointer]:
+                        - /url: https://www.ibm.com/think/podcasts
+                        - generic: Podcasts
+              - listitem [ref=f49e464]:
+                - heading "Connect" [level=2] [ref=f49e465]:
+                  - generic [ref=f49e466]: Connect
+                - list [ref=f49e468]:
+                  - generic:
+                    - listitem [ref=f49e469]:
+                      - link "Business partners" [ref=f49e470] [cursor=pointer]:
+                        - /url: https://www.ibm.com/partnerplus/directory/companies
+                        - generic: Business partners
+                    - listitem [ref=f49e471]:
+                      - link "Documentation" [ref=f49e472] [cursor=pointer]:
+                        - /url: https://www.ibm.com/docs/en?lnk=flathl
+                        - generic: Documentation
+                    - listitem [ref=f49e473]:
+                      - link "Events" [ref=f49e474] [cursor=pointer]:
+                        - /url: https://www.ibm.com/events/
+                        - generic: Events
+                    - listitem [ref=f49e475]:
+                      - link "Newsletters" [ref=f49e476] [cursor=pointer]:
+                        - /url: https://www.ibm.com/subscribe/
+                        - generic: Newsletters
+                    - listitem [ref=f49e477]:
+                      - link "Support" [ref=f49e478] [cursor=pointer]:
+                        - /url: https://www.ibm.com/mysupport/s/?language=en_US&lnk=flathl
+                        - generic: Support
+                    - listitem [ref=f49e479]:
+                      - link "TechXchange community" [ref=f49e480] [cursor=pointer]:
+                        - /url: https://community.ibm.com/community/user/home?lnk=fpo
+                        - generic: TechXchange community
+              - listitem [ref=f49e481]:
+                - heading "About" [level=2] [ref=f49e482]:
+                  - generic [ref=f49e483]: About
+                - list [ref=f49e485]:
+                  - generic:
+                    - listitem [ref=f49e486]:
+                      - link "Overview" [ref=f49e487] [cursor=pointer]:
+                        - /url: https://www.ibm.com/about/?lnk=flatitem
+                        - generic: Overview
+                    - listitem [ref=f49e488]:
+                      - link "Careers" [ref=f49e489] [cursor=pointer]:
+                        - /url: https://www.ibm.com/careers/us-en?lnk=flathl
+                        - generic: Careers
+                    - listitem [ref=f49e490]:
+                      - link "Investor relations" [ref=f49e491] [cursor=pointer]:
+                        - /url: https://www.ibm.com/investor?lnk=flatitem
+                        - generic: Investor relations
+                    - listitem [ref=f49e492]:
+                      - link "Leadership" [ref=f49e493] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/executive-bios
+                        - generic: Leadership
+                    - listitem [ref=f49e494]:
+                      - link "Newsroom" [ref=f49e495] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/?lnk=flatitem
+                        - generic: Newsroom
+                    - listitem [ref=f49e496]:
+                      - link "Security, privacy and trust" [ref=f49e497] [cursor=pointer]:
+                        - /url: https://www.ibm.com/trust?lnk=flatitem
+                        - generic: Security, privacy and trust
+      - navigation "Legal Navigation" [ref=f49e499]:
+        - list [ref=f49e501]:
+          - generic:
+            - listitem [ref=f49e502]:
+              - link "Contact IBM" [ref=f49e503] [cursor=pointer]:
+                - /url: https://www.ibm.com/contact/global
+                - generic: Contact IBM
+            - listitem [ref=f49e504]:
+              - link "Privacy" [ref=f49e505] [cursor=pointer]:
+                - /url: https://www.ibm.com/us-en/privacy
+                - generic: Privacy
+            - listitem [ref=f49e506]:
+              - link "Terms of use" [ref=f49e507] [cursor=pointer]:
+                - /url: https://www.ibm.com/legal?lnk=flg-tous-usen
+                - generic: Terms of use
+            - listitem [ref=f49e508]:
+              - link "Accessibility" [ref=f49e509] [cursor=pointer]:
+                - /url: https://www.ibm.com/able/?lnk=flg-acce-usen
+                - generic: Accessibility
+            - link "Cookie Preferences, opens a dedicated popup modal window" [ref=f49e511] [cursor=pointer]: Cookie Preferences
+  - generic [ref=f49e513]:
+    - img [ref=f49e515]
+    - img [ref=f49e521]
+  - banner "consent_blackbar":
+    - generic [ref=f49e524]:
+      - button "close icon" [ref=f49e526] [cursor=pointer]
+      - generic [ref=f49e528]:
+        - generic [ref=f49e531]:
+          - text: About cookies on this site
+          - generic [ref=f49e532]:
+            - generic [ref=f49e533]: Our websites require some cookies to function properly (required). In addition, other cookies may be used with your consent to analyze site usage, improve the user experience and for advertising.
+            - generic [ref=f49e534]:
+              - text: For more information, please review your
+              - button "cookie preferences" [ref=f49e535] [cursor=pointer]
+              - text: options. By visiting our website, you agree to our processing of information as described in IBM’s
+              - link "privacy statement" [ref=f49e536] [cursor=pointer]:
+                - /url: https://www.ibm.com/privacy
+              - text: .
+            - generic [ref=f49e537]:
+              - text: To provide a smooth navigation, your cookie preferences will be shared across the IBM web domains listed
+              - link "here" [ref=f49e538] [cursor=pointer]:
+                - /url: "#truste_domain_list"
+              - text: .
+        - generic [ref=f49e539]:
+          - button "Accept all" [ref=f49e540] [cursor=pointer]
+          - button "More options" [ref=f49e541] [cursor=pointer]
+  - complementary "Chat launcher" [ref=f49e543]:
+    - button "Open chat" [ref=f49e544] [cursor=pointer]:
+      - img [ref=f49e546]

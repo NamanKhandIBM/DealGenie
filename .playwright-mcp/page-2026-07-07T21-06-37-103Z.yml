@@ -1,0 +1,1115 @@
+- generic [active] [ref=f98e1]:
+  - blockquote [ref=f98e2]:
+    - heading [level=2] [ref=f98e3]: Documentation Index
+    - paragraph [ref=f98e4]:
+      - text: "Fetch the complete documentation index at:"
+      - link [ref=f98e5] [cursor=pointer]:
+        - /url: /llms.txt
+        - text: /llms.txt
+    - paragraph [ref=f98e6]: Use this file to discover all available pages before exploring further.
+  - generic:
+    - link "Skip to main content" [ref=f98e7] [cursor=pointer]:
+      - /url: "#content-area"
+    - generic:
+      - generic:
+        - banner [ref=f98e8]:
+          - generic [ref=f98e14]:
+            - generic [ref=f98e15]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f98e16] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f98e17]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f98e18]
+              - button "2.x" [ref=f98e20] [cursor=pointer]:
+                - generic [ref=f98e21]: 2.x
+                - img [ref=f98e22]
+            - navigation "Main" [ref=f98e26]:
+              - list [ref=f98e27]:
+                - listitem [ref=f98e28]:
+                  - link "Support" [ref=f98e29] [cursor=pointer]:
+                    - /url: https://www.ibm.com/mysupport/s/topic/0TO3p000000A6YLGA0/watsonx-orchestrate?productId=01t3p00000SsRnhAAF&language=en_US
+                    - generic [ref=f98e30]: Support
+                - listitem [ref=f98e31]:
+                  - link "GitHub" [ref=f98e32] [cursor=pointer]:
+                    - /url: https://github.com/ibm/ibm-watsonx-orchestrate-adk/
+                    - generic [ref=f98e33]: GitHub
+        - generic [ref=f98e34]:
+          - navigation "Pages" [ref=f98e35]:
+            - generic [ref=f98e37]:
+              - button "Open search" [ref=f98e39] [cursor=pointer]:
+                - generic [ref=f98e40]:
+                  - img [ref=f98e41]
+                  - generic [ref=f98e44]: Search...
+                - generic [ref=f98e45]: ⌘K
+              - generic [ref=f98e46]:
+                - generic [ref=f98e47]:
+                  - heading "Release Notes" [level=3] [ref=f98e49]
+                  - list [ref=f98e50]:
+                    - listitem [ref=f98e51]:
+                      - link "What's new" [ref=f98e52] [cursor=pointer]:
+                        - /url: /release/release
+                        - img [ref=f98e54]
+                        - generic [ref=f98e57]: What's new
+                    - listitem [ref=f98e58]:
+                      - link "Known issues" [ref=f98e59] [cursor=pointer]:
+                        - /url: /release/knownissues
+                        - img [ref=f98e61]
+                        - generic [ref=f98e64]: Known issues
+                    - listitem [ref=f98e65]:
+                      - link "Troubleshooting" [ref=f98e66] [cursor=pointer]:
+                        - /url: /release/troubleshooting
+                        - img [ref=f98e68]
+                        - generic [ref=f98e71]: Troubleshooting
+                - generic [ref=f98e72]:
+                  - heading "Get Started" [level=3] [ref=f98e74]
+                  - list [ref=f98e75]:
+                    - listitem [ref=f98e76]:
+                      - link "Welcome" [ref=f98e77] [cursor=pointer]:
+                        - /url: /
+                        - img [ref=f98e79]
+                        - generic [ref=f98e82]: Welcome
+                    - listitem [ref=f98e83]:
+                      - link "What is ADK?" [ref=f98e84] [cursor=pointer]:
+                        - /url: /getting_started/what_is
+                        - img [ref=f98e86]
+                        - generic [ref=f98e89]: What is ADK?
+                    - listitem [ref=f98e90]:
+                      - link "Getting started with the ADK" [ref=f98e91] [cursor=pointer]:
+                        - /url: /getting_started/installing
+                        - img [ref=f98e93]
+                        - generic [ref=f98e96]: Getting started with the ADK
+                    - listitem [ref=f98e97]:
+                      - button "Tutorials" [ref=f98e98] [cursor=pointer]:
+                        - img [ref=f98e100]
+                        - generic [ref=f98e102]: Tutorials
+                        - img [ref=f98e104]
+                    - listitem [ref=f98e106]:
+                      - link "Examples" [ref=f98e107] [cursor=pointer]:
+                        - /url: /getting_started/examples
+                        - img [ref=f98e109]
+                        - generic [ref=f98e112]: Examples
+                    - listitem [ref=f98e113]:
+                      - button "Configuring environments" [ref=f98e114] [cursor=pointer]:
+                        - img [ref=f98e116]
+                        - generic [ref=f98e118]: Configuring environments
+                        - img [ref=f98e120]
+                    - listitem [ref=f98e122]:
+                      - link "Useful CLI commands" [ref=f98e123] [cursor=pointer]:
+                        - /url: /getting_started/cli
+                        - img [ref=f98e125]
+                        - generic [ref=f98e128]: Useful CLI commands
+                - generic [ref=f98e129]:
+                  - heading "Build" [level=3] [ref=f98e131]
+                  - list [ref=f98e132]:
+                    - listitem [ref=f98e133]:
+                      - button "Workspaces" [ref=f98e134] [cursor=pointer]:
+                        - img [ref=f98e136]
+                        - generic [ref=f98e138]: Workspaces
+                        - img [ref=f98e140]
+                    - listitem [ref=f98e142]:
+                      - button "Agents" [ref=f98e143] [cursor=pointer]:
+                        - img [ref=f98e145]
+                        - generic [ref=f98e147]: Agents
+                        - img [ref=f98e149]
+                    - listitem [ref=f98e151]:
+                      - button "Large Language Models (LLMs)" [expanded] [ref=f98e152] [cursor=pointer]:
+                        - img [ref=f98e154]
+                        - generic [ref=f98e156]: Large Language Models (LLMs)
+                        - img [ref=f98e158]
+                      - list [ref=f98e160]:
+                        - listitem [ref=f98e161]:
+                          - link "Choosing your LLM" [ref=f98e162] [cursor=pointer]:
+                            - /url: /llm/getting_started_llm
+                            - img [ref=f98e164]
+                            - generic [ref=f98e167]: Choosing your LLM
+                        - listitem [ref=f98e168]:
+                          - link "Migrating to GPT-OSS-120B" [ref=f98e169] [cursor=pointer]:
+                            - /url: /llm/migrating_to_gpt_oss
+                            - img [ref=f98e171]
+                            - generic [ref=f98e174]: Migrating to GPT-OSS-120B
+                        - listitem [ref=f98e175]:
+                          - link "Virtual models" [ref=f98e176] [cursor=pointer]:
+                            - /url: /llm/managing_llm
+                            - img [ref=f98e178]
+                            - generic [ref=f98e181]: Virtual models
+                        - listitem [ref=f98e182]:
+                          - link "Model policies (Public preview)" [ref=f98e183] [cursor=pointer]:
+                            - /url: /llm/model_policies
+                            - img [ref=f98e185]
+                            - generic [ref=f98e188]: Model policies (Public preview)
+                        - listitem [ref=f98e189]:
+                          - link "Configuring the Developer Edition for wxO SaaS Tenant Integration" [ref=f98e190] [cursor=pointer]:
+                            - /url: /llm/watsonx_models
+                            - img [ref=f98e192]
+                            - generic [ref=f98e195]: Configuring the Developer Edition for wxO SaaS Tenant Integration
+                    - listitem [ref=f98e196]:
+                      - button "Agentic Workflows" [ref=f98e197] [cursor=pointer]:
+                        - img [ref=f98e199]
+                        - generic [ref=f98e201]: Agentic Workflows
+                        - img [ref=f98e203]
+                    - listitem [ref=f98e205]:
+                      - button "Tools" [ref=f98e206] [cursor=pointer]:
+                        - img [ref=f98e208]
+                        - generic [ref=f98e210]: Tools
+                        - img [ref=f98e212]
+                    - listitem [ref=f98e214]:
+                      - button "Toolkits" [ref=f98e215] [cursor=pointer]:
+                        - img [ref=f98e217]
+                        - generic [ref=f98e219]: Toolkits
+                        - img [ref=f98e221]
+                    - listitem [ref=f98e223]:
+                      - button "Connections" [ref=f98e224] [cursor=pointer]:
+                        - img [ref=f98e226]
+                        - generic [ref=f98e228]: Connections
+                        - img [ref=f98e230]
+                    - listitem [ref=f98e232]:
+                      - button "Knowledge Bases" [ref=f98e233] [cursor=pointer]:
+                        - img [ref=f98e235]
+                        - generic [ref=f98e237]: Knowledge Bases
+                        - img [ref=f98e239]
+                    - listitem [ref=f98e241]:
+                      - button "Plug-ins" [ref=f98e242] [cursor=pointer]:
+                        - img [ref=f98e244]
+                        - generic [ref=f98e246]: Plug-ins
+                        - img [ref=f98e248]
+                    - listitem [ref=f98e250]:
+                      - button "Channels" [ref=f98e251] [cursor=pointer]:
+                        - img [ref=f98e253]
+                        - generic [ref=f98e255]: Channels
+                        - img [ref=f98e257]
+                    - listitem [ref=f98e259]:
+                      - button "Phone" [ref=f98e260] [cursor=pointer]:
+                        - img [ref=f98e262]
+                        - generic [ref=f98e264]: Phone
+                        - img [ref=f98e266]
+                    - listitem [ref=f98e268]:
+                      - button "Voice" [ref=f98e269] [cursor=pointer]:
+                        - img [ref=f98e271]
+                        - generic [ref=f98e273]: Voice
+                        - img [ref=f98e275]
+                    - listitem [ref=f98e277]:
+                      - button "Scheduling" [ref=f98e278] [cursor=pointer]:
+                        - img [ref=f98e280]
+                        - generic [ref=f98e282]: Scheduling
+                        - img [ref=f98e284]
+                    - listitem [ref=f98e286]:
+                      - link "IBM Agent Connect" [ref=f98e287] [cursor=pointer]:
+                        - /url: /partners/partners
+                        - img [ref=f98e289]
+                        - generic [ref=f98e292]: IBM Agent Connect
+                - generic [ref=f98e293]:
+                  - heading "Deploy" [level=3] [ref=f98e295]
+                  - list [ref=f98e296]:
+                    - listitem [ref=f98e297]:
+                      - button "Embedded chat" [ref=f98e298] [cursor=pointer]:
+                        - img [ref=f98e300]
+                        - generic [ref=f98e302]: Embedded chat
+                        - img [ref=f98e304]
+                - generic [ref=f98e306]:
+                  - heading "Analyze" [level=3] [ref=f98e308]
+                  - list [ref=f98e309]:
+                    - listitem [ref=f98e310]:
+                      - button "Evaluation Framework" [ref=f98e311] [cursor=pointer]:
+                        - img [ref=f98e313]
+                        - generic [ref=f98e315]: Evaluation Framework
+                        - img [ref=f98e317]
+                    - listitem [ref=f98e319]:
+                      - button "Langfuse" [ref=f98e320] [cursor=pointer]:
+                        - img [ref=f98e322]
+                        - generic [ref=f98e324]: Langfuse
+                        - img [ref=f98e326]
+                    - listitem [ref=f98e328]:
+                      - button "Traces" [ref=f98e329] [cursor=pointer]:
+                        - img [ref=f98e331]
+                        - generic [ref=f98e333]: Traces
+                        - img [ref=f98e335]
+                - generic [ref=f98e337]:
+                  - heading "Developer experience" [level=3] [ref=f98e339]
+                  - list [ref=f98e340]:
+                    - listitem [ref=f98e341]:
+                      - button "Developer Edition" [ref=f98e342] [cursor=pointer]:
+                        - img [ref=f98e344]
+                        - generic [ref=f98e346]: Developer Edition
+                        - img [ref=f98e348]
+                    - listitem [ref=f98e350]:
+                      - button "VS Code ADK extension" [ref=f98e351] [cursor=pointer]:
+                        - img [ref=f98e353]
+                        - generic [ref=f98e355]: VS Code ADK extension
+                        - img [ref=f98e357]
+                    - listitem [ref=f98e359]:
+                      - button "ADK MCP Server" [ref=f98e360] [cursor=pointer]:
+                        - img [ref=f98e362]
+                        - generic [ref=f98e364]: ADK MCP Server
+                        - img [ref=f98e366]
+                    - listitem [ref=f98e368]:
+                      - button "Agentic SDK Guide" [ref=f98e369] [cursor=pointer]:
+                        - img [ref=f98e371]
+                        - generic [ref=f98e373]: Agentic SDK Guide
+                        - img [ref=f98e375]
+                - generic [ref=f98e377]:
+                  - heading "Legal notices" [level=3] [ref=f98e379]
+                  - list [ref=f98e380]:
+                    - listitem [ref=f98e381]:
+                      - link "Notices" [ref=f98e382] [cursor=pointer]:
+                        - /url: /notices/notices
+                        - img [ref=f98e384]
+                        - generic [ref=f98e387]: Notices
+                    - listitem [ref=f98e388]:
+                      - link "Security and Privacy by Design (SPbD)" [ref=f98e389] [cursor=pointer]:
+                        - /url: /notices/spbd
+                        - img [ref=f98e391]
+                        - generic [ref=f98e394]: Security and Privacy by Design (SPbD)
+                    - listitem [ref=f98e395]:
+                      - button "ADK license reference" [ref=f98e396] [cursor=pointer]:
+                        - img [ref=f98e398]
+                        - generic [ref=f98e400]: ADK license reference
+                        - img [ref=f98e402]
+            - button "Toggle dark mode" [ref=f98e407] [cursor=pointer]:
+              - generic [ref=f98e408]:
+                - img [ref=f98e409]
+                - img [ref=f98e416]
+          - main [ref=f98e421]:
+            - generic [ref=f98e422]:
+              - navigation "On this page" [ref=f98e426]:
+                - heading "On this page" [level=2] [ref=f98e427]:
+                  - button "On this page" [ref=f98e428] [cursor=pointer]:
+                    - img [ref=f98e429]
+                    - generic [ref=f98e430]: On this page
+                - list [ref=f98e432]:
+                  - listitem [ref=f98e433]:
+                    - link "Supported providers" [ref=f98e434] [cursor=pointer]:
+                      - /url: "#supported-providers"
+                  - listitem [ref=f98e435]:
+                    - link "Understanding Virtual Models" [ref=f98e436] [cursor=pointer]:
+                      - /url: "#understanding-virtual-models"
+                    - list [ref=f98e437]:
+                      - listitem [ref=f98e438]:
+                        - link "Compatibility and Support" [ref=f98e439] [cursor=pointer]:
+                          - /url: "#compatibility-and-support"
+                      - listitem [ref=f98e440]:
+                        - link "Optimized Support" [ref=f98e441] [cursor=pointer]:
+                          - /url: "#optimized-support"
+                      - listitem [ref=f98e442]:
+                        - link "Testing Requirements" [ref=f98e443] [cursor=pointer]:
+                          - /url: "#testing-requirements"
+                  - listitem [ref=f98e444]:
+                    - link "Using Custom Provider Endpoints" [ref=f98e445] [cursor=pointer]:
+                      - /url: "#using-custom-provider-endpoints"
+                    - list [ref=f98e446]:
+                      - listitem [ref=f98e447]:
+                        - link "OpenAI-Compatible with API Key Authentication" [ref=f98e448] [cursor=pointer]:
+                          - /url: "#openai-compatible-with-api-key-authentication"
+                      - listitem [ref=f98e449]:
+                        - link "OpenAI-Compatible with OAuth 2.0 Authentication" [ref=f98e450] [cursor=pointer]:
+                          - /url: "#openai-compatible-with-oauth-2-0-authentication"
+                  - listitem [ref=f98e451]:
+                    - link "CLI Reference" [ref=f98e452] [cursor=pointer]:
+                      - /url: "#cli-reference"
+                    - list [ref=f98e453]:
+                      - listitem [ref=f98e454]:
+                        - link "Examples using the supported providers" [ref=f98e455] [cursor=pointer]:
+                          - /url: "#examples-using-the-supported-providers"
+                      - listitem [ref=f98e456]:
+                        - link "List all LLMs" [ref=f98e457] [cursor=pointer]:
+                          - /url: "#list-all-llms"
+                      - listitem [ref=f98e458]:
+                        - link "Removing custom LLMs" [ref=f98e459] [cursor=pointer]:
+                          - /url: "#removing-custom-llms"
+                      - listitem [ref=f98e460]:
+                        - link "Exporting custom LLM" [ref=f98e461] [cursor=pointer]:
+                          - /url: "#exporting-custom-llm"
+                      - listitem [ref=f98e462]:
+                        - link "Updating custom LLM" [ref=f98e463] [cursor=pointer]:
+                          - /url: "#updating-custom-llm"
+                      - listitem [ref=f98e464]:
+                        - link "Additional configuration options" [ref=f98e465] [cursor=pointer]:
+                          - /url: "#additional-configuration-options"
+                      - listitem [ref=f98e466]:
+                        - link "Setting a default LLM in the UI" [ref=f98e467] [cursor=pointer]:
+                          - /url: "#setting-a-default-llm-in-the-ui"
+                      - listitem [ref=f98e468]:
+                        - link "Setting a default embedding model" [ref=f98e469] [cursor=pointer]:
+                          - /url: "#setting-a-default-embedding-model"
+                      - listitem [ref=f98e470]:
+                        - link "Registering a watsonx model by using your watsonx credentials" [ref=f98e471] [cursor=pointer]:
+                          - /url: "#registering-a-watsonx-model-by-using-your-watsonx-credentials"
+                      - listitem [ref=f98e472]:
+                        - link "Configuring LLM parameters" [ref=f98e473] [cursor=pointer]:
+                          - /url: "#configuring-llm-parameters"
+              - generic [ref=f98e474]:
+                - generic [ref=f98e476]:
+                  - generic [ref=f98e477]: Large Language Models (LLMs)
+                  - heading "Managing virtual models" [level=1] [ref=f98e479]
+                - generic [ref=f98e480]:
+                  - generic [ref=f98e481]:
+                    - text: You can integrate third-party LLM models from a variety of
+                    - link "supported providers" [ref=f98e482] [cursor=pointer]:
+                      - /url: "#supported-providers"
+                    - text: as virtual models.
+                  - heading "Navigate to header Supported providers" [level=2] [ref=f98e483]:
+                    - link "Navigate to header" [ref=f98e484] [cursor=pointer]:
+                      - /url: "#supported-providers"
+                      - img [ref=f98e486]
+                    - generic [ref=f98e488] [cursor=pointer]: Supported providers
+                  - table [ref=f98e491]:
+                    - rowgroup [ref=f98e492]:
+                      - row "Provider Provider ID" [ref=f98e493]:
+                        - columnheader "Provider" [ref=f98e494]
+                        - columnheader "Provider ID" [ref=f98e495]
+                    - rowgroup [ref=f98e496]:
+                      - row "OpenAI openai" [ref=f98e497]:
+                        - cell "OpenAI" [ref=f98e498]:
+                          - link "OpenAI" [ref=f98e499] [cursor=pointer]:
+                            - /url: https://platform.openai.com/
+                        - cell "openai" [ref=f98e500]:
+                          - code [ref=f98e501]: openai
+                      - row "watsonx.ai watsonx" [ref=f98e502]:
+                        - cell "watsonx.ai" [ref=f98e503]:
+                          - link "watsonx.ai" [ref=f98e504] [cursor=pointer]:
+                            - /url: https://www.ibm.com/products/watsonx-ai
+                        - cell "watsonx" [ref=f98e505]:
+                          - code [ref=f98e506]: watsonx
+                      - row "Groq groq" [ref=f98e507]:
+                        - cell "Groq" [ref=f98e508]:
+                          - link "Groq" [ref=f98e509] [cursor=pointer]:
+                            - /url: https://groq.com
+                        - cell "groq" [ref=f98e510]:
+                          - code [ref=f98e511]: groq
+                      - row "Anthropic anthropic" [ref=f98e512]:
+                        - cell "Anthropic" [ref=f98e513]:
+                          - link "Anthropic" [ref=f98e514] [cursor=pointer]:
+                            - /url: https://docs.anthropic.com/en/home
+                        - cell "anthropic" [ref=f98e515]:
+                          - code [ref=f98e516]: anthropic
+                      - row "Google Gen AI google" [ref=f98e517]:
+                        - cell "Google Gen AI" [ref=f98e518]:
+                          - link "Google Gen AI" [ref=f98e519] [cursor=pointer]:
+                            - /url: https://ai.google.dev/
+                        - cell "google" [ref=f98e520]:
+                          - code [ref=f98e521]: google
+                      - row "Gemini Enterprise Agent Platform vertex-ai" [ref=f98e522]:
+                        - cell "Gemini Enterprise Agent Platform" [ref=f98e523]:
+                          - link "Gemini Enterprise Agent Platform" [ref=f98e524] [cursor=pointer]:
+                            - /url: https://cloud.google.com/products/agent-builder
+                        - cell "vertex-ai" [ref=f98e525]:
+                          - code [ref=f98e526]: vertex-ai
+                      - row "Azure AI azure-ai" [ref=f98e527]:
+                        - cell "Azure AI" [ref=f98e528]:
+                          - link "Azure AI" [ref=f98e529] [cursor=pointer]:
+                            - /url: https://azure.microsoft.com/en-us/products/ai-model-catalog
+                        - cell "azure-ai" [ref=f98e530]:
+                          - code [ref=f98e531]: azure-ai
+                      - row "Azure OpenAI azure-openai" [ref=f98e532]:
+                        - cell "Azure OpenAI" [ref=f98e533]:
+                          - link "Azure OpenAI" [ref=f98e534] [cursor=pointer]:
+                            - /url: https://azure.microsoft.com/products/ai-services/openai-service
+                        - cell "azure-openai" [ref=f98e535]:
+                          - code [ref=f98e536]: azure-openai
+                      - row "AWS Bedrock bedrock" [ref=f98e537]:
+                        - cell "AWS Bedrock" [ref=f98e538]:
+                          - link "AWS Bedrock" [ref=f98e539] [cursor=pointer]:
+                            - /url: https://aws.amazon.com/bedrock/
+                        - cell "bedrock" [ref=f98e540]:
+                          - code [ref=f98e541]: bedrock
+                      - row "Mistral mistral-ai" [ref=f98e542]:
+                        - cell "Mistral" [ref=f98e543]:
+                          - link "Mistral" [ref=f98e544] [cursor=pointer]:
+                            - /url: https://admin.mistral.ai/organization
+                        - cell "mistral-ai" [ref=f98e545]:
+                          - code [ref=f98e546]: mistral-ai
+                      - row "OpenRouter openrouter" [ref=f98e547]:
+                        - cell "OpenRouter" [ref=f98e548]:
+                          - link "OpenRouter" [ref=f98e549] [cursor=pointer]:
+                            - /url: https://openrouter.ai/
+                        - cell "openrouter" [ref=f98e550]:
+                          - code [ref=f98e551]: openrouter
+                      - row "x.ai x-ai" [ref=f98e552]:
+                        - cell "x.ai" [ref=f98e553]:
+                          - link "x.ai" [ref=f98e554] [cursor=pointer]:
+                            - /url: https://x.ai/
+                        - cell "x-ai" [ref=f98e555]:
+                          - code [ref=f98e556]: x-ai
+                      - row "Ollama ollama" [ref=f98e557]:
+                        - cell "Ollama" [ref=f98e558]:
+                          - link "Ollama" [ref=f98e559] [cursor=pointer]:
+                            - /url: https://ollama.com/
+                        - cell "ollama" [ref=f98e560]:
+                          - code [ref=f98e561]: ollama
+                  - generic [ref=f98e562]:
+                    - img "Note" [ref=f98e564]
+                    - generic [ref=f98e566]:
+                      - strong [ref=f98e568]: "Note:"
+                      - list [ref=f98e569]:
+                        - listitem [ref=f98e570]:
+                          - text: When importing a model from OpenRouter, always set the
+                          - code [ref=f98e571]: max_token
+                          - text: parameter explicitly. If you skip this step, the system defaults to 65536 tokens. This high token count can cause the request to fail if you don’t have enough credits.
+                        - listitem [ref=f98e572]:
+                          - strong [ref=f98e573]: GPT-OSS-120b
+                          - text: is a non-IBM product governed by a third-party license that may impose use restrictions and other obligations. By using this model you agree to the terms.
+                          - link "Read the terms" [ref=f98e574] [cursor=pointer]:
+                            - /url: https://www.ibm.com/support/customer/csol/terms/?id=i126-9451&lc=en
+                          - text: .
+                  - heading "Navigate to header Understanding Virtual Models" [level=2] [ref=f98e575]:
+                    - link "Navigate to header" [ref=f98e576] [cursor=pointer]:
+                      - /url: "#understanding-virtual-models"
+                      - img [ref=f98e578]
+                    - generic [ref=f98e580] [cursor=pointer]: Understanding Virtual Models
+                  - generic [ref=f98e581]: "You can configure watsonx Orchestrate to register an external model/provider, also known as a virtual model. However, there are important considerations:"
+                  - heading "Navigate to header Compatibility and Support" [level=3] [ref=f98e582]:
+                    - link "Navigate to header" [ref=f98e583] [cursor=pointer]:
+                      - /url: "#compatibility-and-support"
+                      - img [ref=f98e585]
+                    - generic [ref=f98e587] [cursor=pointer]: Compatibility and Support
+                  - generic [ref=f98e588]:
+                    - text: Not every model and provider combination is supported or tested. While the
+                    - link "supported providers" [ref=f98e589] [cursor=pointer]:
+                      - /url: "#supported-providers"
+                    - text: "list shows providers that have been tested in the past, this does not guarantee that every model on every listed provider will work. Consider the following:"
+                  - list [ref=f98e590]:
+                    - listitem [ref=f98e591]:
+                      - strong [ref=f98e592]: New models and API changes
+                      - text: ": Models are released frequently, and some introduce API specification changes that may cause runtime errors"
+                    - listitem [ref=f98e593]:
+                      - strong [ref=f98e594]: Intermediate infrastructure
+                      - text: ": If there are components in the request path between watsonx Orchestrate and the provider (such as gateways, proxies, or adapters), these may introduce incompatibilities or special authentication requirements that watsonx Orchestrate does not support"
+                    - listitem [ref=f98e595]:
+                      - strong [ref=f98e596]: Model suitability
+                      - text: ": Not all models are well-suited for agentic workflows. Even when a model registers successfully and runs without errors, the results may not be accurate enough for business-critical agents"
+                  - heading "Navigate to header Optimized Support" [level=3] [ref=f98e597]:
+                    - link "Navigate to header" [ref=f98e598] [cursor=pointer]:
+                      - /url: "#optimized-support"
+                      - img [ref=f98e600]
+                    - generic [ref=f98e602] [cursor=pointer]: Optimized Support
+                  - generic [ref=f98e603]: "watsonx Orchestrate provides optimized support for:"
+                  - list [ref=f98e604]:
+                    - listitem [ref=f98e605]:
+                      - strong [ref=f98e606]: gpt-oss-120b
+                      - text: via Groq or AWS Bedrock providers
+                    - listitem [ref=f98e607]:
+                      - strong [ref=f98e608]: gpt-oss-120b
+                      - text: via watsonx.ai in GovCloud environments (available April mid-release)
+                  - generic [ref=f98e609]: These model/provider combinations have undergone extensive testing and optimization for agent workflows.
+                  - heading "Navigate to header Testing Requirements" [level=3] [ref=f98e610]:
+                    - link "Navigate to header" [ref=f98e611] [cursor=pointer]:
+                      - /url: "#testing-requirements"
+                      - img [ref=f98e613]
+                    - generic [ref=f98e615] [cursor=pointer]: Testing Requirements
+                  - generic [ref=f98e616]: When registering virtual models with other providers, allocate sufficient time to validate that the combination works correctly. Testing may identify incompatibilities that prevent the agent from functioning as expected.
+                  - heading "Navigate to header Using Custom Provider Endpoints" [level=2] [ref=f98e617]:
+                    - link "Navigate to header" [ref=f98e618] [cursor=pointer]:
+                      - /url: "#using-custom-provider-endpoints"
+                      - img [ref=f98e620]
+                    - generic [ref=f98e622] [cursor=pointer]: Using Custom Provider Endpoints
+                  - generic [ref=f98e623]: If you self-host an LLM or have a model proxy/gateway as a pass-through to another provider, you may be able to leverage OpenAI chat completion compatibility. This section covers authentication options for custom endpoints.
+                  - heading "Navigate to header OpenAI-Compatible with API Key Authentication" [level=3] [ref=f98e624]:
+                    - link "Navigate to header" [ref=f98e625] [cursor=pointer]:
+                      - /url: "#openai-compatible-with-api-key-authentication"
+                      - img [ref=f98e627]
+                    - generic [ref=f98e629] [cursor=pointer]: OpenAI-Compatible with API Key Authentication
+                  - generic [ref=f98e630]:
+                    - text: The default base URL for the
+                    - code [ref=f98e631]: openai
+                    - text: provider is
+                    - code [ref=f98e632]: https://api.openai.com/v1
+                    - text: . For self-hosted OpenAI-compatible endpoints, ensure your full URL ends with
+                    - code [ref=f98e633]: /chat/completions
+                    - text: ", but exclude this path when providing the"
+                    - code [ref=f98e634]: custom_host
+                    - text: during registration.
+                  - generic [ref=f98e635]:
+                    - strong [ref=f98e636]: Authentication format
+                    - text: ":"
+                  - generic [ref=f98e637]:
+                    - generic [ref=f98e638]:
+                      - button "Report incorrect code" [ref=f98e640] [cursor=pointer]:
+                        - img [ref=f98e641]
+                      - button "Copy the contents from the code block" [ref=f98e644] [cursor=pointer]:
+                        - img [ref=f98e645]
+                    - code [ref=f98e651]:
+                      - generic [ref=f98e652]: "Authorization: Bearer ${apiKey}"
+                  - generic [ref=f98e653]:
+                    - strong [ref=f98e654]: Example
+                    - text: ":"
+                  - list [ref=f98e655]:
+                    - listitem [ref=f98e656]:
+                      - generic [ref=f98e659]:
+                        - generic [ref=f98e660]: "1"
+                        - link "Navigate to header" [ref=f98e662] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f98e664]
+                      - generic [ref=f98e666]:
+                        - paragraph [ref=f98e667]: Define the model specification
+                        - generic [ref=f98e668]:
+                          - generic [ref=f98e669]:
+                            - generic [ref=f98e670]:
+                              - generic "custom-openai-model.yaml" [ref=f98e672]
+                              - generic [ref=f98e673]:
+                                - button "Report incorrect code" [ref=f98e675] [cursor=pointer]:
+                                  - img [ref=f98e676]
+                                - button "Copy the contents from the code block" [ref=f98e679] [cursor=pointer]:
+                                  - img [ref=f98e680]
+                            - code [ref=f98e686]:
+                              - generic [ref=f98e687]: "spec_version: v1"
+                              - generic [ref=f98e688]: "kind: model"
+                              - generic [ref=f98e689]: "name: openai/your-model-id"
+                              - generic [ref=f98e690]: "model_type: chat"
+                              - generic [ref=f98e691]: "provider_config:"
+                              - generic [ref=f98e692]: "api_key: \"your-apikey\""
+                              - generic [ref=f98e693]: "custom_host: \"https://your-url\""
+                          - generic [ref=f98e694]:
+                            - text: "Note: Do not include"
+                            - code [ref=f98e695]: /chat/completions
+                            - text: in the
+                            - code [ref=f98e696]: custom_host
+                            - text: value.
+                    - listitem [ref=f98e697]:
+                      - generic [ref=f98e700]:
+                        - generic [ref=f98e701]: "2"
+                        - link "Navigate to header" [ref=f98e703] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f98e705]
+                      - generic [ref=f98e707]:
+                        - paragraph [ref=f98e708]: Register the model
+                        - generic [ref=f98e710]:
+                          - generic [ref=f98e711]:
+                            - button "Report incorrect code" [ref=f98e713] [cursor=pointer]:
+                              - img [ref=f98e714]
+                            - button "Copy the contents from the code block" [ref=f98e717] [cursor=pointer]:
+                              - img [ref=f98e718]
+                          - code [ref=f98e724]:
+                            - generic [ref=f98e725]: orchestrate models import --file custom-openai-model.yaml
+                  - heading "Navigate to header OpenAI-Compatible with OAuth 2.0 Authentication" [level=3] [ref=f98e726]:
+                    - link "Navigate to header" [ref=f98e727] [cursor=pointer]:
+                      - /url: "#openai-compatible-with-oauth-2-0-authentication"
+                      - img [ref=f98e729]
+                    - generic [ref=f98e731] [cursor=pointer]: OpenAI-Compatible with OAuth 2.0 Authentication
+                  - generic [ref=f98e732]:
+                    - text: For self-hosted OpenAI-compatible endpoints that use OAuth 2.0 client credentials authentication, use the
+                    - code [ref=f98e733]: openai-oauth2-client-creds
+                    - text: provider type. This is appropriate when your OAuth token endpoint is separate from your LLM inferencing endpoint.
+                  - generic [ref=f98e734]:
+                    - strong [ref=f98e735]: Prerequisites
+                    - text: ": Your LLM inferencing URL must:"
+                  - list [ref=f98e736]:
+                    - listitem [ref=f98e737]:
+                      - text: End with
+                      - code [ref=f98e738]: /chat/completions
+                      - text: (per OpenAI spec)
+                    - listitem [ref=f98e739]:
+                      - text: "Accept OAuth tokens in the request header:"
+                      - code [ref=f98e740]: "Authorization: Bearer your-access-token"
+                  - list [ref=f98e741]:
+                    - listitem [ref=f98e742]:
+                      - generic [ref=f98e745]:
+                        - generic [ref=f98e746]: "1"
+                        - link "Navigate to header" [ref=f98e748] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f98e750]
+                      - generic [ref=f98e752]:
+                        - paragraph [ref=f98e753]: Create OAuth connection
+                        - generic [ref=f98e754]:
+                          - generic [ref=f98e755]:
+                            - text: First, create a Team application/connection in watsonx Orchestrate. See
+                            - link "OAuth 2.0 Client Credentials" [ref=f98e756] [cursor=pointer]:
+                              - /url: /connections/build_connections#oauth-auth-client-credentials-flow
+                            - text: for details.
+                          - generic [ref=f98e757]: "Example OAuth token endpoint:"
+                          - generic [ref=f98e758]:
+                            - generic [ref=f98e759]:
+                              - button "Report incorrect code" [ref=f98e761] [cursor=pointer]:
+                                - img [ref=f98e762]
+                              - button "Copy the contents from the code block" [ref=f98e765] [cursor=pointer]:
+                                - img [ref=f98e766]
+                            - code [ref=f98e772]:
+                              - generic [ref=f98e773]: response = requests.post(
+                              - generic [ref=f98e774]: token_url,
+                              - generic [ref=f98e775]: auth=(client_id, client_secret),
+                              - generic [ref=f98e776]: "headers={\"Content-Type\": \"application/x-www-form-urlencoded\"},"
+                              - generic [ref=f98e777]: "data={\"grant_type\": \"client_credentials\"}"
+                              - generic [ref=f98e778]: )
+                    - listitem [ref=f98e779]:
+                      - generic [ref=f98e782]:
+                        - generic [ref=f98e783]: "2"
+                        - link "Navigate to header" [ref=f98e785] [cursor=pointer]:
+                          - /url: "#"
+                          - img [ref=f98e787]
+                      - generic [ref=f98e789]:
+                        - paragraph [ref=f98e790]: Register the model
+                        - generic [ref=f98e791]:
+                          - generic [ref=f98e792]:
+                            - generic [ref=f98e793]:
+                              - button "Report incorrect code" [ref=f98e795] [cursor=pointer]:
+                                - img [ref=f98e796]
+                              - button "Copy the contents from the code block" [ref=f98e799] [cursor=pointer]:
+                                - img [ref=f98e800]
+                            - code [ref=f98e806]:
+                              - generic [ref=f98e807]: orchestrate models add \
+                              - generic [ref=f98e808]: "--name \"openai-oauth2-client-creds/your-model-id\" \\"
+                              - generic [ref=f98e809]: "--provider-config '{\"custom_host\": \"https://your-llm-inferencing-url\"}' \\"
+                              - generic [ref=f98e810]: "--app-id your-app-id-from-step-1"
+                          - generic [ref=f98e811]:
+                            - text: "Note: Exclude"
+                            - code [ref=f98e812]: /chat/completions
+                            - text: from the
+                            - code [ref=f98e813]: custom_host
+                            - text: value.
+                  - generic [ref=f98e814]:
+                    - img "Warning" [ref=f98e816]
+                    - generic [ref=f98e819]: Custom endpoints and intermediate infrastructure (proxies, gateways) may not be fully supported. Ensure thorough testing before production use.
+                  - heading "Navigate to header CLI Reference" [level=2] [ref=f98e820]:
+                    - link "Navigate to header" [ref=f98e821] [cursor=pointer]:
+                      - /url: "#cli-reference"
+                      - img [ref=f98e823]
+                    - generic [ref=f98e825] [cursor=pointer]: CLI Reference
+                  - generic [ref=f98e826]:
+                    - tablist [ref=f98e827]:
+                      - tab "Importing from a file" [selected] [ref=f98e828] [cursor=pointer]:
+                        - generic [ref=f98e829]: Importing from a file
+                      - tab "Using the CLI only" [ref=f98e830] [cursor=pointer]:
+                        - generic [ref=f98e831]: Using the CLI only
+                    - tabpanel [ref=f98e833]:
+                      - generic [ref=f98e834]:
+                        - text: You can add a virtual model to watsonx Orchestrate using the
+                        - code [ref=f98e835]: orchestrate models import
+                        - text: command.
+                      - list [ref=f98e836]:
+                        - listitem [ref=f98e837]:
+                          - generic [ref=f98e840]:
+                            - generic [ref=f98e841]: "1"
+                            - link "Navigate to header" [ref=f98e843] [cursor=pointer]:
+                              - /url: "#"
+                              - img [ref=f98e845]
+                          - generic [ref=f98e847]:
+                            - paragraph [ref=f98e848]: Define the model specification file
+                            - generic [ref=f98e849]:
+                              - generic [ref=f98e850]:
+                                - generic [ref=f98e851]:
+                                  - generic "granite-3-3-8b-model.yaml" [ref=f98e853]
+                                  - generic [ref=f98e854]:
+                                    - button "Report incorrect code" [ref=f98e856] [cursor=pointer]:
+                                      - img [ref=f98e857]
+                                    - button "Copy the contents from the code block" [ref=f98e860] [cursor=pointer]:
+                                      - img [ref=f98e861]
+                                - code [ref=f98e867]:
+                                  - generic [ref=f98e868]: "spec_version: v1"
+                                  - generic [ref=f98e869]: "kind: model"
+                                  - generic [ref=f98e870]: "name: virtual-model/watsonx/ibm/granite-3.3-8b-instruct"
+                                  - generic [ref=f98e871]: "display_name: IBM watsonx.ai (Granite)"
+                                  - generic [ref=f98e872]: "description: |"
+                                  - generic [ref=f98e873]: IBM watsonx.ai model using Space-scoped configuration.
+                                  - generic [ref=f98e874]: "tags:"
+                                  - generic [ref=f98e875]: "- ibm"
+                                  - generic [ref=f98e876]: "- watsonx"
+                                  - generic [ref=f98e877]: "model_type: chat"
+                                  - generic [ref=f98e878]: "provider_config:"
+                                  - generic [ref=f98e879]: "watsonx_space_id: my-space-id # For any non-sensitive field not already provided by the connection"
+                              - group [ref=f98e880]:
+                                - generic "Show properties" [ref=f98e881] [cursor=pointer]:
+                                  - img [ref=f98e882]
+                                  - paragraph [ref=f98e884]: Show properties
+                        - listitem [ref=f98e885]:
+                          - generic [ref=f98e888]:
+                            - generic [ref=f98e889]: "2"
+                            - link "Navigate to header" [ref=f98e891] [cursor=pointer]:
+                              - /url: "#"
+                              - img [ref=f98e893]
+                          - generic [ref=f98e895]:
+                            - paragraph [ref=f98e896]: Create an API key connection
+                            - generic [ref=f98e898]:
+                              - generic [ref=f98e899]:
+                                - generic "BASH" [ref=f98e901]
+                                - generic [ref=f98e902]:
+                                  - button "Report incorrect code" [ref=f98e904] [cursor=pointer]:
+                                    - img [ref=f98e905]
+                                  - button "Copy the contents from the code block" [ref=f98e908] [cursor=pointer]:
+                                    - img [ref=f98e909]
+                              - code [ref=f98e915]:
+                                - generic [ref=f98e916]: orchestrate connections add -a watsonx_credentials
+                                - generic [ref=f98e917]: orchestrate connections configure -a watsonx_credentials --env draft -k key_value -t team
+                                - generic [ref=f98e918]: orchestrate connections set-credentials -a watsonx_credentials --env draft -e "api_key=my_watsonx_api_key"
+                        - listitem [ref=f98e919]:
+                          - generic [ref=f98e922]:
+                            - generic [ref=f98e923]: "3"
+                            - link "Navigate to header" [ref=f98e925] [cursor=pointer]:
+                              - /url: "#"
+                              - img [ref=f98e927]
+                          - generic [ref=f98e929]:
+                            - paragraph [ref=f98e930]: Add the model
+                            - generic [ref=f98e931]:
+                              - generic [ref=f98e932]:
+                                - generic [ref=f98e933]:
+                                  - generic "BASH" [ref=f98e935]
+                                  - generic [ref=f98e936]:
+                                    - button "Report incorrect code" [ref=f98e938] [cursor=pointer]:
+                                      - img [ref=f98e939]
+                                    - button "Copy the contents from the code block" [ref=f98e942] [cursor=pointer]:
+                                      - img [ref=f98e943]
+                                - code [ref=f98e949]:
+                                  - generic [ref=f98e950]: orchestrate models import --file watsonx-model.yaml --app-id watsonx_credentials
+                              - generic [ref=f98e951]:
+                                - strong [ref=f98e952]: Arguments
+                                - text: ":"
+                              - list [ref=f98e953]:
+                                - listitem [ref=f98e954]:
+                                  - code [ref=f98e955]: "--file"
+                                  - text: (
+                                  - code [ref=f98e956]: "-f"
+                                  - text: "): File path of the spec file containing the model configuration."
+                                - listitem [ref=f98e957]:
+                                  - code [ref=f98e958]: "--app-id"
+                                  - text: (
+                                  - code [ref=f98e959]: "-a"
+                                  - text: "): The app ID of a"
+                                  - code [ref=f98e960]: key_value
+                                  - text: connection containing provider configuration details. These will be merged with the values provided in the
+                                  - code [ref=f98e961]: provider_config
+                                  - text: section of the spec.
+                  - heading "Navigate to header Examples using the supported providers" [level=3] [ref=f98e962]:
+                    - link "Navigate to header" [ref=f98e963] [cursor=pointer]:
+                      - /url: "#examples-using-the-supported-providers"
+                      - img [ref=f98e965]
+                    - generic [ref=f98e967] [cursor=pointer]: Examples using the supported providers
+                  - generic [ref=f98e968]: The following sections contain examples and the supported schemas for each model provider.
+                  - generic [ref=f98e969]:
+                    - group [ref=f98e970]:
+                      - generic "OpenAI" [ref=f98e971] [cursor=pointer]:
+                        - img [ref=f98e973]
+                        - paragraph [ref=f98e975]: OpenAI
+                    - group [ref=f98e976]:
+                      - generic "watsonx.ai" [ref=f98e977] [cursor=pointer]:
+                        - img [ref=f98e979]
+                        - paragraph [ref=f98e981]: watsonx.ai
+                    - group [ref=f98e982]:
+                      - generic "Groq" [ref=f98e983] [cursor=pointer]:
+                        - img [ref=f98e985]
+                        - paragraph [ref=f98e987]: Groq
+                    - group [ref=f98e988]:
+                      - generic "Anthropic" [ref=f98e989] [cursor=pointer]:
+                        - img [ref=f98e991]
+                        - paragraph [ref=f98e993]: Anthropic
+                    - group [ref=f98e994]:
+                      - generic "Google Gen AI" [ref=f98e995] [cursor=pointer]:
+                        - img [ref=f98e997]
+                        - paragraph [ref=f98e999]: Google Gen AI
+                    - group [ref=f98e1000]:
+                      - generic "Gemini Enterprise Agent Platform" [ref=f98e1001] [cursor=pointer]:
+                        - img [ref=f98e1003]
+                        - paragraph [ref=f98e1005]: Gemini Enterprise Agent Platform
+                    - group [ref=f98e1006]:
+                      - generic "Azure" [ref=f98e1007] [cursor=pointer]:
+                        - img [ref=f98e1009]
+                        - paragraph [ref=f98e1011]: Azure
+                    - group [ref=f98e1012]:
+                      - generic "Azure OpenAI" [ref=f98e1013] [cursor=pointer]:
+                        - img [ref=f98e1015]
+                        - paragraph [ref=f98e1017]: Azure OpenAI
+                    - group [ref=f98e1018]:
+                      - generic "AWS Bedrock" [ref=f98e1019] [cursor=pointer]:
+                        - img [ref=f98e1021]
+                        - paragraph [ref=f98e1023]: AWS Bedrock
+                    - group [ref=f98e1024]:
+                      - generic "Mistral" [ref=f98e1025] [cursor=pointer]:
+                        - img [ref=f98e1027]
+                        - paragraph [ref=f98e1029]: Mistral
+                    - group [ref=f98e1030]:
+                      - generic "OpenRouter" [ref=f98e1031] [cursor=pointer]:
+                        - img [ref=f98e1033]
+                        - paragraph [ref=f98e1035]: OpenRouter
+                    - group [ref=f98e1036]:
+                      - generic "x.ai" [ref=f98e1037] [cursor=pointer]:
+                        - img [ref=f98e1039]
+                        - paragraph [ref=f98e1041]: x.ai
+                    - group [ref=f98e1042]:
+                      - generic "Ollama" [ref=f98e1043] [cursor=pointer]:
+                        - img [ref=f98e1045]
+                        - paragraph [ref=f98e1047]: Ollama
+                  - heading "Navigate to header List all LLMs" [level=3] [ref=f98e1048]:
+                    - link "Navigate to header" [ref=f98e1049] [cursor=pointer]:
+                      - /url: "#list-all-llms"
+                      - img [ref=f98e1051]
+                    - generic [ref=f98e1053] [cursor=pointer]: List all LLMs
+                  - generic [ref=f98e1054]:
+                    - text: Run the
+                    - code [ref=f98e1055]: orchestrate models list
+                    - text: command to see all available LLMs in your active environment.
+                  - generic [ref=f98e1056]:
+                    - generic [ref=f98e1057]:
+                      - generic "BASH" [ref=f98e1059]
+                      - generic [ref=f98e1060]:
+                        - button "Report incorrect code" [ref=f98e1062] [cursor=pointer]:
+                          - img [ref=f98e1063]
+                        - button "Copy the contents from the code block" [ref=f98e1066] [cursor=pointer]:
+                          - img [ref=f98e1067]
+                    - code [ref=f98e1073]:
+                      - generic [ref=f98e1074]: orchestrate models list
+                  - generic [ref=f98e1075]:
+                    - img "Note" [ref=f98e1077]
+                    - generic [ref=f98e1079]:
+                      - strong [ref=f98e1081]: "Note:"
+                      - generic [ref=f98e1082]:
+                        - text: By default, you see a table of available models. If you prefer raw output, add the
+                        - code [ref=f98e1083]: "--raw"
+                        - text: (
+                        - code [ref=f98e1084]: "-r"
+                        - text: ) flag.
+                  - heading "Navigate to header Removing custom LLMs" [level=3] [ref=f98e1085]:
+                    - link "Navigate to header" [ref=f98e1086] [cursor=pointer]:
+                      - /url: "#removing-custom-llms"
+                      - img [ref=f98e1088]
+                    - generic [ref=f98e1090] [cursor=pointer]: Removing custom LLMs
+                  - generic [ref=f98e1091]:
+                    - text: Run the
+                    - code [ref=f98e1092]: orchestrate models remove
+                    - text: command and use the
+                    - code [ref=f98e1093]: "--name"
+                    - text: (
+                    - code [ref=f98e1094]: "-n"
+                    - text: ) flag to specify the LLM you want to remove.
+                  - generic [ref=f98e1095]:
+                    - generic [ref=f98e1096]:
+                      - generic "BASH" [ref=f98e1098]
+                      - generic [ref=f98e1099]:
+                        - button "Report incorrect code" [ref=f98e1101] [cursor=pointer]:
+                          - img [ref=f98e1102]
+                        - button "Copy the contents from the code block" [ref=f98e1105] [cursor=pointer]:
+                          - img [ref=f98e1106]
+                    - code [ref=f98e1112]:
+                      - generic [ref=f98e1113]: orchestrate models remove -n <model-name-unique-identifier-to-delete>
+                  - heading "Navigate to header Exporting custom LLM" [level=3] [ref=f98e1114]:
+                    - link "Navigate to header" [ref=f98e1115] [cursor=pointer]:
+                      - /url: "#exporting-custom-llm"
+                      - img [ref=f98e1117]
+                    - generic [ref=f98e1119] [cursor=pointer]: Exporting custom LLM
+                  - generic [ref=f98e1120]:
+                    - text: Run the
+                    - code [ref=f98e1121]: orchestrate models export
+                    - text: command to export LLMs in your active environment.
+                  - generic [ref=f98e1122]:
+                    - generic [ref=f98e1123]:
+                      - generic "BASH" [ref=f98e1125]
+                      - generic [ref=f98e1126]:
+                        - button "Report incorrect code" [ref=f98e1128] [cursor=pointer]:
+                          - img [ref=f98e1129]
+                        - button "Copy the contents from the code block" [ref=f98e1132] [cursor=pointer]:
+                          - img [ref=f98e1133]
+                    - code [ref=f98e1139]:
+                      - generic [ref=f98e1140]: orchestrate models export -n <model_name> -o <path>.zip
+                  - group [ref=f98e1141]:
+                    - generic "Show command flags" [ref=f98e1142] [cursor=pointer]:
+                      - img [ref=f98e1143]
+                      - paragraph [ref=f98e1145]: Show command flags
+                  - heading "Navigate to header Updating custom LLM" [level=3] [ref=f98e1146]:
+                    - link "Navigate to header" [ref=f98e1147] [cursor=pointer]:
+                      - /url: "#updating-custom-llm"
+                      - img [ref=f98e1149]
+                    - generic [ref=f98e1151] [cursor=pointer]: Updating custom LLM
+                  - generic [ref=f98e1152]: "To update a custom LLM, first remove it, then add it again:"
+                  - generic [ref=f98e1153]:
+                    - generic [ref=f98e1154]:
+                      - generic "BASH" [ref=f98e1156]
+                      - generic [ref=f98e1157]:
+                        - button "Report incorrect code" [ref=f98e1159] [cursor=pointer]:
+                          - img [ref=f98e1160]
+                        - button "Copy the contents from the code block" [ref=f98e1163] [cursor=pointer]:
+                          - img [ref=f98e1164]
+                    - code [ref=f98e1170]:
+                      - generic [ref=f98e1171]: orchestrate models remove -n <model-name-unique-identifier-to-delete>
+                      - generic [ref=f98e1172]: orchestrate models add --name watsonx/meta-llama/llama-3-2-90b-vision-instruct --app-id watsonx_ai_creds
+                  - heading "Navigate to header Additional configuration options" [level=3] [ref=f98e1173]:
+                    - link "Navigate to header" [ref=f98e1174] [cursor=pointer]:
+                      - /url: "#additional-configuration-options"
+                      - img [ref=f98e1176]
+                    - generic [ref=f98e1178] [cursor=pointer]: Additional configuration options
+                  - heading "Navigate to header Setting a default LLM in the UI" [level=4] [ref=f98e1179]:
+                    - link "Navigate to header" [ref=f98e1180] [cursor=pointer]:
+                      - /url: "#setting-a-default-llm-in-the-ui"
+                      - img [ref=f98e1182]
+                    - generic [ref=f98e1184] [cursor=pointer]: Setting a default LLM in the UI
+                  - generic [ref=f98e1185]:
+                    - text: If you use an on-premises installation with models provisioned only as virtual models, you can choose which model appears as the default in the user interface. To do this, add the
+                    - code [ref=f98e1186]: default
+                    - text: tag under the
+                    - code [ref=f98e1187]: tags
+                    - text: section of a model with the type set to
+                    - code [ref=f98e1188]: chat
+                    - text: .
+                  - generic [ref=f98e1189]:
+                    - generic [ref=f98e1190]:
+                      - generic "granite-default-model.yaml" [ref=f98e1192]
+                      - generic [ref=f98e1193]:
+                        - button "Report incorrect code" [ref=f98e1195] [cursor=pointer]:
+                          - img [ref=f98e1196]
+                        - button "Copy the contents from the code block" [ref=f98e1199] [cursor=pointer]:
+                          - img [ref=f98e1200]
+                    - code [ref=f98e1206]:
+                      - generic [ref=f98e1207]: "spec_version: v1"
+                      - generic [ref=f98e1208]: "kind: model"
+                      - generic [ref=f98e1209]: "name: watsonx/ibm/granite-3.3-8b-instruct"
+                      - generic [ref=f98e1210]: "display_name: IBM watsonx.ai (Granite)"
+                      - generic [ref=f98e1211]: "description: |"
+                      - generic [ref=f98e1212]: IBM watsonx.ai model using Space-scoped configuration.
+                      - generic [ref=f98e1213]: "tags:"
+                      - generic [ref=f98e1214]: "- default # <-- this marks this as the Default model in the ui dropdown"
+                      - generic [ref=f98e1215]: "model_type: chat"
+                      - generic [ref=f98e1216]: "provider_config:"
+                      - generic [ref=f98e1217]: "watsonx_space_id: my-space-id"
+                    - button "See all 11 lines" [ref=f98e1219] [cursor=pointer]:
+                      - img [ref=f98e1220]
+                      - text: See all 11 lines
+                  - generic [ref=f98e1224]:
+                    - img "Note" [ref=f98e1226]
+                    - generic [ref=f98e1228]:
+                      - strong [ref=f98e1230]: "Note:"
+                      - generic [ref=f98e1231]: For on-premises installations using only externally hosted virtual-models, at least one model must be specified as the default model or it will not be possible to open the “Create Agent” page in the UI.
+                  - heading "Navigate to header Setting a default embedding model" [level=4] [ref=f98e1232]:
+                    - link "Navigate to header" [ref=f98e1233] [cursor=pointer]:
+                      - /url: "#setting-a-default-embedding-model"
+                      - img [ref=f98e1235]
+                    - generic [ref=f98e1237] [cursor=pointer]: Setting a default embedding model
+                  - generic [ref=f98e1238]:
+                    - text: If you use an on-premises installation with models provisioned only as virtual models, you can also set a default model for knowledge bases. To do this, add the
+                    - code [ref=f98e1239]: default
+                    - text: tag under the
+                    - code [ref=f98e1240]: tags
+                    - text: section of a model with the type set to
+                    - code [ref=f98e1241]: embedding
+                    - text: .
+                  - generic [ref=f98e1242]:
+                    - generic [ref=f98e1243]:
+                      - generic "virtual-model.yaml" [ref=f98e1245]
+                      - generic [ref=f98e1246]:
+                        - button "Report incorrect code" [ref=f98e1248] [cursor=pointer]:
+                          - img [ref=f98e1249]
+                        - button "Copy the contents from the code block" [ref=f98e1252] [cursor=pointer]:
+                          - img [ref=f98e1253]
+                    - code [ref=f98e1259]:
+                      - generic [ref=f98e1260]: "spec_version: v1"
+                      - generic [ref=f98e1261]: "kind: model"
+                      - generic [ref=f98e1262]: "name: virtual-model/watsonx/ibm/slate-30m-english-rtrvr-v2"
+                      - generic [ref=f98e1263]: "display_name: slate30m"
+                      - generic [ref=f98e1264]: "tags:"
+                      - generic [ref=f98e1265]: "- default"
+                      - generic [ref=f98e1266]: "model_type: embedding"
+                      - generic [ref=f98e1267]: "provider_config:"
+                      - generic [ref=f98e1268]: "watsonx_space_id: xxx"
+                      - generic [ref=f98e1269]: "customHost: 'https://us-south.ml.cloud.ibm.com'"
+                      - generic [ref=f98e1270]: "api_key: xxx"
+                    - button "See all 11 lines" [ref=f98e1272] [cursor=pointer]:
+                      - img [ref=f98e1273]
+                      - text: See all 11 lines
+                  - heading "Navigate to header Registering a watsonx model by using your watsonx credentials" [level=4] [ref=f98e1277]:
+                    - link "Navigate to header" [ref=f98e1278] [cursor=pointer]:
+                      - /url: "#registering-a-watsonx-model-by-using-your-watsonx-credentials"
+                      - img [ref=f98e1280]
+                    - generic [ref=f98e1282] [cursor=pointer]: Registering a watsonx model by using your watsonx credentials
+                  - generic [ref=f98e1283]:
+                    - text: You can also register a watsonx model that uses your watsonx credentials supplied in your
+                    - code [ref=f98e1284]: .env
+                    - text: file when you start the watsonx Orchestrate Developer Edition.
+                  - generic [ref=f98e1285]:
+                    - text: For that, your
+                    - code [ref=f98e1286]: .env
+                    - text: "file must contain either:"
+                  - list [ref=f98e1287]:
+                    - listitem [ref=f98e1288]:
+                      - text: Your watsonx.ai credentials with the
+                      - code [ref=f98e1289]: WATSONX_APIKEY
+                      - text: and
+                      - code [ref=f98e1290]: WATSONX_SPACE_ID
+                      - text: environment variables.
+                    - listitem [ref=f98e1291]:
+                      - text: Or, your watsonx Orchestrate credentials with the
+                      - code [ref=f98e1292]: WO_INSTANCE
+                      - text: and
+                      - code [ref=f98e1293]: WO_API_KEY
+                      - text: environment variables.
+                  - generic [ref=f98e1294]:
+                    - text: To learn how to configure you
+                    - code [ref=f98e1295]: .env
+                    - text: file with these credentials, see
+                    - link "Installing the watsonx Orchestrate Developer Edition" [ref=f98e1296] [cursor=pointer]:
+                      - /url: /developer_edition/wxOde_setup
+                    - text: .
+                  - generic [ref=f98e1297]:
+                    - text: To register the watsonx model using this method, set the
+                    - code [ref=f98e1298]: api_key
+                    - text: credential value to “
+                    - code [ref=f98e1299]: gateway
+                    - text: ”. You do not need to specify a
+                    - code [ref=f98e1300]: space_id
+                    - text: "when you add the model. See the following example:"
+                  - generic [ref=f98e1301]:
+                    - img "Note" [ref=f98e1303]
+                    - generic [ref=f98e1305]:
+                      - strong [ref=f98e1307]: "Note:"
+                      - generic [ref=f98e1308]: This requirement does not apply to on-premises deployments.
+                  - generic [ref=f98e1309]:
+                    - generic [ref=f98e1310]:
+                      - generic "BASH" [ref=f98e1312]
+                      - generic [ref=f98e1313]:
+                        - button "Report incorrect code" [ref=f98e1315] [cursor=pointer]:
+                          - img [ref=f98e1316]
+                        - button "Copy the contents from the code block" [ref=f98e1319] [cursor=pointer]:
+                          - img [ref=f98e1320]
+                    - code [ref=f98e1326]:
+                      - generic [ref=f98e1327]: orchestrate connections configure -a wx_gw_creds --env draft -k key_value -t team
+                      - generic [ref=f98e1328]: orchestrate connections set-credentials -a wx_gw_creds --env draft -e "api_key=gateway"
+                      - generic [ref=f98e1329]: orchestrate models add --name "watsonx/meta-llama/llama-3-2-90b-vision-instruct" --app-id wx_gw_creds
+                  - heading "Navigate to header Configuring LLM parameters" [level=4] [ref=f98e1330]:
+                    - link "Navigate to header" [ref=f98e1331] [cursor=pointer]:
+                      - /url: "#configuring-llm-parameters"
+                      - img [ref=f98e1333]
+                    - generic [ref=f98e1335] [cursor=pointer]: Configuring LLM parameters
+                  - generic [ref=f98e1336]: "You can configure additional LLM parameters such as temperature and seed for more control over model behavior. These parameters can be set in your agent configuration:"
+                  - generic [ref=f98e1337]:
+                    - generic [ref=f98e1338]:
+                      - button "Report incorrect code" [ref=f98e1340] [cursor=pointer]:
+                        - img [ref=f98e1341]
+                      - button "Copy the contents from the code block" [ref=f98e1344] [cursor=pointer]:
+                        - img [ref=f98e1345]
+                    - code [ref=f98e1351]:
+                      - generic [ref=f98e1352]: "llm_config:"
+                      - generic [ref=f98e1353]: "seed: 123"
+                      - generic [ref=f98e1354]: "temperature: 0.0"
+                  - strong [ref=f98e1356]: "Parameters:"
+                  - list [ref=f98e1357]:
+                    - listitem [ref=f98e1358]:
+                      - code [ref=f98e1359]: seed
+                      - text: ": Sets a random seed for reproducible outputs (useful for testing and debugging)"
+                    - listitem [ref=f98e1360]:
+                      - code [ref=f98e1361]: temperature
+                      - text: ": Controls randomness in responses (0.0 = deterministic, higher values = more creative)"
+                  - generic [ref=f98e1362]: These settings apply to the specific agent and override any default model configurations.
+                - generic [ref=f98e1363]:
+                  - link "Migrating agents from Llama to GPT-OSS-120B Previous" [ref=f98e1364] [cursor=pointer]:
+                    - /url: /llm/migrating_to_gpt_oss
+                    - generic [ref=f98e1365]:
+                      - generic [ref=f98e1366]: Migrating agents from Llama to GPT-OSS-120B
+                      - generic [ref=f98e1367]:
+                        - img [ref=f98e1368]
+                        - generic [ref=f98e1370]: Previous
+                  - link "Configuring model policies (Public preview) Next" [ref=f98e1371] [cursor=pointer]:
+                    - /url: /llm/model_policies
+                    - generic [ref=f98e1372]:
+                      - generic [ref=f98e1373]: Configuring model policies (Public preview)
+                      - generic [ref=f98e1374]:
+                        - img [ref=f98e1375]
+                        - generic [ref=f98e1377]: Next
+            - generic [ref=f98e1380]:
+              - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f98e1382] [cursor=pointer]:
+                - /url: /
+                - generic [ref=f98e1383]: IBM watsonx Orchestrate ADK home page
+                - img "light logo" [ref=f98e1384]
+              - generic [ref=f98e1385]:
+                - generic [ref=f98e1387]:
+                  - paragraph [ref=f98e1388]: Copyright information
+                  - link "© Copyright IBM Corporation 2025" [ref=f98e1389] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal/copyright-trademark
+                - generic [ref=f98e1391]:
+                  - paragraph [ref=f98e1392]: Privacy and accessibility
+                  - link "Privacy" [ref=f98e1393] [cursor=pointer]:
+                    - /url: https://www.ibm.com/privacy
+                  - link "Accessibility" [ref=f98e1394] [cursor=pointer]:
+                    - /url: https://www.ibm.com/able?lnk=flg-acce-usen
+                  - link "Terms of use" [ref=f98e1395] [cursor=pointer]:
+                    - /url: https://www.ibm.com/legal?lnk=flg-tous-usen

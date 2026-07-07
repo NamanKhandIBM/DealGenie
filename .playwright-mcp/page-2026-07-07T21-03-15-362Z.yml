@@ -1,0 +1,37 @@
+- generic [active] [ref=f4e1]:
+  - blockquote [ref=f4e2]:
+    - heading [level=2] [ref=f4e3]: Documentation Index
+    - paragraph [ref=f4e4]:
+      - text: "Fetch the complete documentation index at:"
+      - link [ref=f4e5] [cursor=pointer]:
+        - /url: /llms.txt
+        - text: /llms.txt
+    - paragraph [ref=f4e6]: Use this file to discover all available pages before exploring further.
+  - generic:
+    - link "Skip to main content" [ref=f4e7] [cursor=pointer]:
+      - /url: "#content-area"
+    - generic [ref=f4e8]:
+      - banner [ref=f4e9]:
+        - generic [ref=f4e15]:
+          - generic [ref=f4e16]:
+            - link "IBM watsonx Orchestrate ADK home page light logo" [ref=f4e17] [cursor=pointer]:
+              - /url: /
+              - generic [ref=f4e18]: IBM watsonx Orchestrate ADK home page
+              - img "light logo" [ref=f4e19]
+            - button "2.x" [ref=f4e21] [cursor=pointer]:
+              - generic [ref=f4e22]: 2.x
+              - img [ref=f4e23]
+          - navigation "Main" [ref=f4e27]:
+            - list [ref=f4e28]:
+              - listitem [ref=f4e29]:
+                - link "Support" [ref=f4e30] [cursor=pointer]:
+                  - /url: https://www.ibm.com/mysupport/s/topic/0TO3p000000A6YLGA0/watsonx-orchestrate?productId=01t3p00000SsRnhAAF&language=en_US
+                  - generic [ref=f4e31]: Support
+              - listitem [ref=f4e32]:
+                - link "GitHub" [ref=f4e33] [cursor=pointer]:
+                  - /url: https://github.com/ibm/ibm-watsonx-orchestrate-adk/
+                  - generic [ref=f4e34]: GitHub
+      - generic [ref=f4e37]:
+        - generic [ref=f4e38]: "404"
+        - heading "Page Not Found" [level=1] [ref=f4e39]
+  - alert [ref=f4e45]
