@@ -1,0 +1,412 @@
+- generic [active] [ref=f140e1]:
+  - generic [ref=f140e4]:
+    - generic [ref=f140e53]:
+      - generic:
+        - navigation "Skip to content":
+          - link "Skip to content" [ref=f140e54] [cursor=pointer]:
+            - /url: "#main-content"
+            - generic [ref=f140e55]: Skip to content
+        - link "IBM logo" [ref=f140e57] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img [ref=f140e59]
+      - generic [ref=f140e63]:
+        - navigation "Primary navigation" [ref=f140e67]:
+          - generic [ref=f140e69]:
+            - generic:
+              - button "Software" [ref=f140e71] [cursor=pointer]:
+                - text: Software
+                - img [ref=f140e72]
+              - button "Infrastructure" [ref=f140e75] [cursor=pointer]:
+                - text: Infrastructure
+                - img [ref=f140e76]
+              - generic "Consulting" [ref=f140e78]:
+                - link "Consulting" [ref=f140e79] [cursor=pointer]:
+                  - /url: https://www.ibm.com/consulting?lnk=L0G
+                  - generic [ref=f140e81]: Consulting
+              - button "Support" [ref=f140e83] [cursor=pointer]:
+                - text: Support
+                - img [ref=f140e84]
+              - generic "Think" [ref=f140e86]:
+                - link "Think" [ref=f140e87] [cursor=pointer]:
+                  - /url: https://www.ibm.com/think
+                  - generic [ref=f140e89]: Think
+        - button "Open IBM search field" [ref=f140e92] [cursor=pointer]:
+          - img [ref=f140e93]
+      - generic [ref=f140e95]:
+        - generic:
+          - generic:
+            - link "Contact" [ref=f140e97] [cursor=pointer]:
+              - /url: javascript:void 0
+              - img [ref=f140e98]
+            - button [ref=f140e101] [cursor=pointer]:
+              - img [ref=f140e102]
+            - generic [ref=f140e104]:
+              - button "User profile" [ref=f140e105] [cursor=pointer]:
+                - img [ref=f140e106]
+              - generic: My IBM
+              - generic: Log in
+    - generic [ref=f140e14]:
+      - generic [ref=f140e16]:
+        - generic [ref=f140e17]:
+          - navigation "Breadcrumb" [ref=f140e18]:
+            - list [ref=f140e19]:
+              - listitem [ref=f140e20]:
+                - link "Home" [ref=f140e21] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=f140e22]: Home
+                - text: /
+              - listitem [ref=f140e23]:
+                - link "Products" [ref=f140e24] [cursor=pointer]:
+                  - /url: /products
+                  - generic [ref=f140e25]: Products
+                - text: /
+              - listitem [ref=f140e26]:
+                - generic [ref=f140e27]: IBM Cloud Databases for PostgreSQL
+          - heading "IBM Cloud Databases for PostgreSQL" [level=1] [ref=f140e28]
+        - generic [ref=f140e29]:
+          - generic [ref=f140e33]: Managed PostgreSQL, built enterprise-ready, with native integration into the IBM Cloud
+          - list [ref=f140e108]:
+            - generic:
+              - link "See pricing options" [ref=f140e36] [cursor=pointer]:
+                - /url: https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hosting-pricing
+                - listitem [ref=f140e109]:
+                  - button "See pricing options" [ref=f140e110]:
+                    - generic [ref=f140e111]: See pricing options
+                    - img [ref=f140e114]: ","
+              - link "Try Databases for PostgreSQL" [ref=f140e38] [cursor=pointer]:
+                - /url: https://cloud.ibm.com/registration?target=https%3A//cloud.ibm.com/databases/databases-for-postgreSQL/create
+                - listitem [ref=f140e116]:
+                  - button "Try Databases for PostgreSQL" [ref=f140e117]:
+                    - generic [ref=f140e118]: Try Databases for PostgreSQL
+                    - img [ref=f140e121]: ","
+      - img "Blue squares piled up representing a database in a black background" [ref=f140e42]
+    - generic [ref=f140e131]:
+      - navigation "Page navigation" [ref=f140e133]:
+        - generic [ref=f140e134]:
+          - generic [ref=f140e135]:
+            - tab "Overview" [selected] [ref=f140e136] [cursor=pointer]
+            - tab "Features" [ref=f140e137] [cursor=pointer]
+            - tab "Use cases" [ref=f140e138] [cursor=pointer]
+          - link "Try Databases for PostgreSQL" [ref=f140e139] [cursor=pointer]:
+            - /url: https://cloud.ibm.com/registration?target=https%3A//cloud.ibm.com/databases/databases-for-postgreSQL/create
+            - button "Try Databases for PostgreSQL" [ref=f140e140]:
+              - generic [ref=f140e141]: Try Databases for PostgreSQL
+      - generic [ref=f140e145]:
+        - generic [ref=f140e146]:
+          - generic:
+            - text: Promo code for new accounts
+            - generic [ref=f140e147]: Apply code DSFREE250 at provisioning to get USD 250 to use towards Database offerings for 1 month.
+        - link "Create an IBM Cloud account" [ref=f140e149] [cursor=pointer]:
+          - /url: https://cloud.ibm.com/registration?target=https%3A//cloud.ibm.com/databases/databases-for-postgreSQL/create
+          - button "Create an IBM Cloud account" [ref=f140e151]:
+            - generic [ref=f140e152]: Create an IBM Cloud account
+            - img [ref=f140e155]: ","
+      - generic [ref=f140e158]:
+        - heading "Overview" [level=2] [ref=f140e159]
+        - heading "Scale, security, resiliency" [level=3] [ref=f140e161]:
+          - generic [ref=f140e162]: Scale, security, resiliency
+        - generic [ref=f140e163]:
+          - paragraph [ref=f140e166]: IBM Cloud® Databases for PostgreSQL is a fully managed service enabling you to efficiently create sophisticated, high-performance applications with enhanced JSON support and improved query parallelism. Our solution handles the database complexities, allowing you to concentrate on delivering exceptional user experiences.
+          - generic [ref=f140e167]:
+            - list
+      - generic [ref=f140e168]:
+        - heading "Features" [level=2] [ref=f140e169]
+        - generic [ref=f140e171]:
+          - heading "Enterprise-ready PostgreSQL features" [level=3] [ref=f140e173]
+          - generic [ref=f140e175]:
+            - list
+        - generic [ref=f140e181]:
+          - generic:
+            - generic [ref=f140e182]:
+              - img [ref=f140e184]
+              - heading "Fully managed PostgreSQL" [level=4] [ref=f140e186]:
+                - generic: Fully managed PostgreSQL
+              - paragraph [ref=f140e190]: PostgreSQL as a service means IBM manages point-in-time backups, read replicas, logging, monitoring, scaling, hardware setup and software patching.
+            - generic [ref=f140e191]:
+              - img [ref=f140e193]
+              - heading "Advanced security" [level=4] [ref=f140e195]:
+                - generic: Advanced security
+              - paragraph [ref=f140e199]: Data is encrypted at rest and in motion. IBM® Key Protect provides bring-your-own-key (BYOK) encryption. Compliant with SOC 2 Type 2, PCI, HIPAA and GDPR.
+            - generic [ref=f140e200]:
+              - img [ref=f140e202]
+              - heading "Scale effortlessly" [level=4] [ref=f140e204]:
+                - generic: Scale effortlessly
+              - paragraph [ref=f140e208]: Scale disk and RAM independently to fit your application needs or use autoscaling. Add read replicas to your PostgreSQL deployments to offload traffic.
+            - generic [ref=f140e209]:
+              - img [ref=f140e211]
+              - heading "Automation aware" [level=4] [ref=f140e213]:
+                - generic: Automation aware
+              - paragraph [ref=f140e217]: Get to global scale with integrated, infrastructure-as-code tools, such as IBM Cloud Schematics with Terraform and Red Hat® Ansible® support at no additional charge.
+      - generic [ref=f140e219]:
+        - heading "Use cases" [level=2] [ref=f140e220]
+        - paragraph [ref=f140e221]: Real-world applications for IBM PostgreSQL
+        - generic [ref=f140e223]:
+          - generic [ref=f140e224]:
+            - button "Scroll left" [disabled]:
+              - img
+            - tablist [ref=f140e225]:
+              - tab "Web and mobile apps" [selected] [ref=f140e226] [cursor=pointer]
+              - tab "Business intelligence" [ref=f140e227] [cursor=pointer]
+              - tab "Machine learning and AI platform" [ref=f140e228] [cursor=pointer]
+              - tab "Database consolidation" [ref=f140e229] [cursor=pointer]
+            - button "Scroll right" [disabled]:
+              - img
+          - tabpanel "Web and mobile apps" [ref=f140e230]:
+            - generic [ref=f140e236]:
+              - generic [ref=f140e239]:
+                - heading "Web and mobile apps" [level=3] [ref=f140e240]:
+                  - paragraph [ref=f140e241]: Web and mobile apps
+                - paragraph [ref=f140e243]: Quickly build engaging, scalable cross-platform enterprise applications and connect a PostgreSQL cloud database deployment to a Kubernetes app. PostgreSQL’s object-relational, highly customizable database makes it an ideal choice for developing web and mobile applications.
+              - generic [ref=f140e246]:
+                - img "Diagram showing the web and mobile app architecture" [ref=f140e247]
+                - img [ref=f140e249]
+      - generic [ref=f140e251]:
+        - generic [ref=f140e252]:
+          - generic [ref=f140e254]:
+            - heading "Related products" [level=2] [ref=f140e256]
+            - generic [ref=f140e258]:
+              - list
+          - generic [ref=f140e259]:
+            - generic:
+              - generic "Learn more" [ref=f140e260]:
+                - generic [ref=f140e263] [cursor=pointer]:
+                  - img [ref=f140e266]:
+                    - img [ref=f140e267]
+                  - heading "IBM Event Streams" [level=3] [ref=f140e269]:
+                    - generic: IBM Event Streams
+                  - link "Learn more" [ref=f140e271]:
+                    - /url: https://www.ibm.com/products/event-streams
+                    - link "IBM Event Streams" [ref=f140e273]:
+                      - /url: https://www.ibm.com/products/event-streams
+                      - img [ref=f140e276]
+              - generic [ref=f140e282] [cursor=pointer]:
+                - img [ref=f140e284]:
+                  - img [ref=f140e285]
+                - heading "IBM Cloud Databases for Elasticsearch" [level=3] [ref=f140e287]:
+                  - generic: IBM Cloud Databases for Elasticsearch
+                - link "IBM Cloud Databases for Elasticsearch" [ref=f140e289]:
+                  - /url: https://www.ibm.com/products/databases-for-elasticsearch
+                  - link "IBM Cloud Databases for Elasticsearch" [ref=f140e291]:
+                    - /url: https://www.ibm.com/products/databases-for-elasticsearch
+                    - img [ref=f140e294]
+              - generic [ref=f140e299] [cursor=pointer]:
+                - img [ref=f140e302]:
+                  - img [ref=f140e303]
+                - heading "IBM Watson® Studio" [level=3] [ref=f140e305]:
+                  - generic: IBM Watson® Studio
+                - link "IBM Watson® Studio" [ref=f140e307]:
+                  - /url: https://www.ibm.com/products/watson-studio
+                  - link "IBM Watson® Studio" [ref=f140e309]:
+                    - /url: https://www.ibm.com/products/watson-studio
+                    - img [ref=f140e312]
+              - generic [ref=f140e318] [cursor=pointer]:
+                - img [ref=f140e320]:
+                  - img [ref=f140e321]
+                - heading "watsonx.ai" [level=3] [ref=f140e323]:
+                  - generic: watsonx.ai
+                - link "watsonx.ai" [ref=f140e325]:
+                  - /url: https://www.ibm.com/products/watsonx-ai
+                  - link "watsonx.ai" [ref=f140e327]:
+                    - /url: https://www.ibm.com/products/watsonx-ai
+                    - img [ref=f140e330]
+        - img [ref=f140e332]
+      - generic [ref=f140e335]:
+        - generic [ref=f140e337]:
+          - heading "Take the next step" [level=2] [ref=f140e338]
+          - paragraph [ref=f140e342]: Explore these resources to get more details about what IBM Cloud Databases for PostgreSQL can bring to your enterprise.
+          - list [ref=f140e343]:
+            - listitem [ref=f140e344]:
+              - link "Try Databases for PostgreSQL" [ref=f140e345] [cursor=pointer]:
+                - /url: https://cloud.ibm.com/registration?target=https%3A//cloud.ibm.com/databases/databases-for-postgreSQL/create
+                - generic [ref=f140e346]: Try Databases for PostgreSQL
+                - img [ref=f140e347]
+            - listitem [ref=f140e349]:
+              - link [ref=f140e350] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=f140e351]
+        - generic [ref=f140e355]:
+          - heading "More ways to explore" [level=4] [ref=f140e356]
+          - list [ref=f140e357]:
+            - link "Create a free IBM Cloud account" [ref=f140e359] [cursor=pointer]:
+              - /url: https://cloud.ibm.com/registration/premium1
+              - generic [ref=f140e360]: Create a free IBM Cloud account
+              - img [ref=f140e361]
+            - link "View pricing options" [ref=f140e364] [cursor=pointer]:
+              - /url: https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hosting-pricing
+              - generic [ref=f140e365]: View pricing options
+              - img [ref=f140e366]
+            - link "Meet the community" [ref=f140e369] [cursor=pointer]:
+              - /url: https://community.ibm.com/community/user/communities/community-home?communitykey=ad287ad0-fd14-46f4-a5c8-0189fa86d88c
+              - generic [ref=f140e370]: Meet the community
+              - img [ref=f140e371]
+            - link "Cloud services" [ref=f140e374] [cursor=pointer]:
+              - /url: https://www.ibm.com/consulting/cloud
+              - generic [ref=f140e375]: Cloud services
+              - img [ref=f140e376]
+    - contentinfo "footer" [ref=f140e381]:
+      - generic [ref=f140e385]:
+        - link "IBM logo" [ref=f140e387] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img [ref=f140e388]
+        - navigation "Footer navigation" [ref=f140e390]:
+          - list [ref=f140e391]:
+            - generic:
+              - listitem [ref=f140e392]:
+                - heading "Discover" [level=2] [ref=f140e393]:
+                  - generic [ref=f140e394]: Discover
+                - list [ref=f140e396]:
+                  - generic:
+                    - listitem [ref=f140e397]:
+                      - link "Products" [ref=f140e398] [cursor=pointer]:
+                        - /url: https://www.ibm.com/products?lnk=flatitem
+                        - generic: Products
+                    - listitem [ref=f140e399]:
+                      - link "Consulting services" [ref=f140e400] [cursor=pointer]:
+                        - /url: https://www.ibm.com/consulting?lnk=flatitem
+                        - generic: Consulting services
+                    - listitem [ref=f140e401]:
+                      - link "Industries" [ref=f140e402] [cursor=pointer]:
+                        - /url: https://www.ibm.com/industries?lnk=flatitem
+                        - generic: Industries
+                    - listitem [ref=f140e403]:
+                      - link "Case studies" [ref=f140e404] [cursor=pointer]:
+                        - /url: https://www.ibm.com/case-studies?lnk=flatitem
+                        - generic: Case studies
+                    - listitem [ref=f140e405]:
+                      - link "Financing" [ref=f140e406] [cursor=pointer]:
+                        - /url: https://www.ibm.com/financing?lnk=flatitem
+                        - generic: Financing
+                    - listitem [ref=f140e407]:
+                      - link "Research" [ref=f140e408] [cursor=pointer]:
+                        - /url: https://research.ibm.com/?lnk=flatitem
+                        - generic: Research
+              - listitem [ref=f140e409]:
+                - heading "Follow" [level=2] [ref=f140e410]:
+                  - generic [ref=f140e411]: Follow
+                - list [ref=f140e413]:
+                  - generic:
+                    - listitem [ref=f140e414]:
+                      - link "LinkedIn" [ref=f140e415] [cursor=pointer]:
+                        - /url: https://www.linkedin.com/company/ibm
+                        - generic: LinkedIn
+                    - listitem [ref=f140e416]:
+                      - link "X" [ref=f140e417] [cursor=pointer]:
+                        - /url: https://www.twitter.com/ibm
+                        - generic: X
+                    - listitem [ref=f140e418]:
+                      - link "Instagram" [ref=f140e419] [cursor=pointer]:
+                        - /url: https://www.instagram.com/ibm
+                        - generic: Instagram
+                    - listitem [ref=f140e420]:
+                      - link "YouTube" [ref=f140e421] [cursor=pointer]:
+                        - /url: https://www.youtube.com/@IBM
+                        - generic: YouTube
+                    - listitem [ref=f140e422]:
+                      - link "Podcasts" [ref=f140e423] [cursor=pointer]:
+                        - /url: https://www.ibm.com/think/podcasts
+                        - generic: Podcasts
+              - listitem [ref=f140e424]:
+                - heading "Connect" [level=2] [ref=f140e425]:
+                  - generic [ref=f140e426]: Connect
+                - list [ref=f140e428]:
+                  - generic:
+                    - listitem [ref=f140e429]:
+                      - link "Business partners" [ref=f140e430] [cursor=pointer]:
+                        - /url: https://www.ibm.com/partnerplus/directory/companies
+                        - generic: Business partners
+                    - listitem [ref=f140e431]:
+                      - link "Documentation" [ref=f140e432] [cursor=pointer]:
+                        - /url: https://www.ibm.com/docs/en?lnk=flathl
+                        - generic: Documentation
+                    - listitem [ref=f140e433]:
+                      - link "Events" [ref=f140e434] [cursor=pointer]:
+                        - /url: https://www.ibm.com/events/
+                        - generic: Events
+                    - listitem [ref=f140e435]:
+                      - link "Newsletters" [ref=f140e436] [cursor=pointer]:
+                        - /url: https://www.ibm.com/subscribe/
+                        - generic: Newsletters
+                    - listitem [ref=f140e437]:
+                      - link "Support" [ref=f140e438] [cursor=pointer]:
+                        - /url: https://www.ibm.com/mysupport/s/?language=en_US&lnk=flathl
+                        - generic: Support
+                    - listitem [ref=f140e439]:
+                      - link "TechXchange community" [ref=f140e440] [cursor=pointer]:
+                        - /url: https://community.ibm.com/community/user/home?lnk=fpo
+                        - generic: TechXchange community
+              - listitem [ref=f140e441]:
+                - heading "About" [level=2] [ref=f140e442]:
+                  - generic [ref=f140e443]: About
+                - list [ref=f140e445]:
+                  - generic:
+                    - listitem [ref=f140e446]:
+                      - link "Overview" [ref=f140e447] [cursor=pointer]:
+                        - /url: https://www.ibm.com/about/?lnk=flatitem
+                        - generic: Overview
+                    - listitem [ref=f140e448]:
+                      - link "Careers" [ref=f140e449] [cursor=pointer]:
+                        - /url: https://www.ibm.com/careers/us-en?lnk=flathl
+                        - generic: Careers
+                    - listitem [ref=f140e450]:
+                      - link "Investor relations" [ref=f140e451] [cursor=pointer]:
+                        - /url: https://www.ibm.com/investor?lnk=flatitem
+                        - generic: Investor relations
+                    - listitem [ref=f140e452]:
+                      - link "Leadership" [ref=f140e453] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/executive-bios
+                        - generic: Leadership
+                    - listitem [ref=f140e454]:
+                      - link "Newsroom" [ref=f140e455] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/?lnk=flatitem
+                        - generic: Newsroom
+                    - listitem [ref=f140e456]:
+                      - link "Security, privacy and trust" [ref=f140e457] [cursor=pointer]:
+                        - /url: https://www.ibm.com/trust?lnk=flatitem
+                        - generic: Security, privacy and trust
+      - navigation "Legal Navigation" [ref=f140e459]:
+        - list [ref=f140e461]:
+          - generic:
+            - listitem [ref=f140e462]:
+              - link "Contact IBM" [ref=f140e463] [cursor=pointer]:
+                - /url: https://www.ibm.com/contact/global
+                - generic: Contact IBM
+            - listitem [ref=f140e464]:
+              - link "Privacy" [ref=f140e465] [cursor=pointer]:
+                - /url: https://www.ibm.com/us-en/privacy
+                - generic: Privacy
+            - listitem [ref=f140e466]:
+              - link "Terms of use" [ref=f140e467] [cursor=pointer]:
+                - /url: https://www.ibm.com/legal?lnk=flg-tous-usen
+                - generic: Terms of use
+            - listitem [ref=f140e468]:
+              - link "Accessibility" [ref=f140e469] [cursor=pointer]:
+                - /url: https://www.ibm.com/able/?lnk=flg-acce-usen
+                - generic: Accessibility
+            - complementary "Open Cookie Preferences Modal" [ref=f140e470]:
+              - link "Cookie Preferences, opens a dedicated popup modal window" [ref=f140e471] [cursor=pointer]: Cookie Preferences
+  - generic [ref=f140e44]:
+    - img [ref=f140e46]
+    - img [ref=f140e473]
+  - banner "consent_blackbar":
+    - generic [ref=f140e476]:
+      - button "close icon" [ref=f140e478] [cursor=pointer]
+      - generic [ref=f140e480]:
+        - generic [ref=f140e483]:
+          - text: About cookies on this site
+          - generic [ref=f140e484]:
+            - generic [ref=f140e485]: Our websites require some cookies to function properly (required). In addition, other cookies may be used with your consent to analyze site usage, improve the user experience and for advertising.
+            - generic [ref=f140e486]:
+              - text: For more information, please review your
+              - button "cookie preferences" [ref=f140e487] [cursor=pointer]
+              - text: options. By visiting our website, you agree to our processing of information as described in IBM’s
+              - link "privacy statement" [ref=f140e488] [cursor=pointer]:
+                - /url: https://www.ibm.com/privacy
+              - text: .
+            - generic [ref=f140e489]:
+              - text: To provide a smooth navigation, your cookie preferences will be shared across the IBM web domains listed
+              - link "here" [ref=f140e490] [cursor=pointer]:
+                - /url: "#truste_domain_list"
+              - text: .
+        - generic [ref=f140e491]:
+          - button "Accept all" [ref=f140e492] [cursor=pointer]
+          - button "More options" [ref=f140e493] [cursor=pointer]

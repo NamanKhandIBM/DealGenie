@@ -1,0 +1,356 @@
+- generic [active] [ref=f154e1]:
+  - generic [ref=f154e4]:
+    - generic [ref=f154e57]:
+      - generic:
+        - navigation "Skip to content":
+          - link "Skip to content" [ref=f154e58] [cursor=pointer]:
+            - /url: "#main-content"
+            - generic [ref=f154e59]: Skip to content
+        - link "IBM logo" [ref=f154e61] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img [ref=f154e63]
+      - generic [ref=f154e67]:
+        - navigation "Primary navigation" [ref=f154e71]:
+          - generic [ref=f154e73]:
+            - generic:
+              - button "Software" [ref=f154e75] [cursor=pointer]:
+                - text: Software
+                - img [ref=f154e76]
+              - button "Infrastructure" [ref=f154e79] [cursor=pointer]:
+                - text: Infrastructure
+                - img [ref=f154e80]
+              - generic "Consulting" [ref=f154e82]:
+                - link "Consulting" [ref=f154e83] [cursor=pointer]:
+                  - /url: https://www.ibm.com/consulting?lnk=L0G
+                  - generic [ref=f154e85]: Consulting
+              - generic [ref=f154e86]:
+                - button "Support" [ref=f154e87] [cursor=pointer]:
+                  - text: Support
+                  - img [ref=f154e88]
+                - generic: Overview
+                - generic: Community
+                - generic: Developer
+                - generic: Documentation
+                - generic: IBM Cloud platform
+                - generic: Implementation
+                - generic: Training
+                - generic: Technology Lifecycle Services
+              - generic "Think" [ref=f154e90]:
+                - link "Think" [ref=f154e91] [cursor=pointer]:
+                  - /url: https://www.ibm.com/think
+                  - generic [ref=f154e93]: Think
+        - button "Open IBM search field" [ref=f154e96] [cursor=pointer]:
+          - img [ref=f154e97]
+      - generic [ref=f154e99]:
+        - generic:
+          - generic:
+            - link "Contact" [ref=f154e101] [cursor=pointer]:
+              - /url: javascript:void 0
+              - img [ref=f154e102]
+            - button [ref=f154e105] [cursor=pointer]:
+              - img [ref=f154e106]
+            - generic [ref=f154e108]:
+              - button "User profile" [ref=f154e109] [cursor=pointer]:
+                - img [ref=f154e110]
+              - generic: My IBM
+              - generic: Log in
+    - generic [ref=f154e112]:
+      - generic [ref=f154e113]:
+        - generic:
+          - text: USD250 free credit for new users
+          - generic [ref=f154e12]: New users of IBM Cloudant can receive a USD 250 credit. Apply code DSFREE250.
+      - link "Apply code" [ref=f154e13] [cursor=pointer]:
+        - /url: https://cloud.ibm.com/registration?target=/catalog/services/cloudant
+        - button "Apply code" [ref=f154e115]:
+          - generic [ref=f154e116]: Apply code
+          - img [ref=f154e119]: ","
+    - generic [ref=f154e23]:
+      - generic [ref=f154e25]:
+        - generic [ref=f154e26]:
+          - navigation "Breadcrumb" [ref=f154e27]:
+            - list [ref=f154e28]:
+              - listitem [ref=f154e29]:
+                - link "Home" [ref=f154e30] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=f154e31]: Home
+                - text: /
+              - listitem [ref=f154e32]:
+                - link "Products" [ref=f154e33] [cursor=pointer]:
+                  - /url: /products
+                  - generic [ref=f154e34]: Products
+                - text: /
+              - listitem [ref=f154e35]:
+                - generic [ref=f154e36]: IBM Cloudant
+          - heading "IBM Cloudant" [level=1] [ref=f154e37]
+        - generic [ref=f154e38]:
+          - paragraph [ref=f154e43]: The data layer for hyperscale, resilient and globally available applications—based on open-source Apache CouchDB
+          - list [ref=f154e121]:
+            - generic:
+              - link "Try IBM Cloudant now" [ref=f154e46] [cursor=pointer]:
+                - /url: https://cloud.ibm.com/registration?target=/catalog/services/cloudant
+                - listitem [ref=f154e122]:
+                  - button "Try IBM Cloudant now" [ref=f154e123]:
+                    - generic [ref=f154e124]: Try IBM Cloudant now
+                    - img [ref=f154e127]: ","
+              - listitem [ref=f154e129]:
+                - button [ref=f154e130] [cursor=pointer]:
+                  - img [ref=f154e49]
+      - img "A man in a data center, standing next to large server racks and mainframes, monitoring equipment" [ref=f154e54]
+    - generic [ref=f154e139]:
+      - navigation "Page navigation" [ref=f154e141]:
+        - generic [ref=f154e143]:
+          - tab "Overview" [selected] [ref=f154e144] [cursor=pointer]
+          - tab "Features" [ref=f154e145] [cursor=pointer]
+          - tab "Use cases" [ref=f154e146] [cursor=pointer]
+          - tab "Case studies" [ref=f154e147] [cursor=pointer]
+      - generic [ref=f154e148]:
+        - heading "Overview" [level=2] [ref=f154e149]
+        - heading "Why IBM Cloudant?" [level=3] [ref=f154e150]:
+          - generic [ref=f154e151]: Why IBM Cloudant?
+        - generic [ref=f154e153]:
+          - heading "Built on CouchDB technology with compatible API and replication protocols, IBM Cloudant supports flexible, schema-free JSON document storage, which is ideal for applications that require rapid, iterative development and dynamic data structures. It’s high availability and automated failover ensure 99.99% SLA reliability and minimal downtime." [level=4] [ref=f154e157]
+          - button [ref=f154e162] [cursor=pointer]
+      - generic [ref=f154e164]:
+        - heading "Features" [level=2] [ref=f154e165]
+        - generic [ref=f154e167]:
+          - heading "Key features" [level=3] [ref=f154e169]
+          - generic [ref=f154e171]:
+            - list
+        - generic [ref=f154e177]:
+          - generic:
+            - generic [ref=f154e178]:
+              - img [ref=f154e180]
+              - heading "Serverless" [level=4] [ref=f154e182]:
+                - generic: Serverless
+              - paragraph [ref=f154e186]: Instantly deploy an instance, create databases and independently scale throughput capacity and data storage to meet your application requirements.
+            - generic [ref=f154e187]:
+              - img [ref=f154e189]
+              - heading "Secure" [level=4] [ref=f154e191]:
+                - generic: Secure
+              - paragraph [ref=f154e195]: Encrypt all data, with optional user-defined encryption key management through IBM Key Protect, and integrate with IBM Identity and Access Management.
+            - generic [ref=f154e196]:
+              - img [ref=f154e198]
+              - heading "Global availability" [level=4] [ref=f154e200]:
+                - generic: Global availability
+              - paragraph [ref=f154e204]: Get continuous availability as Cloudant distributes data across availability zones and 6 regions for app performance and disaster recovery requirements.
+            - generic [ref=f154e205]:
+              - img [ref=f154e207]
+              - heading "Geospatial indexing" [level=4] [ref=f154e209]:
+                - generic: Geospatial indexing
+              - paragraph [ref=f154e213]: IBM Cloudant has layered additional open-source technologies for full text search and geospatial indexing capabilities.
+      - generic [ref=f154e215]:
+        - heading "Use cases" [level=2] [ref=f154e216]
+        - paragraph [ref=f154e217]: Cloudant use cases
+        - generic [ref=f154e219]:
+          - generic [ref=f154e220]:
+            - button "Scroll left" [disabled]:
+              - img
+            - tablist [ref=f154e221]:
+              - tab "Serverless web app and API" [selected] [ref=f154e222] [cursor=pointer]
+              - tab "Mobile app with serverless" [ref=f154e223] [cursor=pointer]
+              - tab "Find anomalies in IoT data" [ref=f154e224] [cursor=pointer]
+              - tab "Open hybrid multicloud" [ref=f154e225] [cursor=pointer]
+            - button "Scroll right" [disabled]:
+              - img
+          - tabpanel "Serverless web app and API" [ref=f154e226]:
+            - generic [ref=f154e232]:
+              - generic [ref=f154e235]:
+                - heading "Serverless web app and API" [level=3] [ref=f154e236]
+                - paragraph [ref=f154e238]: Create a serverless web application in IBM Cloud Object Storage by hosting static website content and implementing the application back end using IBM Cloud Code Engine and Cloudant as a JSON document database.
+              - img "Diagram of a serverless web application workflow" [ref=f154e241]
+      - generic [ref=f154e242]:
+        - heading "Case studies" [level=2] [ref=f154e243]
+        - heading "Case study" [level=3] [ref=f154e244]
+        - generic [ref=f154e246]:
+          - generic [ref=f154e248]:
+            - generic [ref=f154e249]:
+              - heading "The Ticket Fairy" [level=3] [ref=f154e250]
+              - paragraph [ref=f154e252]: The Ticket Fairy leveraged global distribution to enhance scalability and performance. With IBM Cloudant, it was able to handle large volumes of ticket transactions during peak times to offer a more reliable and efficient service to its clients and users.
+            - link "Read the case study" [ref=f154e254] [cursor=pointer]:
+              - /url: https://www.ibm.com/case-studies/the-ticket-fairy-cloud-cloudant
+              - link "Read the case study" [ref=f154e256]:
+                - /url: https://www.ibm.com/case-studies/the-ticket-fairy-cloud-cloudant
+                - generic [ref=f154e257]:
+                  - generic: Read the case study
+                - img [ref=f154e260]
+          - img "Ticket fairy logo" [ref=f154e264]
+      - generic [ref=f154e267]:
+        - generic [ref=f154e269]:
+          - heading "Take the next step" [level=2] [ref=f154e270]
+          - heading "Learn more about IBM Cloudant" [level=3] [ref=f154e274]
+          - list [ref=f154e275]:
+            - listitem [ref=f154e276]:
+              - link "Try IBM Cloudant now" [ref=f154e277] [cursor=pointer]:
+                - /url: https://cloud.ibm.com/registration?target=/catalog/services/cloudant
+                - generic [ref=f154e278]: Try IBM Cloudant now
+                - img [ref=f154e279]
+            - listitem [ref=f154e281]:
+              - link [ref=f154e282] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=f154e283]
+        - generic [ref=f154e287]:
+          - heading "More ways to explore" [level=4] [ref=f154e288]
+          - list [ref=f154e289]:
+            - link "See product documentation" [ref=f154e291] [cursor=pointer]:
+              - /url: https://cloud.ibm.com/docs/Cloudant?topic=Cloudant-getting-started-with-cloudant&_ga=2.42518757.1165320250.1604321683-1614077795.1594908456
+              - generic [ref=f154e292]: See product documentation
+              - img [ref=f154e293]
+            - link "View pricing options" [ref=f154e296] [cursor=pointer]:
+              - /url: https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hosting-pricing
+              - generic [ref=f154e297]: View pricing options
+              - img [ref=f154e298]
+            - link "Community" [ref=f154e301] [cursor=pointer]:
+              - /url: https://community.ibm.com/community/user/cloud/communities/community-home?communitykey=ad287ad0-fd14-46f4-a5c8-0189fa86d88c
+              - generic [ref=f154e302]: Community
+              - img [ref=f154e303]
+            - link "Free IBM Cloud account" [ref=f154e306] [cursor=pointer]:
+              - /url: https://cloud.ibm.com/registration?target=/catalog/services/cloudant
+              - generic [ref=f154e307]: Free IBM Cloud account
+              - img [ref=f154e308]
+            - link "Cloud consulting" [ref=f154e311] [cursor=pointer]:
+              - /url: https://www.ibm.com/consulting/cloud
+              - generic [ref=f154e312]: Cloud consulting
+              - img [ref=f154e313]
+    - contentinfo "footer" [ref=f154e318]:
+      - generic [ref=f154e322]:
+        - link "IBM logo" [ref=f154e324] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img [ref=f154e325]
+        - navigation "Footer navigation" [ref=f154e327]:
+          - list [ref=f154e328]:
+            - generic:
+              - listitem [ref=f154e329]:
+                - heading "Discover" [level=2] [ref=f154e330]:
+                  - generic [ref=f154e331]: Discover
+                - list [ref=f154e333]:
+                  - generic:
+                    - listitem [ref=f154e334]:
+                      - link "Products" [ref=f154e335] [cursor=pointer]:
+                        - /url: https://www.ibm.com/products?lnk=flatitem
+                        - generic: Products
+                    - listitem [ref=f154e336]:
+                      - link "Consulting services" [ref=f154e337] [cursor=pointer]:
+                        - /url: https://www.ibm.com/consulting?lnk=flatitem
+                        - generic: Consulting services
+                    - listitem [ref=f154e338]:
+                      - link "Industries" [ref=f154e339] [cursor=pointer]:
+                        - /url: https://www.ibm.com/industries?lnk=flatitem
+                        - generic: Industries
+                    - listitem [ref=f154e340]:
+                      - link "Case studies" [ref=f154e341] [cursor=pointer]:
+                        - /url: https://www.ibm.com/case-studies?lnk=flatitem
+                        - generic: Case studies
+                    - listitem [ref=f154e342]:
+                      - link "Financing" [ref=f154e343] [cursor=pointer]:
+                        - /url: https://www.ibm.com/financing?lnk=flatitem
+                        - generic: Financing
+                    - listitem [ref=f154e344]:
+                      - link "Research" [ref=f154e345] [cursor=pointer]:
+                        - /url: https://research.ibm.com/?lnk=flatitem
+                        - generic: Research
+              - listitem [ref=f154e346]:
+                - heading "Follow" [level=2] [ref=f154e347]:
+                  - generic [ref=f154e348]: Follow
+                - list [ref=f154e350]:
+                  - generic:
+                    - listitem [ref=f154e351]:
+                      - link "LinkedIn" [ref=f154e352] [cursor=pointer]:
+                        - /url: https://www.linkedin.com/company/ibm
+                        - generic: LinkedIn
+                    - listitem [ref=f154e353]:
+                      - link "X" [ref=f154e354] [cursor=pointer]:
+                        - /url: https://www.twitter.com/ibm
+                        - generic: X
+                    - listitem [ref=f154e355]:
+                      - link "Instagram" [ref=f154e356] [cursor=pointer]:
+                        - /url: https://www.instagram.com/ibm
+                        - generic: Instagram
+                    - listitem [ref=f154e357]:
+                      - link "YouTube" [ref=f154e358] [cursor=pointer]:
+                        - /url: https://www.youtube.com/@IBM
+                        - generic: YouTube
+                    - listitem [ref=f154e359]:
+                      - link "Podcasts" [ref=f154e360] [cursor=pointer]:
+                        - /url: https://www.ibm.com/think/podcasts
+                        - generic: Podcasts
+              - listitem [ref=f154e361]:
+                - heading "Connect" [level=2] [ref=f154e362]:
+                  - generic [ref=f154e363]: Connect
+                - list [ref=f154e365]:
+                  - generic:
+                    - listitem [ref=f154e366]:
+                      - link "Business partners" [ref=f154e367] [cursor=pointer]:
+                        - /url: https://www.ibm.com/partnerplus/directory/companies
+                        - generic: Business partners
+                    - listitem [ref=f154e368]:
+                      - link "Documentation" [ref=f154e369] [cursor=pointer]:
+                        - /url: https://www.ibm.com/docs/en?lnk=flathl
+                        - generic: Documentation
+                    - listitem [ref=f154e370]:
+                      - link "Events" [ref=f154e371] [cursor=pointer]:
+                        - /url: https://www.ibm.com/events/
+                        - generic: Events
+                    - listitem [ref=f154e372]:
+                      - link "Newsletters" [ref=f154e373] [cursor=pointer]:
+                        - /url: https://www.ibm.com/subscribe/
+                        - generic: Newsletters
+                    - listitem [ref=f154e374]:
+                      - link "Support" [ref=f154e375] [cursor=pointer]:
+                        - /url: https://www.ibm.com/mysupport/s/?language=en_US&lnk=flathl
+                        - generic: Support
+                    - listitem [ref=f154e376]:
+                      - link "TechXchange community" [ref=f154e377] [cursor=pointer]:
+                        - /url: https://community.ibm.com/community/user/home?lnk=fpo
+                        - generic: TechXchange community
+              - listitem [ref=f154e378]:
+                - heading "About" [level=2] [ref=f154e379]:
+                  - generic [ref=f154e380]: About
+                - list [ref=f154e382]:
+                  - generic:
+                    - listitem [ref=f154e383]:
+                      - link "Overview" [ref=f154e384] [cursor=pointer]:
+                        - /url: https://www.ibm.com/about/?lnk=flatitem
+                        - generic: Overview
+                    - listitem [ref=f154e385]:
+                      - link "Careers" [ref=f154e386] [cursor=pointer]:
+                        - /url: https://www.ibm.com/careers/us-en?lnk=flathl
+                        - generic: Careers
+                    - listitem [ref=f154e387]:
+                      - link "Investor relations" [ref=f154e388] [cursor=pointer]:
+                        - /url: https://www.ibm.com/investor?lnk=flatitem
+                        - generic: Investor relations
+                    - listitem [ref=f154e389]:
+                      - link "Leadership" [ref=f154e390] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/executive-bios
+                        - generic: Leadership
+                    - listitem [ref=f154e391]:
+                      - link "Newsroom" [ref=f154e392] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/?lnk=flatitem
+                        - generic: Newsroom
+                    - listitem [ref=f154e393]:
+                      - link "Security, privacy and trust" [ref=f154e394] [cursor=pointer]:
+                        - /url: https://www.ibm.com/trust?lnk=flatitem
+                        - generic: Security, privacy and trust
+      - navigation "Legal Navigation" [ref=f154e396]:
+        - list [ref=f154e398]:
+          - generic:
+            - listitem [ref=f154e399]:
+              - link "Contact IBM" [ref=f154e400] [cursor=pointer]:
+                - /url: https://www.ibm.com/contact/global
+                - generic: Contact IBM
+            - listitem [ref=f154e401]:
+              - link "Privacy" [ref=f154e402] [cursor=pointer]:
+                - /url: https://www.ibm.com/us-en/privacy
+                - generic: Privacy
+            - listitem [ref=f154e403]:
+              - link "Terms of use" [ref=f154e404] [cursor=pointer]:
+                - /url: https://www.ibm.com/legal?lnk=flg-tous-usen
+                - generic: Terms of use
+            - listitem [ref=f154e405]:
+              - link "Accessibility" [ref=f154e406] [cursor=pointer]:
+                - /url: https://www.ibm.com/able/?lnk=flg-acce-usen
+                - generic: Accessibility
+  - generic [ref=f154e409]:
+    - img [ref=f154e411]
+    - img [ref=f154e417]
+  - banner "consent_blackbar"

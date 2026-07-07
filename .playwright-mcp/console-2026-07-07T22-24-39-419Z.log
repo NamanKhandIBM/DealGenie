@@ -1,0 +1,139 @@
+[     925ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.ibm.com/content/adobe-cms/us/en/products/databases-for-postgresql/jcr:content/root/leadspace_container/leadspace_copy/image.coreimg.jpeg/1783459729045/databases_for_postgresql_overview_leadspace.png:0
+[    1190ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1190ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1222ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1222ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1222ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1222ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1223ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1223ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1239ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-button.lc-bd3195958ccf1bb107358df845b3a9eb-lc.min.js:1
+[    1240ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-button.lc-bd3195958ccf1bb107358df845b3a9eb-lc.min.js:1
+[    1249ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-button-group.lc-3b06d93eb6289792dd721ec268ed0079-lc.min.js:1
+[    1250ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-button-group.lc-3b06d93eb6289792dd721ec268ed0079-lc.min.js:1
+[    1264ms] [WARNING] Attempting to re-define c4d-expressive-modal @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1264ms] [WARNING] Attempting to re-define cds-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1264ms] [WARNING] Attempting to re-define c4d-expressive-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1265ms] [WARNING] Attempting to re-define c4d-lightbox-image-viewer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1265ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1265ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1265ms] [WARNING] Attempting to re-define c4d-image @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:1
+[    1272ms] [LOG] false @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-background-media.lc-df1684e90cc526820f3334ce661a6cd3-lc.min.js:295
+[    1307ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1307ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1307ms] [WARNING] Attempting to re-define c4d-button-group-item @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1307ms] [WARNING] The c4d-buton-cta component has been deprecated. All its features have been absorbed into
+  the base c4d-button component. See migration guide for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:79
+[    1308ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1316ms] [WARNING] Attempting to re-define c4d-expressive-modal @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1316ms] [WARNING] Attempting to re-define cds-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1316ms] [WARNING] Attempting to re-define c4d-expressive-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1316ms] [WARNING] Attempting to re-define c4d-lightbox-image-viewer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1316ms] [WARNING] Attempting to re-define c4d-image @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1317ms] [WARNING] The c4d-card-cta component has been deprecated. All its features have been absorbed into
+  the base c4d-card component. See migration guide for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:359
+[    1317ms] [WARNING] The card-link component has been deprecated in favor of the card (link variant) component. See card documentation for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:359
+[    1318ms] [WARNING] The c4d-feature-cta component has been deprecated. All its features have been absorbed into
+  the base c4d-feature-card component. See migration guide for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:379
+[    1318ms] [WARNING] The c4d-feature-cta component has been deprecated. All its features have been absorbed into
+  the base c4d-feature-card component. See migration guide for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:383
+[    1318ms] [WARNING] Attempting to re-define c4d-video-player-v7 @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1318ms] [WARNING] Attempting to re-define c4d-video-player-composite-v7 @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1319ms] [WARNING] Attempting to re-define c4d-video-player-container-v7 @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1319ms] [WARNING] Attempting to re-define c4d-lightbox-video-player @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1319ms] [WARNING] Attempting to re-define c4d-lightbox-video-player-composite @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:1
+[    1320ms] [WARNING] The c4d-cta component has been deprecated in favor of the c4d-card, c4d-feature-card, c4d-link-with-icon,
+  and c4d-button-group. See migration guide for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cibm-cta.lc-dd0c77f6af7199a2f5cf8575b27e03a8-lc.min.js:508
+[    1342ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-link-list.lc-2b81f95dd525f4223620a3581d43baf5-lc.min.js:1
+[    1342ms] [WARNING] Attempting to re-define c4d-link-with-icon @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-link-list.lc-2b81f95dd525f4223620a3581d43baf5-lc.min.js:1
+[    1370ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1378ms] [WARNING] Attempting to re-define c4d-link-with-icon @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1378ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1379ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1379ms] [WARNING] Attempting to re-define c4d-button-group @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1379ms] [WARNING] Attempting to re-define c4d-button-group-item @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1382ms] [WARNING] The cta-block component has been deprecated in favor of the content-section/block and content-item components. See content-section/block and content-items documentation for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:210
+[    1382ms] [WARNING] The cta-block-item-row component has been deprecated in favor of the content-section/block and content-item components. See content-section/block and content-items documentation for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:210
+[    1386ms] [WARNING] The cta-block-item component has been deprecated in favor of the content-section/block and content-item components. See content-section/block and content-items documentation for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:230
+[    1386ms] [WARNING] Attempting to re-define c4d-text-cta @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:1
+[    1386ms] [WARNING] The c4d-feature-cta component has been deprecated. All its features have been absorbed into
+  the base c4d-feature-card component. See migration guide for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cta-block.lc-268551b37907f567530d24158d82cf98-lc.min.js:239
+[    1410ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1411ms] [WARNING] Attempting to re-define c4d-card @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define c4d-card-eyebrow @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define c4d-link-with-icon @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define c4d-card-footer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define c4d-card-heading @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define c4d-expressive-modal @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define cds-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1412ms] [WARNING] Attempting to re-define c4d-expressive-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1413ms] [WARNING] Attempting to re-define c4d-lightbox-image-viewer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1413ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1413ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1413ms] [WARNING] Attempting to re-define c4d-image @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card.lc-81fabc83dc395674af79c69314bed575-lc.min.js:1
+[    1442ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1443ms] [WARNING] Attempting to re-define c4d-card @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1444ms] [WARNING] Attempting to re-define c4d-card-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1444ms] [WARNING] The card-link component has been deprecated in favor of the card (link variant) component. See card documentation for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:120
+[    1444ms] [WARNING] Attempting to re-define c4d-card-heading @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1445ms] [WARNING] Attempting to re-define c4d-card-link-heading @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1445ms] [WARNING] Attempting to re-define c4d-link-with-icon @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1445ms] [WARNING] Attempting to re-define c4d-card-footer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1445ms] [WARNING] Attempting to re-define c4d-card-cta-footer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1445ms] [WARNING] Attempting to re-define c4d-card-link-cta @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1445ms] [WARNING] The card-group-card-link-item component has been deprecated in favor of default card or with content-item. See card-group documentation for more information. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:145
+[    1445ms] [WARNING] Attempting to re-define c4d-card-eyebrow @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1446ms] [WARNING] Attempting to re-define c4d-expressive-modal @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1446ms] [WARNING] Attempting to re-define cds-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1446ms] [WARNING] Attempting to re-define c4d-expressive-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1446ms] [WARNING] Attempting to re-define c4d-lightbox-image-viewer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1446ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1446ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1447ms] [WARNING] Attempting to re-define c4d-image @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1447ms] [WARNING] Attempting to re-define c4d-image-logo @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1448ms] [LOG] JSHandle@node @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-card-group.lc-9169503aaa8e730dcf59c86b9a26bc05-lc.min.js:1
+[    1483ms] [WARNING] Attempting to re-define c4d-content-item @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define cds-unordered-list @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define cds-ordered-list @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define cds-list-item @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define c4d-markdown @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define c4d-content-item-paragraph @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define c4d-content-item-copy @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1484ms] [WARNING] Attempting to re-define c4d-content-item-heading @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1485ms] [WARNING] Attempting to re-define c4d-link-with-icon @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-content-item.lc-03de0bb71756db0bfcd670d4d5b12152-lc.min.js:1
+[    1552ms] [WARNING] Attempting to re-define cds-dropdown @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1553ms] [WARNING] Attempting to re-define c4d-expressive-modal @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1553ms] [WARNING] Attempting to re-define cds-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1553ms] [WARNING] Attempting to re-define c4d-expressive-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1553ms] [WARNING] Attempting to re-define cds-link @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1554ms] [WARNING] Attempting to re-define c4d-link-with-icon @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1555ms] [WARNING] Attempting to re-define c4d-card @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1555ms] [WARNING] Attempting to re-define c4d-card-heading @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1555ms] [WARNING] Attempting to re-define c4d-card-footer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:1
+[    1578ms] [WARNING] <c4d-footer>: locale-button slot is deprecated and will be removed. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-footer.lc-c0e770f41f13e5283cf7a30f86b8ed56-lc.min.js:16
+[    1626ms] [WARNING] Attempting to re-define c4d-expressive-modal @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1626ms] [WARNING] Attempting to re-define cds-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1626ms] [WARNING] Attempting to re-define c4d-expressive-modal-close-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1626ms] [WARNING] Attempting to re-define c4d-lightbox-image-viewer @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1627ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1627ms] [WARNING] Attempting to re-define c4d-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1627ms] [WARNING] Attempting to re-define c4d-image @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1627ms] [WARNING] Attempting to re-define c4d-video-player-v7 @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1628ms] [WARNING] Attempting to re-define c4d-video-player-composite-v7 @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1628ms] [WARNING] Attempting to re-define c4d-video-player-container-v7 @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-video-player-v7.lc-e2888738eda9175164a62330156448a7-lc.min.js:1
+[    1638ms] [WARNING] Attempting to re-define cds-popover @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cweb-code-snippet.lc-24f99d6b7c4ddaab098e859bb80a2bd4-lc.min.js:1
+[    1638ms] [WARNING] Attempting to re-define cds-popover-content @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cweb-code-snippet.lc-24f99d6b7c4ddaab098e859bb80a2bd4-lc.min.js:1
+[    1638ms] [WARNING] Attempting to re-define cds-tooltip @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cweb-code-snippet.lc-24f99d6b7c4ddaab098e859bb80a2bd4-lc.min.js:1
+[    1638ms] [WARNING] Attempting to re-define cds-button @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-cweb-code-snippet.lc-24f99d6b7c4ddaab098e859bb80a2bd4-lc.min.js:1
+[    1671ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1671ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1698ms] [WARNING] Warning: c4d-masthead's "navLinks" property is deprecated. Use "l0Data" property instead. @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-masthead-container.lc-6add6201fbad7c7de364061631efbdb6-lc.min.js:1272
+[    1742ms] [LOG] Going to iterate over instancesSettings @ https://assets.adobedtm.com/0f2de1d5b89a/565c2aeb0d39/launch-560e54b3e83c.min.js:15
+[    1783ms] [LOG] Fetched Data: {categories: Array(1)} @ https://www.ibm.com/etc.clientlibs/adobe-cms/clientlibs/clientlib-new-design.lc-5e838b2bcba17c567d4bc7353c1b8760-lc.min.js:2
+[    1786ms] [LOG] Smartling Context Tracker is enabled. @ https://d2c7xlmseob604.cloudfront.net/tracker.min.js:0
+[    2864ms] [LOG] webchat bundle deploy timestamp 20260624-171047 @ https://1.www.s81c.com/cognitive-tooling-unified-chat/v1/webchat.bundle.js:7
+[    2864ms] [LOG] webchat bundle commit d467766143ebb10303719d84867ff491cabb0619 @ https://1.www.s81c.com/cognitive-tooling-unified-chat/v1/webchat.bundle.js:7
+[    4559ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://nsone-healthcheck.lumenedge.dev/ns1-healthcheck.gif?t=b9v6lr:0
+[    4641ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://nsone-healthcheck.lumenedge.dev/ns1-healthcheck.gif?t=8ztbso:0
+[    4724ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://nsone-healthcheck.lumenedge.dev/ns1-healthcheck.gif?t=clt8ci:0
