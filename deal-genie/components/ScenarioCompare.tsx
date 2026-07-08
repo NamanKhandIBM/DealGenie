@@ -3,26 +3,23 @@
 /**
  * ScenarioCompare.tsx
  *
- * In-flight dual/triple scenario comparison panel.
- * - Scenarios ordered high→low price (anchoring: Full Platform shown first)
- * - Middle scenario pre-highlighted as "Recommended"
- * - Diff table showing only rows that differ between scenarios
- * - Sensitivity slider: adjust one key variable and watch all prices update live
- * - Zero AI calls — all computation is deterministic via compare-engine.ts
+ * Step 1 — Variable picker: seller chooses 1–2 levers to compare across.
+ * Step 2 — Fan-out result: every option for those levers is computed and shown.
+ *
+ * No AI. All computation is deterministic via compare-engine.ts.
+ * Scenarios are ordered high→low price (anchoring).
  */
 
-import { useState, useCallback } from "react";
+import { useState, useMemo } from "react";
 import type { Product } from "@/lib/types";
 import {
-  buildVerifyScenarios,
-  buildVaultScenarios,
-  buildNS1Scenarios,
+  getForkVariables,
+  buildFanOut,
+  computeSliderPrice,
+  type ForkVariable,
   type CompareResult,
   type Scenario,
 } from "@/lib/compare-engine";
-import { computeNS1Quote } from "@/lib/ns1-engine";
-import { computeVerifyQuote } from "@/lib/verify-engine";
-import { computeVaultQuote } from "@/lib/vault-engine";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -32,136 +29,286 @@ interface Props {
   onClose: () => void;
 }
 
-// ─── Formatting helpers ───────────────────────────────────────────────────────
+// ─── Colour palette (anchored: most expensive = index 0 = purple) ─────────────
 
-function fmt(n: number): string {
+const COLORS  = ["#a78bfa", "#3b82f6", "#34d399", "#f59e0b", "#f87171", "#60a5fa"] as const;
+const BORDERS = ["rgba(167,139,250,0.35)", "rgba(59,130,246,0.35)", "rgba(52,211,153,0.35)", "rgba(245,158,11,0.35)", "rgba(248,113,113,0.35)", "rgba(96,165,250,0.35)"] as const;
+const BGS     = ["rgba(167,139,250,0.07)", "rgba(59,130,246,0.07)", "rgba(52,211,153,0.07)", "rgba(245,158,11,0.07)", "rgba(248,113,113,0.07)", "rgba(96,165,250,0.07)"] as const;
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function fmt(n: number) {
   return "$" + Math.round(n).toLocaleString();
 }
-
-function pctDiff(a: number, base: number): string {
+function pct(a: number, base: number) {
   if (base === 0) return "";
   const d = ((a - base) / base) * 100;
   return (d >= 0 ? "+" : "") + Math.round(d) + "%";
 }
 
-// ─── Build initial CompareResult from live answers ───────────────────────────
+// ─── Step 1: Variable Picker ──────────────────────────────────────────────────
 
-function buildResult(
-  product: Product,
-  answers: Record<string, string | number | boolean | string[]>
-): CompareResult {
-  if (product === "Verify") {
-    const population = Number(answers.population ?? 500);
-    const avgLogins = Number(answers.avgLogins ?? 12);
-    const term = String(answers.term ?? "12-month") as "12-month" | "3-year";
-    return buildVerifyScenarios(population, avgLogins, term);
-  }
-  if (product === "Vault") {
-    const model = String(answers.vaultModel ?? "A") as "A" | "B";
-    const installCount = Number(answers.installCount ?? 1);
-    const clientCount = Number(answers.clientCount ?? 100);
-    const rusMonthly = Number(answers.rusMonthly ?? 100);
-    return buildVaultScenarios(model, installCount, clientCount, rusMonthly);
-  }
-  // NS1
-  const queryMQ = Number(answers.queryMQ ?? 50);
-  const filterChains = Number(answers.filterChainCount ?? 0);
-  return buildNS1Scenarios(queryMQ, filterChains);
+function VariablePicker({
+  product,
+  answers,
+  onConfirm,
+}: {
+  product: Product;
+  answers: Record<string, string | number | boolean | string[]>;
+  onConfirm: (keys: string[]) => void;
+}) {
+  const variables = useMemo(() => getForkVariables(product, answers), [product, answers]);
+  const [selected, setSelected] = useState<string[]>([variables[0].key]);
+
+  const toggle = (key: string) => {
+    setSelected((prev) => {
+      if (prev.includes(key)) return prev.filter((k) => k !== key);
+      if (prev.length >= 2) return [prev[1], key]; // rolling window of 2
+      return [...prev, key];
+    });
+  };
+
+  return (
+    <div className="px-6 py-5">
+      <p className="text-sm font-semibold mb-1" style={{ color: "#e8eaed" }}>
+        Which variable do you want to explore?
+      </p>
+      <p className="text-xs mb-5" style={{ color: "rgba(147,180,253,0.55)" }}>
+        Pick 1 or 2 levers. DealGenie will compute the price for every option and show them side-by-side, ordered highest to lowest.
+      </p>
+
+      <div className="grid grid-cols-1 gap-2.5 mb-6">
+        {variables.map((v) => {
+          const active = selected.includes(v.key);
+          return (
+            <button
+              key={v.key}
+              onClick={() => toggle(v.key)}
+              className="text-left rounded-xl px-4 py-3.5 transition-all"
+              style={{
+                background: active ? "rgba(59,130,246,0.12)" : "rgba(255,255,255,0.03)",
+                border: active ? "1px solid rgba(59,130,246,0.55)" : "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: active ? "#93b4fd" : "#e8eaed" }}>
+                    {v.label}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.5)" }}>
+                    {v.impact}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {v.options.map((o) => (
+                      <span
+                        key={String(o.value)}
+                        className="text-[10px] px-1.5 py-0.5 rounded"
+                        style={{ background: "rgba(255,255,255,0.06)", color: "rgba(147,180,253,0.5)", border: "1px solid rgba(255,255,255,0.07)" }}
+                      >
+                        {o.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {/* checkbox */}
+                <div
+                  className="w-5 h-5 rounded flex-shrink-0 flex items-center justify-center"
+                  style={{
+                    background: active ? "#3b82f6" : "rgba(255,255,255,0.06)",
+                    border: active ? "1px solid #3b82f6" : "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  {active && (
+                    <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="white" strokeWidth="2">
+                      <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Summary of what will be generated */}
+      {selected.length > 0 && (
+        <div
+          className="rounded-xl px-4 py-3 mb-5 text-xs"
+          style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)", color: "rgba(147,180,253,0.7)", lineHeight: 1.55 }}
+        >
+          {(() => {
+            const vars = variables.filter((v) => selected.includes(v.key));
+            const totalOptions = vars.reduce((acc, v) => acc * v.options.length, 1);
+            if (vars.length === 1) {
+              return <>Will generate <strong style={{ color: "#93b4fd" }}>{vars[0].options.length} scenarios</strong>, one for each option of <strong style={{ color: "#93b4fd" }}>{vars[0].label}</strong>. All other answers stay fixed from your current quote.</>;
+            }
+            return <>Will generate <strong style={{ color: "#93b4fd" }}>{totalOptions} scenarios</strong> — every combination of <strong style={{ color: "#93b4fd" }}>{vars[0].label}</strong> ({vars[0].options.length} options) × <strong style={{ color: "#93b4fd" }}>{vars[1].label}</strong> ({vars[1].options.length} options). All other answers stay fixed.</>;
+          })()}
+        </div>
+      )}
+
+      <button
+        onClick={() => selected.length > 0 && onConfirm(selected)}
+        disabled={selected.length === 0}
+        className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+        style={{
+          background: selected.length > 0 ? "#3b82f6" : "rgba(255,255,255,0.05)",
+          color: selected.length > 0 ? "#fff" : "rgba(147,180,253,0.3)",
+          border: "none",
+          cursor: selected.length > 0 ? "pointer" : "not-allowed",
+        }}
+      >
+        Generate Scenarios →
+      </button>
+    </div>
+  );
 }
 
-// ─── Compute single price for sensitivity slider ──────────────────────────────
+// ─── Step 2: Scenario Result cards ───────────────────────────────────────────
 
-function sliderPrice(
-  product: Product,
-  answers: Record<string, string | number | boolean | string[]>,
-  sliderKey: string,
-  sliderValue: number,
-  scenarioInputs: Record<string, string | number | boolean | string[]>
-): number {
-  if (product === "Verify") {
-    const population = sliderKey === "population" ? sliderValue : Number(answers.population ?? 500);
-    const avgLogins = Number(answers.avgLogins ?? 12);
-    const term = String(answers.term ?? "12-month") as "12-month" | "3-year";
-    const caps = (scenarioInputs.Capabilities as string)?.split(", ") ?? ["SSO"];
-    const managedUsers = caps.includes("Lifecycle") ? population : 0;
-    const result = computeVerifyQuote({
-      capabilities: caps as ("SSO" | "MFA" | "Adaptive" | "Lifecycle")[],
-      population,
-      avgLoginsPerYear: avgLogins,
-      managedUsers,
-      term,
-    });
-    return result.totalAnnualList;
-  }
-  if (product === "NS1") {
-    const mq = sliderKey === "queryMQ" ? sliderValue : Number(answers.queryMQ ?? 50);
-    const fc = Number(scenarioInputs["Filter Chains"] ?? 0);
-    const monitors = Number(scenarioInputs.Monitors ?? 0);
-    const result = computeNS1Quote({ queryVolumeMQ: mq, filterChains: fc, monitors });
-    return result.ballparkAnnual;
-  }
-  // Vault
-  const model = String(answers.vaultModel ?? "B") as "A" | "B";
-  const installCount = Number(answers.installCount ?? 1);
-  if (model === "B") {
-    const clientCount = sliderKey === "clientCount" ? sliderValue : Number(answers.clientCount ?? 100);
-    const edition = String(scenarioInputs.Edition ?? "Standard") as "Essentials" | "Standard" | "Premium";
-    const result = computeVaultQuote({ model: "B-Clients", edition, installCount, clientCount });
-    return result.totalAnnualList;
-  }
-  const ru = sliderKey === "rusMonthly" ? sliderValue : Number(answers.rusMonthly ?? 100);
-  const result = computeVaultQuote({ model: "A-Platform", installCount, useCaseInputs: { staticSecretCount: ru } });
-  return result.totalAnnualList;
+function ResultCards({ result, baseline }: { result: CompareResult; baseline: Scenario }) {
+  const scenarios = result.scenarios;
+  // Use a 3-column grid for ≤6 scenarios, wrap after that
+  const cols = scenarios.length <= 2 ? 2 : scenarios.length <= 3 ? 3 : scenarios.length <= 4 ? 2 : 3;
+
+  return (
+    <div
+      className={`grid gap-3`}
+      style={{ gridTemplateColumns: `repeat(${Math.min(cols, scenarios.length)}, 1fr)` }}
+    >
+      {scenarios.map((s, i) => {
+        const isRecommended = i === result.recommendedIdx;
+        const isBaseline    = i === result.baselineIdx;
+        const delta = s.annualList - baseline.annualList;
+        const c = COLORS[i % COLORS.length];
+        const border = isRecommended
+          ? `1.5px solid ${c}`
+          : BORDERS[i % BORDERS.length];
+        const bg = isRecommended ? BGS[i % BGS.length] : "rgba(255,255,255,0.025)";
+
+        return (
+          <div
+            key={i}
+            className="rounded-xl p-4 flex flex-col gap-1.5"
+            style={{ border, background: bg }}
+          >
+            {/* Badges */}
+            <div className="flex flex-wrap gap-1 mb-0.5">
+              {isRecommended && (
+                <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
+                  style={{ background: `${c}22`, color: c, border: `1px solid ${c}55` }}>
+                  Recommended
+                </span>
+              )}
+              {isBaseline && !isRecommended && (
+                <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
+                  style={{ background: "rgba(255,255,255,0.05)", color: "rgba(147,180,253,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  Lowest
+                </span>
+              )}
+              {i === 0 && (
+                <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
+                  style={{ background: "rgba(255,255,255,0.05)", color: "rgba(147,180,253,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  Highest
+                </span>
+              )}
+            </div>
+
+            {/* Name */}
+            <p className="font-bold text-xs leading-snug" style={{ color: c }}>
+              {s.name}
+            </p>
+
+            {/* Price */}
+            <div>
+              <div className="text-xl font-extrabold tabular-nums leading-tight" style={{ color: "#e8eaed" }}>
+                {fmt(s.annualList)}
+              </div>
+              <div className="text-[10px] mt-0.5" style={{ color: "rgba(147,180,253,0.4)" }}>
+                /yr list · {fmt(s.monthlyList)}/mo
+              </div>
+            </div>
+
+            {/* Delta */}
+            {!isBaseline && (
+              <div className="text-[10px] font-semibold px-1.5 py-0.5 rounded w-fit mt-0.5"
+                style={{
+                  background: delta > 0 ? "rgba(251,191,36,0.1)" : "rgba(52,211,153,0.1)",
+                  color: delta > 0 ? "#fbbf24" : "#34d399",
+                  border: `1px solid ${delta > 0 ? "rgba(251,191,36,0.2)" : "rgba(52,211,153,0.2)"}`,
+                }}>
+                {delta > 0 ? "+" : ""}{fmt(Math.abs(delta))} vs lowest ({pct(s.annualList, baseline.annualList)})
+              </div>
+            )}
+
+            {/* Drivers */}
+            <ul className="mt-1 space-y-0.5">
+              {s.drivers.map((d, di) => (
+                <li key={di} className="text-[10px] flex items-center gap-1" style={{ color: "rgba(147,180,253,0.45)" }}>
+                  <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: c }} />
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 // ─── Diff table ───────────────────────────────────────────────────────────────
 
-function DiffTable({ scenarios }: { scenarios: Scenario[] }) {
-  if (scenarios.length < 2) return null;
+function DiffTable({ result }: { result: CompareResult }) {
+  const scenarios = result.scenarios;
+  if (scenarios.length < 2 || result.forkVars.length === 0) return null;
 
-  // Collect all input keys
-  const allKeys = Array.from(new Set(scenarios.flatMap((s) => Object.keys(s.inputs))));
-  // Only show rows that differ
-  const differingKeys = allKeys.filter((k) => {
-    const vals = scenarios.map((s) => String(s.inputs[k] ?? "—"));
-    return !vals.every((v) => v === vals[0]);
-  });
+  // Show one row per fork variable
+  const rows = result.forkVars.map((fv) => ({
+    label: fv.label,
+    values: scenarios.map((s) => {
+      const raw = s.overrides[fv.key];
+      if (Array.isArray(raw)) return (raw as string[]).join(", ");
+      if (raw === undefined) return "—";
+      return String(raw);
+    }),
+  }));
 
-  if (differingKeys.length === 0) return null;
+  // Cap columns to avoid overflowing — show max 6
+  const displayScenarios = scenarios.slice(0, 6);
 
   return (
-    <div className="mt-5">
-      <p className="text-[10px] font-semibold tracking-widest uppercase mb-2" style={{ color: "rgba(147,180,253,0.5)" }}>
-        What differs between scenarios
+    <div className="mt-4">
+      <p className="text-[10px] font-semibold tracking-widest uppercase mb-2" style={{ color: "rgba(147,180,253,0.4)" }}>
+        Variable differences across scenarios
       </p>
-      <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-        <table className="w-full text-xs">
+      <div className="rounded-xl overflow-x-auto" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+        <table className="w-full text-xs" style={{ minWidth: `${displayScenarios.length * 120 + 140}px` }}>
           <thead>
-            <tr style={{ background: "rgba(255,255,255,0.04)" }}>
-              <th className="text-left px-3 py-2 font-semibold" style={{ color: "rgba(147,180,253,0.6)", width: "30%" }}>Variable</th>
-              {scenarios.map((s, i) => (
-                <th key={i} className="text-right px-3 py-2 font-semibold" style={{ color: TIER_COLORS[i % TIER_COLORS.length] }}>
-                  {s.name}
+            <tr style={{ background: "rgba(255,255,255,0.03)" }}>
+              <th className="text-left px-3 py-2 font-semibold" style={{ color: "rgba(147,180,253,0.5)", width: "140px" }}>Variable</th>
+              {displayScenarios.map((_, i) => (
+                <th key={i} className="text-right px-3 py-2 font-semibold" style={{ color: COLORS[i % COLORS.length] }}>
+                  Scenario {i + 1}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {differingKeys.map((k) => (
-              <tr key={k} style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-                <td className="px-3 py-2" style={{ color: "rgba(147,180,253,0.55)" }}>{k}</td>
-                {scenarios.map((s, i) => (
+            {rows.map((row) => (
+              <tr key={row.label} style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+                <td className="px-3 py-2" style={{ color: "rgba(147,180,253,0.5)" }}>{row.label}</td>
+                {displayScenarios.map((_, i) => (
                   <td key={i} className="text-right px-3 py-2 font-medium" style={{ color: "#e8eaed" }}>
-                    {String(s.inputs[k] ?? "—")}
+                    {row.values[i]}
                   </td>
                 ))}
               </tr>
             ))}
-            {/* Price totals row */}
-            <tr style={{ borderTop: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.03)" }}>
-              <td className="px-3 py-2.5 font-semibold text-xs" style={{ color: "#e8eaed" }}>Annual List Price</td>
-              {scenarios.map((s, i) => (
-                <td key={i} className="text-right px-3 py-2.5 font-bold text-sm" style={{ color: TIER_COLORS[i % TIER_COLORS.length] }}>
+            <tr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.02)" }}>
+              <td className="px-3 py-2.5 font-semibold" style={{ color: "#e8eaed" }}>Annual List Price</td>
+              {displayScenarios.map((s, i) => (
+                <td key={i} className="text-right px-3 py-2.5 font-bold" style={{ color: COLORS[i % COLORS.length] }}>
                   {fmt(s.annualList)}
                 </td>
               ))}
@@ -169,47 +316,42 @@ function DiffTable({ scenarios }: { scenarios: Scenario[] }) {
           </tbody>
         </table>
       </div>
+      {scenarios.length > 6 && (
+        <p className="text-[10px] mt-1.5" style={{ color: "rgba(147,180,253,0.35)" }}>
+          Showing first 6 of {scenarios.length} scenarios in the diff table.
+        </p>
+      )}
     </div>
   );
 }
 
-// ─── Colour palette for scenarios (anchored: most expensive first) ────────────
+// ─── Sensitivity Slider ───────────────────────────────────────────────────────
 
-const TIER_COLORS = ["#a78bfa", "#3b82f6", "#34d399"] as const;
-const TIER_BORDER = ["rgba(139,92,246,0.35)", "rgba(59,130,246,0.35)", "rgba(52,211,153,0.35)"] as const;
-const TIER_BG     = ["rgba(139,92,246,0.08)", "rgba(59,130,246,0.08)", "rgba(52,211,153,0.08)"] as const;
-const TIER_GLOW   = ["rgba(139,92,246,0.25)", "rgba(59,130,246,0.25)", "rgba(52,211,153,0.25)"] as const;
-
-// ─── Sensitivity slider panel ─────────────────────────────────────────────────
-
-interface SliderPanelProps {
+function SliderPanel({
+  result,
+  product,
+  answers,
+}: {
   result: CompareResult;
   product: Product;
   answers: Record<string, string | number | boolean | string[]>;
-}
+}) {
+  const [value, setValue] = useState(result.sliderCurrentValue);
+  if (!result.sliderVar) return null;
 
-function SliderPanel({ result, product, answers }: SliderPanelProps) {
-  const [value, setValue] = useState(result.sliderMin + Math.round((result.sliderMax - result.sliderMin) * 0.25));
   const prices = result.scenarios.map((s) =>
-    sliderPrice(product, answers, result.sliderKey, value, s.inputs)
+    computeSliderPrice(product, answers, s.overrides, result.sliderKey, value)
   );
   const maxPrice = Math.max(...prices, 1);
 
   return (
-    <div
-      className="mt-5 rounded-xl p-4"
-      style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
-      }}
-    >
-      <p className="text-[10px] font-semibold tracking-widest uppercase mb-3" style={{ color: "rgba(147,180,253,0.5)" }}>
-        Sensitivity — how does price change with {result.sliderLabel}?
+    <div className="mt-4 rounded-xl p-4" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <p className="text-[10px] font-semibold tracking-widest uppercase mb-3" style={{ color: "rgba(147,180,253,0.45)" }}>
+        Sensitivity — move {result.sliderVar.label.toLowerCase()} and watch all prices update
       </p>
 
-      {/* Slider */}
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-xs w-20 text-right tabular-nums" style={{ color: "rgba(147,180,253,0.6)" }}>
+      <div className="flex items-center gap-3 mb-3">
+        <span className="text-[10px] w-20 text-right tabular-nums" style={{ color: "rgba(147,180,253,0.5)" }}>
           {result.sliderMin.toLocaleString()} {result.sliderUnit}
         </span>
         <input
@@ -222,35 +364,29 @@ function SliderPanel({ result, product, answers }: SliderPanelProps) {
           className="flex-1 accent-blue-500"
           style={{ cursor: "pointer" }}
         />
-        <span className="text-xs w-24 tabular-nums" style={{ color: "rgba(147,180,253,0.6)" }}>
+        <span className="text-[10px] w-24 tabular-nums" style={{ color: "rgba(147,180,253,0.5)" }}>
           {result.sliderMax.toLocaleString()} {result.sliderUnit}
         </span>
       </div>
 
-      {/* Current value label */}
       <p className="text-center text-sm font-bold mb-3" style={{ color: "#e8eaed" }}>
         {value.toLocaleString()} {result.sliderUnit}
       </p>
 
-      {/* Bar chart */}
-      <div className="space-y-2">
-        {result.scenarios.map((s, i) => {
-          const pct = (prices[i] / maxPrice) * 100;
+      <div className="space-y-1.5">
+        {result.scenarios.slice(0, 6).map((s, i) => {
+          const barPct = (prices[i] / maxPrice) * 100;
+          const c = COLORS[i % COLORS.length];
           return (
             <div key={i} className="flex items-center gap-2">
-              <span className="text-xs w-36 truncate" style={{ color: TIER_COLORS[i % TIER_COLORS.length] }}>
-                {s.name}
-              </span>
-              <div className="flex-1 h-6 rounded overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+              <span className="text-[10px] w-32 truncate" style={{ color: c }}>{s.name}</span>
+              <div className="flex-1 h-5 rounded overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
                 <div
-                  className="h-full rounded transition-all duration-150"
-                  style={{
-                    width: `${pct}%`,
-                    background: `linear-gradient(90deg, ${TIER_COLORS[i % TIER_COLORS.length]}99, ${TIER_COLORS[i % TIER_COLORS.length]})`,
-                  }}
+                  className="h-full rounded transition-all duration-100"
+                  style={{ width: `${barPct}%`, background: `linear-gradient(90deg, ${c}88, ${c})` }}
                 />
               </div>
-              <span className="text-xs w-24 text-right tabular-nums font-semibold" style={{ color: "#e8eaed" }}>
+              <span className="text-[10px] w-22 text-right tabular-nums font-semibold" style={{ color: "#e8eaed" }}>
                 {fmt(prices[i])}/yr
               </span>
             </div>
@@ -258,8 +394,8 @@ function SliderPanel({ result, product, answers }: SliderPanelProps) {
         })}
       </div>
 
-      <p className="text-center mt-3 text-[11px]" style={{ color: "rgba(147,180,253,0.4)" }}>
-        Drag slider to model different {result.sliderLabel.toLowerCase()} values
+      <p className="text-center mt-2 text-[10px]" style={{ color: "rgba(147,180,253,0.3)" }}>
+        Each bar shows that scenario with the slider value applied · other variables fixed
       </p>
     </div>
   );
@@ -268,22 +404,16 @@ function SliderPanel({ result, product, answers }: SliderPanelProps) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function ScenarioCompare({ product, answers, onClose }: Props) {
-  const [result, setResult] = useState<CompareResult>(() => buildResult(product, answers));
+  const [result, setResult] = useState<CompareResult | null>(null);
 
-  // Rebuild if answers change (won't happen in practice since this is modal)
-  const rebuild = useCallback(() => setResult(buildResult(product, answers)), [product, answers]);
-
-  const baseline = result.scenarios[result.baselineIdx];
+  const productLabel =
+    product === "NS1" ? "NS1 Connect" :
+    product === "Vault" ? "IBM HashiCorp Vault" : "IBM Security Verify";
 
   return (
     <div
       className="fixed inset-0 flex items-start justify-center overflow-y-auto"
-      style={{
-        zIndex: 60,
-        background: "rgba(0,0,0,0.75)",
-        backdropFilter: "blur(8px)",
-        padding: "24px 16px",
-      }}
+      style={{ zIndex: 60, background: "rgba(0,0,0,0.78)", backdropFilter: "blur(8px)", padding: "24px 16px 48px" }}
     >
       <div
         className="w-full max-w-4xl rounded-2xl"
@@ -294,17 +424,30 @@ export default function ScenarioCompare({ product, answers, onClose }: Props) {
         }}
       >
         {/* ── Header ── */}
-        <div
-          className="flex items-center justify-between px-6 py-4"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          <div>
-            <h2 className="font-bold text-base" style={{ color: "#e8eaed" }}>
-              Scenario Comparison — {product === "NS1" ? "NS1 Connect" : product === "Vault" ? "IBM HashiCorp Vault" : "IBM Security Verify"}
-            </h2>
-            <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.55)" }}>
-              {result.scenarios.length} scenarios · ordered Full Platform → Entry · no AI used
-            </p>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="flex items-center gap-3">
+            {result && (
+              <button
+                onClick={() => setResult(null)}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(147,180,253,0.7)" }}
+              >
+                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M10 4L6 8l4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Change variable
+              </button>
+            )}
+            <div>
+              <h2 className="font-bold text-base" style={{ color: "#e8eaed" }}>
+                {result ? "Scenario Comparison" : "Compare Scenarios"} — {productLabel}
+              </h2>
+              <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.45)" }}>
+                {result
+                  ? `${result.scenarios.length} scenarios · ordered highest → lowest price · no AI`
+                  : "Choose which variables to explore"}
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -317,128 +460,34 @@ export default function ScenarioCompare({ product, answers, onClose }: Props) {
           </button>
         </div>
 
-        <div className="px-6 py-5 space-y-5">
+        {/* ── Body ── */}
+        {!result ? (
+          <VariablePicker
+            product={product}
+            answers={answers}
+            onConfirm={(keys) => setResult(buildFanOut(product, answers, keys))}
+          />
+        ) : (
+          <div className="px-6 py-5 space-y-2">
+            <ResultCards result={result} baseline={result.scenarios[result.baselineIdx]} />
 
-          {/* ── Scenario cards ── */}
-          <div className={`grid gap-3 ${result.scenarios.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
-            {result.scenarios.map((s, i) => {
-              const isRecommended = i === result.recommendedIdx;
-              const isBaseline = i === result.baselineIdx;
-              const delta = s.annualList - baseline.annualList;
-              const color = TIER_COLORS[i % TIER_COLORS.length];
-              const border = isRecommended ? `1px solid ${color}` : TIER_BORDER[i % TIER_BORDER.length];
-              const bg = isRecommended ? TIER_BG[i % TIER_BG.length] : "rgba(255,255,255,0.03)";
+            {/* Insight */}
+            <div
+              className="rounded-xl px-4 py-3 text-xs"
+              style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.18)", color: "rgba(147,180,253,0.7)", lineHeight: 1.6, marginTop: "14px" }}
+            >
+              <span className="font-semibold" style={{ color: "#93b4fd" }}>💡 </span>
+              {result.insightText}
+            </div>
 
-              return (
-                <div
-                  key={i}
-                  className="rounded-xl p-4 flex flex-col gap-2"
-                  style={{
-                    border,
-                    background: bg,
-                    boxShadow: isRecommended ? `0 0 0 1px ${color}40` : undefined,
-                    position: "relative",
-                  }}
-                >
-                  {/* Badge row */}
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {isRecommended && (
-                      <span
-                        className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
-                        style={{ background: `${color}22`, color, border: `1px solid ${color}55` }}
-                      >
-                        Recommended
-                      </span>
-                    )}
-                    {isBaseline && !isRecommended && (
-                      <span
-                        className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
-                        style={{ background: "rgba(255,255,255,0.05)", color: "rgba(147,180,253,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}
-                      >
-                        Entry
-                      </span>
-                    )}
-                    {i === 0 && (
-                      <span
-                        className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
-                        style={{ background: "rgba(255,255,255,0.05)", color: "rgba(147,180,253,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}
-                      >
-                        Full Platform
-                      </span>
-                    )}
-                  </div>
+            <DiffTable result={result} />
+            <SliderPanel result={result} product={product} answers={answers} />
 
-                  {/* Name */}
-                  <h3 className="font-bold text-sm leading-tight" style={{ color }}>
-                    {s.name}
-                  </h3>
-                  <p className="text-[11px] leading-snug" style={{ color: "rgba(147,180,253,0.55)" }}>
-                    {s.tagline}
-                  </p>
-
-                  {/* Price */}
-                  <div className="mt-1">
-                    <div className="text-2xl font-extrabold tabular-nums" style={{ color: "#e8eaed" }}>
-                      {fmt(s.annualList)}
-                    </div>
-                    <div className="text-[11px] mt-0.5" style={{ color: "rgba(147,180,253,0.45)" }}>
-                      per year list · ~{fmt(s.monthlyList)}/mo
-                    </div>
-                  </div>
-
-                  {/* Delta vs baseline */}
-                  {!isBaseline && (
-                    <div
-                      className="text-[11px] font-semibold mt-1 px-2 py-0.5 rounded-md w-fit"
-                      style={{
-                        background: delta > 0 ? "rgba(251,191,36,0.1)" : "rgba(52,211,153,0.1)",
-                        color: delta > 0 ? "#fbbf24" : "#34d399",
-                        border: `1px solid ${delta > 0 ? "rgba(251,191,36,0.2)" : "rgba(52,211,153,0.2)"}`,
-                      }}
-                    >
-                      {delta > 0 ? "+" : ""}{fmt(Math.abs(delta))} vs Entry ({pctDiff(s.annualList, baseline.annualList)})
-                    </div>
-                  )}
-
-                  {/* Key drivers */}
-                  <ul className="mt-1 space-y-0.5">
-                    {s.drivers.map((d, di) => (
-                      <li key={di} className="text-[11px] flex items-center gap-1.5" style={{ color: "rgba(147,180,253,0.5)" }}>
-                        <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: color }} />
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
+            <p className="text-center text-[10px] pt-2" style={{ color: "rgba(147,180,253,0.25)" }}>
+              All prices are LIST — confirm exact pricing and discounts in CPQ · No AI was used
+            </p>
           </div>
-
-          {/* ── Insight banner ── */}
-          <div
-            className="rounded-xl px-4 py-3 text-sm"
-            style={{
-              background: "rgba(59,130,246,0.07)",
-              border: "1px solid rgba(59,130,246,0.2)",
-              color: "rgba(147,180,253,0.75)",
-              lineHeight: 1.55,
-            }}
-          >
-            <span className="font-semibold" style={{ color: "#93b4fd" }}>💡 Pricing insight: </span>
-            {result.insightText}
-          </div>
-
-          {/* ── Diff table ── */}
-          <DiffTable scenarios={result.scenarios} />
-
-          {/* ── Sensitivity slider ── */}
-          <SliderPanel result={result} product={product} answers={answers} />
-
-          {/* ── Footer note ── */}
-          <p className="text-center text-[11px] pb-1" style={{ color: "rgba(147,180,253,0.3)" }}>
-            All prices are LIST — confirm exact pricing, discounts, and approval in CPQ · No AI was used to generate these scenarios
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );

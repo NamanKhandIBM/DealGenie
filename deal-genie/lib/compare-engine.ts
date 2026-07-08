@@ -1,253 +1,421 @@
 /**
  * compare-engine.ts
  *
- * Deterministic, zero-AI scenario generator.
- * Each product has a hardcoded set of 2–3 "named tiers" that represent
- * meaningful Good / Better / Best configurations.
+ * Variable-selector scenario fan-out — zero AI, fully deterministic.
  *
- * The shared answers (population, term, etc.) are provided by the caller.
- * The engine computes prices by calling the existing pricing engines directly.
+ * Instead of hardcoded tiers, the seller picks 1–2 "fork variables"
+ * (e.g. "Which capabilities?" or "How many users?").
+ * The engine fans out every meaningful option for those variables
+ * and computes a price for each combination using the existing engines.
+ *
+ * Results are ordered high → low price (anchoring).
  */
 
-import { computeVerifyQuote, type VerifyInputs } from "./verify-engine";
-import { computeVaultQuote, type VaultInputsModelA, type VaultInputsModelB } from "./vault-engine";
-import { computeNS1Quote, type NS1Inputs } from "./ns1-engine";
+import { computeVerifyQuote } from "./verify-engine";
+import { computeVaultQuote } from "./vault-engine";
+import { computeNS1Quote } from "./ns1-engine";
 import type { Product } from "./types";
 import type { VerifyCapability } from "./data";
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
+/** A single forkable variable the seller can choose to compare across */
+export interface ForkVariable {
+  key: string;
+  label: string;
+  /** Short description of what this variable affects */
+  impact: string;
+  /** The options to fan out over */
+  options: ForkOption[];
+}
+
+export interface ForkOption {
+  label: string;
+  /** The raw answer value (same format as ConversationState.answers[key]) */
+  value: string | number | string[];
+}
+
+/** One computed scenario (one combination of fork variable values) */
 export interface Scenario {
-  /** Human-facing tier name — ordered Premium → Standard → Entry */
+  /** Human-readable name built from the fork option labels */
   name: string;
-  /** Short sentence about what's in this tier */
-  tagline: string;
-  /** Annual list price computed by the deterministic engine */
+  /** The answer overrides that produced this scenario */
+  overrides: Record<string, string | number | boolean | string[]>;
   annualList: number;
-  /** Monthly equivalent */
   monthlyList: number;
-  /** Key differences vs entry scenario (auto-derived) */
+  /** Key drivers shown under the price */
   drivers: string[];
-  /** Which inputs were used (for display in diff table) */
-  inputs: Record<string, string | number | boolean | string[]>;
 }
 
 export interface CompareResult {
   product: Product;
-  scenarios: Scenario[];      // always ordered high → low price (anchoring)
-  /** Cheapest scenario index (always last after sort) */
+  forkVars: ForkVariable[];         // the variables that were forked
+  scenarios: Scenario[];            // ordered high → low price
   baselineIdx: number;
-  /** Recommended scenario index (middle, or [1] when 3 exist) */
   recommendedIdx: number;
-  /** One-line plain-English explanation of the biggest price driver */
   insightText: string;
-  /** The slider variable for the sensitivity panel */
+  /** For the sensitivity slider */
+  sliderVar: ForkVariable | null;
   sliderKey: string;
-  sliderLabel: string;
   sliderMin: number;
   sliderMax: number;
   sliderStep: number;
   sliderUnit: string;
+  sliderCurrentValue: number;
 }
 
-// ─── Verify ───────────────────────────────────────────────────────────────────
+// ─── Per-product fork variable definitions ────────────────────────────────────
+// These mirror the actual question options in questions.ts.
+// They are the "levers" a seller can choose to explore.
 
-const VERIFY_TIERS: {
-  name: string;
-  tagline: string;
-  capabilities: VerifyCapability[];
-  managedUsersFraction: number; // fraction of population to use as managedUsers
-  addOnSms: boolean;
-}[] = [
-  {
-    name: "Authentication Only",
-    tagline: "SSO for every user — the essential starting point",
-    capabilities: ["SSO"],
-    managedUsersFraction: 0,
-    addOnSms: false,
-  },
-  {
-    name: "Secure Workforce",
-    tagline: "SSO + Adaptive MFA — strong protection without complexity",
-    capabilities: ["SSO", "MFA", "Adaptive"],
-    managedUsersFraction: 0,
-    addOnSms: false,
-  },
-  {
-    name: "Full Identity Platform",
-    tagline: "SSO + MFA + Lifecycle — govern the full identity lifecycle",
-    capabilities: ["SSO", "MFA", "Adaptive", "Lifecycle"],
-    managedUsersFraction: 1.0,
-    addOnSms: false,
-  },
-];
-
-export function buildVerifyScenarios(
-  population: number,
-  avgLogins: number,
-  term: "12-month" | "3-year"
-): CompareResult {
-  const scenarios: Scenario[] = VERIFY_TIERS.map((tier) => {
-    const managedUsers = Math.round(population * tier.managedUsersFraction);
-    const inputs: VerifyInputs = {
-      capabilities: tier.capabilities,
-      population,
-      avgLoginsPerYear: avgLogins,
-      managedUsers,
-      term,
-    };
-    const result = computeVerifyQuote(inputs);
-    return {
-      name: tier.name,
-      tagline: tier.tagline,
-      annualList: result.totalAnnualList,
-      monthlyList: Math.round(result.totalAnnualList / 12),
-      drivers: tier.capabilities.map((c) => `${c} enabled`),
-      inputs: {
-        Capabilities: tier.capabilities.join(", "),
-        "Managed Users": managedUsers.toLocaleString(),
-        Population: population.toLocaleString(),
-        "Avg Logins / yr": avgLogins,
-        Term: term,
+export function getForkVariables(
+  product: Product,
+  answers: Record<string, string | number | boolean | string[]>
+): ForkVariable[] {
+  if (product === "Verify") {
+    return [
+      {
+        key: "capabilities",
+        label: "Security capabilities",
+        impact: "Biggest price driver — each capability adds RUs",
+        options: [
+          { label: "SSO only",                  value: ["SSO"] },
+          { label: "SSO + MFA",                 value: ["SSO", "MFA"] },
+          { label: "SSO + MFA + Adaptive",      value: ["SSO", "MFA", "Adaptive"] },
+          { label: "Full suite (+ Lifecycle)",  value: ["SSO", "MFA", "Adaptive", "Lifecycle"] },
+        ],
       },
+      {
+        key: "population",
+        label: "User population",
+        impact: "Drives MAU — crosses tier boundaries non-linearly",
+        options: [
+          { label: "1,000 users",    value: 1000 },
+          { label: "5,000 users",    value: 5000 },
+          { label: "10,000 users",   value: 10000 },
+          { label: "50,000 users",   value: 50000 },
+          { label: "100,000 users",  value: 100000 },
+          { label: "500,000 users",  value: 500000 },
+        ],
+      },
+      {
+        key: "avgLogins",
+        label: "Login frequency",
+        impact: "Controls how many months/year count as active MAU",
+        options: [
+          { label: "Occasional (3 months/yr)",  value: 3 },
+          { label: "Seasonal (6 months/yr)",    value: 6 },
+          { label: "Regular (9 months/yr)",     value: 9 },
+          { label: "Always-on (12 months/yr)",  value: 12 },
+        ],
+      },
+      {
+        key: "term",
+        label: "Contract term",
+        impact: "3-year commitments carry higher total value",
+        options: [
+          { label: "12-month", value: "12-month" },
+          { label: "3-year",   value: "3-year" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "Vault") {
+    const model = String(answers.vaultModel ?? "B");
+    if (model === "B") {
+      return [
+        {
+          key: "edition",
+          label: "Vault edition",
+          impact: "Edition sets the install price — Essentials vs Standard vs Premium",
+          options: [
+            { label: "Essentials", value: "Essentials" },
+            { label: "Standard",   value: "Standard" },
+            { label: "Premium",    value: "Premium" },
+          ],
+        },
+        {
+          key: "clientCount",
+          label: "Client (app/service) count",
+          impact: "Each connecting app or service = 1 client RVU at $1,296/yr",
+          options: [
+            { label: "50 clients",     value: 50 },
+            { label: "250 clients",    value: 250 },
+            { label: "1,000 clients",  value: 1000 },
+            { label: "5,000 clients",  value: 5000 },
+            { label: "10,000 clients", value: 10000 },
+          ],
+        },
+        {
+          key: "installCount",
+          label: "Number of clusters",
+          impact: "Each production cluster = one install fee",
+          options: [
+            { label: "1 cluster", value: 1 },
+            { label: "2 clusters", value: 2 },
+            { label: "3 clusters", value: 3 },
+          ],
+        },
+      ];
+    }
+    // Model A
+    return [
+      {
+        key: "rusMonthly",
+        label: "Monthly resource units (RU)",
+        impact: "Platform model charges per RU/month — usage drives cost directly",
+        options: [
+          { label: "100 RU/mo",    value: 100 },
+          { label: "500 RU/mo",    value: 500 },
+          { label: "1,000 RU/mo",  value: 1000 },
+          { label: "5,000 RU/mo",  value: 5000 },
+          { label: "10,000 RU/mo", value: 10000 },
+        ],
+      },
+      {
+        key: "installCount",
+        label: "Number of clusters",
+        impact: "Each production cluster = $96,000/yr install fee",
+        options: [
+          { label: "1 cluster", value: 1 },
+          { label: "2 clusters", value: 2 },
+          { label: "3 clusters", value: 3 },
+        ],
+      },
+    ];
+  }
+
+  // NS1
+  return [
+    {
+      key: "queryMQ",
+      label: "Query volume",
+      impact: "Biggest NS1 cost driver — tier pricing means non-linear jumps",
+      options: [
+        { label: "25M queries/mo",    value: 25 },
+        { label: "100M queries/mo",   value: 100 },
+        { label: "300M queries/mo",   value: 300 },
+        { label: "700M queries/mo",   value: 700 },
+        { label: "2,000M queries/mo", value: 2000 },
+      ],
+    },
+    {
+      key: "filterChainCount",
+      label: "Traffic steering (GSLB filter chains)",
+      impact: "Each steered DNS record adds a filter chain fee",
+      options: [
+        { label: "No GSLB (0)",     value: 0 },
+        { label: "5 filter chains", value: 5 },
+        { label: "25 filter chains", value: 25 },
+        { label: "100 filter chains", value: 100 },
+      ],
+    },
+    {
+      key: "monitors",
+      label: "Health monitors",
+      impact: "Up/down checks per hostname — flat per-monitor fee",
+      options: [
+        { label: "No monitors (0)", value: 0 },
+        { label: "25 monitors",     value: 25 },
+        { label: "100 monitors",    value: 100 },
+        { label: "200 monitors",    value: 200 },
+      ],
+    },
+  ];
+}
+
+// ─── Price computation for one set of overrides ───────────────────────────────
+
+export function computeScenarioPrice(
+  product: Product,
+  base: Record<string, string | number | boolean | string[]>,
+  overrides: Record<string, string | number | boolean | string[]>
+): number {
+  const a = { ...base, ...overrides };
+
+  if (product === "Verify") {
+    const caps = (a.capabilities as string[]) ?? ["SSO"];
+    const pop  = Number(a.population ?? 500);
+    const logins = Number(a.avgLogins ?? 12);
+    const managed = caps.includes("Lifecycle") ? Number(a.managedUsers ?? pop) : 0;
+    const term  = String(a.term ?? "12-month") as "12-month" | "3-year";
+    const result = computeVerifyQuote({ capabilities: caps as VerifyCapability[], population: pop, avgLoginsPerYear: logins, managedUsers: managed, term });
+    return result.totalAnnualList;
+  }
+
+  if (product === "Vault") {
+    const model = String(a.vaultModel ?? "B");
+    const installs = Number(a.installCount ?? 1);
+    if (model === "B") {
+      const editionRaw = String(a.edition ?? "Standard");
+      const edition = (["Essentials", "Standard", "Premium"].includes(editionRaw) ? editionRaw : "Standard") as "Essentials" | "Standard" | "Premium";
+      const clients = Number(a.clientCount ?? 100);
+      const result = computeVaultQuote({ model: "B-Clients", edition, installCount: installs, clientCount: clients });
+      return result.totalAnnualList;
+    }
+    const ru = Number(a.rusMonthly ?? 100);
+    const result = computeVaultQuote({ model: "A-Platform", installCount: installs, useCaseInputs: { staticSecretCount: ru } });
+    return result.totalAnnualList;
+  }
+
+  // NS1
+  const mq = Number(a.queryMQ ?? 50);
+  const fc = Number(a.filterChainCount ?? 0);
+  const mon = Number(a.monitors ?? 0);
+  const result = computeNS1Quote({ queryVolumeMQ: mq, filterChains: fc, monitors: mon });
+  return result.ballparkAnnual;
+}
+
+// ─── Sensitivity slider price (single variable sweep) ────────────────────────
+
+export function computeSliderPrice(
+  product: Product,
+  base: Record<string, string | number | boolean | string[]>,
+  overrides: Record<string, string | number | boolean | string[]>,
+  sliderKey: string,
+  sliderValue: number
+): number {
+  return computeScenarioPrice(product, base, { ...overrides, [sliderKey]: sliderValue });
+}
+
+// ─── Fan-out builder ──────────────────────────────────────────────────────────
+
+/**
+ * Given the current answers and 1–2 chosen fork variable keys,
+ * build a CompareResult with one scenario per option combination.
+ */
+export function buildFanOut(
+  product: Product,
+  answers: Record<string, string | number | boolean | string[]>,
+  selectedVarKeys: string[]
+): CompareResult {
+  const allVars = getForkVariables(product, answers);
+  const forkVars = selectedVarKeys
+    .map((k) => allVars.find((v) => v.key === k))
+    .filter(Boolean) as ForkVariable[];
+
+  // Generate all combinations of options across chosen variables
+  type Combo = { labels: string[]; overrides: Record<string, string | number | boolean | string[]> };
+  let combos: Combo[] = [{ labels: [], overrides: {} }];
+
+  for (const fv of forkVars) {
+    const expanded: Combo[] = [];
+    for (const existing of combos) {
+      for (const opt of fv.options) {
+        expanded.push({
+          labels: [...existing.labels, opt.label],
+          overrides: { ...existing.overrides, [fv.key]: opt.value },
+        });
+      }
+    }
+    combos = expanded;
+  }
+
+  // Build scenarios
+  const rawScenarios: Scenario[] = combos.map((c) => {
+    const price = computeScenarioPrice(product, answers, c.overrides);
+    return {
+      name: c.labels.join(" · ") || "Baseline",
+      overrides: c.overrides,
+      annualList: price,
+      monthlyList: Math.round(price / 12),
+      drivers: c.labels,
     };
   });
 
   // Sort high → low (anchoring)
-  scenarios.sort((a, b) => b.annualList - a.annualList);
+  rawScenarios.sort((a, b) => b.annualList - a.annualList);
 
-  const topPrice = scenarios[0].annualList;
-  const bottomPrice = scenarios[scenarios.length - 1].annualList;
-  const diff = topPrice - bottomPrice;
-  const pct = bottomPrice > 0 ? Math.round((diff / bottomPrice) * 100) : 0;
+  // Remove duplicates (same price — can happen when fork var has no effect)
+  const unique = rawScenarios.filter((s, i, arr) =>
+    arr.findIndex((x) => x.annualList === s.annualList && x.name === s.name) === i
+  );
+
+  const baseline = unique[unique.length - 1];
+  const recommended = unique.length >= 3 ? unique[1] : unique[0];
+  const baselineIdx = unique.length - 1;
+  const recommendedIdx = unique.indexOf(recommended);
+
+  // Insight text
+  const topPrice = unique[0].annualList;
+  const bottomPrice = baseline.annualList;
+  const pct = bottomPrice > 0 ? Math.round(((topPrice - bottomPrice) / bottomPrice) * 100) : 0;
+  const insightText = buildInsight(product, forkVars, pct, unique);
+
+  // Slider — use the first numeric fork var, or fallback to product default
+  const numericFork = forkVars.find((v) => typeof v.options[0].value === "number");
+  const sliderForkVar = numericFork ?? allVars.find((v) => typeof v.options[0].value === "number") ?? null;
+
+  const sliderKey = sliderForkVar?.key ?? "population";
+  const sliderVals = sliderForkVar?.options.map((o) => Number(o.value)) ?? [1000, 500000];
+  const sliderMin = Math.min(...sliderVals);
+  const sliderMax = Math.max(...sliderVals);
+  const sliderStep = sliderMax > 10000 ? 1000 : sliderMax > 1000 ? 100 : sliderMax > 100 ? 10 : 1;
+  const sliderUnit = sliderForkVar
+    ? sliderForkVar.label.toLowerCase().includes("user") ? "users"
+    : sliderForkVar.label.toLowerCase().includes("query") ? "MQ/mo"
+    : sliderForkVar.label.toLowerCase().includes("client") ? "clients"
+    : sliderForkVar.label.toLowerCase().includes("ru") ? "RU/mo"
+    : ""
+    : "";
+  const sliderCurrentValue = typeof answers[sliderKey] === "number"
+    ? answers[sliderKey] as number
+    : Number(answers[sliderKey] ?? sliderMin);
 
   return {
-    product: "Verify",
-    scenarios,
-    baselineIdx: scenarios.length - 1,
-    recommendedIdx: 1,
-    insightText: `Adding full identity lifecycle management (Lifecycle capability) accounts for most of the ${pct}% price difference — it drives managed-user RUs for all ${population.toLocaleString()} identities.`,
-    sliderKey: "population",
-    sliderLabel: "User Population",
-    sliderMin: 1000,
-    sliderMax: Math.max(population * 4, 100000),
-    sliderStep: 1000,
-    sliderUnit: "users",
+    product,
+    forkVars,
+    scenarios: unique,
+    baselineIdx,
+    recommendedIdx,
+    insightText,
+    sliderVar: sliderForkVar,
+    sliderKey,
+    sliderMin,
+    sliderMax,
+    sliderStep,
+    sliderUnit,
+    sliderCurrentValue: Math.min(Math.max(sliderCurrentValue, sliderMin), sliderMax),
   };
 }
 
-// ─── Vault ────────────────────────────────────────────────────────────────────
+// ─── Insight text ─────────────────────────────────────────────────────────────
 
-export function buildVaultScenarios(
-  model: "A" | "B",
-  installCount: number,
-  clientCount: number,
-  rusMonthly: number
-): CompareResult {
-  if (model === "B") {
-    const editions: Array<{ edition: "Essentials" | "Standard" | "Premium"; name: string; tagline: string }> = [
-      { edition: "Essentials", name: "Essentials", tagline: "Core secrets management — entry tier" },
-      { edition: "Standard",   name: "Standard",   tagline: "Full secrets + namespaces + DR replication" },
-      { edition: "Premium",    name: "Premium",     tagline: "Full platform + HSM, Sentinel, performance replication" },
-    ];
-    const scenarios: Scenario[] = editions.map(({ edition, name, tagline }) => {
-      const inputs: VaultInputsModelB = { model: "B-Clients", edition, installCount, clientCount };
-      const result = computeVaultQuote(inputs);
-      return {
-        name,
-        tagline,
-        annualList: result.totalAnnualList,
-        monthlyList: Math.round(result.totalAnnualList / 12),
-        drivers: [`${edition} edition`, `${installCount} install(s)`, `${clientCount.toLocaleString()} clients`],
-        inputs: { Edition: edition, Installs: installCount, Clients: clientCount.toLocaleString() },
-      };
-    });
-    scenarios.sort((a, b) => b.annualList - a.annualList);
-    return {
-      product: "Vault",
-      scenarios,
-      baselineIdx: scenarios.length - 1,
-      recommendedIdx: 1,
-      insightText: `Edition choice is the primary price driver — Premium includes HSM and performance replication. Moving from Essentials to Standard doubles the install cost but unlocks namespace isolation.`,
-      sliderKey: "clientCount",
-      sliderLabel: "Client Count",
-      sliderMin: 10,
-      sliderMax: Math.max(clientCount * 4, 500),
-      sliderStep: 10,
-      sliderUnit: "clients",
-    };
+function buildInsight(
+  product: Product,
+  forkVars: ForkVariable[],
+  pctDiff: number,
+  scenarios: Scenario[]
+): string {
+  const varLabel = forkVars.map((v) => v.label).join(" and ");
+  const top = scenarios[0];
+  const bottom = scenarios[scenarios.length - 1];
+  const diff = top.annualList - bottom.annualList;
+  const diffStr = "$" + Math.round(diff).toLocaleString();
+
+  if (product === "Verify") {
+    if (forkVars.some((v) => v.key === "capabilities")) {
+      return `Capability choice is the dominant driver — the difference between the simplest and most complete option is ${diffStr}/yr (${pctDiff}%). Lifecycle Management has the biggest single impact because it charges per managed user rather than per MAU.`;
+    }
+    if (forkVars.some((v) => v.key === "population")) {
+      return `User population drives MAU, which determines the pricing tier. Watch for non-linear jumps at tier boundaries — a small increase in users can trigger a significant price step. The spread across these options is ${diffStr}/yr.`;
+    }
+  }
+  if (product === "Vault") {
+    if (forkVars.some((v) => v.key === "edition")) {
+      return `Edition choice drives the per-cluster install fee (Essentials $24.9k → Premium $100k/cluster). The ${pctDiff}% spread of ${diffStr}/yr is dominated by install cost, with client RVUs as a secondary driver.`;
+    }
+    if (forkVars.some((v) => v.key === "clientCount")) {
+      return `Client count (RVU) scales linearly at $1,296/client/yr — the ${pctDiff}% spread of ${diffStr}/yr is driven entirely by the number of connecting apps and services.`;
+    }
+    if (forkVars.some((v) => v.key === "rusMonthly")) {
+      return `Platform-model (Model A) pricing scales with monthly RU consumption at $48/RU/month ($576/yr). The ${pctDiff}% spread of ${diffStr}/yr reflects different usage profiles. Volume discounts reduce the effective rate significantly at scale.`;
+    }
+  }
+  if (product === "NS1") {
+    return `NS1 pricing is tier-based on query volume — small increases near tier boundaries cause disproportionate price jumps. The ${pctDiff}% spread of ${diffStr}/yr across these options is driven by ${varLabel}.`;
   }
 
-  // Model A — vary RU size: half, actual, double
-  const ruVariants = [
-    { label: "Low Usage",    ru: Math.max(1, Math.round(rusMonthly * 0.5)),  tagline: "Half the estimated monthly RU consumption" },
-    { label: "Expected",     ru: rusMonthly,                                  tagline: "Based on your stated usage inputs" },
-    { label: "Peak / Scale", ru: rusMonthly * 2,                              tagline: "Double capacity for peak load or growth" },
-  ];
-  const scenarios: Scenario[] = ruVariants.map(({ label, ru, tagline }) => {
-    const inputs: VaultInputsModelA = {
-      model: "A-Platform",
-      installCount,
-      useCaseInputs: { staticSecretCount: ru },
-    };
-    const result = computeVaultQuote(inputs);
-    return {
-      name: label,
-      tagline,
-      annualList: result.totalAnnualList,
-      monthlyList: Math.round(result.totalAnnualList / 12),
-      drivers: [`${ru.toLocaleString()} RU/month`],
-      inputs: { "RU / month": ru.toLocaleString(), Installs: installCount },
-    };
-  });
-  scenarios.sort((a, b) => b.annualList - a.annualList);
-  return {
-    product: "Vault",
-    scenarios,
-    baselineIdx: scenarios.length - 1,
-    recommendedIdx: 1,
-    insightText: `RU consumption is the main driver on the Platform model — each additional RU/month adds $${(48 * 12).toLocaleString()} per year at list price.`,
-    sliderKey: "rusMonthly",
-    sliderLabel: "RU / Month",
-    sliderMin: 1,
-    sliderMax: Math.max(rusMonthly * 4, 500),
-    sliderStep: 1,
-    sliderUnit: "RU/mo",
-  };
-}
-
-// ─── NS1 ──────────────────────────────────────────────────────────────────────
-
-export function buildNS1Scenarios(queryMQ: number, filterChains: number): CompareResult {
-  const tiers = [
-    { name: "Managed DNS Only",    tagline: "Pure DNS resolution — no traffic steering",    mq: queryMQ, fc: 0,            monitors: 0  },
-    { name: "DNS + Traffic Steering", tagline: "DNS + GSLB filter chains for load balancing", mq: queryMQ, fc: filterChains || 5, monitors: 0  },
-    { name: "Full Observability",  tagline: "DNS + GSLB + health monitors",                 mq: queryMQ, fc: filterChains || 5, monitors: 10 },
-  ];
-  const scenarios: Scenario[] = tiers.map(({ name, tagline, mq, fc, monitors }) => {
-    const inputs: NS1Inputs = { queryVolumeMQ: mq, filterChains: fc, monitors };
-    const result = computeNS1Quote(inputs);
-    return {
-      name,
-      tagline,
-      annualList: result.ballparkAnnual,
-      monthlyList: result.ballparkMRR,
-      drivers: [`${mq}M queries/mo`, fc > 0 ? `${fc} filter chains` : "No GSLB", monitors > 0 ? `${monitors} monitors` : "No monitors"].filter(Boolean),
-      inputs: { "Queries (MQ)": `${mq}M`, "Filter Chains": fc, Monitors: monitors },
-    };
-  });
-  scenarios.sort((a, b) => b.annualList - a.annualList);
-  return {
-    product: "NS1",
-    scenarios,
-    baselineIdx: scenarios.length - 1,
-    recommendedIdx: 1,
-    insightText: `Query volume sets the base price tier — traffic steering (GSLB filter chains) and monitors add incrementally on top. Most customers start with DNS + GSLB and add monitors as observability matures.`,
-    sliderKey: "queryMQ",
-    sliderLabel: "Query Volume",
-    sliderMin: 5,
-    sliderMax: Math.max(queryMQ * 4, 100),
-    sliderStep: 5,
-    sliderUnit: "MQ/mo",
-  };
+  return `The ${pctDiff}% price spread (${diffStr}/yr) across these scenarios is driven by differences in ${varLabel}.`;
 }
