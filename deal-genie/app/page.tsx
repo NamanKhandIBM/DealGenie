@@ -891,12 +891,15 @@ export default function ChatPage() {
               });
               const json = await res.json();
               if (json.reply) {
+                // The reply starts with <div class="result-card" — MessageBubble
+                // detects that prefix and renders it with dangerouslySetInnerHTML.
+                // Do NOT prepend any text or the HTML renderer won't trigger.
                 setMessages((m) => [
                   ...m,
                   {
                     id: crypto.randomUUID(),
                     role: "assistant",
-                    content: `🔄 **Quote rebuilt from scenario selections:**\n\n${json.reply}`,
+                    content: json.reply,
                     timestamp: Date.now(),
                   },
                 ]);
