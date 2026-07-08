@@ -2,7 +2,7 @@
  * Quote history — types + Cloudant REST client.
  *
  * Uses IBM Cloudant's HTTP API directly (no SDK needed).
- * Auth: IAM API key exchanged for a bearer token, or legacy "Basic" with apikey.
+ * Auth: IBM Cloud IAM bearer token (same flow as watsonx.ts).
  *
  * Cloudant REST docs: https://cloud.ibm.com/apidocs/cloudant
  */
@@ -36,6 +36,34 @@ export interface SavedQuote {
 // ─── Cloudant helpers ─────────────────────────────────────────────────────────
 
 const DB_NAME = "dealgenie-quotes";
+const IAM_TOKEN_URL = "https://iam.cloud.ibm.com/identity/token";
+
+// Simple IAM token cache (same pattern as watsonx.ts)
+interface TokenCache { token: string; expiresAt: number }
+let _tokenCache: TokenCache | null = null;
+
+async function getIAMToken(): Promise<string> {
+  const now = Date.now();
+  if (_tokenCache && now < _tokenCache.expiresAt) return _tokenCache.token;
+
+  const apiKey = process.env.CLOUDANT_API_KEY;
+  if (!apiKey) throw new Error("CLOUDANT_API_KEY is not set");
+
+  const res = await fetch(IAM_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ibm:params:oauth:grant-type:apikey",
+      apikey: apiKey,
+    }),
+  });
+  if (!res.ok) throw new Error(`IAM token fetch failed (${res.status}): ${await res.text()}`);
+
+  const json = await res.json();
+  const ttlMs = (json.expires_in ?? 3600) * 1000;
+  _tokenCache = { token: json.access_token, expiresAt: now + ttlMs * 0.8 };
+  return _tokenCache.token;
+}
 
 function cloudantBase(): string {
   const url = process.env.CLOUDANT_URL;
@@ -43,22 +71,15 @@ function cloudantBase(): string {
   return url.replace(/\/$/, "");
 }
 
-function authHeader(): string {
-  const key = process.env.CLOUDANT_API_KEY;
-  if (!key) throw new Error("CLOUDANT_API_KEY is not set");
-  // Cloudant accepts "Basic" auth with "apikey" as username + the key as password
-  const encoded = Buffer.from(`apikey:${key}`).toString("base64");
-  return `Basic ${encoded}`;
-}
-
 async function cloudantFetch(path: string, init?: RequestInit): Promise<Response> {
+  const token = await getIAMToken();
   const url = `${cloudantBase()}/${DB_NAME}${path}`;
   return fetch(url, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: authHeader(),
+      Authorization: `Bearer ${token}`,
       ...(init?.headers ?? {}),
     },
   });
@@ -67,13 +88,11 @@ async function cloudantFetch(path: string, init?: RequestInit): Promise<Response
 // ─── Ensure DB exists (idempotent) ───────────────────────────────────────────
 
 export async function ensureDatabase(): Promise<void> {
+  const token = await getIAMToken();
   const url = `${cloudantBase()}/${DB_NAME}`;
   const res = await fetch(url, {
     method: "PUT",
-    headers: {
-      Accept: "application/json",
-      Authorization: authHeader(),
-    },
+    headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
   });
   // 201 = created, 412 = already exists — both are fine
   if (res.status !== 201 && res.status !== 412) {
