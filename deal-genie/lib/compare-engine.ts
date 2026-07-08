@@ -109,15 +109,6 @@ export function getForkVariables(
           { label: "Always-on (12 months/yr)",  value: 12 },
         ],
       },
-      {
-        key: "term",
-        label: "Contract term",
-        impact: "3-year commitments carry higher total value",
-        options: [
-          { label: "12-month", value: "12-month" },
-          { label: "3-year",   value: "3-year" },
-        ],
-      },
     ];
   }
 
