@@ -90,7 +90,7 @@ export function getAddonDefinitions(
 ): AddonDefinition[] {
   if (product === "Verify") {
     return [
-      { key: "addon_sms",         label: "SMS / Email MFA",               partNumber: "D02T6ZX", annualDelta: 404,    deltaNote: "~$33.70 / 1k auth events (est. 1k events/mo)", yesValue: "yes", noValue: "no" },
+      { key: "addon_sms",         label: "SMS / Email MFA",               partNumber: "D02T6ZX", annualDelta: 0,      deltaNote: "Usage-based: $33.70 per 1,000 auth events — see CPQ for volume estimate", yesValue: "yes", noValue: "no" },
       { key: "addon_hag",         label: "Hosted Application Gateway",    partNumber: "D01UQZX", annualDelta: 270000, deltaNote: "$22,500 / instance / month",                    yesValue: "yes", noValue: "no" },
       { key: "addon_vanity",      label: "Vanity Domain",                  partNumber: "D01URZX", annualDelta: 6744,   deltaNote: "$562 / instance / month",                       yesValue: "yes", noValue: "no" },
       { key: "addon_nonprod_sla", label: "Non-Production (with SLA)",     partNumber: "D22PGLL", annualDelta: 33720,  deltaNote: "$2,810 / instance / month",                     yesValue: "yes", noValue: "no" },
@@ -417,7 +417,7 @@ export function computeScenarioPrice(
     const caps = (a.capabilities as string[]) ?? ["SSO"];
     const basePop = Number(base.population ?? 500);
     const pop = Number(a.population ?? basePop);
-    const logins = Number(a.avgLogins ?? 12);
+    const logins = Math.max(1, Math.min(12, Number(a.avgLogins ?? 12)));
     const term = String(a.term ?? "12-month") as "12-month" | "3-year";
     let managed = 0;
     if (caps.includes("Lifecycle")) {
@@ -469,8 +469,13 @@ export function computeScenarioPrice(
     const model = String(a.vaultModel ?? "B");
     const installs = Number(a.installCount ?? 1);
     if (model === "B") {
-      const editionRaw = String(a.edition ?? "Standard");
-      const edition = (["Essentials", "Standard", "Premium"].includes(editionRaw) ? editionRaw : "Standard") as "Essentials" | "Standard" | "Premium";
+      // edition is stored as "1"/"2"/"3" from the questions, OR as the full name
+      // when set by a fan-out override (which uses "Essentials"/"Standard"/"Premium").
+      // Translate numeric codes to names first; full names pass through unchanged.
+      const EDITION_CODES: Record<string, string> = { "1": "Essentials", "2": "Standard", "3": "Premium" };
+      const editionRaw = String(a.edition ?? "2");
+      const editionName = EDITION_CODES[editionRaw] ?? editionRaw;
+      const edition = (["Essentials", "Standard", "Premium"].includes(editionName) ? editionName : "Standard") as "Essentials" | "Standard" | "Premium";
       const clients = Number(a.clientCount ?? 100);
       const includeNonProd = String(a.includeNonProd ?? "no") === "yes";
       const pkiCerts = Number(a.pkiAddon ?? 0);

@@ -362,7 +362,7 @@ function computeVerifyResult(state: ConversationState): string {
   const a = state.answers;
   const caps = (a.capabilities as string[]) ?? ["SSO"];
   const population = parseNumber(String(a.population ?? 500));
-  const avgLogins = parseNumber(String(a.avgLogins ?? 12));
+  const avgLogins = Math.max(1, Math.min(12, parseNumber(String(a.avgLogins ?? 12))));
   const managedUsers = parseNumber(String(a.managedUsers ?? 0));
   const regions = 1; // one license = one tenant; not a configurable input
   const term = String(a.term ?? "12-month") as "12-month" | "3-year";
