@@ -431,12 +431,14 @@ export function computeScenarioPrice(
 
     // Build add-on list from both the base answers (existing addOns array)
     // and any individual addon_* comparison overrides.
+    // IMPORTANT: verify-engine treats addOn.listPrice as ANNUAL (annualList = listPrice × qty).
+    // Monthly-rated add-ons must be multiplied by 12 here before passing to the engine.
     const ADDON_PRICES: Record<string, { description: string; listPrice: number; unit: string }> = {
-      D02T6ZX: { description: "SMS and Email MFA Only",        listPrice: 33.70,  unit: "per event per thousand" },
-      D01UQZX: { description: "Hosted Application Gateway",    listPrice: 22500,  unit: "per instance / month" },
-      D01URZX: { description: "Vanity Domain",                 listPrice: 562,    unit: "per instance / month" },
-      D22PGLL: { description: "Non-Production with SLA",       listPrice: 2810,   unit: "per instance / month" },
-      D21CWLL: { description: "Non-Production without SLA",    listPrice: 1410,   unit: "per instance / month" },
+      D02T6ZX: { description: "SMS and Email MFA Only",        listPrice: 33.70,       unit: "per event per thousand" },
+      D01UQZX: { description: "Hosted Application Gateway",   listPrice: 22500  * 12,  unit: "per instance / year" },
+      D01URZX: { description: "Vanity Domain",                 listPrice: 562    * 12,  unit: "per instance / year" },
+      D22PGLL: { description: "Non-Production with SLA",       listPrice: 2810   * 12,  unit: "per instance / year" },
+      D21CWLL: { description: "Non-Production without SLA",    listPrice: 1410   * 12,  unit: "per instance / year" },
     };
     // Start from whatever add-ons were in the original answers
     const baseAddOns: string[] = (base.addOns as string[] | undefined) ?? [];

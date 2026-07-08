@@ -367,12 +367,15 @@ function computeVerifyResult(state: ConversationState): string {
   const regions = 1; // one license = one tenant; not a configurable input
   const term = String(a.term ?? "12-month") as "12-month" | "3-year";
 
+  // listPrice here is the MONTHLY list price from data.ts.
+  // The verify engine computes addOnAnnual = listPrice × quantity, so we must
+  // convert monthly-rated add-ons to annual before passing them in.
   const ADDON_MAP: Record<string, { description: string; listPrice: number; unit: string }> = {
-    D02T6ZX: { description: "SMS and Email MFA Only", listPrice: 33.70, unit: "per event per thousand" },
-    D01UQZX: { description: "Hosted Application Gateway", listPrice: 22500, unit: "per instance / month" },
-    D01URZX: { description: "Vanity Domain", listPrice: 562, unit: "per instance / month" },
-    D22PGLL: { description: "Non-Production with SLA", listPrice: 2810, unit: "per instance / month" },
-    D21CWLL: { description: "Non-Production without SLA", listPrice: 1410, unit: "per instance / month" },
+    D02T6ZX: { description: "SMS and Email MFA Only",        listPrice: 33.70,        unit: "per event per thousand" },
+    D01UQZX: { description: "Hosted Application Gateway",   listPrice: 22500  * 12,  unit: "per instance / year" },
+    D01URZX: { description: "Vanity Domain",                 listPrice: 562    * 12,  unit: "per instance / year" },
+    D22PGLL: { description: "Non-Production with SLA",       listPrice: 2810   * 12,  unit: "per instance / year" },
+    D21CWLL: { description: "Non-Production without SLA",    listPrice: 1410   * 12,  unit: "per instance / year" },
   };
   const addOnParts = (a.addOns as string[]) ?? [];
   const addOns = addOnParts.filter((p) => p !== "none" && ADDON_MAP[p]).map((p) => ({
