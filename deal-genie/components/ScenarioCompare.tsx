@@ -101,6 +101,68 @@ function BreadcrumbStrip({ crumbs, onReset }: { crumbs: Crumb[]; onReset: () => 
 
 // ─── Variable picker ─────────────────────────────────────────────────────────
 
+/** Variables whose label starts with "Add-on:" are add-on comparisons */
+function isAddonVar(v: ForkVariable) { return v.label.startsWith("Add-on:"); }
+
+function renderVar(
+  v: ForkVariable,
+  selected: string,
+  setSelected: (k: string) => void,
+  accentColor: string
+) {
+  const active = selected === v.key;
+  return (
+    <button
+      key={v.key}
+      onClick={() => setSelected(v.key)}
+      className="text-left rounded-xl px-4 py-3 transition-all"
+      style={{
+        background: active ? `${accentColor}1a` : "rgba(255,255,255,0.03)",
+        border: active ? `1px solid ${accentColor}80` : "1px solid rgba(255,255,255,0.07)",
+      }}
+    >
+      <div className="flex items-center gap-3">
+        {/* Radio dot */}
+        <div
+          className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center"
+          style={{
+            border: active ? `2px solid ${accentColor}` : "2px solid rgba(255,255,255,0.2)",
+            background: "transparent",
+          }}
+        >
+          {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: accentColor }} />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-semibold" style={{ color: active ? "#c4b5fd" : "#e8eaed" }}>
+              {v.label.replace(/^Add-on:\s*/, "")}
+            </p>
+            <span className="text-[10px] flex-shrink-0" style={{ color: "rgba(147,180,253,0.35)" }}>
+              {v.options.length} options
+            </span>
+          </div>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.45)" }}>
+            {v.impact}
+          </p>
+          {active && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {v.options.map((o) => (
+                <span
+                  key={String(o.value)}
+                  className="text-[10px] px-1.5 py-0.5 rounded"
+                  style={{ background: `${accentColor}1a`, color: "#c4b5fd", border: `1px solid ${accentColor}33` }}
+                >
+                  {o.label}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
 function VariablePicker({
   product,
   answers,
@@ -118,6 +180,8 @@ function VariablePicker({
   // Filter out variables that are already locked
   const lockedKeys = new Set(crumbs.flatMap((c) => Object.keys(c.overrides)));
   const available  = variables.filter((v) => !lockedKeys.has(v.key));
+  const coreVars   = available.filter((v) => !isAddonVar(v));
+  const addonVars  = available.filter((v) =>  isAddonVar(v));
   const [selected, setSelected] = useState<string>(available[0]?.key ?? "");
 
   if (available.length === 0) {
@@ -176,61 +240,29 @@ function VariablePicker({
         {crumbs.length > 0 && " All locked values above stay fixed."}
       </p>
 
-      <div className="grid grid-cols-1 gap-2 mb-5">
-        {available.map((v) => {
-          const active = selected === v.key;
-          return (
-            <button
-              key={v.key}
-              onClick={() => setSelected(v.key)}
-              className="text-left rounded-xl px-4 py-3 transition-all"
-              style={{
-                background: active ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.03)",
-                border: active ? "1px solid rgba(59,130,246,0.5)" : "1px solid rgba(255,255,255,0.07)",
-              }}
-            >
-              <div className="flex items-center gap-3">
-                {/* Radio dot */}
-                <div
-                  className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center"
-                  style={{
-                    border: active ? "2px solid #3b82f6" : "2px solid rgba(255,255,255,0.2)",
-                    background: "transparent",
-                  }}
-                >
-                  {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#3b82f6" }} />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold" style={{ color: active ? "#93b4fd" : "#e8eaed" }}>
-                      {v.label}
-                    </p>
-                    <span className="text-[10px] flex-shrink-0" style={{ color: "rgba(147,180,253,0.35)" }}>
-                      {v.options.length} options
-                    </span>
-                  </div>
-                  <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.45)" }}>
-                    {v.impact}
-                  </p>
-                  {active && (
-                    <div className="flex flex-wrap gap-1 mt-1.5">
-                      {v.options.map((o) => (
-                        <span
-                          key={String(o.value)}
-                          className="text-[10px] px-1.5 py-0.5 rounded"
-                          style={{ background: "rgba(59,130,246,0.1)", color: "#93b4fd", border: "1px solid rgba(59,130,246,0.2)" }}
-                        >
-                          {o.label}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+      {/* ── Core pricing levers ── */}
+      {coreVars.length > 0 && (
+        <>
+          <p className="text-[10px] font-semibold tracking-widest uppercase mb-2" style={{ color: "rgba(96,165,250,0.5)" }}>
+            Core pricing levers
+          </p>
+          <div className="grid grid-cols-1 gap-2 mb-4">
+            {coreVars.map((v) => renderVar(v, selected, setSelected, "#3b82f6"))}
+          </div>
+        </>
+      )}
+
+      {/* ── Add-ons ── */}
+      {addonVars.length > 0 && (
+        <>
+          <p className="text-[10px] font-semibold tracking-widest uppercase mb-2 mt-1" style={{ color: "rgba(167,139,250,0.5)" }}>
+            Add-ons — compare cost of including each
+          </p>
+          <div className="grid grid-cols-1 gap-2 mb-4">
+            {addonVars.map((v) => renderVar(v, selected, setSelected, "#a78bfa"))}
+          </div>
+        </>
+      )}
 
       <button
         onClick={() => selected && onPick(selected)}
