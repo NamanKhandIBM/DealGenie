@@ -347,9 +347,11 @@ export function buildFanOut(
   const pct = bottomPrice > 0 ? Math.round(((topPrice - bottomPrice) / bottomPrice) * 100) : 0;
   const insightText = buildInsight(product, forkVars, pct, unique);
 
-  // Slider — use the first numeric fork var, or fallback to product default
-  const numericFork = forkVars.find((v) => typeof v.options[0].value === "number");
-  const sliderForkVar = numericFork ?? allVars.find((v) => typeof v.options[0].value === "number") ?? null;
+  // Slider — use the first numeric variable that is NOT already shown on the cards.
+  // Showing the same variable on the slider as the cards is redundant.
+  const forkedKeys = new Set(forkVars.map((v) => v.key));
+  const sliderForkVar =
+    allVars.find((v) => !forkedKeys.has(v.key) && typeof v.options[0].value === "number") ?? null;
 
   const sliderKey = sliderForkVar?.key ?? "population";
   const sliderVals = sliderForkVar?.options.map((o) => Number(o.value)) ?? [1000, 500000];
