@@ -89,9 +89,19 @@ export const VERIFY_QUESTIONS: Question[] = [
       { label: "SMS / Email MFA",           value: "D02T6ZX", hint: "$33.70 per 1,000 events" },
       { label: "Hosted Application Gateway", value: "D01UQZX", hint: "$22,500/instance/month" },
       { label: "Vanity Domain",             value: "D01URZX", hint: "$562/instance/month" },
-      { label: "Non-Production (with SLA)", value: "D22PGLL", hint: "$2,810/instance/month" },
-      { label: "Non-Production (no SLA)",   value: "D21CWLL", hint: "$1,410/instance/month" },
-      { label: "None",                      value: "none" },
+      { label: "None of the above",         value: "none" },
+    ],
+  },
+  {
+    key: "nonProd",
+    ask: "Do they need a non-production (dev/test) environment?",
+    subtext: "Choose one — with SLA gives an uptime guarantee, without SLA is cheaper.",
+    type: "single",
+    conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
+    options: [
+      { label: "No",                            value: "none",    },
+      { label: "Yes — with SLA (D22PGLL)",      value: "D22PGLL", hint: "$2,810/instance/month" },
+      { label: "Yes — without SLA (D21CWLL)",   value: "D21CWLL", hint: "$1,410/instance/month" },
     ],
   },
   {

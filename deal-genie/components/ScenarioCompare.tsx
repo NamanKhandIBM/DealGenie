@@ -136,12 +136,14 @@ function AddonPanel({
   addons,
   checked,
   onToggle,
+  onSelectNonProd,
   effectiveAnswers,
   product,
 }: {
   addons: AddonDefinition[];
   checked: Record<string, boolean>;
   onToggle: (key: string) => void;
+  onSelectNonProd: (val: string) => void;
   effectiveAnswers: Record<string, string | number | boolean | string[]>;
   product: Product;
 }) {
@@ -161,12 +163,51 @@ function AddonPanel({
 
       <div className="flex flex-col gap-2">
         {addons.map((addon) => {
-          const isOn = checked[addon.key] ?? false;
+          // ── Three-way selector (nonProd: none / D22PGLL / D21CWLL) ──
+          if (addon.key === "nonProd") {
+            const currentVal = String(effectiveAnswers[addon.key] ?? "none");
+            const opts = [
+              { value: "none",    label: "None",          delta: 0 },
+              { value: "D22PGLL", label: "With SLA",      delta: computeScenarioPrice(product, effectiveAnswers, { nonProd: "D22PGLL" }) - computeScenarioPrice(product, effectiveAnswers, { nonProd: "none" }) },
+              { value: "D21CWLL", label: "Without SLA",   delta: computeScenarioPrice(product, effectiveAnswers, { nonProd: "D21CWLL" }) - computeScenarioPrice(product, effectiveAnswers, { nonProd: "none" }) },
+            ];
+            return (
+              <div key={addon.key} className="rounded-xl px-3 py-3"
+                style={{ background: currentVal !== "none" ? "rgba(167,139,250,0.1)" : "rgba(255,255,255,0.02)", border: currentVal !== "none" ? "1px solid rgba(167,139,250,0.4)" : "1px solid rgba(255,255,255,0.07)" }}>
+                <p className="text-xs font-semibold mb-2" style={{ color: currentVal !== "none" ? "#c4b5fd" : "rgba(232,234,237,0.7)" }}>
+                  Non-Production environment
+                </p>
+                <div className="flex flex-col gap-1">
+                  {opts.map((opt) => {
+                    const active = currentVal === opt.value;
+                    return (
+                      <button key={opt.value} onClick={() => onSelectNonProd(opt.value)}
+                        className="text-left rounded-lg px-3 py-2 flex items-center justify-between transition-all"
+                        style={{ background: active ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.03)", border: active ? "1px solid rgba(167,139,250,0.5)" : "1px solid rgba(255,255,255,0.06)" }}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full flex-shrink-0 flex items-center justify-center"
+                            style={{ border: active ? "2px solid #a78bfa" : "2px solid rgba(255,255,255,0.2)" }}>
+                            {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#a78bfa" }} />}
+                          </div>
+                          <span className="text-xs font-semibold" style={{ color: active ? "#c4b5fd" : "rgba(232,234,237,0.65)" }}>{opt.label}</span>
+                        </div>
+                        {opt.value !== "none" && (
+                          <span className="text-[10px] font-semibold" style={{ color: active ? "#c4b5fd" : "rgba(147,180,253,0.4)" }}>
+                            {active ? fmtDelta(opt.delta) : `adds ${fmtDelta(opt.delta)}`}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }
 
-          // Compute the exact delta by pricing with vs without
+          // ── Binary checkbox (all others) ──
+          const isOn = checked[addon.key] ?? false;
           const withOverride: Record<string, string | number | boolean | string[]> = { [addon.key]: addon.yesValue };
           const withoutOverride: Record<string, string | number | boolean | string[]> = { [addon.key]: addon.noValue };
-          // Also zero Verify addOns array when computing without
           if (product === "Verify") withoutOverride["addOns"] = [];
           const priceWith    = computeScenarioPrice(product, effectiveAnswers, withOverride);
           const priceWithout = computeScenarioPrice(product, effectiveAnswers, withoutOverride);
@@ -183,7 +224,6 @@ function AddonPanel({
               }}
             >
               <div className="flex items-start gap-3">
-                {/* Checkbox */}
                 <div
                   className="mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center"
                   style={{
@@ -197,7 +237,6 @@ function AddonPanel({
                     </svg>
                   )}
                 </div>
-
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1">
                     <p className="text-xs font-semibold leading-snug" style={{ color: isOn ? "#c4b5fd" : "rgba(232,234,237,0.7)" }}>
@@ -614,9 +653,22 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
     [product, answers]
   );
 
-  // Checkbox state — initialised from original quote answers
+  // Checkbox state — initialised from original quote answers (binary add-ons only)
   const [addonChecked, setAddonChecked] = useState<Record<string, boolean>>(
     () => initialAddonState(addonDefs, answers)
+  );
+
+  // nonProd is a three-way choice stored separately: "none" | "D22PGLL" | "D21CWLL"
+  const [nonProdSelection, setNonProdSelection] = useState<string>(
+    () => {
+      const raw = String(answers.nonProd ?? "none");
+      // Also handle legacy: if nonProd not set but addOns array has a non-prod part
+      if (raw !== "none") return raw;
+      const addOns = (answers.addOns as string[] | undefined) ?? [];
+      if (addOns.includes("D22PGLL")) return "D22PGLL";
+      if (addOns.includes("D21CWLL")) return "D21CWLL";
+      return "none";
+    }
   );
 
   // effectiveAnswers = original answers + locked crumb overrides + checked add-on overrides
@@ -624,12 +676,15 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
     const merged = { ...answers };
     // Apply locked crumbs
     for (const c of crumbs) Object.assign(merged, c.overrides);
-    // Apply current add-on checkbox state
+    // Apply binary add-on checkbox state (skip nonProd — handled separately below)
     for (const a of addonDefs) {
+      if (a.key === "nonProd") continue;
       merged[a.key] = addonChecked[a.key] ? a.yesValue : a.noValue;
     }
+    // Apply nonProd three-way selection
+    merged["nonProd"] = nonProdSelection;
     return merged;
-  }, [answers, crumbs, addonDefs, addonChecked]);
+  }, [answers, crumbs, addonDefs, addonChecked, nonProdSelection]);
 
   // Base price = effective answers with core vars locked, add-ons stripped
   // Used so RunningTotal can split "core" vs "add-on" lines
@@ -674,13 +729,8 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
   const handleBack  = () => setResult(null);
 
   // Merge add-on checkbox state into the final answers for "Build quote"
-  const buildQuoteAnswers = useMemo(() => {
-    const merged = { ...effectiveAnswers };
-    for (const a of addonDefs) {
-      merged[a.key] = addonChecked[a.key] ? a.yesValue : a.noValue;
-    }
-    return merged;
-  }, [effectiveAnswers, addonDefs, addonChecked]);
+  // effectiveAnswers already has all addon keys applied, so just use it directly
+  const buildQuoteAnswers = useMemo(() => ({ ...effectiveAnswers }), [effectiveAnswers]);
 
   return (
     <div
@@ -771,6 +821,7 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
               onToggle={(key) =>
                 setAddonChecked((prev) => ({ ...prev, [key]: !prev[key] }))
               }
+              onSelectNonProd={setNonProdSelection}
               effectiveAnswers={effectiveAnswers}
               product={product}
             />

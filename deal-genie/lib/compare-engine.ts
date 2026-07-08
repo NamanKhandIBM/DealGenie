@@ -90,11 +90,11 @@ export function getAddonDefinitions(
 ): AddonDefinition[] {
   if (product === "Verify") {
     return [
-      { key: "addon_sms",         label: "SMS / Email MFA",               partNumber: "D02T6ZX", annualDelta: 0,      deltaNote: "Usage-based: $33.70 per 1,000 auth events — see CPQ for volume estimate", yesValue: "yes", noValue: "no" },
-      { key: "addon_hag",         label: "Hosted Application Gateway",    partNumber: "D01UQZX", annualDelta: 270000, deltaNote: "$22,500 / instance / month",                    yesValue: "yes", noValue: "no" },
-      { key: "addon_vanity",      label: "Vanity Domain",                  partNumber: "D01URZX", annualDelta: 6744,   deltaNote: "$562 / instance / month",                       yesValue: "yes", noValue: "no" },
-      { key: "addon_nonprod_sla", label: "Non-Production (with SLA)",     partNumber: "D22PGLL", annualDelta: 33720,  deltaNote: "$2,810 / instance / month",                     yesValue: "yes", noValue: "no" },
-      { key: "addon_nonprod_nosla",label:"Non-Production (no SLA)",       partNumber: "D21CWLL", annualDelta: 16920,  deltaNote: "$1,410 / instance / month",                     yesValue: "yes", noValue: "no" },
+      { key: "addon_sms",    label: "SMS / Email MFA",            partNumber: "D02T6ZX", annualDelta: 0,      deltaNote: "Usage-based: $33.70 per 1,000 auth events — see CPQ for volume estimate", yesValue: "yes",    noValue: "no"    },
+      { key: "addon_hag",    label: "Hosted Application Gateway", partNumber: "D01UQZX", annualDelta: 270000, deltaNote: "$22,500 / instance / month",                              yesValue: "yes",    noValue: "no"    },
+      { key: "addon_vanity", label: "Vanity Domain",              partNumber: "D01URZX", annualDelta: 6744,   deltaNote: "$562 / instance / month",                                 yesValue: "yes",    noValue: "no"    },
+      // Non-prod is mutually exclusive — one entry, value is the part number ("D22PGLL" | "D21CWLL" | "none")
+      { key: "nonProd",      label: "Non-Production (with SLA)",  partNumber: "D22PGLL", annualDelta: 33720,  deltaNote: "$2,810 / instance / month — toggle to switch or remove",  yesValue: "D22PGLL",noValue: "none"  },
     ];
   }
   if (product === "Vault") {
@@ -209,21 +209,13 @@ export function getForkVariables(
         ],
       },
       {
-        key: "addon_nonprod_sla",
-        label: "Add-on: Non-Production with SLA (D22PGLL)",
-        impact: "$2,810 / instance / month — compare with vs without",
+        key: "nonProd",
+        label: "Add-on: Non-Production environment",
+        impact: "Compare no non-prod vs with-SLA ($33,720/yr) vs without-SLA ($16,920/yr)",
         options: [
-          { label: "Without Non-Prod (SLA)", value: "no" },
-          { label: "With Non-Prod (SLA)",    value: "yes" },
-        ],
-      },
-      {
-        key: "addon_nonprod_nosla",
-        label: "Add-on: Non-Production without SLA (D21CWLL)",
-        impact: "$1,410 / instance / month — compare with vs without",
-        options: [
-          { label: "Without Non-Prod (no SLA)", value: "no" },
-          { label: "With Non-Prod (no SLA)",    value: "yes" },
+          { label: "No non-prod",                    value: "none"    },
+          { label: "Non-Prod — with SLA (D22PGLL)",  value: "D22PGLL" },
+          { label: "Non-Prod — no SLA (D21CWLL)",    value: "D21CWLL" },
         ],
       },
     ];
@@ -442,20 +434,33 @@ export function computeScenarioPrice(
     };
     // Start from whatever add-ons were in the original answers
     const baseAddOns: string[] = (base.addOns as string[] | undefined) ?? [];
-    // Build a mutable set, then apply each addon_* toggle override
-    const addOnSet = new Set(baseAddOns.filter((p) => p !== "none"));
-    const addonMap: Record<string, string> = {
-      addon_sms:         "D02T6ZX",
-      addon_hag:         "D01UQZX",
-      addon_vanity:      "D01URZX",
-      addon_nonprod_sla: "D22PGLL",
-      addon_nonprod_nosla: "D21CWLL",
+    // Build a mutable set — remove any legacy non-prod parts first (they come from nonProd key now)
+    const addOnSet = new Set(baseAddOns.filter((p) => p !== "none" && p !== "D22PGLL" && p !== "D21CWLL"));
+
+    // Apply nonProd from base answers (the single-choice part number or "none")
+    const baseNonProd = String(a.nonProd ?? "none");
+    if (baseNonProd !== "none" && ADDON_PRICES[baseNonProd]) addOnSet.add(baseNonProd);
+
+    // Binary toggle overrides for SMS/HAG/Vanity
+    const binaryAddonMap: Record<string, string> = {
+      addon_sms:    "D02T6ZX",
+      addon_hag:    "D01UQZX",
+      addon_vanity: "D01URZX",
     };
-    for (const [key, part] of Object.entries(addonMap)) {
+    for (const [key, part] of Object.entries(binaryAddonMap)) {
       if (key in overrides) {
         if (String(overrides[key]) === "yes") addOnSet.add(part);
         else addOnSet.delete(part);
       }
+    }
+
+    // nonProd override from compare panel — value is the part number or "none"
+    if ("nonProd" in overrides) {
+      // Remove both non-prod variants, then add the chosen one (if any)
+      addOnSet.delete("D22PGLL");
+      addOnSet.delete("D21CWLL");
+      const chosen = String(overrides.nonProd);
+      if (chosen !== "none" && ADDON_PRICES[chosen]) addOnSet.add(chosen);
     }
     const addOns = Array.from(addOnSet)
       .filter((p) => ADDON_PRICES[p])
@@ -521,26 +526,29 @@ export function normaliseAnswersForQuote(
 ): Record<string, string | number | boolean | string[]> {
   if (product !== "Verify") return answers;
 
-  // Map each addon_* key to its part number
-  const ADDON_KEY_TO_PART: Record<string, string> = {
-    addon_sms:          "D02T6ZX",
-    addon_hag:          "D01UQZX",
-    addon_vanity:       "D01URZX",
-    addon_nonprod_sla:  "D22PGLL",
-    addon_nonprod_nosla:"D21CWLL",
+  // Map each binary addon_* key to its part number
+  const BINARY_ADDON_MAP: Record<string, string> = {
+    addon_sms:    "D02T6ZX",
+    addon_hag:    "D01UQZX",
+    addon_vanity: "D01URZX",
   };
 
-  // Start from the existing addOns array (may have been set by the original question flow)
+  // Start from the existing addOns array — strip out any legacy non-prod parts
+  // (they are now controlled exclusively by the nonProd key)
   const baseAddOns: string[] = (answers.addOns as string[] | undefined) ?? [];
-  const addOnSet = new Set(baseAddOns.filter((p) => p !== "none"));
+  const addOnSet = new Set(baseAddOns.filter((p) => p !== "none" && p !== "D22PGLL" && p !== "D21CWLL"));
 
-  // Apply each addon_* key if present — "yes" adds the part, "no" removes it
-  for (const [key, part] of Object.entries(ADDON_KEY_TO_PART)) {
+  // Apply each binary addon_* key if present
+  for (const [key, part] of Object.entries(BINARY_ADDON_MAP)) {
     if (key in answers) {
       if (String(answers[key]) === "yes") addOnSet.add(part);
       else addOnSet.delete(part);
     }
   }
+
+  // Apply nonProd — single-choice: "D22PGLL" | "D21CWLL" | "none"
+  const nonProdVal = String(answers.nonProd ?? "none");
+  if (nonProdVal !== "none") addOnSet.add(nonProdVal);
 
   return { ...answers, addOns: Array.from(addOnSet) };
 }

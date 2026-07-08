@@ -378,7 +378,10 @@ function computeVerifyResult(state: ConversationState): string {
     D21CWLL: { description: "Non-Production without SLA",    listPrice: 1410   * 12,  unit: "per instance / year" },
   };
   const addOnParts = (a.addOns as string[]) ?? [];
-  const addOns = addOnParts.filter((p) => p !== "none" && ADDON_MAP[p]).map((p) => ({
+  // nonProd is a single-choice key ("none" | "D22PGLL" | "D21CWLL") — merge into the add-on list
+  const nonProdPart = String(a.nonProd ?? "none");
+  const allParts = [...addOnParts.filter((p) => p !== "none"), ...(nonProdPart !== "none" ? [nonProdPart] : [])];
+  const addOns = allParts.filter((p) => ADDON_MAP[p]).map((p) => ({
     part: p, quantity: 1, ...ADDON_MAP[p],
   }));
 
