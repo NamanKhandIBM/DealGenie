@@ -10,6 +10,7 @@ import type { BestPracticesMessage } from "@/lib/best-practices-ai";
 import QuestionInput from "@/components/QuestionInput";
 import QuoteHistoryDrawer from "@/components/QuoteHistoryDrawer";
 import QuoteCompare from "@/components/QuoteCompare";
+import ScenarioCompare from "@/components/ScenarioCompare";
 import type { SavedQuote } from "@/lib/quote-history";
 
 const WELCOME_MESSAGE: Message = {
@@ -108,6 +109,7 @@ export default function ChatPage() {
   const [quotesLoading, setQuotesLoading] = useState(false);
   const [compareQuotes, setCompareQuotes] = useState<SavedQuote[] | null>(null);
   const [savingQuote, setSavingQuote] = useState(false);
+  const [scenarioCompareOpen, setScenarioCompareOpen] = useState(false);
 
   const fetchQuotes = useCallback(async () => {
     setQuotesLoading(true);
@@ -689,7 +691,7 @@ export default function ChatPage() {
                   </>
                 )}
 
-                {/* After a QUOTE RESULT → Save + AI SME + Start Quoting */}
+                {/* After a QUOTE RESULT → Save + Compare Scenarios + AI SME + Start Quoting */}
                 {state.phase === "result" && resultSource === "quote" && (
                   <>
                     {/* Save Quote */}
@@ -708,6 +710,24 @@ export default function ChatPage() {
                         <path d="M5 2v4h6V2M5 10h6" strokeLinecap="round"/>
                       </svg>
                       {savingQuote ? "Saved ✓" : "Save Quote"}
+                    </button>
+                    {/* Compare Scenarios — deterministic, zero AI */}
+                    <button
+                      onClick={() => setScenarioCompareOpen(true)}
+                      disabled={loading}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(139,92,246,0.12)",
+                        border: "1px solid rgba(139,92,246,0.35)",
+                        color: "#a78bfa",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <rect x="1" y="3" width="6" height="10" rx="1"/>
+                        <rect x="9" y="3" width="6" height="10" rx="1"/>
+                        <path d="M7 8h2" strokeLinecap="round"/>
+                      </svg>
+                      Compare Scenarios
                     </button>
                     <button
                       onClick={startBestPractices}
@@ -841,6 +861,15 @@ export default function ChatPage() {
           quotes={compareQuotes}
           onClose={() => setCompareQuotes(null)}
           onLoad={loadQuote}
+        />
+      )}
+
+      {/* ── Scenario Compare Overlay ─────────────────────────────────────────── */}
+      {scenarioCompareOpen && state.product && (
+        <ScenarioCompare
+          product={state.product}
+          answers={state.answers}
+          onClose={() => setScenarioCompareOpen(false)}
         />
       )}
     </>
