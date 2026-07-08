@@ -500,6 +500,51 @@ export function computeScenarioPrice(
   return result.ballparkAnnual;
 }
 
+// ─── Normalise answers for the quoting engine ─────────────────────────────────
+
+/**
+ * Translates compare-panel answer keys back into the format that
+ * computeVerifyResult (and the /api/compute-quote route) expects.
+ *
+ * Specifically for Verify: the compare panel stores add-ons as individual
+ * boolean-ish keys (addon_hag: "yes") but computeVerifyResult reads a.addOns
+ * which is an array of part numbers (["D01UQZX"]). This function rebuilds that
+ * array from the current checkbox state so the rebuilt quote is accurate.
+ *
+ * Vault and NS1 add-ons (includeNonProd, pkiAddon, adpKeyMgmt, includeKMIP,
+ * ddosProtection) are already the keys that computeVaultResult / computeNS1Result
+ * read directly — no translation needed for those.
+ */
+export function normaliseAnswersForQuote(
+  product: Product,
+  answers: Record<string, string | number | boolean | string[]>
+): Record<string, string | number | boolean | string[]> {
+  if (product !== "Verify") return answers;
+
+  // Map each addon_* key to its part number
+  const ADDON_KEY_TO_PART: Record<string, string> = {
+    addon_sms:          "D02T6ZX",
+    addon_hag:          "D01UQZX",
+    addon_vanity:       "D01URZX",
+    addon_nonprod_sla:  "D22PGLL",
+    addon_nonprod_nosla:"D21CWLL",
+  };
+
+  // Start from the existing addOns array (may have been set by the original question flow)
+  const baseAddOns: string[] = (answers.addOns as string[] | undefined) ?? [];
+  const addOnSet = new Set(baseAddOns.filter((p) => p !== "none"));
+
+  // Apply each addon_* key if present — "yes" adds the part, "no" removes it
+  for (const [key, part] of Object.entries(ADDON_KEY_TO_PART)) {
+    if (key in answers) {
+      if (String(answers[key]) === "yes") addOnSet.add(part);
+      else addOnSet.delete(part);
+    }
+  }
+
+  return { ...answers, addOns: Array.from(addOnSet) };
+}
+
 // ─── Sensitivity slider price (single variable sweep) ────────────────────────
 
 export function computeSliderPrice(

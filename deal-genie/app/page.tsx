@@ -11,6 +11,7 @@ import QuestionInput from "@/components/QuestionInput";
 import QuoteHistoryDrawer from "@/components/QuoteHistoryDrawer";
 import QuoteCompare from "@/components/QuoteCompare";
 import ScenarioCompare from "@/components/ScenarioCompare";
+import { normaliseAnswersForQuote } from "@/lib/compare-engine";
 import type { SavedQuote } from "@/lib/quote-history";
 
 const WELCOME_MESSAGE: Message = {
@@ -882,6 +883,12 @@ export default function ChatPage() {
             try {
               // Call /api/compute-quote directly — skips the question flow entirely
               // since all answers are already known from the locked scenario selections.
+              // normaliseAnswersForQuote translates Verify addon_* keys back into
+              // the addOns part-number array that computeVerifyResult reads.
+              const normalisedAnswers = normaliseAnswersForQuote(
+                state.product,
+                { ...state.answers, ...mergedAnswers }
+              );
               const res = await fetch("/api/compute-quote", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -889,7 +896,7 @@ export default function ChatPage() {
                   state: {
                     ...state,
                     phase: "result",
-                    answers: { ...state.answers, ...mergedAnswers },
+                    answers: normalisedAnswers,
                   },
                 }),
               });
