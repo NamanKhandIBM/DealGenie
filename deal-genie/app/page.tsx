@@ -8,6 +8,9 @@ import type { ActiveQuestion } from "@/lib/conversation";
 import type { Question } from "@/lib/questions";
 import type { BestPracticesMessage } from "@/lib/best-practices-ai";
 import QuestionInput from "@/components/QuestionInput";
+import QuoteHistoryDrawer from "@/components/QuoteHistoryDrawer";
+import QuoteCompare from "@/components/QuoteCompare";
+import type { SavedQuote } from "@/lib/quote-history";
 
 const WELCOME_MESSAGE: Message = {
   id: "welcome",
@@ -98,6 +101,73 @@ export default function ChatPage() {
   const [clientMode, setClientMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // ── Quote history ──────────────────────────────────────────────────────────
+  const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
+  const [savedQuotes, setSavedQuotes] = useState<SavedQuote[]>([]);
+  const [quotesLoading, setQuotesLoading] = useState(false);
+  const [compareQuotes, setCompareQuotes] = useState<SavedQuote[] | null>(null);
+  const [savingQuote, setSavingQuote] = useState(false);
+
+  const fetchQuotes = useCallback(async () => {
+    setQuotesLoading(true);
+    try {
+      const res = await fetch("/api/quotes");
+      if (res.ok) {
+        const json = await res.json();
+        setSavedQuotes(json.quotes ?? []);
+      }
+    } finally {
+      setQuotesLoading(false);
+    }
+  }, []);
+
+  const openHistoryDrawer = () => {
+    setHistoryDrawerOpen(true);
+    fetchQuotes();
+  };
+
+  const saveCurrentQuote = async () => {
+    if (!state.product || savingQuote) return;
+    setSavingQuote(true);
+    try {
+      const res = await fetch("/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: crypto.randomUUID(),
+          product: state.product,
+          answers: state.answers,
+          chatSnapshot: messages,
+        }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setSavedQuotes((prev) => [json.quote, ...prev]);
+      }
+    } finally {
+      setSavingQuote(false);
+    }
+  };
+
+  const deleteQuote = async (id: string, rev: string) => {
+    await fetch(`/api/quotes?id=${id}&rev=${encodeURIComponent(rev)}`, { method: "DELETE" });
+    setSavedQuotes((prev) => prev.filter((q) => q.id !== id));
+  };
+
+  const loadQuote = (quote: SavedQuote) => {
+    setMessages(quote.chatSnapshot.length > 0 ? quote.chatSnapshot : [WELCOME_MESSAGE]);
+    setState({
+      ...initialState,
+      phase: "result",
+      product: quote.product,
+      answers: quote.answers,
+    });
+    setActiveQuestion(null);
+    setResultSource("quote");
+    setHistoryDrawerOpen(false);
+    setCompareQuotes(null);
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -407,9 +477,33 @@ export default function ChatPage() {
             watsonx.ai
           </div>
 
+          {/* History button */}
+          <button
+            onClick={openHistoryDrawer}
+            className="ml-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all relative"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(203,213,225,0.8)",
+            }}
+          >
+            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zM5 6h6M5 9h4" strokeLinecap="round"/>
+            </svg>
+            Quotes
+            {savedQuotes.length > 0 && (
+              <span
+                className="absolute -top-1.5 -right-1.5 text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full"
+                style={{ background: "#0f62fe", color: "white" }}
+              >
+                {savedQuotes.length}
+              </span>
+            )}
+          </button>
+
           <button
             onClick={reset}
-            className="ml-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
             style={{
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.12)",
@@ -595,9 +689,26 @@ export default function ChatPage() {
                   </>
                 )}
 
-                {/* After a QUOTE RESULT → AI SME + Start Quoting */}
+                {/* After a QUOTE RESULT → Save + AI SME + Start Quoting */}
                 {state.phase === "result" && resultSource === "quote" && (
                   <>
+                    {/* Save Quote */}
+                    <button
+                      onClick={saveCurrentQuote}
+                      disabled={loading || savingQuote}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: savingQuote ? "rgba(74,222,128,0.12)" : "rgba(255,255,255,0.05)",
+                        border: savingQuote ? "1px solid rgba(74,222,128,0.3)" : "1px solid rgba(255,255,255,0.1)",
+                        color: savingQuote ? "#4ade80" : "rgba(147,180,253,0.7)",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M3 2h8l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" strokeLinecap="round"/>
+                        <path d="M5 2v4h6V2M5 10h6" strokeLinecap="round"/>
+                      </svg>
+                      {savingQuote ? "Saved ✓" : "Save Quote"}
+                    </button>
                     <button
                       onClick={startBestPractices}
                       disabled={loading}
@@ -712,6 +823,26 @@ export default function ChatPage() {
           </div>
         )}
       </div>
+
+      {/* ── Quote History Drawer ─────────────────────────────────────────────── */}
+      <QuoteHistoryDrawer
+        open={historyDrawerOpen}
+        onClose={() => setHistoryDrawerOpen(false)}
+        quotes={savedQuotes}
+        loading={quotesLoading}
+        onDelete={deleteQuote}
+        onCompare={(selected) => { setCompareQuotes(selected); setHistoryDrawerOpen(false); }}
+        onLoad={loadQuote}
+      />
+
+      {/* ── Quote Compare Overlay ────────────────────────────────────────────── */}
+      {compareQuotes && (
+        <QuoteCompare
+          quotes={compareQuotes}
+          onClose={() => setCompareQuotes(null)}
+          onLoad={loadQuote}
+        />
+      )}
     </>
   );
 }
