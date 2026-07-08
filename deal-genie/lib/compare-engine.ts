@@ -19,6 +19,18 @@ import type { VerifyCapability } from "./data";
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
+/** A single toggleable add-on with a known annual price delta */
+export interface AddonDefinition {
+  key: string;             // answer key — e.g. "addon_sms", "includeNonProd"
+  label: string;           // display label (without "Add-on:" prefix)
+  partNumber: string;      // IBM part number
+  annualDelta: number;     // how much it adds to the annual list price (approx)
+  deltaNote: string;       // human note on how delta is calculated
+  /** "yes"/"no" for binary toggles; number for quantity-based (e.g. pkiAddon certs) */
+  yesValue: string | number;
+  noValue: string | number;
+}
+
 /** A single forkable variable the seller can choose to compare across */
 export interface ForkVariable {
   key: string;
@@ -62,6 +74,64 @@ export interface CompareResult {
   sliderStep: number;
   sliderUnit: string;
   sliderCurrentValue: number;
+}
+
+// ─── Add-on definitions (persistent checkbox panel) ──────────────────────────
+
+/**
+ * Returns the full list of toggleable add-ons for a product.
+ * These are shown as checkboxes in the sidebar — not as fan-out variables.
+ * annualDelta is a *typical* 1-unit annual cost used for display only;
+ * the live running total always uses computeScenarioPrice for accuracy.
+ */
+export function getAddonDefinitions(
+  product: Product,
+  answers: Record<string, string | number | boolean | string[]>
+): AddonDefinition[] {
+  if (product === "Verify") {
+    return [
+      { key: "addon_sms",         label: "SMS / Email MFA",               partNumber: "D02T6ZX", annualDelta: 404,    deltaNote: "~$33.70 / 1k auth events (est. 1k events/mo)", yesValue: "yes", noValue: "no" },
+      { key: "addon_hag",         label: "Hosted Application Gateway",    partNumber: "D01UQZX", annualDelta: 270000, deltaNote: "$22,500 / instance / month",                    yesValue: "yes", noValue: "no" },
+      { key: "addon_vanity",      label: "Vanity Domain",                  partNumber: "D01URZX", annualDelta: 6744,   deltaNote: "$562 / instance / month",                       yesValue: "yes", noValue: "no" },
+      { key: "addon_nonprod_sla", label: "Non-Production (with SLA)",     partNumber: "D22PGLL", annualDelta: 33720,  deltaNote: "$2,810 / instance / month",                     yesValue: "yes", noValue: "no" },
+      { key: "addon_nonprod_nosla",label:"Non-Production (no SLA)",       partNumber: "D21CWLL", annualDelta: 16920,  deltaNote: "$1,410 / instance / month",                     yesValue: "yes", noValue: "no" },
+    ];
+  }
+  if (product === "Vault") {
+    const model = String(answers.vaultModel ?? "B");
+    if (model === "B") {
+      return [
+        { key: "includeNonProd", label: "Non-production cluster",         partNumber: "D1018ZX", annualDelta: 12480,   deltaNote: "$12,480 / yr",                               yesValue: "yes", noValue: "no" },
+        { key: "pkiAddon",       label: "PKI cert management (50 certs)", partNumber: "D1406ZX", annualDelta: 8004,    deltaNote: "$5,004 install + $60/cert × 50",             yesValue: 50,    noValue: 0    },
+        { key: "adpKeyMgmt",     label: "ADP Key Mgmt / KMIP (1 cluster)",partNumber: "D1013ZX", annualDelta: 249600,  deltaNote: "$249,600 / cluster",                         yesValue: 1,     noValue: 0    },
+      ];
+    }
+    // Model A
+    return [
+      { key: "includeNonProd", label: "Non-production cluster",           partNumber: "D155GZX", annualDelta: 48000,   deltaNote: "$48,000 / yr",                               yesValue: "yes", noValue: "no" },
+      { key: "includeKMIP",    label: "KMIP support",                     partNumber: "D155LZX", annualDelta: 264000,  deltaNote: "Upgrades install from $96K → $360K / cluster",yesValue: "yes", noValue: "no" },
+    ];
+  }
+  // NS1
+  return [
+    { key: "ddosProtection", label: "Spike / DDoS Protection",            partNumber: "D10ATZX", annualDelta: 0,       deltaNote: "Fixed add-on — see CPQ for price",           yesValue: "yes", noValue: "no" },
+  ];
+}
+
+/**
+ * Compute base price with all add-ons stripped out.
+ * Used so the add-on panel can show exact deltas.
+ */
+export function computeBasePrice(
+  product: Product,
+  answers: Record<string, string | number | boolean | string[]>
+): number {
+  const addons = getAddonDefinitions(product, answers);
+  const noAddons: Record<string, string | number | boolean | string[]> = {};
+  for (const a of addons) noAddons[a.key] = a.noValue;
+  // Also zero out the raw addOns array for Verify
+  if (product === "Verify") noAddons["addOns"] = [];
+  return computeScenarioPrice(product, answers, noAddons);
 }
 
 // ─── Per-product fork variable definitions ────────────────────────────────────

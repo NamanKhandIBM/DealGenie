@@ -3,15 +3,13 @@
 /**
  * ScenarioCompare.tsx
  *
- * Single-variable exploration with breadcrumb locking.
+ * Two-panel layout:
+ *   LEFT  — core variable explorer (one variable at a time, breadcrumb locking)
+ *   RIGHT — persistent add-on checkbox panel with live running total
  *
- * The seller explores ONE variable at a time — never more than 6 cards.
- * After seeing the options they click "Set as baseline" on any card,
- * which locks that choice into the breadcrumb trail and opens a fresh
- * variable picker to explore the next question.
- *
- * This mirrors a real sales conversation: one question at a time,
- * each answer building on the last.
+ * The running total updates whenever:
+ *   • a core variable is locked into the breadcrumb trail
+ *   • an add-on checkbox is toggled
  *
  * No AI. Zero extra API calls.
  */
@@ -22,6 +20,9 @@ import {
   getForkVariables,
   buildFanOut,
   computeSliderPrice,
+  computeScenarioPrice,
+  getAddonDefinitions,
+  type AddonDefinition,
   type ForkVariable,
   type CompareResult,
   type Scenario,
@@ -39,7 +40,6 @@ interface Props {
   product: Product;
   answers: Record<string, string | number | boolean | string[]>;
   onClose: () => void;
-  /** Called with the merged locked answers — lets parent rebuild the quote */
   onBuildQuote: (mergedAnswers: Record<string, string | number | boolean | string[]>) => void;
 }
 
@@ -58,10 +58,41 @@ const BGS = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmt(n: number) { return "$" + Math.round(n).toLocaleString(); }
+function fmtDelta(n: number) {
+  if (n === 0) return "see CPQ";
+  return (n >= 0 ? "+" : "") + "$" + Math.round(Math.abs(n)).toLocaleString() + "/yr";
+}
 function pct(a: number, base: number) {
   if (base === 0) return "";
   const d = ((a - base) / base) * 100;
   return (d >= 0 ? "+" : "") + Math.round(d) + "%";
+}
+
+/**
+ * Determine initial add-on state from the original quote answers.
+ * A binary add-on is "on" if the answer matches the "yes" value.
+ * A numeric add-on (pkiAddon, adpKeyMgmt) is "on" if its value is > 0.
+ * For Verify we also check the addOns part-number array.
+ */
+function initialAddonState(
+  addons: AddonDefinition[],
+  answers: Record<string, string | number | boolean | string[]>
+): Record<string, boolean> {
+  const state: Record<string, boolean> = {};
+  const rawAddOns = (answers.addOns as string[] | undefined) ?? [];
+
+  for (const a of addons) {
+    const val = answers[a.key];
+    if (typeof a.yesValue === "number") {
+      // numeric — on if current value > 0
+      state[a.key] = Number(val ?? 0) > 0;
+    } else {
+      // binary "yes"/"no" — also check legacy addOns array for Verify
+      const legacyOn = rawAddOns.includes(String(a.partNumber));
+      state[a.key] = String(val ?? "no") === "yes" || legacyOn;
+    }
+  }
+  return state;
 }
 
 // ─── Breadcrumb strip ─────────────────────────────────────────────────────────
@@ -70,7 +101,7 @@ function BreadcrumbStrip({ crumbs, onReset }: { crumbs: Crumb[]; onReset: () => 
   if (crumbs.length === 0) return null;
   return (
     <div
-      className="mx-6 mt-4 rounded-xl px-4 py-2.5 flex items-center gap-2 flex-wrap"
+      className="mx-0 mt-0 mb-3 rounded-xl px-4 py-2.5 flex items-center gap-2 flex-wrap"
       style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)" }}
     >
       <span className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: "rgba(147,180,253,0.5)" }}>
@@ -91,7 +122,7 @@ function BreadcrumbStrip({ crumbs, onReset }: { crumbs: Crumb[]; onReset: () => 
       <button
         onClick={onReset}
         className="ml-auto text-[10px] px-2 py-0.5 rounded"
-        style={{ color: "rgba(147,180,253,0.4)", background: "transparent", border: "none" }}
+        style={{ color: "rgba(147,180,253,0.4)", background: "transparent", border: "none", cursor: "pointer" }}
       >
         Reset
       </button>
@@ -99,69 +130,167 @@ function BreadcrumbStrip({ crumbs, onReset }: { crumbs: Crumb[]; onReset: () => 
   );
 }
 
-// ─── Variable picker ─────────────────────────────────────────────────────────
+// ─── Add-on checkbox panel ────────────────────────────────────────────────────
 
-/** Variables whose label starts with "Add-on:" are add-on comparisons */
-function isAddonVar(v: ForkVariable) { return v.label.startsWith("Add-on:"); }
+function AddonPanel({
+  addons,
+  checked,
+  onToggle,
+  effectiveAnswers,
+  product,
+}: {
+  addons: AddonDefinition[];
+  checked: Record<string, boolean>;
+  onToggle: (key: string) => void;
+  effectiveAnswers: Record<string, string | number | boolean | string[]>;
+  product: Product;
+}) {
+  if (addons.length === 0) return null;
 
-function renderVar(
-  v: ForkVariable,
-  selected: string,
-  setSelected: (k: string) => void,
-  accentColor: string
-) {
-  const active = selected === v.key;
   return (
-    <button
-      key={v.key}
-      onClick={() => setSelected(v.key)}
-      className="text-left rounded-xl px-4 py-3 transition-all"
-      style={{
-        background: active ? `${accentColor}1a` : "rgba(255,255,255,0.03)",
-        border: active ? `1px solid ${accentColor}80` : "1px solid rgba(255,255,255,0.07)",
-      }}
+    <div
+      className="rounded-2xl p-4 flex flex-col gap-3"
+      style={{ background: "rgba(167,139,250,0.04)", border: "1px solid rgba(167,139,250,0.18)" }}
     >
-      <div className="flex items-center gap-3">
-        {/* Radio dot */}
-        <div
-          className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center"
-          style={{
-            border: active ? `2px solid ${accentColor}` : "2px solid rgba(255,255,255,0.2)",
-            background: "transparent",
-          }}
-        >
-          {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: accentColor }} />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-semibold" style={{ color: active ? "#c4b5fd" : "#e8eaed" }}>
-              {v.label.replace(/^Add-on:\s*/, "")}
-            </p>
-            <span className="text-[10px] flex-shrink-0" style={{ color: "rgba(147,180,253,0.35)" }}>
-              {v.options.length} options
-            </span>
-          </div>
-          <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.45)" }}>
-            {v.impact}
-          </p>
-          {active && (
-            <div className="flex flex-wrap gap-1 mt-1.5">
-              {v.options.map((o) => (
-                <span
-                  key={String(o.value)}
-                  className="text-[10px] px-1.5 py-0.5 rounded"
-                  style={{ background: `${accentColor}1a`, color: "#c4b5fd", border: `1px solid ${accentColor}33` }}
+      <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: "rgba(167,139,250,0.6)" }}>
+        Add-ons
+      </p>
+      <p className="text-[11px] leading-relaxed" style={{ color: "rgba(147,180,253,0.45)" }}>
+        Pre-filled from your quote. Toggle to see how each add-on affects the total.
+      </p>
+
+      <div className="flex flex-col gap-2">
+        {addons.map((addon) => {
+          const isOn = checked[addon.key] ?? false;
+
+          // Compute the exact delta by pricing with vs without
+          const withOverride: Record<string, string | number | boolean | string[]> = { [addon.key]: addon.yesValue };
+          const withoutOverride: Record<string, string | number | boolean | string[]> = { [addon.key]: addon.noValue };
+          // Also zero Verify addOns array when computing without
+          if (product === "Verify") withoutOverride["addOns"] = [];
+          const priceWith    = computeScenarioPrice(product, effectiveAnswers, withOverride);
+          const priceWithout = computeScenarioPrice(product, effectiveAnswers, withoutOverride);
+          const exactDelta   = priceWith - priceWithout;
+
+          return (
+            <button
+              key={addon.key}
+              onClick={() => onToggle(addon.key)}
+              className="text-left rounded-xl px-3 py-3 transition-all w-full"
+              style={{
+                background: isOn ? "rgba(167,139,250,0.1)" : "rgba(255,255,255,0.02)",
+                border: isOn ? "1px solid rgba(167,139,250,0.4)" : "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <div className="flex items-start gap-3">
+                {/* Checkbox */}
+                <div
+                  className="mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center"
+                  style={{
+                    background: isOn ? "#a78bfa" : "transparent",
+                    border: isOn ? "2px solid #a78bfa" : "2px solid rgba(255,255,255,0.25)",
+                  }}
                 >
-                  {o.label}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+                  {isOn && (
+                    <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none" stroke="#fff" strokeWidth="1.8">
+                      <path d="M1 4l3 3 5-6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="text-xs font-semibold leading-snug" style={{ color: isOn ? "#c4b5fd" : "rgba(232,234,237,0.7)" }}>
+                      {addon.label}
+                    </p>
+                    <span
+                      className="text-[10px] font-semibold px-1.5 py-0.5 rounded flex-shrink-0"
+                      style={{
+                        background: isOn ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.04)",
+                        color: isOn ? "#c4b5fd" : "rgba(147,180,253,0.4)",
+                        border: isOn ? "1px solid rgba(167,139,250,0.3)" : "1px solid rgba(255,255,255,0.07)",
+                      }}
+                    >
+                      {isOn ? fmtDelta(exactDelta) : `adds ${fmtDelta(exactDelta)}`}
+                    </span>
+                  </div>
+                  <p className="text-[10px] mt-0.5" style={{ color: "rgba(147,180,253,0.35)" }}>
+                    {addon.partNumber} · {addon.deltaNote}
+                  </p>
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
-    </button>
+    </div>
   );
 }
+
+// ─── Running total bar ────────────────────────────────────────────────────────
+
+function RunningTotal({
+  basePrice,
+  addonTotal,
+  total,
+  crumbCount,
+}: {
+  basePrice: number;
+  addonTotal: number;
+  total: number;
+  crumbCount: number;
+}) {
+  return (
+    <div
+      className="rounded-2xl p-4"
+      style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.22)" }}
+    >
+      <p className="text-[10px] font-semibold tracking-widest uppercase mb-3" style={{ color: "rgba(96,165,250,0.6)" }}>
+        Running total
+      </p>
+
+      <div className="flex flex-col gap-1.5 text-xs mb-3">
+        <div className="flex justify-between">
+          <span style={{ color: "rgba(147,180,253,0.55)" }}>
+            Core{crumbCount > 0 ? ` (${crumbCount} adjustment${crumbCount > 1 ? "s" : ""})` : ""}
+          </span>
+          <span className="font-semibold tabular-nums" style={{ color: "#e8eaed" }}>
+            {fmt(basePrice)}
+          </span>
+        </div>
+        {addonTotal > 0 && (
+          <div className="flex justify-between">
+            <span style={{ color: "rgba(167,139,250,0.65)" }}>Add-ons</span>
+            <span className="font-semibold tabular-nums" style={{ color: "#c4b5fd" }}>
+              +{fmt(addonTotal)}
+            </span>
+          </div>
+        )}
+        <div
+          className="flex justify-between pt-2 mt-1"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          <span className="font-bold" style={{ color: "#e8eaed" }}>Total / yr (list)</span>
+          <span className="font-extrabold tabular-nums text-sm" style={{ color: "#3b82f6" }}>
+            {fmt(total)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span style={{ color: "rgba(147,180,253,0.35)" }}>Monthly (list)</span>
+          <span className="tabular-nums" style={{ color: "rgba(147,180,253,0.5)" }}>
+            {fmt(total / 12)}/mo
+          </span>
+        </div>
+      </div>
+
+      <p className="text-[10px]" style={{ color: "rgba(147,180,253,0.3)", lineHeight: 1.5 }}>
+        Prices are LIST. Confirm discounts in CPQ. No AI was used.
+      </p>
+    </div>
+  );
+}
+
+// ─── Variable picker ─────────────────────────────────────────────────────────
 
 function VariablePicker({
   product,
@@ -177,29 +306,26 @@ function VariablePicker({
   onBuildQuote: () => void;
 }) {
   const variables = useMemo(() => getForkVariables(product, answers), [product, answers]);
-  // Filter out variables that are already locked
   const lockedKeys = new Set(crumbs.flatMap((c) => Object.keys(c.overrides)));
-  const available  = variables.filter((v) => !lockedKeys.has(v.key));
-  const coreVars   = available.filter((v) => !isAddonVar(v));
-  const addonVars  = available.filter((v) =>  isAddonVar(v));
+  // Core vars only — add-ons are no longer part of the picker
+  const available = variables.filter((v) => !lockedKeys.has(v.key) && !v.label.startsWith("Add-on:"));
   const [selected, setSelected] = useState<string>(available[0]?.key ?? "");
 
   if (available.length === 0) {
     return (
-      <div className="px-6 py-8">
+      <div className="py-4">
         <div
           className="rounded-xl px-5 py-4 mb-5"
           style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)" }}
         >
           <p className="text-sm font-semibold mb-1" style={{ color: "#34d399" }}>
-            ✓ All variables locked in
+            ✓ All core variables locked in
           </p>
           <p className="text-xs" style={{ color: "rgba(147,180,253,0.55)", lineHeight: 1.6 }}>
-            You've locked a choice for every available variable. Hit the button below to run a fresh quote using all these selections, or Reset to start the exploration over.
+            Every core pricing lever is locked. Use the add-ons panel to toggle extras, then build the quote.
           </p>
         </div>
 
-        {/* Summary of locked choices */}
         <div className="rounded-xl overflow-hidden mb-5" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
           {crumbs.map((c, i) => (
             <div
@@ -231,38 +357,67 @@ function VariablePicker({
   }
 
   return (
-    <div className="px-6 py-4">
+    <div className="py-4">
       <p className="text-sm font-semibold mb-1" style={{ color: "#e8eaed" }}>
         {crumbs.length === 0 ? "What would you like to explore?" : "What would you like to explore next?"}
       </p>
       <p className="text-xs mb-4" style={{ color: "rgba(147,180,253,0.5)" }}>
-        Pick one variable. DealGenie computes a price for every option, ordered highest to lowest.
-        {crumbs.length > 0 && " All locked values above stay fixed."}
+        Pick a core lever. DealGenie computes a price for every option — highest to lowest.
+        {crumbs.length > 0 && " All locked choices above stay fixed."}
       </p>
 
-      {/* ── Core pricing levers ── */}
-      {coreVars.length > 0 && (
-        <>
-          <p className="text-[10px] font-semibold tracking-widest uppercase mb-2" style={{ color: "rgba(96,165,250,0.5)" }}>
-            Core pricing levers
-          </p>
-          <div className="grid grid-cols-1 gap-2 mb-4">
-            {coreVars.map((v) => renderVar(v, selected, setSelected, "#3b82f6"))}
-          </div>
-        </>
-      )}
-
-      {/* ── Add-ons ── */}
-      {addonVars.length > 0 && (
-        <>
-          <p className="text-[10px] font-semibold tracking-widest uppercase mb-2 mt-1" style={{ color: "rgba(167,139,250,0.5)" }}>
-            Add-ons — compare cost of including each
-          </p>
-          <div className="grid grid-cols-1 gap-2 mb-4">
-            {addonVars.map((v) => renderVar(v, selected, setSelected, "#a78bfa"))}
-          </div>
-        </>
-      )}
+      <div className="grid grid-cols-1 gap-2 mb-5">
+        {available.map((v) => {
+          const active = selected === v.key;
+          return (
+            <button
+              key={v.key}
+              onClick={() => setSelected(v.key)}
+              className="text-left rounded-xl px-4 py-3 transition-all"
+              style={{
+                background: active ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.03)",
+                border: active ? "1px solid rgba(59,130,246,0.5)" : "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center"
+                  style={{
+                    border: active ? "2px solid #3b82f6" : "2px solid rgba(255,255,255,0.2)",
+                    background: "transparent",
+                  }}
+                >
+                  {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#3b82f6" }} />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold" style={{ color: active ? "#93b4fd" : "#e8eaed" }}>
+                      {v.label}
+                    </p>
+                    <span className="text-[10px] flex-shrink-0" style={{ color: "rgba(147,180,253,0.35)" }}>
+                      {v.options.length} options
+                    </span>
+                  </div>
+                  <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.45)" }}>{v.impact}</p>
+                  {active && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {v.options.map((o) => (
+                        <span
+                          key={String(o.value)}
+                          className="text-[10px] px-1.5 py-0.5 rounded"
+                          style={{ background: "rgba(59,130,246,0.1)", color: "#93b4fd", border: "1px solid rgba(59,130,246,0.2)" }}
+                        >
+                          {o.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
 
       <button
         onClick={() => selected && onPick(selected)}
@@ -289,19 +444,16 @@ function ScenarioCards({
   onLock,
 }: {
   result: CompareResult;
-  /** Price of the locked baseline (from crumbs), for delta comparison */
   baselinePrice: number | null;
   onLock: (scenario: Scenario, varLabel: string) => void;
 }) {
   const scenarios = result.scenarios;
   const cheapest = scenarios[scenarios.length - 1];
   const varLabel = result.forkVars[0]?.label ?? "";
-
   const cols = scenarios.length <= 2 ? 2 : scenarios.length <= 3 ? 3 : scenarios.length <= 4 ? 2 : 3;
 
   return (
     <>
-      {/* Column count label */}
       <p className="text-[10px] font-semibold tracking-widest uppercase mb-3" style={{ color: "rgba(147,180,253,0.4)" }}>
         {scenarios.length} scenarios for <span style={{ color: "#93b4fd" }}>{varLabel}</span> · highest → lowest price
       </p>
@@ -323,7 +475,6 @@ function ScenarioCards({
                 background: isMid ? BGS[i % BGS.length] : "rgba(255,255,255,0.025)",
               }}
             >
-              {/* Badges */}
               <div className="flex flex-wrap gap-1 min-h-[18px]">
                 {i === 0 && (
                   <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
@@ -345,12 +496,8 @@ function ScenarioCards({
                 )}
               </div>
 
-              {/* Scenario label */}
-              <p className="font-bold text-xs leading-snug" style={{ color: c }}>
-                {s.name}
-              </p>
+              <p className="font-bold text-xs leading-snug" style={{ color: c }}>{s.name}</p>
 
-              {/* Price */}
               <div>
                 <div className="text-xl font-extrabold tabular-nums" style={{ color: "#e8eaed" }}>
                   {fmt(s.annualList)}
@@ -360,7 +507,6 @@ function ScenarioCards({
                 </div>
               </div>
 
-              {/* Delta */}
               {delta !== 0 && (
                 <div
                   className="text-[10px] font-semibold px-1.5 py-0.5 rounded w-fit"
@@ -374,7 +520,6 @@ function ScenarioCards({
                 </div>
               )}
 
-              {/* Lock button */}
               <button
                 onClick={() => onLock(s, varLabel)}
                 className="mt-auto w-full text-[11px] font-semibold py-1.5 rounded-lg transition-all"
@@ -402,7 +547,6 @@ function ScenarioCards({
         })}
       </div>
 
-      {/* Insight */}
       <div
         className="rounded-xl px-4 py-3 mt-3 text-xs"
         style={{ background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.15)", color: "rgba(147,180,253,0.65)", lineHeight: 1.6 }}
@@ -470,46 +614,53 @@ function SliderPanel({ result, product, answers }: { result: CompareResult; prod
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function ScenarioCompare({ product, answers, onClose, onBuildQuote }: Props) {
-  // Accumulated locked choices from each exploration round
-  const [crumbs, setCrumbs]     = useState<Crumb[]>([]);
-  // Current fan-out result (null = show picker)
-  const [result, setResult]     = useState<CompareResult | null>(null);
-  // The effective answers = original + all locked overrides
+  const [crumbs, setCrumbs] = useState<Crumb[]>([]);
+  const [result, setResult] = useState<CompareResult | null>(null);
+
+  // Add-on definitions (static for a given product + answers)
+  const addonDefs = useMemo(
+    () => getAddonDefinitions(product, answers),
+    [product, answers]
+  );
+
+  // Checkbox state — initialised from original quote answers
+  const [addonChecked, setAddonChecked] = useState<Record<string, boolean>>(
+    () => initialAddonState(addonDefs, answers)
+  );
+
+  // effectiveAnswers = original answers + locked crumb overrides + checked add-on overrides
   const effectiveAnswers = useMemo(() => {
     const merged = { ...answers };
+    // Apply locked crumbs
     for (const c of crumbs) Object.assign(merged, c.overrides);
+    // Apply current add-on checkbox state
+    for (const a of addonDefs) {
+      merged[a.key] = addonChecked[a.key] ? a.yesValue : a.noValue;
+    }
     return merged;
-  }, [answers, crumbs]);
+  }, [answers, crumbs, addonDefs, addonChecked]);
 
-  // Baseline price = price computed from the locked answers (without current fork var)
+  // Base price = effective answers with core vars locked, add-ons stripped
+  // Used so RunningTotal can split "core" vs "add-on" lines
+  const basePriceNoAddons = useMemo(() => {
+    const stripped = { ...effectiveAnswers };
+    for (const a of addonDefs) stripped[a.key] = a.noValue;
+    if (product === "Verify") stripped["addOns"] = [];
+    return computeScenarioPrice(product, effectiveAnswers, Object.fromEntries(
+      addonDefs.map((a) => [a.key, a.noValue])
+    ));
+  }, [effectiveAnswers, addonDefs, product]);
+
+  const totalPrice = useMemo(
+    () => computeScenarioPrice(product, effectiveAnswers, {}),
+    [product, effectiveAnswers]
+  );
+  const addonTotal = totalPrice - basePriceNoAddons;
+
+  // Baseline for scenario card deltas
   const lockedBaselinePrice = useMemo(() => {
     if (crumbs.length === 0) return null;
-    // Import computeScenarioPrice lazily to avoid circular issues — inline the logic
-    // We just need the price for effectiveAnswers with no overrides
-    if (product === "Verify") {
-      const { computeVerifyQuote } = require("@/lib/verify-engine");
-      const caps = (effectiveAnswers.capabilities as string[]) ?? ["SSO"];
-      const pop = Number(effectiveAnswers.population ?? 500);
-      const logins = Number(effectiveAnswers.avgLogins ?? 12);
-      const managed = caps.includes("Lifecycle") ? Number(effectiveAnswers.managedUsers ?? pop) : 0;
-      const term = String(effectiveAnswers.term ?? "12-month") as "12-month" | "3-year";
-      return computeVerifyQuote({ capabilities: caps, population: pop, avgLoginsPerYear: logins, managedUsers: managed, term }).totalAnnualList;
-    }
-    if (product === "Vault") {
-      const { computeVaultQuote } = require("@/lib/vault-engine");
-      const model = String(effectiveAnswers.vaultModel ?? "B");
-      const installs = Number(effectiveAnswers.installCount ?? 1);
-      if (model === "B") {
-        const ed = String(effectiveAnswers.edition ?? "Standard") as "Essentials" | "Standard" | "Premium";
-        const clients = Number(effectiveAnswers.clientCount ?? 100);
-        return computeVaultQuote({ model: "B-Clients", edition: ed, installCount: installs, clientCount: clients }).totalAnnualList;
-      }
-      const ru = Number(effectiveAnswers.rusMonthly ?? 100);
-      return computeVaultQuote({ model: "A-Platform", installCount: installs, useCaseInputs: { staticSecretCount: ru } }).totalAnnualList;
-    }
-    // NS1
-    const { computeNS1Quote } = require("@/lib/ns1-engine");
-    return computeNS1Quote({ queryVolumeMQ: Number(effectiveAnswers.queryMQ ?? 50), filterChains: Number(effectiveAnswers.filterChainCount ?? 0), monitors: Number(effectiveAnswers.monitors ?? 0) }).ballparkAnnual;
+    return computeScenarioPrice(product, effectiveAnswers, {});
   }, [crumbs, effectiveAnswers, product]);
 
   const productLabel =
@@ -517,8 +668,7 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
     product === "Vault" ? "IBM HashiCorp Vault" : "IBM Security Verify";
 
   const handlePick = (key: string) => {
-    const r = buildFanOut(product, effectiveAnswers, [key]);
-    setResult(r);
+    setResult(buildFanOut(product, effectiveAnswers, [key]));
   };
 
   const handleLock = (scenario: Scenario, varLabel: string) => {
@@ -526,15 +676,20 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
     if (!pickedVar) return;
     const choiceLabel = scenario.drivers[0] ?? scenario.name;
     setCrumbs((prev) => [...prev, { varLabel, choiceLabel, overrides: scenario.overrides }]);
-    setResult(null); // back to picker
-  };
-
-  const handleReset = () => {
-    setCrumbs([]);
     setResult(null);
   };
 
-  const handleBack = () => setResult(null);
+  const handleReset = () => { setCrumbs([]); setResult(null); };
+  const handleBack  = () => setResult(null);
+
+  // Merge add-on checkbox state into the final answers for "Build quote"
+  const buildQuoteAnswers = useMemo(() => {
+    const merged = { ...effectiveAnswers };
+    for (const a of addonDefs) {
+      merged[a.key] = addonChecked[a.key] ? a.yesValue : a.noValue;
+    }
+    return merged;
+  }, [effectiveAnswers, addonDefs, addonChecked]);
 
   return (
     <div
@@ -542,7 +697,7 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
       style={{ zIndex: 60, background: "rgba(0,0,0,0.78)", backdropFilter: "blur(8px)", padding: "24px 16px 48px" }}
     >
       <div
-        className="w-full max-w-4xl rounded-2xl"
+        className="w-full max-w-5xl rounded-2xl"
         style={{
           background: "rgba(10,15,30,0.97)",
           border: "1px solid rgba(255,255,255,0.1)",
@@ -555,7 +710,7 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
             {result && (
               <button onClick={handleBack}
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(147,180,253,0.65)" }}>
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(147,180,253,0.65)", cursor: "pointer" }}>
                 <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M10 4L6 8l4 4" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -571,45 +726,77 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
                   ? `Exploring: ${result.forkVars[0]?.label ?? ""} · ${result.scenarios.length} scenarios · no AI`
                   : crumbs.length > 0
                     ? `${crumbs.length} variable${crumbs.length > 1 ? "s" : ""} locked · choose the next to explore`
-                    : "One variable at a time — lock a choice to keep exploring"}
+                    : "Explore one lever at a time · toggle add-ons on the right"}
               </p>
             </div>
           </div>
           <button onClick={onClose}
             className="flex items-center justify-center w-8 h-8 rounded-lg"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(147,180,253,0.65)" }}>
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(147,180,253,0.65)", cursor: "pointer" }}>
             <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round"/>
             </svg>
           </button>
         </div>
 
-        {/* ── Breadcrumbs (shown when any variable is locked) ── */}
-        <BreadcrumbStrip crumbs={crumbs} onReset={handleReset} />
+        {/* ── Two-column body ── */}
+        <div className="flex gap-0" style={{ minHeight: "400px" }}>
 
-        {/* ── Body ── */}
-        <div className="px-6 py-4">
-          {!result ? (
-            <VariablePicker
-              product={product}
-              answers={effectiveAnswers}
-              crumbs={crumbs}
-              onPick={handlePick}
-              onBuildQuote={() => onBuildQuote(effectiveAnswers)}
-            />
-          ) : (
-            <div className="space-y-0">
-              <ScenarioCards
-                result={result}
-                baselinePrice={lockedBaselinePrice}
-                onLock={handleLock}
+          {/* LEFT — explorer */}
+          <div className="flex-1 min-w-0 px-6 py-4 flex flex-col" style={{ borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+            <BreadcrumbStrip crumbs={crumbs} onReset={handleReset} />
+
+            {!result ? (
+              <VariablePicker
+                product={product}
+                answers={effectiveAnswers}
+                crumbs={crumbs}
+                onPick={handlePick}
+                onBuildQuote={() => onBuildQuote(buildQuoteAnswers)}
               />
-              <SliderPanel result={result} product={product} answers={effectiveAnswers} />
-              <p className="text-center text-[10px] pt-4 pb-1" style={{ color: "rgba(147,180,253,0.22)" }}>
-                All prices are LIST — confirm exact pricing and discounts in CPQ · No AI was used
-              </p>
-            </div>
-          )}
+            ) : (
+              <div>
+                <ScenarioCards
+                  result={result}
+                  baselinePrice={lockedBaselinePrice}
+                  onLock={handleLock}
+                />
+                <SliderPanel result={result} product={product} answers={effectiveAnswers} />
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT — add-on panel + running total */}
+          <div className="w-72 flex-shrink-0 px-4 py-4 flex flex-col gap-4">
+            <RunningTotal
+              basePrice={basePriceNoAddons}
+              addonTotal={addonTotal > 0 ? addonTotal : 0}
+              total={totalPrice}
+              crumbCount={crumbs.length}
+            />
+
+            <AddonPanel
+              addons={addonDefs}
+              checked={addonChecked}
+              onToggle={(key) =>
+                setAddonChecked((prev) => ({ ...prev, [key]: !prev[key] }))
+              }
+              effectiveAnswers={effectiveAnswers}
+              product={product}
+            />
+
+            {/* Build quote button */}
+            <button
+              onClick={() => onBuildQuote(buildQuoteAnswers)}
+              className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 mt-auto"
+              style={{ background: "#3b82f6", color: "#fff", border: "none", cursor: "pointer" }}
+            >
+              <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Build quote with these settings
+            </button>
+          </div>
         </div>
       </div>
     </div>
