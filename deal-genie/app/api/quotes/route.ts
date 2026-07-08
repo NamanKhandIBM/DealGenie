@@ -24,10 +24,27 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, product, answers, chatSnapshot } = body;
+    const { id, product, answers, chatSnapshot, name } = body;
 
     if (!id || !product || !answers) {
       return NextResponse.json({ error: "Missing id, product, or answers" }, { status: 400 });
+    }
+
+    const trimmedName = typeof name === "string" ? name.trim() : "";
+    if (!trimmedName) {
+      return NextResponse.json({ error: "A quote name is required" }, { status: 400 });
+    }
+
+    // Uniqueness check — scan existing quotes for same name (case-insensitive)
+    const existing = await listQuotes();
+    const duplicate = existing.find(
+      (q) => q.name && q.name.trim().toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (duplicate) {
+      return NextResponse.json(
+        { error: `A quote named "${duplicate.name}" already exists. Please choose a different name.` },
+        { status: 409 }
+      );
     }
 
     const lastAssistantMsg = [...(chatSnapshot ?? [])]
@@ -40,6 +57,7 @@ export async function POST(req: NextRequest) {
     const quote: SavedQuote = {
       id,
       savedAt: Date.now(),
+      name: trimmedName,
       label,
       product,
       answers,

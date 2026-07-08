@@ -109,6 +109,7 @@ export default function ChatPage() {
   const [quotesLoading, setQuotesLoading] = useState(false);
   const [compareQuotes, setCompareQuotes] = useState<SavedQuote[] | null>(null);
   const [savingQuote, setSavingQuote] = useState(false);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [scenarioCompareOpen, setScenarioCompareOpen] = useState(false);
 
   const fetchQuotes = useCallback(async () => {
@@ -129,8 +130,8 @@ export default function ChatPage() {
     fetchQuotes();
   };
 
-  const saveCurrentQuote = async () => {
-    if (!state.product || savingQuote) return;
+  const saveCurrentQuote = async (name: string): Promise<string | null> => {
+    if (!state.product || savingQuote) return null;
     setSavingQuote(true);
     try {
       const res = await fetch("/api/quotes", {
@@ -141,12 +142,15 @@ export default function ChatPage() {
           product: state.product,
           answers: state.answers,
           chatSnapshot: messages,
+          name,
         }),
       });
+      const json = await res.json();
       if (res.ok) {
-        const json = await res.json();
         setSavedQuotes((prev) => [json.quote, ...prev]);
+        return null; // success — no error
       }
+      return json.error ?? "Failed to save quote";
     } finally {
       setSavingQuote(false);
     }
@@ -696,7 +700,7 @@ export default function ChatPage() {
                   <>
                     {/* Save Quote */}
                     <button
-                      onClick={saveCurrentQuote}
+                      onClick={() => setSaveModalOpen(true)}
                       disabled={loading || savingQuote}
                       className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
                       style={{
@@ -919,7 +923,136 @@ export default function ChatPage() {
           }}
         />
       )}
+
+      {/* ── Save Quote Modal ──────────────────────────────────────────────────── */}
+      {saveModalOpen && (
+        <SaveQuoteModal
+          existingNames={savedQuotes.map((q) => q.name ?? "")}
+          saving={savingQuote}
+          onSave={async (name) => {
+            const err = await saveCurrentQuote(name);
+            if (!err) setSaveModalOpen(false);
+            return err;
+          }}
+          onCancel={() => setSaveModalOpen(false)}
+        />
+      )}
     </>
+  );
+}
+
+// ─── Save Quote Modal ─────────────────────────────────────────────────────────
+
+function SaveQuoteModal({
+  existingNames,
+  saving,
+  onSave,
+  onCancel,
+}: {
+  existingNames: string[];
+  saving: boolean;
+  onSave: (name: string) => Promise<string | null>;
+  onCancel: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const lowerNames = existingNames.map((n) => n.toLowerCase());
+  const isDupe = name.trim() && lowerNames.includes(name.trim().toLowerCase());
+
+  const handleSubmit = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) { setError("Please enter a name for this quote."); return; }
+    if (isDupe) { setError("That name is already taken. Choose a different one."); return; }
+    setError(null);
+    const serverError = await onSave(trimmed);
+    if (serverError) setError(serverError);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 70, background: "rgba(0,0,0,0.72)", backdropFilter: "blur(6px)" }}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4"
+        style={{ background: "rgba(10,15,30,0.98)", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}
+      >
+        {/* Header */}
+        <div>
+          <h3 className="font-bold text-base" style={{ color: "#e8eaed" }}>Name this quote</h3>
+          <p className="text-xs mt-1" style={{ color: "rgba(147,180,253,0.5)" }}>
+            Give it a memorable name so you can find it later. Names must be unique.
+          </p>
+        </div>
+
+        {/* Input */}
+        <div className="flex flex-col gap-1.5">
+          <input
+            autoFocus
+            type="text"
+            placeholder="e.g. Acme Corp — 10k users SSO+MFA"
+            value={name}
+            onChange={(e) => { setName(e.target.value); setError(null); }}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); if (e.key === "Escape") onCancel(); }}
+            maxLength={80}
+            className="w-full rounded-xl px-4 py-2.5 text-sm outline-none"
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: error ? "1px solid rgba(248,113,113,0.6)" : isDupe ? "1px solid rgba(251,191,36,0.5)" : "1px solid rgba(255,255,255,0.12)",
+              color: "#e8eaed",
+            }}
+          />
+          {/* Inline feedback */}
+          {isDupe && !error && (
+            <p className="text-[11px]" style={{ color: "#fbbf24" }}>⚠ That name is already taken.</p>
+          )}
+          {error && (
+            <p className="text-[11px]" style={{ color: "#f87171" }}>{error}</p>
+          )}
+          <p className="text-[10px] text-right" style={{ color: "rgba(147,180,253,0.3)" }}>{name.length}/80</p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(147,180,253,0.6)", cursor: "pointer" }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={saving || !name.trim() || !!isDupe}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
+            style={{
+              background: saving || !name.trim() || isDupe ? "rgba(59,130,246,0.3)" : "#3b82f6",
+              color: saving || !name.trim() || isDupe ? "rgba(255,255,255,0.4)" : "#fff",
+              border: "none",
+              cursor: saving || !name.trim() || isDupe ? "not-allowed" : "pointer",
+            }}
+          >
+            {saving ? (
+              <>
+                <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="10"/>
+                </svg>
+                Saving…
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M3 2h8l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" strokeLinecap="round"/>
+                  <path d="M5 2v4h6V2M5 10h6" strokeLinecap="round"/>
+                </svg>
+                Save quote
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

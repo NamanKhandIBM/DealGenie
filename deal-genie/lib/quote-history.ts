@@ -25,6 +25,7 @@ export interface SavedQuote {
   _rev?: string;          // Cloudant revision (needed for delete)
   id: string;             // client-generated uuid — stable identifier
   savedAt: number;        // Date.now()
+  name?: string;          // user-supplied name — unique across all saved quotes
   label: string;          // auto: "Verify · 2,000 MAU · $38,500/yr"
   product: Product;
   answers: Record<string, string | number | boolean | string[]>;

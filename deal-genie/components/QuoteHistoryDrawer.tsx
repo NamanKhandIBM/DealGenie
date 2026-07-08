@@ -179,9 +179,9 @@ export default function QuoteHistoryDrawer({
                         {q.product}
                       </span>
 
-                      {/* Label */}
-                      <p className="text-xs leading-snug mt-0.5 truncate" style={{ color: "#e8eaed", maxWidth: "160px" }}>
-                        {q.summary.keyMetrics.join(" · ") || q.label}
+                      {/* Name (user-supplied) then auto-label */}
+                      <p className="text-xs leading-snug mt-0.5 font-semibold truncate" style={{ color: "#e8eaed", maxWidth: "160px" }}>
+                        {q.name || q.summary.keyMetrics.join(" · ") || q.label}
                       </p>
 
                       {/* Price */}
