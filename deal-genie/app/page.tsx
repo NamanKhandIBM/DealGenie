@@ -870,6 +870,12 @@ export default function ChatPage() {
           product={state.product}
           answers={state.answers}
           onClose={() => setScenarioCompareOpen(false)}
+          onBuildQuote={(mergedAnswers) => {
+            // Merge the locked scenario answers into the current state and jump to result
+            setState((prev) => ({ ...prev, answers: { ...prev.answers, ...mergedAnswers }, phase: "result" }));
+            setResultSource("quote");
+            setScenarioCompareOpen(false);
+          }}
         />
       )}
     </>

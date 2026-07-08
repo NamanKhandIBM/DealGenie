@@ -39,6 +39,8 @@ interface Props {
   product: Product;
   answers: Record<string, string | number | boolean | string[]>;
   onClose: () => void;
+  /** Called with the merged locked answers — lets parent rebuild the quote */
+  onBuildQuote: (mergedAnswers: Record<string, string | number | boolean | string[]>) => void;
 }
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
@@ -104,11 +106,13 @@ function VariablePicker({
   answers,
   crumbs,
   onPick,
+  onBuildQuote,
 }: {
   product: Product;
   answers: Record<string, string | number | boolean | string[]>;
   crumbs: Crumb[];
   onPick: (key: string) => void;
+  onBuildQuote: () => void;
 }) {
   const variables = useMemo(() => getForkVariables(product, answers), [product, answers]);
   // Filter out variables that are already locked
@@ -118,10 +122,46 @@ function VariablePicker({
 
   if (available.length === 0) {
     return (
-      <div className="px-6 py-8 text-center">
-        <p className="text-sm" style={{ color: "rgba(147,180,253,0.5)" }}>
-          All available variables have been locked in. Hit Reset to start over.
-        </p>
+      <div className="px-6 py-8">
+        <div
+          className="rounded-xl px-5 py-4 mb-5"
+          style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)" }}
+        >
+          <p className="text-sm font-semibold mb-1" style={{ color: "#34d399" }}>
+            ✓ All variables locked in
+          </p>
+          <p className="text-xs" style={{ color: "rgba(147,180,253,0.55)", lineHeight: 1.6 }}>
+            You've locked a choice for every available variable. Hit the button below to run a fresh quote using all these selections, or Reset to start the exploration over.
+          </p>
+        </div>
+
+        {/* Summary of locked choices */}
+        <div className="rounded-xl overflow-hidden mb-5" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+          {crumbs.map((c, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between px-4 py-2.5 text-xs"
+              style={{
+                borderBottom: i < crumbs.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+              }}
+            >
+              <span style={{ color: "rgba(147,180,253,0.5)" }}>{c.varLabel}</span>
+              <span className="font-semibold" style={{ color: "#93b4fd" }}>{c.choiceLabel}</span>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={onBuildQuote}
+          className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
+          style={{ background: "#3b82f6", color: "#fff", border: "none", cursor: "pointer" }}
+        >
+          <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Build quote with these settings
+        </button>
       </div>
     );
   }
@@ -397,7 +437,7 @@ function SliderPanel({ result, product, answers }: { result: CompareResult; prod
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function ScenarioCompare({ product, answers, onClose }: Props) {
+export default function ScenarioCompare({ product, answers, onClose, onBuildQuote }: Props) {
   // Accumulated locked choices from each exploration round
   const [crumbs, setCrumbs]     = useState<Crumb[]>([]);
   // Current fan-out result (null = show picker)
@@ -523,6 +563,7 @@ export default function ScenarioCompare({ product, answers, onClose }: Props) {
               answers={effectiveAnswers}
               crumbs={crumbs}
               onPick={handlePick}
+              onBuildQuote={() => onBuildQuote(effectiveAnswers)}
             />
           ) : (
             <div className="space-y-0">
