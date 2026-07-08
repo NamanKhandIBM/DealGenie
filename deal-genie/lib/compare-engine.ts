@@ -236,10 +236,21 @@ export function computeScenarioPrice(
 
   if (product === "Verify") {
     const caps = (a.capabilities as string[]) ?? ["SSO"];
-    const pop  = Number(a.population ?? 500);
+    const basePop = Number(base.population ?? 500);
+    const pop = Number(a.population ?? basePop);
     const logins = Number(a.avgLogins ?? 12);
-    const managed = caps.includes("Lifecycle") ? Number(a.managedUsers ?? pop) : 0;
     const term  = String(a.term ?? "12-month") as "12-month" | "3-year";
+    let managed = 0;
+    if (caps.includes("Lifecycle")) {
+      // If population is being overridden, scale managedUsers proportionally
+      // so the comparison reflects realistic growth (not a fixed managed headcount).
+      const baseMgd = Number(base.managedUsers ?? basePop);
+      if ("population" in overrides && basePop > 0) {
+        managed = Math.round(baseMgd * (pop / basePop));
+      } else {
+        managed = Number(a.managedUsers ?? pop);
+      }
+    }
     const result = computeVerifyQuote({ capabilities: caps as VerifyCapability[], population: pop, avgLoginsPerYear: logins, managedUsers: managed, term });
     return result.totalAnnualList;
   }
@@ -276,6 +287,8 @@ export function computeSliderPrice(
   sliderKey: string,
   sliderValue: number
 ): number {
+  // Pass sliderKey as an override so computeScenarioPrice sees it in `overrides`
+  // and applies proportional scaling logic (e.g. managedUsers when population moves).
   return computeScenarioPrice(product, base, { ...overrides, [sliderKey]: sliderValue });
 }
 
