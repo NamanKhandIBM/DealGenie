@@ -297,13 +297,11 @@ function VariablePicker({
   answers,
   crumbs,
   onPick,
-  onBuildQuote,
 }: {
   product: Product;
   answers: Record<string, string | number | boolean | string[]>;
   crumbs: Crumb[];
   onPick: (key: string) => void;
-  onBuildQuote: () => void;
 }) {
   const variables = useMemo(() => getForkVariables(product, answers), [product, answers]);
   const lockedKeys = new Set(crumbs.flatMap((c) => Object.keys(c.overrides)));
@@ -342,16 +340,9 @@ function VariablePicker({
           ))}
         </div>
 
-        <button
-          onClick={onBuildQuote}
-          className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"
-          style={{ background: "#3b82f6", color: "#fff", border: "none", cursor: "pointer" }}
-        >
-          <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Build quote with these settings
-        </button>
+        <p className="text-xs text-center" style={{ color: "rgba(147,180,253,0.4)" }}>
+          Hit <span style={{ color: "#93b4fd" }}>Build quote</span> in the panel on the right →
+        </p>
       </div>
     );
   }
@@ -752,7 +743,6 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
                 answers={effectiveAnswers}
                 crumbs={crumbs}
                 onPick={handlePick}
-                onBuildQuote={() => onBuildQuote(buildQuoteAnswers)}
               />
             ) : (
               <div>
