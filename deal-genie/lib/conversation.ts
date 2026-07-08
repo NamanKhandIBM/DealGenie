@@ -347,7 +347,7 @@ export function processUserMessage(
 
 // ─── RESULT COMPUTATION ───────────────────────────────────────────────────────
 
-function computeResult(state: ConversationState): string {
+export function computeResult(state: ConversationState): string {
   switch (state.product) {
     case "Verify": return computeVerifyResult(state);
     case "Vault":  return computeVaultResult(state);

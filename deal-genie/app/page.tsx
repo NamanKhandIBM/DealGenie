@@ -870,11 +870,49 @@ export default function ChatPage() {
           product={state.product}
           answers={state.answers}
           onClose={() => setScenarioCompareOpen(false)}
-          onBuildQuote={(mergedAnswers) => {
-            // Merge the locked scenario answers into the current state and jump to result
-            setState((prev) => ({ ...prev, answers: { ...prev.answers, ...mergedAnswers }, phase: "result" }));
-            setResultSource("quote");
+          onBuildQuote={async (mergedAnswers) => {
+            if (!state.product || loading) return;
             setScenarioCompareOpen(false);
+            setHistory((h) => [...h, { messages, state, activeQuestion }]);
+            setLoading(true);
+            try {
+              // Call /api/compute-quote directly — skips the question flow entirely
+              // since all answers are already known from the locked scenario selections.
+              const res = await fetch("/api/compute-quote", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  state: {
+                    ...state,
+                    phase: "result",
+                    answers: { ...state.answers, ...mergedAnswers },
+                  },
+                }),
+              });
+              const json = await res.json();
+              if (json.reply) {
+                setMessages((m) => [
+                  ...m,
+                  {
+                    id: crypto.randomUUID(),
+                    role: "assistant",
+                    content: `🔄 **Quote rebuilt from scenario selections:**\n\n${json.reply}`,
+                    timestamp: Date.now(),
+                  },
+                ]);
+              }
+              setState(json.state);
+              setActiveQuestion(null);
+              setResultSource("quote");
+            } catch (err) {
+              const errMsg = err instanceof Error ? err.message : "Something went wrong.";
+              setMessages((m) => [
+                ...m,
+                { id: crypto.randomUUID(), role: "assistant", content: `⚠️ ${errMsg}`, timestamp: Date.now() },
+              ]);
+            } finally {
+              setLoading(false);
+            }
           }}
         />
       )}
