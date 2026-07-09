@@ -364,7 +364,7 @@ function computeVerifyResult(state: ConversationState): string {
   const population = parseNumber(String(a.population ?? 500));
   const avgLogins = Math.max(1, Math.min(12, parseNumber(String(a.avgLogins ?? 12))));
   const managedUsers = parseNumber(String(a.managedUsers ?? 0));
-  const regions = 1; // one license = one tenant; not a configurable input
+  const regions = Math.max(1, parseNumber(String(a.regions ?? "1")));
   const term = String(a.term ?? "12-month") as "12-month" | "3-year";
 
   // listPrice here is the MONTHLY list price from data.ts.
@@ -462,6 +462,8 @@ function computeVaultResult(state: ConversationState): string {
   const edition = editionMap[String(a.edition ?? "2")] ?? "Standard";
   const clientCount = parseNumber(String(a.clientCount ?? "1")) || 1;
 
+  const adpTransformClients = parseNumber(String(a.adpTransform ?? "0"));
+
   const result = computeVaultQuote({
     model: "B-Clients",
     edition,
@@ -470,6 +472,7 @@ function computeVaultResult(state: ConversationState): string {
     includeNonProd: parseYesNo(String(a.includeNonProd ?? "no")),
     pkiCerts: parseNumber(String(a.pkiAddon ?? "0")),
     adpKeyMgmt: parseNumber(String(a.adpKeyMgmt ?? "0")),
+    adpTransformClients: adpTransformClients > 0 ? adpTransformClients : undefined,
   });
   return formatVaultResult(result, `B — Clients / RVU (${edition})`);
 }
@@ -530,7 +533,10 @@ function computeNS1Result(state: ConversationState): string {
   const dedicatedPoPs = dedicatedRaw !== "no" ? parseNumber(dedicatedRaw) || undefined : undefined;
 
   const chinaRaw = String(a.china ?? "no");
-  const chinaMQ = chinaRaw === "yes" ? 50 : undefined;
+  // chinaMQ: if yes, use the explicit volume from answer; default to 50M minimum
+  const chinaMQ = chinaRaw === "yes"
+    ? Math.max(50, parseNumber(String(a.chinaMQ ?? "50")))
+    : undefined;
 
   const growth = parseNumber(String(a.growth ?? "0"));
 
@@ -569,15 +575,21 @@ function computeNS1Result(state: ConversationState): string {
     </div>`
   ).join("");
 
+  const tierLabel = result.tier === "Hybrid"
+    ? "Hybrid Cloud DNS (5900B5C)"
+    : result.tier === "Premium"
+    ? "NS1 Connect Premium (5900B4J)"
+    : "NS1 Connect Standard (5900B4J)";
+
   return `<div class="result-card">
 
 <div class="result-header">
   <span class="result-product">NS1 Connect</span>
-  <span class="result-badge ns1">NS1</span>
+  <span class="result-badge ns1">NS1 · ${result.tier}</span>
 </div>
 
 <div class="result-inputs">
-  ${result.effectiveMQ.toLocaleString()} MQ/month &nbsp;·&nbsp; DNS: ${a.currentDNS ?? "N/A"} &nbsp;·&nbsp; ${a.term ?? "12-month"}
+  ${result.effectiveMQ.toLocaleString()} MQ/month &nbsp;·&nbsp; ${tierLabel} &nbsp;·&nbsp; DNS: ${a.currentDNS ?? "N/A"} &nbsp;·&nbsp; ${a.term ?? "12-month"}
 </div>
 
 <div class="result-section-label">📋 PART NUMBERS FOR CPQ</div>

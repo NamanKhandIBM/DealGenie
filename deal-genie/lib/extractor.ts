@@ -69,7 +69,7 @@ Extract any of these fields that are clearly stated or strongly implied:
 product: "Verify" | "NS1" | "Vault"  (IBM Security Verify = Verify, NS1 Connect = NS1, HashiCorp Vault = Vault)
 population: number  (total user count, e.g. "500 users" → 500)
 avgLogins: number  (active months per year, 1–12; how many distinct months per year a user logs in at least once — "every day / every week / every month" → 12, "most months" → 9, "half the year" → 6, "a few months" → 3, "once or twice a year" → 1)
-capabilities: array of "SSO" | "MFA" | "AdaptiveAccess" | "LifecycleGov"
+capabilities: array of "SSO" | "MFA" | "Adaptive" | "Lifecycle"
 managedUsers: number
 vaultModel: "A" | "B"  (A = new customer / expanding, B = renewal / stable)
 installCount: number  (Vault clusters or servers)
@@ -92,6 +92,9 @@ Rules:
 Examples:
 Input: "500 users, SSO and MFA, they log in about once a month"
 Output: {"product":"Verify","population":500,"capabilities":["SSO","MFA"],"avgLogins":12}
+
+Input: "500 users need adaptive access and lifecycle governance, they're active all year"
+Output: {"product":"Verify","population":500,"capabilities":["Adaptive","Lifecycle"],"avgLogins":12}
 
 Input: "new vault customer, 3 clusters, using PKI and static secrets, around 2000 certs a month with 90 day lifetime"
 Output: {"product":"Vault","vaultModel":"A","installCount":3,"useCases":["pki","static"],"pkiCertsPerMonth":2000,"pkiCertLifetimeHours":2160}
@@ -141,7 +144,7 @@ function sanitise(raw: Record<string, unknown>): ExtractedEntities {
   const out: ExtractedEntities = {};
 
   const VALID_PRODUCTS = new Set(["Verify", "NS1", "Vault"]);
-  const VALID_CAPS = new Set(["SSO", "MFA", "AdaptiveAccess", "LifecycleGov"]);
+  const VALID_CAPS = new Set(["SSO", "MFA", "Adaptive", "Lifecycle"]);
   const VALID_USE_CASES = new Set(["static", "dynamic", "pki", "ssh", "transit", "kmse"]);
 
   if (typeof raw.product === "string" && VALID_PRODUCTS.has(raw.product))

@@ -105,6 +105,19 @@ export const VERIFY_QUESTIONS: Question[] = [
     ],
   },
   {
+    key: "regions",
+    ask: "Is this a multi-region or multi-tenant deployment?",
+    subtext: "Each region/tenant needs its own Verify tenant — price multiplied per region.",
+    type: "single",
+    conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
+    options: [
+      { label: "No — single region / tenant", value: "1" },
+      { label: "Yes — 2 regions",             value: "2" },
+      { label: "Yes — 3 regions",             value: "3" },
+      { label: "Yes — 4+ regions",            value: "4" },
+    ],
+  },
+  {
     key: "term",
     ask: "What's the contract term?",
     type: "single",
@@ -238,6 +251,32 @@ export const NS1_QUESTIONS: Question[] = [
     key: "china",
     ask: "Do they need DNS coverage in mainland China?",
     subtext: "DNS for China is a separate add-on with a minimum of 50M China-origin queries.",
+    type: "single",
+    options: [
+      { label: "No",   value: "no" },
+      { label: "Yes",  value: "yes" },
+    ],
+  },
+  {
+    key: "chinaMQ",
+    ask: "How many China-origin queries per month?",
+    subtext: "Minimum 50M. These are queries handled by the China-specific NS1 network.",
+    type: "single",
+    allowOther: true,
+    conditional: (a) => String(a.china ?? "no") === "yes",
+    options: [
+      { label: "50 million (minimum)", value: "50" },
+      { label: "100 million",          value: "100" },
+      { label: "500 million",          value: "500" },
+      { label: "1 billion+",           value: "1000" },
+    ],
+    placeholder: "Enter China-origin MQ",
+    unit: "million queries/month",
+  },
+  {
+    key: "ddos",
+    ask: "Do they need DDoS / spike protection?",
+    subtext: "Covers sudden traffic spikes and denial-of-service events exceeding contracted query volume.",
     type: "single",
     options: [
       { label: "No",   value: "no" },
@@ -530,5 +569,20 @@ export const VAULT_QUESTIONS_MODEL_B: Question[] = [
     ],
     placeholder: "Enter cluster count needing KMIP",
     unit: "clusters",
+  },
+  {
+    key: "adpTransform",
+    ask: "Do they need ADP Transform (tokenisation / format-preserving encryption)?",
+    subtext: "Used for masking PII, credit card numbers, SSNs in transit. Charged per app/service using it.",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "No",            value: "0" },
+      { label: "Yes — < 10",    value: "5" },
+      { label: "Yes — 10–50",   value: "25" },
+      { label: "Yes — 50+",     value: "50" },
+    ],
+    placeholder: "Enter number of Transform clients",
+    unit: "clients",
   },
 ];

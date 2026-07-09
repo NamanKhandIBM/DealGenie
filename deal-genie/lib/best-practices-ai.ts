@@ -12,6 +12,7 @@
 
 import { watsonxGenerate } from "./watsonx";
 import type { Product } from "./types";
+import { fetchProductContext, buildContextSnippet } from "./ibm-search";
 
 // ─── OpenAI provider ──────────────────────────────────────────────────────────
 
@@ -275,7 +276,7 @@ SIZING EXAMPLES:
 
 // ─── Per-product system prompt builders ───────────────────────────────────────
 
-function buildSystemPrompt(product: Product): string {
+function buildSystemPrompt(product: Product, liveContext?: string): string {
   const knowledge =
     product === "Verify" ? VERIFY_KNOWLEDGE :
     product === "NS1"    ? NS1_KNOWLEDGE :
@@ -285,6 +286,10 @@ function buildSystemPrompt(product: Product): string {
     product === "Verify" ? "IBM Security Verify" :
     product === "NS1"    ? "NS1 Connect" :
                            "IBM HashiCorp Vault";
+
+  const liveSection = liveContext
+    ? `\n\nLIVE CONTEXT FROM IBM SEISMIC (fetched now — more current than the knowledge base above):\n${liveContext}\n`
+    : "";
 
   return `You are an AI Subject Matter Expert (AI SME) for ${productName}, built into IBM's DealGenie quoting assistant.
 You help IBM sellers and business partners deeply understand this product so they can run better discovery conversations with customers — and build accurate quotes.
@@ -302,7 +307,7 @@ Your boundaries:
 - If asked something outside your knowledge, say so clearly and suggest the IBM product team
 
 Your product knowledge for ${productName}:
-${knowledge}
+${knowledge}${liveSection}
 
 Conversation style:
 - Be direct and practical — sellers are busy, often in front of a customer
@@ -314,7 +319,7 @@ Conversation style:
 - After your initial overview, invite follow-up questions`;
 }
 
-function buildClientModeSystemPrompt(product: Product): string {
+function buildClientModeSystemPrompt(product: Product, liveContext?: string): string {
   const knowledge =
     product === "Verify" ? VERIFY_KNOWLEDGE :
     product === "NS1"    ? NS1_KNOWLEDGE :
@@ -324,6 +329,10 @@ function buildClientModeSystemPrompt(product: Product): string {
     product === "Verify" ? "IBM Security Verify" :
     product === "NS1"    ? "NS1 Connect" :
                            "IBM HashiCorp Vault";
+
+  const liveSection = liveContext
+    ? `\n\nLIVE CONTEXT FROM IBM SEISMIC (use to inform answers — do NOT recite prices or part numbers to the client):\n${liveContext}\n`
+    : "";
 
   return `You are Genie, an AI assistant helping a prospective customer understand ${productName} and whether it is a good fit for their needs.
 You are being used live in a conversation between an IBM seller and their client. Speak directly to the client in plain, friendly, non-technical business language.
@@ -342,7 +351,7 @@ Your boundaries:
 - If a technical question is beyond the scope of this conversation, say "that's a great question for our technical team"
 
 Your product knowledge (use this to inform answers — do NOT recite it verbatim):
-${knowledge}
+${knowledge}${liveSection}
 
 Conversation style:
 - Warm, clear, and consultative — you are helping them, not selling to them
@@ -402,9 +411,20 @@ export async function continueBestPracticesChat(
     ? `Prior context:\n${historyText}\n\n${speakerLabel}: ${userMessage}`
     : userMessage;
 
+  // Fetch live IBM Search context in parallel with prompt building (fire-and-forget on failure).
+  // Only fetch on the first user message in a session (history.length <= 1) to avoid
+  // hammering the IBM Search API on every follow-up turn.
+  let liveContext: string | undefined;
+  if (history.length <= 1) {
+    const searchResults = await fetchProductContext(product);
+    if (searchResults && searchResults.length > 0) {
+      liveContext = buildContextSnippet(searchResults);
+    }
+  }
+
   const systemPrompt = clientMode
-    ? buildClientModeSystemPrompt(product)
-    : buildSystemPrompt(product);
+    ? buildClientModeSystemPrompt(product, liveContext)
+    : buildSystemPrompt(product, liveContext);
 
   try {
     const text = await generate(systemPrompt, fullUserMessage);

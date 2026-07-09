@@ -3,21 +3,7 @@
 ## ✅ Recently completed
 - **Quote history + Cloudant persistence** — save, retrieve, delete quotes; IAM bearer-token auth
 - **QuoteCompare UI (seller-facing)** — price cards with best-value badge, pricing drivers, diff table, and plain-English insight banner
-
----
-
-## 🟡 Ready to build (token received)
-
-### 1. IBM Search wrapper — live Seismic pricing
-**What:** Connect DealGenie to IBM's internal vector store so pricing data is always current, pulled live from Seismic instead of hardcoded in `lib/data.ts`.
-**Status:** ✅ Token received — `IBM_SEARCH_API_KEY` added to `.env.local`.
-**Ready to build:** `lib/ibm-search.ts` client + wire into quoting engines (~1 day).
-**API endpoint:** `POST https://www-api.ibm.com/search/api/v2/`
-**Auth header:** `x-search-query-token: <IBM_SEARCH_API_KEY>`
-**Plan:**
-- Query Seismic on each quote for the relevant product pricing sheet
-- Parse and overlay on `lib/data.ts` constants (data.ts stays as offline fallback)
-- Priority: NS1 — currently all `$0 / PENDING`; this would give real prices
+- **IBM Search AI integration** — ✅ **LIVE**. Native TypeScript REST client calling `www-api.ibm.com/search/api/v1/ibmcom/appid/searchai` directly. No Python, no sidecar. All 3 products return real IBM Docs content. Wired into Genie (AI SME) system prompt on every first-turn message.
 
 ---
 
