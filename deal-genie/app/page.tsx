@@ -13,6 +13,7 @@ import QuoteCompare from "@/components/QuoteCompare";
 import ScenarioCompare from "@/components/ScenarioCompare";
 import { normaliseAnswersForQuote } from "@/lib/compare-engine";
 import type { SavedQuote } from "@/lib/quote-history";
+import { exportPartsCsv } from "@/lib/export-csv";
 
 const WELCOME_MESSAGE: Message = {
   id: "welcome",
@@ -308,7 +309,7 @@ export default function ChatPage() {
         setState(json.state);
         setActiveQuestion(json.activeQuestion ?? null);
         // Track what kind of result was produced so the action bar shows the right buttons
-        if (json.state?.phase === "result") setResultSource("quote");
+        if (json.state?.phase === "result") setResultSource(json.resultType ?? "quote");
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
         setMessages((m) => [
@@ -612,9 +613,25 @@ export default function ChatPage() {
                   </button>
                 )}
 
-                {/* After viewing PART NUMBERS → offer Best Practices + Start Quoting */}
+                {/* After viewing PART NUMBERS → offer Export CSV + Best Practices + Start Quoting */}
                 {state.phase === "result" && resultSource === "parts" && (
                   <>
+                    <button
+                      onClick={() => state.product && exportPartsCsv(state.product)}
+                      disabled={loading || !state.product}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(74,222,128,0.08)",
+                        border: "1px solid rgba(74,222,128,0.25)",
+                        color: "#4ade80",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M8 2v8M5 7l3 3 3-3" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 12h10" strokeLinecap="round"/>
+                      </svg>
+                      Export CSV
+                    </button>
                     <button
                       onClick={startBestPractices}
                       disabled={loading}

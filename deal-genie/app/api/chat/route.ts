@@ -16,9 +16,19 @@ export async function POST(req: NextRequest) {
 
   const result = processUserMessage(state, message, entities);
 
+  // Signal whether this is a parts or quote result so the client
+  // can show the correct action bar buttons.
+  const resultType =
+    result.state.phase === "result" && result.reply.includes("Part Numbers")
+      ? "parts"
+      : result.state.phase === "result"
+      ? "quote"
+      : null;
+
   return NextResponse.json({
     reply: result.reply,
     state: result.state,
     activeQuestion: result.activeQuestion,
+    resultType,
   });
 }
