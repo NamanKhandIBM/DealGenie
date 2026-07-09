@@ -6,16 +6,18 @@
 
 ---
 
-## 🔴 Blocked / In progress
+## 🟡 Ready to build (token received)
 
-### 1. IBM Search wrapper access (Seismic live pricing)
+### 1. IBM Search wrapper — live Seismic pricing
 **What:** Connect DealGenie to IBM's internal vector store so pricing data is always current, pulled live from Seismic instead of hardcoded in `lib/data.ts`.
-**Status:** Access Hub request submitted — awaiting token via email.
-**How to unblock:** Go to [Access Hub](https://ibm.idaas.iam.ibm.com/accesshub), search **"IBM Search wrapper"**, request access. Token arrives by email.
-**Slack channel:** `#m-search` for questions.
-**Once token received:** Add `IBM_SEARCH_API_KEY=<token>` to `.env.local` — integration can be built in ~1 day.
+**Status:** ✅ Token received — `IBM_SEARCH_API_KEY` added to `.env.local`.
+**Ready to build:** `lib/ibm-search.ts` client + wire into quoting engines (~1 day).
 **API endpoint:** `POST https://www-api.ibm.com/search/api/v2/`
 **Auth header:** `x-search-query-token: <IBM_SEARCH_API_KEY>`
+**Plan:**
+- Query Seismic on each quote for the relevant product pricing sheet
+- Parse and overlay on `lib/data.ts` constants (data.ts stays as offline fallback)
+- Priority: NS1 — currently all `$0 / PENDING`; this would give real prices
 
 ---
 
