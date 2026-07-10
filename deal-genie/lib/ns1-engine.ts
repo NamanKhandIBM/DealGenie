@@ -1,22 +1,20 @@
 // NS1 quoting engine — sizing + ballpark pricing + part numbers
 //
-// THREE TIERS (source: NS1 Sales Decoder Ring §3–§6, Appendix E §17):
-//   Standard  — D10A*/D10B*  — Product 5900B4J — ARR $4K–$40K
-//   Premium   — D0GN*        — Product 5900B4J — ARR $45K–$250K
-//   Hybrid    — D0GY*/D0GZ*  — Product 5900B5C — ARR $250K+ or MQ >10,000
+// FOUR TIERS (as shown in IBM Software CPQ configurator):
+//   Essentials — D10AYZX base — 30M queries, 1K records, 2 monitors, 1 filter chain included
+//   Standard   — D10AYZX base — 50M queries, 1K records, 2 monitors, 1 filter chain included; add-ons D10AWZX/D10AUZX/D10B2ZX
+//   Premium    — D0GN* a la carte — Product 5900B4J — ARR $45K+
+//   Hybrid     — D0GY*/D0GZ* bundles — Product 5900B5C — ARR $250K+
 //
-// Tier routing: ballparkAnnual < 40_000 → Standard
-//               ballparkAnnual 40_000–249_999 → Premium
-//               ballparkAnnual >= 250_000 OR effectiveMQ > 10_000 → Hybrid
+// Tier routing: MQ ≤ 30  → Essentials
+//               MQ ≤ 50  → Standard
+//               MQ ≤ 10,000 → Premium
+//               MQ > 10,000 → Hybrid
 //
-// CPQ metric conversions (ibid §8, §18):
-//   1 Request     = 10M queries   (Standard & Premium managed DNS, China DNS)
-//   1 Record      = 1,000 DNS records
-//   1 Interaction = 1M RUM queries (Standard RUM min 1M; Advanced RUM min 5M, sold in 5M blocks)
-//
-// SLA rules (ibid §17):
-//   Premium: D0GNDZX qty=1 required on every order
-//   Hybrid:  D0GZ2ZX qty=1 required on every order; 10B QPM minimum (= 1,000 Requests)
+// CPQ metric conversions:
+//   Standard queries: entered in millions directly (qty 10 = 10M queries, multiples of 10, range 10–70)
+//   Premium/Hybrid:   1 Request = 10M queries; 1 Record = 1,000 DNS records
+//   1 Interaction = 1M RUM queries
 //
 // Confirmed CPQ list prices (12-month term, sourced from IBM Software CPQ):
 //   D0GNEZX: $1.343/mo per Request (10M queries)
@@ -25,6 +23,7 @@
 //   D0GYUZX: $31.718/mo per Request (Enterprise bundle)
 //   D0GZ2ZX: $0 (Hybrid SLA — free, required)
 // All other parts: listPrice still PENDING — confirm in CPQ.
+// DDoS/NXD: qty=1 each (not tied to DNS Request qty) — confirmed in CPQ
 // Discounting: ≤35% pre-auth; +10% with leadership; >45% needs product team.
 
 import { NS1_PRICING_TIERS } from "./data";
@@ -44,7 +43,7 @@ function catalogPrice(partNumber: string): number {
   return all.find(p => p.partNumber === partNumber)?.listPrice ?? 0;
 }
 
-export type NS1Tier = "Standard" | "Premium" | "Hybrid";
+export type NS1Tier = "Essentials" | "Standard" | "Premium" | "Hybrid";
 
 export interface NS1Inputs {
   queryVolumeMQ: number;        // millions of queries/month
@@ -56,7 +55,9 @@ export interface NS1Inputs {
   dedicatedPoPs?: number;       // 0 = no Dedicated DNS; min 3 if enabled (Premium only)
   chinaMQ?: number;             // China-origin queries in MQ (min 50M if enabled)
   dnsInsights?: boolean;        // flat qty = DNS Requests (D0GN6ZX qty must equal D0GNEZX qty)
-  ddosProtection?: boolean;     // D10ATZX (Standard) or D0GN5ZX qty=D0GNEZX (Premium)
+  ddosProtection?: boolean;     // D10ATZX (Standard) or D0GN5ZX qty=1 (Premium) — confirmed in CPQ
+  nxdWaiver?: boolean;          // D0GNMZX qty=1 — Premium only — confirmed in CPQ
+  cloudSync?: boolean;          // D16MXZX — available all tiers
   expectedGrowthPct?: number;   // % headroom to add to MQ
   term?: "12-month" | "3-year";
 }
@@ -132,35 +133,36 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     flags.push(`Query volume sized with ${inputs.expectedGrowthPct}% growth headroom to avoid overages.`);
   }
 
-  // ── 2. Ballpark MRR/Annual for tier routing ───────────────────────────────
+  // ── 2. Ballpark MRR/Annual (used for display only — tier routing now MQ-based) ──
   const pricingTier = getNS1Tier(effectiveMQ);
   const ballparkMRR = Math.round(effectiveMQ * pricingTier.tierMRR);
   const ballparkAnnual = ballparkMRR * 12;
 
   const rationale =
-    `${effectiveMQ.toLocaleString()} MQ → tier base ${pricingTier.tierBase.toLocaleString()} → ` +
-    `Tier MRR $${pricingTier.tierMRR} → ${effectiveMQ.toLocaleString()} × $${pricingTier.tierMRR} = ` +
-    `$${ballparkMRR.toLocaleString()}/month`;
+    `${effectiveMQ.toLocaleString()} MQ → ` +
+    `ballpark $${ballparkMRR.toLocaleString()}/month`;
 
-  // ── 3. Tier routing ────────────────────────────────────────────────────────
-  // Source: Decoder Ring §3–§6, §11–§12, Appendix D
+  // ── 3. Tier routing — matches CPQ configurator options ────────────────────
   let tier: NS1Tier;
-  if (effectiveMQ > 10_000 || ballparkAnnual >= 250_000) {
+  if (effectiveMQ > 10_000) {
     tier = "Hybrid";
-  } else if (ballparkAnnual >= 40_000) {
+  } else if (effectiveMQ > 50) {
     tier = "Premium";
-  } else {
+  } else if (effectiveMQ > 30) {
     tier = "Standard";
+  } else {
+    tier = "Essentials";
   }
 
   flags.push(
-    `Tier routed to ${tier} (ballpark ACV ~$${ballparkAnnual.toLocaleString()}/yr).` +
+    `Tier: ${tier} (${effectiveMQ.toLocaleString()}M queries/month).` +
     (tier === "Hybrid" ? " Confirm with Tony Nicolakis / Nick Lammert." :
      tier === "Premium" ? " Contact NS1 sales team for pricing." : "")
   );
 
   // ── 4. Derived sizing ──────────────────────────────────────────────────────
-  const billableRecords = Math.max(0, (inputs.recordCount ?? 0) - 3000);
+  // Standard/Essentials: 1K records included; Premium: 1K records minimum required
+  const billableRecords = Math.max(0, (inputs.recordCount ?? 1000) - 1000);
   const filterChains = inputs.filterChains ?? 0;
   const monitors = inputs.monitors ?? 0;
 
@@ -169,88 +171,94 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
 
   // ── 5. Build part number list by tier ─────────────────────────────────────
 
-  if (tier === "Standard") {
-    // ── STANDARD tier: D10A*/D10B* (Product 5900B4J) ──────────────────────
-    // 1 Request = 10M queries; 1 Record = 1,000 DNS records
+  if (tier === "Essentials" || tier === "Standard") {
+    // ── ESSENTIALS / STANDARD tier: D10A*/D10B* (Product 5900B4J) ─────────
+    // CPQ: Essentials = 30M base, Standard = 50M base
+    // Add-on queries entered in millions directly (multiples of 10, range 10–70)
+    // 1K records included; 2 monitors included; 1 filter chain included
+
+    const tierLabel = tier === "Essentials"
+      ? "Essentials (30M queries, 1K records, 2 monitors, 1 filter chain)"
+      : "Standard (50M queries, 1K records, 2 monitors, 1 filter chain)";
 
     // Base access (required)
     partNumbers.push(partLine(
       "D10AYZX",
-      "IBM NS1 Connect Standard Access Per Month",
+      `IBM NS1 Connect ${tier} Access Per Month`,
       1,
       "per month (base fee)",
-      "Required base subscription for every Standard deal."
+      `Required base. Includes: ${tierLabel}.`
     ));
 
-    // Committed query volume in 10M-query (1 Request) blocks
-    const queryRequests = Math.ceil(effectiveMQ / 10);
-    partNumbers.push(partLine(
-      "D10AZZX",
-      "IBM NS1 Connect Standard 10M Query Add-On Request Per Month",
-      queryRequests,
-      "per 10M queries/month",
-      `${effectiveMQ.toLocaleString()} MQ ÷ 10 = ${queryRequests} Requests. Add overage SKU D10B0ZX for reference.`
-    ));
+    // Add-on query volume (in millions directly, multiples of 10)
+    const baseIncludedMQ = tier === "Essentials" ? 30 : 50;
+    const addOnMQ = Math.max(0, effectiveMQ - baseIncludedMQ);
+    if (addOnMQ > 0) {
+      const addOnQty = Math.ceil(addOnMQ / 10) * 10; // round up to nearest 10M
+      partNumbers.push(partLine(
+        "D10AZZX",
+        "IBM NS1 Connect Standard 10M Query Add-On Request Per Month",
+        addOnQty,
+        "million queries/month (multiples of 10)",
+        `${effectiveMQ}M total − ${baseIncludedMQ}M included = ${addOnMQ}M add-on, rounded to ${addOnQty}M. Enter ${addOnQty} in CPQ.`
+      ));
+    }
 
-    // Additional DNS Records
+    // Additional DNS Records (beyond 1K included)
     if (billableRecords > 0) {
       const recordUnits = Math.ceil(billableRecords / 1000);
       partNumbers.push(partLine(
         "D10AWZX",
         "IBM NS1 Connect Standard Records Add-On 1000 Records Per Month",
         recordUnits,
-        "per 1,000 records/month",
-        `${billableRecords.toLocaleString()} billable records (after 3,000 free) → ${recordUnits} × 1,000-record units. Also add overage D10AXZX.`
+        "per 1,000 records/month (1-9)",
+        `${(inputs.recordCount ?? 1000).toLocaleString()} total − 1,000 included = ${billableRecords.toLocaleString()} billable → ${recordUnits} × 1K-record units.`
       ));
-      flags.push(`${billableRecords.toLocaleString()} billable records → ${recordUnits} × 1,000-record blocks.`);
+      flags.push(`${billableRecords.toLocaleString()} billable records → ${recordUnits} × 1,000-record units (D10AWZX).`);
     }
 
-    // Filter Chains (Resource Units)
+    // Filter Chains / Resource Units (beyond 1 included)
     if (filterChains > 0) {
       partNumbers.push(partLine(
         "D10AUZX",
         "IBM NS1 Connect Standard Filter Chains Add-On Resource Unit Per Month",
         filterChains,
-        "per filter chain/month",
-        `${filterChains} traffic steering policies. Also add overage D10AVZX.`
+        "per filter chain/month (1-99)",
+        `${filterChains} additional filter chains beyond the 1 included. Max 99.`
       ));
     }
 
-    // RUM-based traffic steering — Standard uses D0GZ0ZX (1M-query Interactions, min 1M)
-    if (inputs.rumBased && filterChains > 0) {
-      const rumInteractions = Math.max(1, effectiveMQ); // 1 Interaction = 1M queries
-      rumPacks = rumInteractions;
-      partNumbers.push(partLine(
-        "D0GZ0ZX",
-        "IBM NS1 Connect GSLB Standard — RUM Traffic Steering Interaction Per Month",
-        rumInteractions,
-        "per 1M RUM queries/month",
-        `${effectiveMQ.toLocaleString()}M queries → ${rumInteractions.toLocaleString()} Interactions (1 Interaction = 1M queries). Min 1. Confirm pricing with Tony/Nick.`
-      ));
-      flags.push(`GSLB RUM Standard (D0GZ0ZX): ${rumInteractions.toLocaleString()} Interactions — confirm pricing with Tony/Nick.`);
-    }
-
-    // Monitors
+    // Monitors / Jobs (beyond 2 included)
     if (monitors > 0) {
       partNumbers.push(partLine(
         "D10B2ZX",
         "IBM NS1 Connect Standard Monitors Add-On Job Per Month",
         monitors,
-        "per monitor/month",
-        `${monitors} health-check monitors. Also add overage D10B3ZX.`
+        "per monitor/month (1-98)",
+        `${monitors} additional monitors beyond the 2 included. Max 98.`
       ));
     }
 
-    // DDoS / Spike Protection (Standard uses flat per-month SKU)
+    // DDoS / Spike Protection
     if (inputs.ddosProtection) {
       partNumbers.push(partLine(
         "D10ATZX",
         "IBM NS1 Connect Standard Spike Protection / DDoS Add-On Per Month",
         1,
         "per month",
-        "Spike and DDoS protection. Confirm pricing with NS1 team."
+        "Spike and DDoS protection add-on."
       ));
-      flags.push("Spike/DDoS protection (D10ATZX) — confirm pricing with NS1 team.");
+    }
+
+    // IBM Cloud Sync
+    if (inputs.cloudSync) {
+      partNumbers.push(partLine(
+        "D16MXZX",
+        "IBM Cloud Sync Add-on",
+        1,
+        "per instance",
+        "Syncs NS1 DNS zones with IBM Cloud."
+      ));
     }
 
   } else if (tier === "Premium") {
@@ -339,16 +347,37 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       }
     }
 
-    // DDoS — Premium: qty MUST equal D0GNEZX qty
+    // DDoS — Premium: qty=1 (confirmed in CPQ — not tied to DNS Request qty)
     if (inputs.ddosProtection) {
       partNumbers.push(partLine(
         "D0GN5ZX",
         "IBM NS1 Connect DDoS Overage Protection Request per Month",
-        dnsRequests,
-        "per 10M queries/month",
-        `Qty must equal D0GNEZX (${dnsRequests} Requests). Confirm pricing with NS1 team.`
+        1,
+        "per month",
+        "DDoS overage protection. Qty=1 (confirmed in CPQ)."
       ));
-      flags.push(`DDoS (D0GN5ZX) qty must equal Managed DNS Requests (${dnsRequests}) — CPQ rule.`);
+    }
+
+    // NXD Waiver — qty=1 (confirmed in CPQ)
+    if (inputs.nxdWaiver) {
+      partNumbers.push(partLine(
+        "D0GNMZX",
+        "IBM NS1 Connect NXD Waiver Request per Month",
+        1,
+        "per month",
+        "Non-Existent Domain waiver. Qty=1 (confirmed in CPQ)."
+      ));
+    }
+
+    // IBM Cloud Sync
+    if (inputs.cloudSync) {
+      partNumbers.push(partLine(
+        "D16MXZX",
+        "IBM Cloud Sync Add-on",
+        1,
+        "per instance",
+        "Syncs NS1 DNS zones with IBM Cloud."
+      ));
     }
 
     // DNS Insights — qty MUST equal D0GNEZX qty

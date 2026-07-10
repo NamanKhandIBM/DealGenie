@@ -523,9 +523,9 @@ function computeNS1Result(state: ConversationState): string {
   const records = parseNumber(String(a.recordCount ?? "0"));
 
   const gslbRaw = String(a.gslb ?? "no");
-  const hasGSLB = gslbRaw !== "no";
   const rumBased = gslbRaw === "yes-rum";
-  const filterChains = hasGSLB ? parseNumber(String(a.filterChainCount ?? "0")) : 0;
+  const rumAdvanced = gslbRaw === "yes-rum-advanced";
+  const filterChains = parseNumber(String(a.filterChainCount ?? "0"));
 
   const monitorsRaw = parseNumber(String(a.monitors ?? "0"));
 
@@ -533,7 +533,6 @@ function computeNS1Result(state: ConversationState): string {
   const dedicatedPoPs = dedicatedRaw !== "no" ? parseNumber(dedicatedRaw) || undefined : undefined;
 
   const chinaRaw = String(a.china ?? "no");
-  // chinaMQ: if yes, use the explicit volume from answer; default to 50M minimum
   const chinaMQ = chinaRaw === "yes"
     ? Math.max(50, parseNumber(String(a.chinaMQ ?? "50")))
     : undefined;
@@ -544,12 +543,15 @@ function computeNS1Result(state: ConversationState): string {
     queryVolumeMQ: mq,
     recordCount: records,
     filterChains,
-    rumBased,
+    rumBased: rumBased || rumAdvanced,
+    rumAdvanced,
     monitors: monitorsRaw,
     dedicatedPoPs,
     chinaMQ,
     dnsInsights: String(a.insights ?? "no") === "yes",
     ddosProtection: String(a.ddos ?? "no") === "yes",
+    nxdWaiver: String(a.nxd ?? "no") === "yes",
+    cloudSync: String(a.cloudSync ?? "no") === "yes",
     expectedGrowthPct: growth,
     term: String(a.term ?? "12-month") === "3-year" ? "3-year" : "12-month",
   });
