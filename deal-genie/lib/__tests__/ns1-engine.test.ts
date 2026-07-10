@@ -11,8 +11,8 @@ describe("NS1 Tier Routing", () => {
     expect(result.tier).toBe("Essentials");
   });
 
-  test("Standard tier — MQ 31–50", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 40 });
+  test("Standard tier — MQ 50–999", () => {
+    const result = computeNS1Quote({ queryVolumeMQ: 100 });
     expect(result.tier).toBe("Standard");
     expect(result.partNumbers.some(p => p.partNumber === "D10AYZX")).toBe(true);
     // No Premium/Hybrid parts
@@ -20,8 +20,8 @@ describe("NS1 Tier Routing", () => {
     expect(result.partNumbers.some(p => p.partNumber === "D0GZ2ZX")).toBe(false);
   });
 
-  test("Premium tier — MQ 51–10,000", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 100 });
+  test("Premium tier — MQ 1,000–10,000", () => {
+    const result = computeNS1Quote({ queryVolumeMQ: 3000 });
     expect(result.tier).toBe("Premium");
     // SLA required
     expect(result.partNumbers.some(p => p.partNumber === "D0GNDZX")).toBe(true);
@@ -65,8 +65,8 @@ describe("NS1 Tier Routing", () => {
   });
 
   test("Hybrid tier — MQ just over 10,000 boundary", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 7500, expectedGrowthPct: 34 });
     // 7500 × 1.34 = 10,050 → Hybrid
+    const result = computeNS1Quote({ queryVolumeMQ: 7500, expectedGrowthPct: 34 });
     expect(result.tier).toBe("Hybrid");
   });
 });
@@ -75,7 +75,7 @@ describe("NS1 Tier Routing", () => {
 
 describe("NS1 SLA auto-insertion", () => {
   test("Premium: D0GNDZX SLA qty=1 always present", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 3000 });
+    const result = computeNS1Quote({ queryVolumeMQ: 1000 });
     expect(result.tier).toBe("Premium");
     const sla = result.partNumbers.find(p => p.partNumber === "D0GNDZX");
     expect(sla).toBeDefined();
@@ -96,7 +96,7 @@ describe("NS1 SLA auto-insertion", () => {
 // ─── CPQ QUANTITY RULES ───────────────────────────────────────────────────────
 
 describe("NS1 CPQ quantity rules (Premium)", () => {
-  const premiumBase: NS1Inputs = { queryVolumeMQ: 3000 };
+  const premiumBase: NS1Inputs = { queryVolumeMQ: 1000 };
 
   test("DNS Insights qty must equal D0GNEZX qty", () => {
     const result = computeNS1Quote({ ...premiumBase, dnsInsights: true });
@@ -152,15 +152,15 @@ describe("NS1 CPQ quantity rules (Premium)", () => {
 // ─── EXISTING TESTS (updated for new shape) ──────────────────────────────────
 
 describe("NS1 Quote Engine — existing behaviour", () => {
-  test("Basic managed DNS quote — Premium (100 MQ > 50 threshold)", () => {
+  test("Basic managed DNS quote — Standard (100 MQ, 50–999 range)", () => {
     const inputs: NS1Inputs = {
       queryVolumeMQ: 100,
       recordCount: 5000,
     };
     const result = computeNS1Quote(inputs);
-    expect(result.tier).toBe("Premium");
+    expect(result.tier).toBe("Standard");
     expect(result.effectiveMQ).toBe(100);
-    expect(result.billableRecords).toBe(4000); // 5000 - 1000 included (new CPQ baseline)
+    expect(result.billableRecords).toBe(4000); // 5000 - 1000 included
     expect(result.ballparkMRR).toBeGreaterThan(0);
     expect(result.partNumbers.length).toBeGreaterThan(0);
     expect(result.bestPractices.length).toBeGreaterThan(0);
@@ -174,19 +174,31 @@ describe("NS1 Quote Engine — existing behaviour", () => {
     expect(result.flags.some(f => f.includes("30% growth headroom"))).toBe(true);
   });
 
-  test("GSLB features — Premium RUM (200 MQ > 50 threshold)", () => {
+  test("GSLB features — Standard tier (200 MQ, 50–999 range)", () => {
+    // Standard tier has filter chains (D10AUZX) and monitors (D10B2ZX) but no RUM
     const result = computeNS1Quote({
       queryVolumeMQ: 200,
+      filterChains: 5,
+      monitors: 10,
+    });
+    expect(result.tier).toBe("Standard");
+    expect(result.filterChains).toBe(5);
+    expect(result.monitors).toBe(10);
+    expect(result.partNumbers.some(p => p.partNumber === "D10AUZX")).toBe(true);
+    expect(result.partNumbers.some(p => p.partNumber === "D10B2ZX")).toBe(true);
+  });
+
+  test("GSLB RUM — Premium tier (2000 MQ, 1K–10K range)", () => {
+    // RUM only available on Premium/Hybrid
+    const result = computeNS1Quote({
+      queryVolumeMQ: 2000,
       filterChains: 5,
       rumBased: true,
       monitors: 10,
     });
     expect(result.tier).toBe("Premium");
-    expect(result.filterChains).toBe(5);
-    expect(result.monitors).toBe(10);
     expect(result.rumPacks).toBeGreaterThan(0);
     expect(result.partNumbers.some(p => p.description.includes("RUM"))).toBe(true);
-    // Premium monitor part is D0GNIZX "Jobs"
     expect(result.partNumbers.some(p => p.partNumber === "D0GNIZX")).toBe(true);
   });
 
@@ -201,62 +213,58 @@ describe("NS1 Quote Engine — existing behaviour", () => {
   });
 
   test("Dedicated DNS PoP limits (Premium tier)", () => {
-    // 3000 MQ → Premium; dedicatedPoPs=2 → bumped to 3
-    const result = computeNS1Quote({ queryVolumeMQ: 3000, dedicatedPoPs: 2 });
+    const result = computeNS1Quote({ queryVolumeMQ: 1000, dedicatedPoPs: 2 });
     expect(result.tier).toBe("Premium");
     expect(result.flags.some(f => f.includes("minimum is 3 PoPs"))).toBe(true);
     expect(result.partNumbers.some(p => p.description.includes("Dedicated DNS"))).toBe(true);
   });
 
-  test("DNS Insights — Premium tier emits D0GN6ZX (100 MQ routes to Premium)", () => {
+  test("DNS Insights — Standard tier (dnsInsights flag only, no D0GN6ZX part)", () => {
+    // Standard tier stores the flag but doesn't emit the Premium D0GN6ZX part
     const result = computeNS1Quote({ queryVolumeMQ: 100, dnsInsights: true });
-    expect(result.tier).toBe("Premium");
+    expect(result.tier).toBe("Standard");
     expect(result.dnsInsights).toBe(true);
-    expect(result.partNumbers.some(p => p.partNumber === "D0GN6ZX")).toBe(true);
+    expect(result.partNumbers.some(p => p.partNumber === "D0GN6ZX")).toBe(false);
   });
 
-  test("DNS Insights — Premium tier emits D0GN6ZX", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 3000, dnsInsights: true });
+  test("DNS Insights — Premium tier emits D0GN6ZX (1000 MQ)", () => {
+    const result = computeNS1Quote({ queryVolumeMQ: 1000, dnsInsights: true });
     expect(result.tier).toBe("Premium");
     expect(result.partNumbers.some(p => p.partNumber === "D0GN6ZX")).toBe(true);
     expect(result.flags.some(f => f.includes("DNS Insights"))).toBe(true);
   });
 
-  test("DDoS protection — Standard uses D10ATZX (MQ 40, Standard tier)", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 40, ddosProtection: true });
+  test("DDoS protection — Standard uses D10ATZX (MQ 100, Standard tier)", () => {
+    const result = computeNS1Quote({ queryVolumeMQ: 100, ddosProtection: true });
     expect(result.tier).toBe("Standard");
-    // Part emitted (flag removed in CPQ-aligned update)
     expect(result.partNumbers.some(p => p.partNumber === "D10ATZX")).toBe(true);
   });
 
-  test("DDoS protection — Premium uses D0GN5ZX", () => {
-    const result = computeNS1Quote({ queryVolumeMQ: 3000, ddosProtection: true });
+  test("DDoS protection — Premium uses D0GN5ZX (MQ 1000)", () => {
+    const result = computeNS1Quote({ queryVolumeMQ: 1000, ddosProtection: true });
     expect(result.tier).toBe("Premium");
     expect(result.partNumbers.some(p => p.partNumber === "D0GN5ZX")).toBe(true);
     expect(result.partNumbers.some(p => p.partNumber === "D10ATZX")).toBe(false);
   });
 
-  test("Comprehensive quote — Premium with all features (500 MQ > 50 threshold)", () => {
+  test("Comprehensive quote — Standard with non-RUM features (500 MQ, Standard tier)", () => {
+    // 500 MQ → Standard (50–999). Standard has no RUM — use Premium (1000 MQ) for RUM test.
     const inputs: NS1Inputs = {
       queryVolumeMQ: 500,
       recordCount: 10000,
       filterChains: 8,
-      rumBased: true,
       monitors: 20,
-      chinaMQ: 100,
-      dnsInsights: true,
       ddosProtection: true,
       expectedGrowthPct: 25,
       term: "3-year",
     };
     const result = computeNS1Quote(inputs);
     expect(result.effectiveMQ).toBe(625); // 500 * 1.25
-    expect(result.billableRecords).toBe(9000); // 10000 - 1000 included (new CPQ baseline)
+    expect(result.billableRecords).toBe(9000); // 10000 - 1000 included
     expect(result.filterChains).toBe(8);
     expect(result.monitors).toBe(20);
-    expect(result.rumPacks).toBeGreaterThan(0);
-    expect(result.chinaMQ).toBe(100);
-    expect(result.dnsInsights).toBe(true);
+    expect(result.chinaMQ).toBeUndefined();
+    expect(result.dnsInsights).toBe(false);
     expect(result.partNumbers.length).toBeGreaterThan(3);
     expect(result.bestPractices.length).toBeGreaterThan(0);
     expect(result.tutorialSteps.length).toBe(7);
