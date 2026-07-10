@@ -560,7 +560,8 @@ function computeNS1Result(state: ConversationState): string {
       <td><code>${part.partNumber}</code></td>
       <td>${part.description}</td>
       <td class="text-right">${part.quantity.toLocaleString()}</td>
-      <td>${part.unit}</td>
+      <td class="text-right">${part.listPrice > 0 ? `$${part.listPrice.toFixed(3)}` : "—"}</td>
+      <td class="text-right">${part.extendedPrice > 0 ? `$${part.extendedPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "—"}</td>
       <td class="text-sm">${part.notes}</td>
     </tr>`
   ).join("");
@@ -594,13 +595,17 @@ function computeNS1Result(state: ConversationState): string {
 
 <div class="result-section-label">📋 PART NUMBERS FOR CPQ</div>
 <table class="result-table">
-  <thead><tr><th>Part #</th><th>Description</th><th class="text-right">Qty</th><th>Unit</th><th>Notes</th></tr></thead>
+  <thead><tr><th>Part #</th><th>Description</th><th class="text-right">Qty</th><th class="text-right">List $/mo</th><th class="text-right">Extended $/mo</th><th>Notes</th></tr></thead>
   <tbody>${partNumberRows}</tbody>
 </table>
 
 <div class="result-price-row">
-  <div class="result-price">~$${result.ballparkMRR.toLocaleString()}<span>/mo</span></div>
-  <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()} /yr &nbsp;·&nbsp; ILLUSTRATIVE — confirm in CPQ</div>
+  ${result.totalMonthlyList > 0
+    ? `<div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
+       <div class="result-price-note">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} /yr list${result.hasPendingPrices ? " · ⚠️ partial — some parts still $0 pending CPQ" : " · CPQ confirmed prices"}</div>`
+    : `<div class="result-price">~$${result.ballparkMRR.toLocaleString()}<span>/mo</span></div>
+       <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()} /yr &nbsp;·&nbsp; ILLUSTRATIVE — confirm in CPQ</div>`
+  }
 </div>
 
 <ul class="result-flags">${flags}</ul>
@@ -612,8 +617,8 @@ ${bestPracticesSection}
 </p>
 
 <div class="result-next">
-  ✅ <strong>Part numbers ready for CPQ</strong> (D0XXXZX = placeholder, get actual from Tony Nicolakis/Nick Lammert)<br/>
-  📚 <strong>Best practices & tutorial</strong> included to help with discovery<br/>
+  ✅ <strong>Part numbers ready for CPQ</strong><br/>
+  📚 <strong>Best practices &amp; tutorial</strong> included to help with discovery<br/>
   📋 Copy part numbers and quantities into SAP CPQ
 </div>
 

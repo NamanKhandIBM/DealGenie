@@ -18,16 +18,31 @@
 //   Premium: D0GNDZX qty=1 required on every order
 //   Hybrid:  D0GZ2ZX qty=1 required on every order; 10B QPM minimum (= 1,000 Requests)
 //
-// All list prices are PENDING — confirm in IBM Software CPQ.
+// Confirmed CPQ list prices (12-month term, sourced from IBM Software CPQ):
+//   D0GNEZX: $1.343/mo per Request (10M queries)
+//   D0GNGZX: $10.802/mo per Record (1,000 DNS records)
+//   D0GNDZX: $0 (SLA — free, required)
+//   D0GYUZX: $31.718/mo per Request (Enterprise bundle)
+//   D0GZ2ZX: $0 (Hybrid SLA — free, required)
+// All other parts: listPrice still PENDING — confirm in CPQ.
 // Discounting: ≤35% pre-auth; +10% with leadership; >45% needs product team.
 
 import { NS1_PRICING_TIERS } from "./data";
 import {
+  NS1_PREMIUM_PARTS,
+  NS1_HYBRID_PARTS,
+  NS1_STANDARD_PARTS,
   NS1_BEST_PRACTICES,
   NS1_TUTORIAL_STEPS,
   NS1_QUICK_REFERENCE,
   type NS1Part
 } from "./ns1-parts";
+
+/** Look up the confirmed list price for a part number from the catalog. Returns 0 if not yet confirmed. */
+function catalogPrice(partNumber: string): number {
+  const all = [...NS1_STANDARD_PARTS, ...NS1_PREMIUM_PARTS, ...NS1_HYBRID_PARTS];
+  return all.find(p => p.partNumber === partNumber)?.listPrice ?? 0;
+}
 
 export type NS1Tier = "Standard" | "Premium" | "Hybrid";
 
@@ -65,8 +80,11 @@ export interface NS1SizingResult {
   rumPacks?: number;            // interactions (1M each for Std RUM, 5M each for Adv RUM)
   chinaMQ?: number;
   dnsInsights: boolean;
-  ballparkMRR: number;          // monthly, rough
+  ballparkMRR: number;          // monthly, rough (illustrative for Standard; real for Premium/Hybrid)
   ballparkAnnual: number;
+  totalMonthlyList: number;     // sum of extendedPrice across all line items (monthly)
+  totalAnnualList: number;      // totalMonthlyList × 12
+  hasPendingPrices: boolean;    // true if any line item still has listPrice=0
   rationale: string;
   flags: string[];
   partNumbers: NS1PartLineItem[]; // detailed line items ready to paste into CPQ
@@ -94,14 +112,15 @@ function partLine(
   unit: string,
   notes: string
 ): NS1PartLineItem {
-  return { partNumber, description, quantity, unit, listPrice: 0, extendedPrice: 0, notes };
+  const listPrice = catalogPrice(partNumber);
+  const extendedPrice = listPrice * quantity;
+  return { partNumber, description, quantity, unit, listPrice, extendedPrice, notes };
 }
 
 // ─── MAIN ENGINE ─────────────────────────────────────────────────────────────
 
 export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
   const flags: string[] = [
-    "NS1 list prices are PENDING — confirm in IBM Software CPQ before quoting.",
     "All prices are LIST. Real pricing, discounts, and approvals happen in CPQ.",
   ];
 
@@ -477,6 +496,17 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     }
   }
 
+  // ── 6. Compute totals and pending-price flag ───────────────────────────────
+  const totalMonthlyList = Math.round(
+    partNumbers.reduce((sum, p) => sum + p.extendedPrice, 0) * 100
+  ) / 100;
+  const totalAnnualList = Math.round(totalMonthlyList * 12 * 100) / 100;
+  const hasPendingPrices = partNumbers.some(p => p.listPrice === 0 && p.partNumber !== "D0GNDZX" && p.partNumber !== "D0GZ2ZX");
+
+  if (hasPendingPrices) {
+    flags.push("⚠️ Some parts still have PENDING list prices ($0) — confirm those in IBM Software CPQ before sharing with a customer.");
+  }
+
   return {
     tier,
     effectiveMQ,
@@ -488,6 +518,9 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     dnsInsights: inputs.dnsInsights ?? false,
     ballparkMRR,
     ballparkAnnual,
+    totalMonthlyList,
+    totalAnnualList,
+    hasPendingPrices,
     rationale,
     flags,
     partNumbers,
