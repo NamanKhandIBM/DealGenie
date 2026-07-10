@@ -58,7 +58,8 @@ export interface NS1Inputs {
   ddosProtection?: boolean;     // D10ATZX (Standard) or D0GN5ZX qty=1 (Premium) — confirmed in CPQ
   nxdWaiver?: boolean;          // D0GNMZX qty=1 — Premium only — confirmed in CPQ
   cloudSync?: boolean;          // D16MXZX — available all tiers
-  expectedGrowthPct?: number;   // % headroom to add to MQ
+  expectedGrowthPct?: number;   // % headroom to add to MQ (legacy)
+  growthMQ?: number;            // absolute MQ headroom to add (replaces expectedGrowthPct)
   term?: "12-month" | "3-year";
 }
 
@@ -126,10 +127,14 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
   ];
 
   // ── 1. Apply growth headroom ───────────────────────────────────────────────
+  // Prefer absolute MQ headroom (growthMQ); fall back to percentage for legacy callers
+  const growthAddMQ = inputs.growthMQ ?? 0;
   const growthFactor = 1 + (inputs.expectedGrowthPct ?? 0) / 100;
-  const effectiveMQ = Math.ceil(inputs.queryVolumeMQ * growthFactor);
+  const effectiveMQ = Math.ceil(inputs.queryVolumeMQ * growthFactor) + growthAddMQ;
 
-  if (inputs.expectedGrowthPct && inputs.expectedGrowthPct > 0) {
+  if (growthAddMQ > 0) {
+    flags.push(`Query volume sized with +${growthAddMQ}M headroom (${inputs.queryVolumeMQ}M + ${growthAddMQ}M = ${effectiveMQ}M).`);
+  } else if (inputs.expectedGrowthPct && inputs.expectedGrowthPct > 0) {
     flags.push(`Query volume sized with ${inputs.expectedGrowthPct}% growth headroom to avoid overages.`);
   }
 
@@ -142,13 +147,14 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     `${effectiveMQ.toLocaleString()} MQ → ` +
     `ballpark $${ballparkMRR.toLocaleString()}/month`;
 
-  // ── 3. Tier routing — matches CPQ configurator options ────────────────────
+  // ── 3. Tier routing — aligned with NS1 package tiers per Nick Lammert ────
+  // Essentials: <50M · Standard: 50M–1B · Premium: >1B · Hybrid: enterprise bundles
   let tier: NS1Tier;
   if (effectiveMQ > 10_000) {
     tier = "Hybrid";
-  } else if (effectiveMQ > 50) {
+  } else if (effectiveMQ >= 1_000) {
     tier = "Premium";
-  } else if (effectiveMQ > 30) {
+  } else if (effectiveMQ >= 50) {
     tier = "Standard";
   } else {
     tier = "Essentials";
@@ -525,15 +531,34 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     }
   }
 
-  // ── 6. Compute totals and pending-price flag ───────────────────────────────
+  // ── 6. Compute totals, pending-price warnings, and $0 part warnings ───────
   const totalMonthlyList = Math.round(
     partNumbers.reduce((sum, p) => sum + p.extendedPrice, 0) * 100
   ) / 100;
   const totalAnnualList = Math.round(totalMonthlyList * 12 * 100) / 100;
-  const hasPendingPrices = partNumbers.some(p => p.listPrice === 0 && p.partNumber !== "D0GNDZX" && p.partNumber !== "D0GZ2ZX");
+
+  // Free parts that are legitimately $0 — don't warn on these
+  const FREE_PARTS = new Set(["D0GNDZX", "D0GZ2ZX"]);
+  // Known exception: Standard Query Add-On has no visible part number in CPQ
+  const KNOWN_EXCEPTIONS = new Set(["D10AZZX"]);
+
+  const hasPendingPrices = partNumbers.some(
+    p => p.listPrice === 0 && !FREE_PARTS.has(p.partNumber) && !KNOWN_EXCEPTIONS.has(p.partNumber)
+  );
+
+  // Per-part $0 warnings (item 13 from Nick)
+  for (const p of partNumbers) {
+    if (p.listPrice === 0 && !FREE_PARTS.has(p.partNumber)) {
+      if (KNOWN_EXCEPTIONS.has(p.partNumber)) {
+        flags.push(`ℹ️ ${p.partNumber} (${p.description.replace("IBM NS1 Connect ", "")}): price not exposed in CPQ — known exception. Confirm manually.`);
+      } else {
+        flags.push(`⚠️ ${p.partNumber} (${p.description.replace("IBM NS1 Connect ", "").replace("IBM Hybrid Cloud DNS ", "")}): price could not be validated. Please verify in CPQ.`);
+      }
+    }
+  }
 
   if (hasPendingPrices) {
-    flags.push("⚠️ Some parts still have PENDING list prices ($0) — confirm those in IBM Software CPQ before sharing with a customer.");
+    flags.push("⚠️ Some line items have unconfirmed list prices — verify all $0 parts in IBM Software CPQ before sharing with a customer.");
   }
 
   return {

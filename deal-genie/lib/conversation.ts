@@ -537,7 +537,14 @@ function computeNS1Result(state: ConversationState): string {
     ? Math.max(50, parseNumber(String(a.chinaMQ ?? "50")))
     : undefined;
 
-  const growth = parseNumber(String(a.growth ?? "0"));
+  // growthMQ: absolute MQ headroom (new); fall back to legacy % if present
+  const growthMQ = parseNumber(String(a.growthMQ ?? "0"));
+  const growthPct = parseNumber(String(a.growth ?? "0")); // legacy fallback
+
+  // Combined DDoS+NXD answer: "no" | "ddos" | "nxd" | "both"
+  const ddosNxdRaw = String(a.ddos ?? "no");
+  const ddosProtection = ddosNxdRaw === "ddos" || ddosNxdRaw === "both" || ddosNxdRaw === "yes";
+  const nxdWaiver    = ddosNxdRaw === "nxd"  || ddosNxdRaw === "both";
 
   const result = computeNS1Quote({
     queryVolumeMQ: mq,
@@ -549,10 +556,11 @@ function computeNS1Result(state: ConversationState): string {
     dedicatedPoPs,
     chinaMQ,
     dnsInsights: String(a.insights ?? "no") === "yes",
-    ddosProtection: String(a.ddos ?? "no") === "yes",
-    nxdWaiver: String(a.nxd ?? "no") === "yes",
+    ddosProtection,
+    nxdWaiver,
     cloudSync: String(a.cloudSync ?? "no") === "yes",
-    expectedGrowthPct: growth,
+    growthMQ,
+    expectedGrowthPct: growthPct,
     term: String(a.term ?? "12-month") === "3-year" ? "3-year" : "12-month",
   });
 
@@ -582,7 +590,23 @@ function computeNS1Result(state: ConversationState): string {
     ? "Hybrid Cloud DNS (5900B5C)"
     : result.tier === "Premium"
     ? "NS1 Connect Premium (5900B4J)"
-    : "NS1 Connect Standard (5900B4J)";
+    : result.tier === "Standard"
+    ? "NS1 Connect Standard (5900B4J)"
+    : "NS1 Connect Essentials (5900B4J)";
+
+  // ── CPQ Input Summary (item 12 from Nick) ─────────────────────────────────
+  const cpqSummaryRows = [
+    ["Package",       tierLabel],
+    ["Queries/month", `${result.effectiveMQ.toLocaleString()}M`],
+    ["Records",       `${(records ?? 0).toLocaleString()}`],
+    ["Filter Chains", `${filterChains}`],
+    ["Monitors",      `${monitorsRaw}`],
+    ...(chinaMQ ? [["China DNS (MQ)", `${chinaMQ}M`]] : []),
+    ...(result.dnsInsights ? [["DNS Insights", "Yes"]] : []),
+    ["Term",          String(a.term ?? "12-month")],
+  ].map(([label, val]) =>
+    `<tr><td style="color:#94a3b8;padding:3px 12px 3px 0;font-size:12px;">${label}</td><td style="font-size:12px;font-weight:600;">${val}</td></tr>`
+  ).join("");
 
   return `<div class="result-card">
 
@@ -592,7 +616,7 @@ function computeNS1Result(state: ConversationState): string {
 </div>
 
 <div class="result-inputs">
-  ${result.effectiveMQ.toLocaleString()} MQ/month &nbsp;·&nbsp; ${tierLabel} &nbsp;·&nbsp; DNS: ${a.currentDNS ?? "N/A"} &nbsp;·&nbsp; ${a.term ?? "12-month"}
+  ${result.effectiveMQ.toLocaleString()} MQ/month &nbsp;·&nbsp; ${tierLabel} &nbsp;·&nbsp; ${a.term ?? "12-month"}
 </div>
 
 <div class="result-section-label">📋 PART NUMBERS FOR CPQ</div>
@@ -604,24 +628,24 @@ function computeNS1Result(state: ConversationState): string {
 <div class="result-price-row">
   ${result.totalMonthlyList > 0
     ? `<div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
-       <div class="result-price-note">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} /yr list${result.hasPendingPrices ? " · ⚠️ partial — some parts still $0 pending CPQ" : " · CPQ confirmed prices"}</div>`
-    : `<div class="result-price">~$${result.ballparkMRR.toLocaleString()}<span>/mo</span></div>
-       <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()} /yr &nbsp;·&nbsp; ILLUSTRATIVE — confirm in CPQ</div>`
+       <div class="result-price-note">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} /yr list${result.hasPendingPrices ? " · ⚠️ partial — some parts still pending CPQ" : " · confirmed prices"}</div>`
+    : `<div class="result-price">~$${result.ballparkMRR.toLocaleString()}<span>/mo est.</span></div>
+       <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()} /yr estimated &nbsp;·&nbsp; confirm final pricing in CPQ</div>`
   }
 </div>
 
 <ul class="result-flags">${flags}</ul>
 
+<div class="result-section-label mt-4">📥 CPQ INPUT SUMMARY</div>
+<table style="margin-bottom:8px;">${cpqSummaryRows}</table>
+
 <div class="result-section-label mt-4">💡 BEST PRACTICES (Top 3 of ${result.bestPractices.length})</div>
 ${bestPracticesSection}
-<p class="text-xs text-gray-600 mt-2">
-  <strong>Full Guide Available:</strong> ${result.bestPractices.length} best practices, ${result.tutorialSteps.length}-step tutorial, and quick reference included in the quote data.
-</p>
 
 <div class="result-next">
   ✅ <strong>Part numbers ready for CPQ</strong><br/>
-  📚 <strong>Best practices &amp; tutorial</strong> included to help with discovery<br/>
-  📋 Copy part numbers and quantities into SAP CPQ
+  📋 Use the CPQ Input Summary above to enter values into IBM Software CPQ<br/>
+  ⚠️ All prices are LIST — apply discount in CPQ before sharing with customer
 </div>
 
 </div>`;
