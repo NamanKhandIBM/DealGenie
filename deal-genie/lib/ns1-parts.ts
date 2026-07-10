@@ -5,7 +5,12 @@
 //   1. NS1 Connect Standard  — Product ID 5900B4J  — D10A*/D10B* SKUs  — ARR $4K–$40K
 //   2. NS1 Connect Premium / Hybrid Cloud DNS — Product ID 5900B5C — D0GN*/D0GY*/D0GZ* SKUs — ARR $45K–$1M+
 //
-// List prices: PENDING — confirm exact rates in IBM Software CPQ.
+// Prices confirmed from IBM Software CPQ (12-month term):
+//   D0GNEZX: $77,362.80/yr at 4,800 qty  → $1.343/mo per 10M queries
+//   D0GNGZX: $777,750.00/yr at 6,000 qty → $10.802/mo per 1K records
+//   D0GNDZX: $0 (SLA — included/free)
+//   D0GYUZX: $380,619.60/yr at 1,000 qty → $31.718/mo per 10M queries (Enterprise bundle)
+//   D0GZ2ZX: $0 (Hybrid SLA — included/free)
 // Discounting policy: up to 35% pre-authorized; +10% with sales leadership approval; beyond that requires product team.
 
 export interface NS1Part {
@@ -124,26 +129,26 @@ export const NS1_PREMIUM_PARTS: NS1Part[] = [
   {
     partNumber: "D0GNDZX",
     description: "IBM NS1 Connect Service Level Agreement",
-    listPrice: 0,
+    listPrice: 0, // $0 — SLA included/free. Confirmed in CPQ.
     unit: "per month",
     category: "Core",
-    notes: "Required SLA part on all NS1 Connect Premium orders."
+    notes: "Required SLA part on all NS1 Connect Premium orders. List price $0 — confirmed in CPQ."
   },
   {
     partNumber: "D0GNGZX",
     description: "IBM NS1 Connect Managed DNS Record per Month",
-    listPrice: 0,
+    listPrice: 10.802, // $10.802/mo per unit. Source: CPQ $777,750/yr ÷ 12 ÷ 6,000 qty. 12-month term.
     unit: "per 1,000 DNS records/month",
     category: "Core",
-    notes: "Baseline DNS records. 1 IBM Record = 1,000 DNS records. Required on all orders. Min: 1K records."
+    notes: "Baseline DNS records. 1 IBM Record = 1,000 DNS records. Required on all orders. Min: 1K records. List price $10.802/mo per unit (CPQ verified)."
   },
   {
     partNumber: "D0GNEZX",
     description: "IBM NS1 Connect Managed DNS Request per Month",
-    listPrice: 0,
+    listPrice: 1.343, // $1.343/mo per unit. Source: CPQ $77,362.80/yr ÷ 12 ÷ 4,800 qty. 12-month term.
     unit: "per 10M queries/month",
     category: "Core",
-    notes: "Baseline DNS QPM. 1 Request = 10M queries. Required on all orders. Min: 10M queries."
+    notes: "Baseline DNS QPM. 1 Request = 10M queries. Required on all orders. Min: 10M queries. List price $1.343/mo per unit (CPQ verified)."
   },
   {
     partNumber: "D0GNIZX",
@@ -264,18 +269,18 @@ export const NS1_HYBRID_PARTS: NS1Part[] = [
   {
     partNumber: "D0GZ2ZX",
     description: "IBM Hybrid Cloud DNS Service Level Agreement",
-    listPrice: 0,
+    listPrice: 0, // $0 — SLA included/free. Confirmed in CPQ.
     unit: "per month",
     category: "Hybrid Bundle",
-    notes: "Required SLA part on all Hybrid Cloud DNS orders."
+    notes: "Required SLA part on all Hybrid Cloud DNS orders. List price $0 — confirmed in CPQ."
   },
   {
     partNumber: "D0GYUZX",
     description: "IBM Hybrid Cloud DNS Enterprise Request per Month",
-    listPrice: 0, // Min pre-discount ACV ~$350K. Confirm rate in CPQ.
+    listPrice: 31.718, // $31.718/mo per unit. Source: CPQ $380,619.60/yr ÷ 12 ÷ 1,000 qty. 12-month term.
     unit: "per 10M queries/month",
     category: "Hybrid Bundle",
-    notes: "Enterprise bundle baseline QPM. 1 Request = 10M queries. Min: 10B queries (1,000 Requests). Includes: up to 200K records, 250 filter chains, 500 monitors, 5 Dedicated DNS Standard (8GB/4-core, 2.5M records, 10B QPM each), DNS Insights + 10 policies, NXD Waiver, DDoS Overage Protection, Enhanced Monitor Interval (5s), Vanity Name Server. Min pre-discount ACV ~$350K.",
+    notes: "Enterprise bundle baseline QPM. 1 Request = 10M queries. Min: 10B queries (1,000 Requests). Includes: up to 200K records, 250 filter chains, 500 monitors, 5 Dedicated DNS Standard (8GB/4-core, 2.5M records, 10B QPM each), DNS Insights + 10 policies, NXD Waiver, DDoS Overage Protection, Enhanced Monitor Interval (5s), Vanity Name Server. List price $31.718/mo per unit (CPQ verified). Min pre-discount ACV ~$380K/yr.",
     minimums: { quantity: 1000, description: "Minimum 10B queries/month (1,000 Requests × 10M)" }
   },
   {
