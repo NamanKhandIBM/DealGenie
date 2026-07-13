@@ -24,6 +24,7 @@ export default function QuoteHistoryDrawer({
 }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -36,6 +37,16 @@ export default function QuoteHistoryDrawer({
       return next;
     });
   };
+
+  const term = search.toLowerCase().trim();
+  const filteredQuotes = term
+    ? quotes.filter((q) =>
+        (q.name ?? "").toLowerCase().includes(term) ||
+        q.product.toLowerCase().includes(term) ||
+        q.label.toLowerCase().includes(term) ||
+        q.summary.keyMetrics.some((m) => m.toLowerCase().includes(term))
+      )
+    : quotes;
 
   const selectedQuotes = quotes.filter((q) => selected.has(q.id));
 
@@ -117,14 +128,54 @@ export default function QuoteHistoryDrawer({
           </button>
         </div>
 
+        {/* Search */}
+        <div className="px-3 pt-2.5 pb-1 flex-shrink-0">
+          <div className="relative">
+            <svg
+              viewBox="0 0 16 16"
+              className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              style={{ color: "rgba(147,180,253,0.4)" }}
+            >
+              <circle cx="6.5" cy="6.5" r="4.5"/>
+              <path d="M10 10l3 3" strokeLinecap="round"/>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search quotes…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-md pl-7 pr-7 py-1.5 text-xs outline-none"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#e8eaed",
+              }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+                style={{ color: "rgba(147,180,253,0.4)" }}
+              >
+                <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M2 2l8 8M10 2L2 10" strokeLinecap="round"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Quote list */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
           {loading && (
             <div className="text-center py-8 text-xs" style={{ color: "rgba(147,180,253,0.4)" }}>
               Loading…
             </div>
           )}
-          {!loading && quotes.length === 0 && (
+          {!loading && quotes.length === 0 && !search && (
             <div className="text-center py-8 space-y-2">
               <div className="text-2xl">📋</div>
               <p className="text-xs" style={{ color: "rgba(147,180,253,0.4)" }}>
@@ -135,7 +186,14 @@ export default function QuoteHistoryDrawer({
               </p>
             </div>
           )}
-          {quotes.map((q) => {
+          {!loading && filteredQuotes.length === 0 && search && (
+            <div className="text-center py-8">
+              <p className="text-xs" style={{ color: "rgba(147,180,253,0.4)" }}>
+                No quotes match &ldquo;{search}&rdquo;
+              </p>
+            </div>
+          )}
+          {filteredQuotes.map((q) => {
             const isSelected = selected.has(q.id);
             const isConfirming = confirmDelete === q.id;
             return (
