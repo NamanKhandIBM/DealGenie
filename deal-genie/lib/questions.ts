@@ -339,41 +339,56 @@ export const NS1_QUESTIONS: Question[] = [
 
 // ─── IBM HASHICORP VAULT ──────────────────────────────────────────────────────
 //
-// Source: Kris Ditmore meeting transcript (July 13 2026)
+// Sources: Kris Ditmore meeting transcript (July 13 2026) + Vault 2.0 P&P FAQ (official)
 //
-// Vault 1.0  (current, still most deals)
-//   Metric: cluster + client model
-//   - 1 production cluster is typical
+// Vault 2.0 — what it is (from official P&P FAQ)
+//   - April 2026 release of Vault Enterprise (what would have been Vault 1.22, renamed per IBM versioning)
+//   - Supports BOTH Client-based (Model B) AND Resource Unit (Model A/RU) pricing
+//   - Existing customers may upgrade to 2.0 and CONTINUE using Client entitlements (no forced migration)
+//   - Moving to RU requires: (1) upgrade to Vault 2.0, (2) a contracting event (change of metrics)
+//   - Mid-term switch: allowed via supersede, as long as customer meets requirements
+//   - CENSUS IS REQUIRED for RU model — no exception process available
+//
+// Model B (Clients/RVU) — classic, still most deals
 //   - A "client" = any unique app/service/user that AUTHENTICATES to Vault (via alias)
-//   - Once authenticated, the client can access unlimited secrets — secret count doesn't matter
-//   - Analogy: Vault = hotel front desk; client = a room key; secrets = what you access with it
 //   - Priced on: # production clusters (Installs) + # unique clients (RVUs)
 //   - NOT relevant: secret count, access frequency, secret type
 //
-// Vault 2.0  (new, ~2 months old as of July 2026, direction IBM is moving)
-//   Metric: consumption / secret model
-//   - Driven by: secret type, # secrets stored, how often accessed/rotated
-//   - Motivation: Kubernetes clusters can have 1000s of machine clients — charging per-client
-//     is not cost-effective. Vault 2.0 charges per secret instead.
-//   - Official pricing spreadsheet exists but has NOT been shared yet (Kris to send)
-//   - Contact: #vault-pricing-deals Slack channel + Vault product managers
-//   - NOT relevant: per-seat client count
+// Model A (Platform/RU) — consumption model, Vault 2.0 direction
+//   - RU = 1 entitlement unit covering everything Vault does
+//   - RU table (official):
+//       Static secrets:          unique secrets stored (monthly high-water mark)
+//       Dynamic/auto-rotated:    roles configured (monthly high-water mark)
+//       PKI:                     CEIL(certs/month × lifetime_hours ÷ 730)
+//       SSH:                     CEIL(creds/month × lifetime_hours ÷ 730)
+//       Transit/Transform:       data-protection API calls ÷ 150,000 per element
+//       KMIP/TOTP:               managed keys (monthly high-water mark)
+//   - Census must be enabled (automated monthly reporting to IBM)
+//   - Discounting at RU level — same discount applies across ALL use-case RUs
+//   - No overage charges — adjust entitlements on go-forward basis (FSL or Monthly License)
+//   - Production + non-production both consume RUs
+//   - DR secondary clusters: included free with production installs (inactive standby only)
+//   - Non-production installs do NOT get free DR — purchase additional non-prod installs if needed
+//   - Deduplication across primary clusters may reduce total RU count for larger orgs
+//   - Models CANNOT be mixed within same contract/installation/region
 //
-// Gap analysis (from Kris meeting)
+// Greenfield guidance (from P&P FAQ)
+//   1. Start small — limits sizing effort, reduces risk of wildly-off entitlement
+//   2. Identify 1-2 initial pain points for fastest ROI
+//   3. Identify relevant metrics, ask customer-friendly questions
+//      e.g. "how many secrets do you have under management?"
+//
+// Gap analysis
 // ─────────────────────────────────────────────────────────────────────────────
-// | Question          | Vault 1.0 (B-Clients) | Vault 2.0 (consumption)   |
+// | Question          | Model B (Clients/RVU) | Model A (Platform/RU)     |
 // |-------------------|-----------------------|---------------------------|
-// | Cluster count     | Required (usually 1)  | TBD                       |
+// | Cluster count     | Required (usually 1)  | Required (prod billed)    |
 // | Client count      | Required (often ≤5)   | Not used                  |
-// | Secret type       | Not used              | Required (PKI vs API etc) |
-// | Secret count      | Not used              | Required (most have 10–15)|
-// | Access frequency  | Not used              | Required                  |
+// | Secret type       | Not used              | Required (see RU table)   |
+// | Secret count      | Not used              | Required (most have 10-15)|
+// | Access frequency  | Not used              | Required (Transit only)   |
+// | Census            | Not required          | REQUIRED — no exceptions  |
 // ─────────────────────────────────────────────────────────────────────────────
-//
-// ⚠️  Vault 2.0 BLOCKERS — do not build engine until resolved:
-//   1. Get the official Vault 2.0 pricing spreadsheet from Kris / #vault-pricing-deals
-//   2. Confirm part numbers for Vault 2.0 SKUs with the Vault product managers
-//   3. Confirm exact formula: secret count × access frequency × type multiplier?
 
 export const VAULT_QUESTIONS_COMMON: Question[] = [
   {
@@ -395,10 +410,10 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
     key: "vaultModel",
     conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "Is this a new Vault deployment or an existing renewal?",
-    subtext: "This determines the pricing model. The two models cannot be mixed for the same customer.",
+    subtext: "This determines the pricing model. Models cannot be mixed in the same contract. Usage-based (Model A) requires Vault 2.0 and Census reporting enabled.",
     type: "single",
     options: [
-      { label: "New or expanding deployment",  value: "A", hint: "Usage-based: priced on what Vault does (secrets, certs, keys)" },
+      { label: "New or expanding deployment",  value: "A", hint: "Usage-based: priced on what Vault does (secrets, certs, keys) — requires Vault 2.0 + Census" },
       { label: "Existing renewal / stable env", value: "B", hint: "Client-based: priced on who connects (unique apps/services/users)" },
     ],
   },
@@ -411,11 +426,11 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
     type: "single",
     allowOther: true,
     options: [
-      { label: "1 cluster",      value: "1",  hint: "Typical for most customers" },
-      { label: "2 clusters",     value: "2" },
-      { label: "3 – 5 clusters", value: "3" },
-      { label: "6 – 10 clusters",value: "6" },
-      { label: "10+ clusters",   value: "10" },
+      { label: "1 cluster",  value: "1", hint: "Typical for most customers" },
+      { label: "2 clusters", value: "2" },
+      { label: "3 clusters", value: "3" },
+      { label: "4 clusters", value: "4" },
+      { label: "5 clusters", value: "5" },
     ],
     placeholder: "Enter exact number of production clusters",
     unit: "production clusters",

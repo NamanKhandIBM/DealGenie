@@ -950,7 +950,98 @@ Only needed for legacy apps that use the KMIP protocol for external key manageme
 - **DR (Disaster Recovery):** Multiple clusters (primary + DR). Requires **Premium edition + ≥2 installs**. Ask: *"Do you need to survive a full datacenter failure?"*
 - **Performance Replication:** Premium only. Read-heavy workloads across regions.
 
+**Under Model A (RU):** Production installs automatically include DR secondary clusters (inactive standby). Non-production installs do NOT include free DR — purchase additional non-production installs if needed.
+
 Common mistake: quoting Premium without buying ≥2 installs — the edition is useless without a DR target cluster.`;
+    }
+
+    if (/what.*vault.?2|vault.?2.*what|vault 2\.0/i.test(msg)) {
+      return `**What is Vault 2.0?**
+
+Vault 2.0 is the **April 2026 release** of Vault Enterprise — it would have been Vault 1.22, but IBM aligned to its software versioning policy.
+
+Key facts:
+- Supports **both** Model B (Clients/RVU) and Model A (Resource Units/RU) pricing
+- Existing customers can upgrade to 2.0 and **keep their Client-based entitlements** — no forced migration
+- Moving to RU requires: (1) upgrade to Vault 2.0, (2) a **contracting event** (change of pricing metrics)
+- Mid-term switch to RU model is possible via a **supersede**, provided customer meets requirements
+
+For quoting: Model A = RU model, Model B = Client model. Both have working part numbers in this tool.`;
+    }
+
+    if (/census|license.*report|utilization.*report|automated.*report/i.test(msg)) {
+      return `**Census / License Utilization Reporting**
+
+Census is Vault's **automated monthly reporting** feature — it sends license utilization data to IBM.
+
+- **Required for Model A (RU)** — there is no exception process
+- Must be enabled before or at the time of contracting
+- Reports data to IBM no less frequently than monthly
+- Customers have access to current-month and previous-month data via the Vault API
+- Sigma reporting is available to Sales for tracking
+
+**If a customer refuses to enable Census, they cannot use the RU model.** Stay on Model B (Clients).`;
+    }
+
+    if (/mix.*model|model.*mix|same.*contract.*model|combine.*model|both.*model/i.test(msg)) {
+      return `**Can Model A and Model B be used together?**
+
+**No.** The Client-based model (B) and the Resource Unit model (A) **cannot be mixed** within the same contract, installation, or region.
+
+A customer must choose one model per contract. If they want to switch:
+- Allowed mid-term via a **supersede** (not a new contract)
+- Customer must meet requirements: Vault 2.0 upgrade + willingness to enable Census
+- Once on RU, the Client entitlements are replaced — they cannot run both simultaneously`;
+    }
+
+    if (/non.?prod|non.?production|dev.*env|test.*env|staging/i.test(msg)) {
+      return `**Non-production environments under Model A (RU)**
+
+- Both production **and** non-production usage is charged using RUs
+- Non-production is billed, but **deduplication of secrets** across primary clusters may reduce the total RU count (especially for larger orgs)
+- Production installs automatically include **DR secondary clusters** (inactive standby — not for testing)
+- Non-production installs do NOT include free DR — purchase additional non-production installs to serve as DR secondaries
+- DR is defined as an **inactive standby** cluster; it is not intended for pre-deployment testing`;
+    }
+
+    if (/overage|exceed.*entitle|bill.*model|how.*billed|discount.*ru|ru.*discount/i.test(msg)) {
+      return `**How RUs are discounted and billed**
+
+- Discounting is at the **RU level** — cannot be changed by use case or install type
+- RUs can be discounted under Sales authority; the discount applies **across all RUs**
+- Usage = total sum of RUs, with a **monthly maximum entitlement**
+- **No overage charges** — if a customer exceeds entitlement, adjust on a go-forward basis:
+  - **FSL** (permanent re-baselining) for a lasting increase
+  - **Monthly License** for future monthly peaks
+- Sales remains responsible for reviewing customer compliance with license terms`;
+    }
+
+    if (/greenfield|new.*customer|brand.*new|start.*fresh|no.*existing.*vault/i.test(msg)) {
+      return `**Greenfield Vault sizing guidance**
+
+Start small — limits sizing effort and reduces risk of an entitlement being wildly off.
+
+1. **Identify 1–2 initial pain points** where the customer wants the fastest ROI
+2. **Identify the relevant metrics** for those use cases
+3. **Ask customer-friendly questions:**
+   - *"How many secrets do you have under management?"*
+   - *"How many secrets would you like rotated automatically?"*
+   - *"Do you issue certificates? How many per month, and how long do they live?"*
+
+Once live with Census, you can right-size at renewal based on actual usage data from the Vault API or Sigma reports.`;
+    }
+
+    if (/supersede|mid.?term|switch.*mid|change.*contract/i.test(msg)) {
+      return `**Mid-term model switch (supersede)**
+
+A customer can switch from Client model (B) to RU model (A) **mid-term** via a supersede — they do not have to wait for contract end.
+
+Requirements:
+1. Customer must be on **Vault 2.0** (April 2026 release or later)
+2. Customer must be willing to **enable Census** (automated monthly license reporting)
+3. A contracting event is required — this is a change in pricing metrics
+
+The supersede replaces the existing Client entitlements with RU entitlements. The two models cannot run simultaneously.`;
     }
   }
 
