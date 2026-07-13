@@ -141,14 +141,21 @@ function getVaultRUDiscount(rusMonthly: number): { recDiscount: number; netPerRU
   return { recDiscount: best.recDiscount, netPerRU: best.netPerRU };
 }
 
-/** Find the closest discount tier for Client count. */
-function getVaultClientDiscount(clients: number): { recDiscount: number } {
+/** Find the closest discount tier for Client count.
+ *  Returns null recDiscount when below the lowest published bracket (<100 clients)
+ *  so the UI can show "no guidance" rather than applying the 100-client tier incorrectly.
+ */
+function getVaultClientDiscount(clients: number): { recDiscount: number; hasGuidance: boolean } {
+  if (clients < VAULT_CLIENT_DISCOUNTS[0].clients) {
+    // Below the lowest bracket — discount guidance not published for this volume
+    return { recDiscount: 0, hasGuidance: false };
+  }
   let best: { recDiscount: number } = VAULT_CLIENT_DISCOUNTS[0];
   for (const row of VAULT_CLIENT_DISCOUNTS) {
     if (clients >= row.clients) best = row;
     else break;
   }
-  return { recDiscount: best.recDiscount };
+  return { recDiscount: best.recDiscount, hasGuidance: true };
 }
 
 export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
@@ -329,15 +336,21 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
   }
 
   const totalAnnualList = lines.reduce((s, l) => s + l.annualList, 0);
-  const { recDiscount: clientRec } = getVaultClientDiscount(inputs.clientCount);
+  const { recDiscount: clientRec, hasGuidance: clientDiscountKnown } = getVaultClientDiscount(inputs.clientCount);
   const installRec = editionDiscountMap[inputs.edition];
-  const ballparkNet = Math.round(
-    installAnnual * (1 - installRec) + clientAnnual * (1 - clientRec)
-  );
+  const ballparkNet = clientDiscountKnown
+    ? Math.round(installAnnual * (1 - installRec) + clientAnnual * (1 - clientRec))
+    : Math.round(installAnnual * (1 - installRec)); // install-only estimate when client discount unknown
 
-  flags.push(
-    `Rec. install discount ~${Math.round(installRec * 100)}% (${inputs.edition}); rec. client discount ~${Math.round(clientRec * 100)}% for ${inputs.clientCount.toLocaleString()} clients. Ballpark net ≈ $${ballparkNet.toLocaleString()}/yr.`
-  );
+  if (clientDiscountKnown) {
+    flags.push(
+      `Rec. install discount ~${Math.round(installRec * 100)}% (${inputs.edition}); rec. client discount ~${Math.round(clientRec * 100)}% for ${inputs.clientCount.toLocaleString()} clients. Ballpark net ≈ $${ballparkNet.toLocaleString()}/yr.`
+    );
+  } else {
+    flags.push(
+      `Rec. install discount ~${Math.round(installRec * 100)}% (${inputs.edition}). Client discount guidance is only published for 100+ clients — confirm exact client pricing in CPQ. Ballpark net (install only) ≈ $${ballparkNet.toLocaleString()}/yr.`
+    );
+  }
   flags.push("Model B (Clients/RVU) — may NOT be mixed with Model A for this customer.");
   if (inputs.edition === "Premium" && inputs.installCount < 2) {
     flags.push("Premium edition: buy ≥ 2 installs for Performance Replication / DR.");

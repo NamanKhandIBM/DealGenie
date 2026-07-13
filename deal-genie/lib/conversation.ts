@@ -74,6 +74,8 @@ function getProductOpening(product: Product): string {
 // ─── Question list helpers ───────────────────────────────────────────────────
 
 function getVaultQuestions(state: ConversationState): Question[] {
+  // Model A = usage/consumption-based (aligns with Vault 2.0 direction)
+  // Model B = client/seat-based (classic Vault 1.0)
   const model = String(state.answers.vaultModel ?? "");
   const specific = model === "A" ? VAULT_QUESTIONS_MODEL_A : VAULT_QUESTIONS_MODEL_B;
   return [...VAULT_QUESTIONS_COMMON, ...specific];
@@ -238,10 +240,6 @@ export function processUserMessage(
     // Handle NS1 action selection
     if (s.product === "NS1" && currentQ?.key === "ns1Action") {
       const action = msg.trim();
-      if (action === "guide") {
-        s.phase = "best-practices";
-        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
-      }
       if (action === "bestpractices") {
         s.phase = "result";
         return { state: s, reply: formatNS1BestPractices(), activeQuestion: null };
@@ -256,10 +254,6 @@ export function processUserMessage(
     // Handle Vault action selection
     if (s.product === "Vault" && currentQ?.key === "vaultAction") {
       const action = msg.trim();
-      if (action === "guide") {
-        s.phase = "best-practices";
-        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
-      }
       if (action === "bestpractices") {
         s.phase = "result";
         return { state: s, reply: formatVaultBestPractices(), activeQuestion: null };
@@ -274,10 +268,6 @@ export function processUserMessage(
     // Handle Verify action selection
     if (s.product === "Verify" && currentQ?.key === "verifyAction") {
       const action = msg.trim();
-      if (action === "guide") {
-        s.phase = "best-practices";
-        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
-      }
       if (action === "bestpractices") {
         s.phase = "result";
         return { state: s, reply: formatVerifyBestPractices(), activeQuestion: null };
@@ -287,6 +277,21 @@ export function processUserMessage(
         return { state: s, reply: formatVerifyPartNumbers(), activeQuestion: null };
       }
       // If "quote", continue with normal flow
+    }
+
+    // Inline Q&A: if the message looks like a question (not an option answer) and a product
+    // is already selected, try to answer it from static knowledge before storing as an answer.
+    // This means sellers can type "what counts as a client?" mid-flow and get a real answer.
+    if (s.product && currentQ && isLikelyQuestion(msg)) {
+      const staticAnswer = staticInlineAnswer(s.product, msg);
+      if (staticAnswer) {
+        // Don't advance the step — keep the active question, just reply with the answer
+        return {
+          state: s,
+          reply: staticAnswer,
+          activeQuestion: { question: currentQ },
+        };
+      }
     }
 
     // Also apply any additional entities the LLM extracted from this message
@@ -433,6 +438,7 @@ function computeVerifyResult(state: ConversationState): string {
 
 function computeVaultResult(state: ConversationState): string {
   const a = state.answers;
+
   const modelCode = String(a.vaultModel ?? "A");
   const installCount = parseNumber(String(a.installCount ?? "1")) || 1;
 
@@ -444,6 +450,10 @@ function computeVaultResult(state: ConversationState): string {
     if (useCases.includes("pki")) {
       useCaseInputs.pkiCertsPerMonth    = parseNumber(String(a.pkiCertsPerMonth ?? "100")) || 100;
       useCaseInputs.pkiCertLifetimeHours = parseNumber(String(a.pkiCertLifetime ?? "2160")) || 2160;
+    }
+    if (useCases.includes("ssh")) {
+      useCaseInputs.sshCredsPerMonth  = parseNumber(String(a.sshCredsPerMonth ?? "100")) || 100;
+      useCaseInputs.sshLifetimeHours  = parseNumber(String(a.sshLifetime ?? "24")) || 24;
     }
     if (useCases.includes("transit")) useCaseInputs.transitCallsPerMonth = parseNumber(String(a.transitCallsPerMonth ?? "150000")) || 150000;
     if (useCases.includes("kmse"))    useCaseInputs.kmseKeyCount         = parseNumber(String(a.kmseKeyCount ?? "100")) || 100;
@@ -835,6 +845,244 @@ function formatVerifyPartNumbers(): string {
 </div>`;
 }
 
+
+// ─── INLINE Q&A HELPERS ──────────────────────────────────────────────────────
+// Detects free-text questions typed during the quoting flow and answers them
+// without disrupting the current step. Static answers come first; if nothing
+// matches, the caller falls through to normal answer storage.
+
+function isLikelyQuestion(msg: string): boolean {
+  const m = msg.toLowerCase().trim();
+  // Must contain a question indicator AND not be a single-word option value
+  return (
+    m.includes("?") ||
+    /^(what|how|why|when|which|who|does|do|is|are|can|should|where|explain|tell me|help|difference|count|why does|means?)\b/.test(m)
+  ) && msg.length > 8;
+}
+
+function staticInlineAnswer(product: string, msg: string): string | null {
+  // ── VAULT ──────────────────────────────────────────────────────────────────
+  if (product === "Vault") {
+    if (/what.*(count|is).*(client|rvu)|client.*count|count.*client|what.*client/i.test(msg)) {
+      return `**What counts as a Vault client?**
+
+A client = any unique app, service, or user that **authenticates** to Vault during the billing year.
+
+- **1 client = 1 unique identity that logs in** — not an instance count
+- 10 containers running the same app with the same AppRole → **1 client** (they share one role ID)
+- MicroserviceA and MicroserviceB with different AppRole IDs → **2 clients**
+- CI/CD pipelines, monitoring agents, and users all count
+
+**Common pitfall:** Kubernetes clusters. Each pod can authenticate separately unless they share an AppRole role ID. Confirm how the customer configures Kubernetes auth — alias_name_source defaults to the service account UID, which means each unique service account = 1 client.
+
+Does this help clarify the number you should enter?`;
+    }
+
+    if (/kubernetes|k8s|pod|container/i.test(msg)) {
+      return `**Vault + Kubernetes client counting**
+
+Kubernetes auth in Vault uses **service account UID** as the alias by default, meaning:
+- Each unique Kubernetes service account = 1 client
+- Multiple pods sharing the **same** service account = 1 client
+- If a customer has 50 microservices each with their own service account → 50 clients
+
+**This is the reason IBM is moving to Vault 2.0** (consumption/secret-based pricing) — K8s environments can have hundreds of service accounts, making per-client pricing uneconomical.
+
+For current quoting (Model B), ask: "How many distinct Kubernetes service accounts authenticate to Vault?" — that's your client count, not the pod count.`;
+    }
+
+    if (/model a|model b|which model|platform.*ru|clients.*rvu|difference.*model/i.test(msg)) {
+      return `**Model A vs Model B — which to use?**
+
+| | Model A (Platform/RU) | Model B (Clients/RVU) |
+|---|---|---|
+| **Best for** | New/expanding, cloud-native, variable workloads | Stable renewals, known app count |
+| **Priced on** | What Vault *does* (secrets, certs, keys, API calls) | Who *connects* (unique apps/services/users) |
+| **Predictability** | Variable (scales with usage) | Predictable (flat per client) |
+
+**Decision question:** *"Do you know how many apps/services will connect to Vault, and is that number stable?"*
+- Yes, stable number → Model B
+- No, or growing fast → Model A
+
+⚠️ Cannot be changed without a new contract — get this right upfront.`;
+    }
+
+    if (/namespace|duplication|child namespace/i.test(msg)) {
+      return `**Namespaces and client counting**
+
+- A client authenticated in a **parent** namespace and accessing a **child** namespace = **1 client**
+- A client authenticated in a **child** namespace accessing the parent, or across different namespaces = **counted separately** (can inflate count)
+- Migrating mounts **across** namespaces creates duplication in client count; migrating **within** a namespace does not
+
+Practical advice: if the customer uses namespaces heavily (multi-team setups), ask how clients are authenticated — parent or child namespace? This affects the count.`;
+    }
+
+    if (/pki|certif|lifetime|cert/i.test(msg)) {
+      return `**PKI certificate RU calculation (Model A)**
+
+Formula: \`CEIL(certs_per_month × (lifetime_hours ÷ 730))\`
+
+730 hours = 1 month. Examples:
+- 100 certs/month with 90-day (2,160h) lifetime → \`CEIL(100 × 2160/730)\` = **296 RU/month**
+- 100 certs/month with 1-day (24h) lifetime → \`CEIL(100 × 24/730)\` = **4 RU/month**
+- 1,000 certs/month with 30-day (720h) lifetime → \`CEIL(1000 × 720/730)\` = **986 RU/month**
+
+**Key insight:** short-lived certs (mTLS, service mesh) have very low RU impact. Long-lived certs (1+ year) have disproportionately high RU impact.
+
+For PKI Add-On (Model B), Vault v1.21+ is required — check the customer's Vault version before quoting.`;
+    }
+
+    if (/kmip|key.?manage|adp/i.test(msg)) {
+      return `**KMIP / ADP Key Management**
+
+Kris Ditmore confirmed: "In my five, six years of selling Vault, I sold KMIP three or four times" — this is rare.
+
+- **Model A:** KMIP is included in the D155LZX install ($360K/cluster, replaces standard $96K install)
+- **Model B:** Separate add-on D1013ZX ($249,600/cluster needing KMIP)
+
+Only needed for legacy apps that use the KMIP protocol for external key management (e.g., database transparent data encryption, storage encryption). Ask: *"Do any databases or storage systems use KMIP-based encryption?"*`;
+    }
+
+    if (/dr|disaster|recovery|replication|premium|ha|high.?avail/i.test(msg)) {
+      return `**HA vs DR for Vault**
+
+- **HA (High Availability):** 3–5 nodes in one cluster. Counts as **1 Install**. Included in all editions. Ask: *"What are your uptime requirements?"*
+- **DR (Disaster Recovery):** Multiple clusters (primary + DR). Requires **Premium edition + ≥2 installs**. Ask: *"Do you need to survive a full datacenter failure?"*
+- **Performance Replication:** Premium only. Read-heavy workloads across regions.
+
+Common mistake: quoting Premium without buying ≥2 installs — the edition is useless without a DR target cluster.`;
+    }
+  }
+
+  // ── VERIFY ─────────────────────────────────────────────────────────────────
+  if (product === "Verify") {
+    if (/mau|monthly active|active user|how.*count.*user/i.test(msg)) {
+      return `**How MAU is calculated for Verify**
+
+Formula: \`MAU = ROUNDUP(population × MIN(avg_logins_per_year, 12) ÷ 12)\`
+
+- A user active **once** or **100 times** in a month counts the same — it's binary (active or not)
+- avg_logins is **months/year they log in at least once** (1–12), not total login events
+
+Examples:
+- 10,000 employees who log in every month → MAU = 10,000
+- 50,000 seasonal customers active 6 months/year → MAU = CEIL(50,000 × 6/12) = 25,000
+- 100,000 users active 3 months/year → MAU = CEIL(100,000 × 3/12) = 25,000
+
+**Don't use raw headcount as MAU** — ask *"In a typical year, which months does a user actually log in?"*`;
+    }
+
+    if (/lifecycle|managed.?user|provision|deprovision/i.test(msg)) {
+      return `**Lifecycle Management sizing**
+
+- Lifecycle uses **Managed Users** (not MAU) — the accounts Verify actively provisions/deprovisions
+- Managed Users ≤ total population, often much smaller (e.g. only HR-managed employees)
+- A company with 50,000 total users might only have 5,000 managed by Verify for joiner-mover-leaver flows
+
+Ask: *"Which users does Verify need to create and remove as they join or leave the company?"* That number is your Managed Users count.`;
+    }
+
+    if (/adaptive|risk.?based|context/i.test(msg)) {
+      return `**Adaptive Access**
+
+Adaptive Access adds risk-based, contextual authentication on top of MFA:
+- Uses device posture, location, behaviour, and network signals to assess risk
+- Can step-up to stronger auth (biometric, FIDO2) when risk is elevated
+- Sized by MAU, same as SSO/MFA
+
+Sell it when the customer says: *"We want to reduce MFA friction for trusted devices"* or *"We need to block suspicious logins automatically."* Usually bundled with MFA, not sold standalone.`;
+    }
+
+    if (/gateway|legacy|app.?gateway|saml|oidc/i.test(msg)) {
+      return `**Hosted Application Gateway (D01UQZX)**
+
+Required when a legacy app can't support modern auth protocols (SAML, OIDC).
+- Acts as a reverse proxy that injects SSO into legacy apps
+- $22,500/instance/month — this is a significant add-on, ask carefully
+- Ask: *"Do any of the apps use header-based authentication, or are they too old to support SAML/OIDC?"*
+
+Each gateway instance handles a set of legacy apps. One instance typically covers one environment (prod, or a cluster of legacy apps).`;
+    }
+
+    if (/sms|email.*mfa|d02t6|per.?event/i.test(msg)) {
+      return `**SMS & Email MFA (D02T6ZX)**
+
+This is a **per-event** part at $33.70 per 1,000 events — priced differently from the RU model.
+- Only add this when SMS or email OTP is the specific auth method needed
+- TOTP apps (Authenticator), push notifications, FIDO2 are covered by the standard RU
+- Ask: *"Do they specifically need SMS or email OTP, or will an authenticator app work?"*
+- If adding, estimate events = MAU × average MFA challenges per month`;
+    }
+  }
+
+  // ── NS1 ────────────────────────────────────────────────────────────────────
+  if (product === "NS1") {
+    if (/tier|standard.*premium|premium.*standard|which.*tier|what.*tier/i.test(msg)) {
+      return `**NS1 Connect tier selection**
+
+| Tier | ARR range | Use when |
+|---|---|---|
+| **Standard** | $4K–$40K | <1B queries/month, <10K records, straightforward DNS |
+| **Premium** | $45K–$200K | >1B queries or needs custom GSLB, a la carte |
+| **Hybrid Enterprise** | $250K–$1M+ | >10B queries, whale-scale, bundled pricing |
+
+⚠️ **Never mix Standard (D10A*) and Premium (D0GN*) parts on the same quote.**
+
+Estimate ARR first, then pick the tier — it determines which parts you enter in CPQ.`;
+    }
+
+    if (/gslb|traffic.?steer|rum|filter.?chain|pulsar/i.test(msg)) {
+      return `**GSLB / Traffic Steering types**
+
+- **Standard filter chains (D0GNKZX):** 1 Resource Unit = 1 filter chain. Simple routing rules — geographic, round-robin, weighted. No RUM data needed.
+- **RUM Standard (D0GNQZX/D0GZ0ZX):** Uses NS1's own real-user measurement data. 1 Interaction = 1M queries. Min 1M queries. Good for CDN selection.
+- **RUM Advanced (D0GNNZX/D0GYYZX):** Uses the **customer's** RUM data. Min 5M queries, must be multiple of 5. For customers with their own performance data.
+
+RUM queries must always be a **subset** of the total Managed DNS query count. You can't buy more RUM queries than DNS queries.`;
+    }
+
+    if (/record.*count|dns.*record|zone|how.*count.*record/i.test(msg)) {
+      return `**Counting DNS records correctly**
+
+Common mistake: counting **zones** instead of **resource records**.
+
+- A zone (e.g. example.com) might contain 500 individual A, CNAME, MX, TXT records
+- You need to count the individual records, not the zones
+- Ask the customer to export from their current provider: Route53 console → Hosted Zones → export, or use dig/dnsdump tools
+
+1 IBM Record = 1,000 DNS records. If they have 25,000 records, that's 25 IBM Records.
+
+For Hybrid bundle selection: <200K records → Enterprise (D0GYUZX); 200K–2M records → Enterprise Plus (D0GYWZX).`;
+    }
+
+    if (/china|chinese.*dns|dns.*china/i.test(msg)) {
+      return `**DNS for China (D0GN8ZX)**
+
+- Minimum 50M queries/month from China-origin traffic
+- Requires Managed DNS to already be on the quote
+- **CPQ gotcha:** You must check the China DNS box in CPQ **before** entering the Managed DNS section — if you do it after, you'll need to start over
+- Ask: *"Do they have users or infrastructure in mainland China?"*`;
+    }
+
+    if (/cpq|order|sequence|mistake|gotcha/i.test(msg)) {
+      return `**NS1 CPQ ordering rules (Premium)**
+
+Critical sequence — do these **before** entering Managed DNS:
+1. ✅ Check China DNS box (if needed)
+2. ✅ Check DNS Insights box (if needed)
+3. ✅ Then enter Managed DNS section
+
+Required parts on every Premium order:
+- D0GNDZX — SLA (always required)
+- D0GNGZX — Records (always required)
+- D0GNEZX — Requests/queries (always required)
+
+DDoS Overage Protection (D0GN5ZX), NXD Waiver (D0GNMZX), and DNS Insights (D0GN6ZX) quantities must **equal D0GNEZX**.`;
+    }
+  }
+
+  return null; // no static match — caller will fall through
+}
 
 // ─── WELCOME ─────────────────────────────────────────────────────────────────
 

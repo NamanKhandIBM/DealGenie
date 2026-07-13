@@ -329,7 +329,7 @@ export default function ChatPage() {
   );
 
   // ── Shared helper: send a top-level action (quote/parts/guide) for the current product ──
-  const sendProductAction = async (action: "quote" | "parts" | "guide") => {
+  const sendProductAction = async (action: "quote" | "parts" | "guide" | "bestpractices") => {
     if (!state.product || loading) return;
     setHistory((h) => [...h, { messages, state, activeQuestion }]);
     setLoading(true);
@@ -396,9 +396,9 @@ export default function ChatPage() {
     }
   };
 
-  const startQuoting      = () => sendProductAction("quote");
-  const startPartNumbers  = () => sendProductAction("parts");
-  const startBestPractices = () => sendProductAction("guide");
+  const startQuoting       = () => sendProductAction("quote");
+  const startPartNumbers   = () => sendProductAction("parts");
+  const startBestPractices = () => sendProductAction("bestpractices");
 
   const toggleClientMode = async () => {
     if (!state.product || state.phase !== "best-practices") return;
@@ -613,7 +613,7 @@ export default function ChatPage() {
                   </button>
                 )}
 
-                {/* After viewing PART NUMBERS → offer Export CSV + Best Practices + Start Quoting */}
+                {/* After viewing PART NUMBERS → Export CSV + Best Practices + Start Quoting */}
                 {state.phase === "result" && resultSource === "parts" && (
                   <>
                     <button
@@ -645,7 +645,7 @@ export default function ChatPage() {
                       <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M2 4h12M2 8h9M2 12h6" strokeLinecap="round"/>
                       </svg>
-                      AI SME
+                      Best Practices
                     </button>
                     <button
                       onClick={startQuoting}
@@ -660,60 +660,7 @@ export default function ChatPage() {
                   </>
                 )}
 
-                {/* After AI SME → toggle client mode + Part Numbers + Start Quoting */}
-                {state.phase === "best-practices" && (
-                  <>
-                    {/* Walk Client Through toggle */}
-                    <button
-                      onClick={toggleClientMode}
-                      disabled={loading}
-                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
-                      style={clientMode ? {
-                        background: "rgba(8,189,186,0.18)",
-                        border: "1px solid rgba(8,189,186,0.5)",
-                        color: "#5eead4",
-                        fontWeight: 600,
-                      } : {
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        color: "rgba(147,180,253,0.7)",
-                      }}
-                    >
-                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <circle cx="8" cy="5" r="2.5"/>
-                        <path d="M2.5 13.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" strokeLinecap="round"/>
-                      </svg>
-                      {clientMode ? "● Client Mode" : "Walk Client Through"}
-                    </button>
-                    <button
-                      onClick={startPartNumbers}
-                      disabled={loading}
-                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
-                      style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        color: "rgba(147,180,253,0.7)",
-                      }}
-                    >
-                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zM5 6h6M5 9h4" strokeLinecap="round"/>
-                      </svg>
-                      Part Numbers
-                    </button>
-                    <button
-                      onClick={startQuoting}
-                      disabled={loading}
-                      className="btn-primary flex items-center gap-2 px-4 py-2 text-sm"
-                    >
-                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Start Quoting
-                    </button>
-                  </>
-                )}
-
-                {/* After a QUOTE RESULT → Save + Compare Scenarios + AI SME + Start Quoting */}
+                {/* After a QUOTE RESULT → Save + Compare Scenarios + Best Practices + Start Quoting */}
                 {state.phase === "result" && resultSource === "quote" && (
                   <>
                     {/* Save Quote */}
@@ -764,7 +711,7 @@ export default function ChatPage() {
                       <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M2 4h12M2 8h9M2 12h6" strokeLinecap="round"/>
                       </svg>
-                      AI SME
+                      Best Practices
                     </button>
                     <button
                       onClick={startQuoting}

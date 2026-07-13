@@ -30,8 +30,7 @@ export const VERIFY_QUESTIONS: Question[] = [
     subtext: "Choose an option to get started with Verify quoting",
     type: "single",
     options: [
-      { label: "🤖 AI SME", value: "guide", hint: "Chat with an AI subject matter expert" },
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Static discovery guide" },
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
       { label: "📋 View Part Numbers", value: "parts", hint: "See all Verify SKUs" },
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
     ],
@@ -138,8 +137,7 @@ export const NS1_QUESTIONS: Question[] = [
     subtext: "View the guide first, or jump straight into quoting?",
     type: "single",
     options: [
-      { label: "🤖 AI SME", value: "guide", hint: "Chat with an AI subject matter expert" },
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Static discovery guide" },
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
       { label: "📋 View Part Numbers Reference", value: "parts", hint: "See all NS1 part numbers" },
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the discovery questions" },
     ],
@@ -340,6 +338,42 @@ export const NS1_QUESTIONS: Question[] = [
 ];
 
 // ─── IBM HASHICORP VAULT ──────────────────────────────────────────────────────
+//
+// Source: Kris Ditmore meeting transcript (July 13 2026)
+//
+// Vault 1.0  (current, still most deals)
+//   Metric: cluster + client model
+//   - 1 production cluster is typical
+//   - A "client" = any unique app/service/user that AUTHENTICATES to Vault (via alias)
+//   - Once authenticated, the client can access unlimited secrets — secret count doesn't matter
+//   - Analogy: Vault = hotel front desk; client = a room key; secrets = what you access with it
+//   - Priced on: # production clusters (Installs) + # unique clients (RVUs)
+//   - NOT relevant: secret count, access frequency, secret type
+//
+// Vault 2.0  (new, ~2 months old as of July 2026, direction IBM is moving)
+//   Metric: consumption / secret model
+//   - Driven by: secret type, # secrets stored, how often accessed/rotated
+//   - Motivation: Kubernetes clusters can have 1000s of machine clients — charging per-client
+//     is not cost-effective. Vault 2.0 charges per secret instead.
+//   - Official pricing spreadsheet exists but has NOT been shared yet (Kris to send)
+//   - Contact: #vault-pricing-deals Slack channel + Vault product managers
+//   - NOT relevant: per-seat client count
+//
+// Gap analysis (from Kris meeting)
+// ─────────────────────────────────────────────────────────────────────────────
+// | Question          | Vault 1.0 (B-Clients) | Vault 2.0 (consumption)   |
+// |-------------------|-----------------------|---------------------------|
+// | Cluster count     | Required (usually 1)  | TBD                       |
+// | Client count      | Required (often ≤5)   | Not used                  |
+// | Secret type       | Not used              | Required (PKI vs API etc) |
+// | Secret count      | Not used              | Required (most have 10–15)|
+// | Access frequency  | Not used              | Required                  |
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// ⚠️  Vault 2.0 BLOCKERS — do not build engine until resolved:
+//   1. Get the official Vault 2.0 pricing spreadsheet from Kris / #vault-pricing-deals
+//   2. Confirm part numbers for Vault 2.0 SKUs with the Vault product managers
+//   3. Confirm exact formula: secret count × access frequency × type multiplier?
 
 export const VAULT_QUESTIONS_COMMON: Question[] = [
   {
@@ -348,39 +382,43 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
     subtext: "Choose an option to get started with Vault quoting",
     type: "single",
     options: [
-      { label: "🤖 AI SME", value: "guide", hint: "Chat with an AI subject matter expert" },
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Static discovery guide" },
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
       { label: "📋 View Part Numbers", value: "parts", hint: "See all Vault SKUs" },
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
     ],
   },
   {
+    // Model A (Platform/RU) = usage/consumption-based → aligns with what IBM calls "Vault 2.0 direction"
+    // Model B (Clients/RVU) = per-seat/client-based → classic Vault 1.0 model
+    // Both have full part numbers and a working engine. The "Vault 2.0" name is directional —
+    // Model A already implements the consumption methodology Kris described.
     key: "vaultModel",
     conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "Is this a new Vault deployment or an existing renewal?",
-    subtext: "This determines the pricing model. The two models cannot be mixed.",
+    subtext: "This determines the pricing model. The two models cannot be mixed for the same customer.",
     type: "single",
     options: [
-      { label: "New or expanding deployment",  value: "A", hint: "Platform / usage-based model" },
-      { label: "Existing renewal / stable env", value: "B", hint: "Clients / per-seat model" },
+      { label: "New or expanding deployment",  value: "A", hint: "Usage-based: priced on what Vault does (secrets, certs, keys)" },
+      { label: "Existing renewal / stable env", value: "B", hint: "Client-based: priced on who connects (unique apps/services/users)" },
     ],
   },
   {
     key: "installCount",
     conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
-    ask: "How many Vault servers or clusters will they run?",
-    subtext: "Each production cluster = 1 Install.",
+    ask: "How many production Vault clusters will they run?",
+    // Kris Ditmore (July 13 2026): "typically a customer will have one production cluster"
+    subtext: "Most customers run 1 production cluster. Count production clusters only — each = 1 Install. Non-production is quoted separately.",
     type: "single",
     allowOther: true,
     options: [
-      { label: "1",     value: "1" },
-      { label: "2",     value: "2" },
-      { label: "3 – 5", value: "3" },
-      { label: "6 – 10",value: "6" },
-      { label: "10+",   value: "10" },
+      { label: "1 cluster",      value: "1",  hint: "Typical for most customers" },
+      { label: "2 clusters",     value: "2" },
+      { label: "3 – 5 clusters", value: "3" },
+      { label: "6 – 10 clusters",value: "6" },
+      { label: "10+ clusters",   value: "10" },
     ],
-    placeholder: "Enter exact number",
-    unit: "clusters",
+    placeholder: "Enter exact number of production clusters",
+    unit: "production clusters",
   },
 ];
 
@@ -402,6 +440,8 @@ export const VAULT_QUESTIONS_MODEL_A: Question[] = [
   {
     key: "staticSecretCount",
     ask: "How many secrets (passwords, API keys, config values) will they store in Vault?",
+    // Kris Ditmore (July 13 2026): ranges were "a little high" — scaled back ~50%.
+    // Many customers have just 10–15 secrets. Upper range dropped from 10,000+ to 2,000+.
     type: "single",
     allowOther: true,
     conditional: (a) => {
@@ -409,10 +449,11 @@ export const VAULT_QUESTIONS_MODEL_A: Question[] = [
       return !!uc?.includes("static");
     },
     options: [
-      { label: "< 500",          value: "250" },
-      { label: "500 – 2,000",    value: "1000" },
-      { label: "2,000 – 10,000", value: "5000" },
-      { label: "10,000+",        value: "10000" },
+      { label: "< 25",         value: "12",  hint: "Common — many customers have 10–15" },
+      { label: "25 – 100",     value: "50" },
+      { label: "100 – 500",    value: "250" },
+      { label: "500 – 2,000",  value: "1000" },
+      { label: "2,000+",       value: "2000" },
     ],
     placeholder: "Enter secret count",
     unit: "secrets",
@@ -469,6 +510,42 @@ export const VAULT_QUESTIONS_MODEL_A: Question[] = [
       { label: "90 days",   value: "2160", hint: "Common for public certs" },
       { label: "1 year",    value: "8760" },
       { label: "2+ years",  value: "17520" },
+    ],
+  },
+  {
+    key: "sshCredsPerMonth",
+    ask: "How many SSH credentials will Vault issue per month?",
+    subtext: "Count SSH certificates or OTPs issued/renewed. Uses the same formula as PKI — shorter lifetime = more RU.",
+    type: "single",
+    allowOther: true,
+    conditional: (a) => {
+      const uc = a.useCases as string[] | undefined;
+      return !!uc?.includes("ssh");
+    },
+    options: [
+      { label: "< 100/month",        value: "50" },
+      { label: "100 – 500/month",    value: "250" },
+      { label: "500 – 2,000/month",  value: "1000" },
+      { label: "2,000+/month",       value: "2000" },
+    ],
+    placeholder: "Enter SSH credentials per month",
+    unit: "creds/month",
+  },
+  {
+    key: "sshLifetime",
+    ask: "What is the typical SSH credential lifetime?",
+    subtext: "Shorter lifetimes mean more frequent issuance = higher RU usage.",
+    type: "single",
+    conditional: (a) => {
+      const uc = a.useCases as string[] | undefined;
+      return !!uc?.includes("ssh");
+    },
+    options: [
+      { label: "1 hour",    value: "1",    hint: "Very short-lived (just-in-time access)" },
+      { label: "8 hours",   value: "8",    hint: "One working shift" },
+      { label: "1 day",     value: "24" },
+      { label: "7 days",    value: "168" },
+      { label: "30 days",   value: "720" },
     ],
   },
   {
@@ -529,6 +606,8 @@ export const VAULT_QUESTIONS_MODEL_A: Question[] = [
   },
 ];
 
+// Vault 1.0 — client-based pricing (current licensing model)
+// Secret count is NOT a pricing input for Vault 1.0; do not ask for it here.
 export const VAULT_QUESTIONS_MODEL_B: Question[] = [
   {
     key: "edition",
@@ -543,15 +622,17 @@ export const VAULT_QUESTIONS_MODEL_B: Question[] = [
   {
     key: "clientCount",
     ask: "How many apps, services, or users connect to Vault?",
-    subtext: "Each unique app, service, or user = 1 Client (RVU).",
+    // Most Vault 1.0 customers have ≤ 5 distinct clients; lower ranges are reflected
+    // in the first two options. Use allowOther for larger deployments.
+    subtext: "Each unique app, service, or user = 1 Client (RVU). Most customers have 5 or fewer clients.",
     type: "single",
     allowOther: true,
     options: [
-      { label: "< 100",         value: "50" },
-      { label: "100 – 500",     value: "250" },
-      { label: "500 – 1,500",   value: "1000" },
-      { label: "1,500 – 10,000",value: "5000" },
-      { label: "10,000+",       value: "10000" },
+      { label: "1 – 5",         value: "3",     hint: "Typical for most customers" },
+      { label: "6 – 25",        value: "15" },
+      { label: "26 – 100",      value: "50" },
+      { label: "101 – 500",     value: "250" },
+      { label: "500+",          value: "500" },
     ],
     placeholder: "Enter client count",
     unit: "clients",
@@ -608,5 +689,89 @@ export const VAULT_QUESTIONS_MODEL_B: Question[] = [
     ],
     placeholder: "Enter number of Transform clients",
     unit: "clients",
+  },
+];
+
+// ─── VAULT 2.0 — consumption-based (upcoming licensing model) ─────────────────
+//
+// Source: Kris Ditmore meeting transcript (July 13 2026)
+//
+// ⚠️  PRICING ENGINE NOT YET BUILDABLE — official spreadsheet not received.
+//     These questions capture the right inputs based on what Kris described.
+//
+//     BLOCKERS before this can produce real quotes:
+//       1. Get Vault 2.0 pricing spreadsheet from Kris Ditmore (he offered to send)
+//       2. Join #vault-pricing-deals Slack channel — Vault product managers are there
+//       3. Confirm exact pricing formula (secret count × access freq × type multiplier?)
+//       4. Obtain part numbers for Vault 2.0 SKUs
+//
+// What Kris confirmed Vault 2.0 is priced on:
+//   - Type of secrets (PKI certs vs API keys are charged differently)
+//   - Number of secrets stored
+//   - How often secrets are accessed / rotated
+//   - "There's a whole spreadsheet" — more nuance than just these three inputs
+//
+// Secret count IS a required input for Vault 2.0 (unlike Vault 1.0).
+// Client count is NOT used in Vault 2.0.
+// Kris: secret ranges should be small — many customers have only 10–15 secrets.
+
+export const VAULT_QUESTIONS_VAULT2: Question[] = [
+  {
+    key: "v2SecretTypes",
+    ask: "What types of secrets will they store in Vault?",
+    // Kris: "we charge different for PKI keys versus API calls"
+    subtext: "Select all that apply — Vault 2.0 charges differently by secret type.",
+    type: "multi",
+    options: [
+      { label: "Static secrets (passwords, API keys, config values)", value: "static",  hint: "Key/value secrets engine" },
+      { label: "Dynamic credentials (auto-rotating DB, cloud creds)", value: "dynamic", hint: "Database, AWS, Azure engines" },
+      { label: "PKI certificates",                                     value: "pki",     hint: "Certificate lifecycle — priced separately from API keys" },
+      { label: "SSH credentials",                                      value: "ssh",     hint: "SSH secrets engine" },
+      { label: "Encryption keys (KMIP / Transit)",                     value: "kmse",    hint: "Key management / tokenisation" },
+    ],
+  },
+  {
+    key: "v2SecretCount",
+    ask: "How many secrets will they store in Vault?",
+    // Secret count is a core pricing input for Vault 2.0 — NOT used in Vault 1.0.
+    // Kris: "there are many customers that just have 10, 15 secrets" — keep ranges small.
+    subtext: "Count all unique secrets across all types. Most customers have fewer than you'd expect.",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "< 25",          value: "12",   hint: "Common — many customers have 10–15" },
+      { label: "25 – 100",      value: "50" },
+      { label: "100 – 500",     value: "250" },
+      { label: "500 – 2,000",   value: "1000" },
+      { label: "2,000+",        value: "2000" },
+    ],
+    placeholder: "Enter total secret count",
+    unit: "secrets",
+  },
+  {
+    key: "v2AccessFrequency",
+    ask: "How often will secrets be accessed or rotated?",
+    // Kris: "how many times are you going to rotate the secret" is a key Vault 2.0 input.
+    // Kris: "we charge different for...how often they're accessed"
+    subtext: "Estimate average secret reads/writes per day across all applications.",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "Low — < 1,000 operations/day",        value: "500" },
+      { label: "Medium — 1,000 – 10,000/day",         value: "5000" },
+      { label: "High — 10,000 – 100,000/day",         value: "50000" },
+      { label: "Very high — 100,000+/day",             value: "100000" },
+    ],
+    placeholder: "Enter estimated operations per day",
+    unit: "operations/day",
+  },
+  {
+    key: "v2IncludeNonProd",
+    ask: "Do they need a non-production (dev/test) environment?",
+    type: "single",
+    options: [
+      { label: "Yes", value: "yes" },
+      { label: "No",  value: "no" },
+    ],
   },
 ];
