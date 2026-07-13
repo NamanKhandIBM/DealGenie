@@ -1,0 +1,319 @@
+- generic [active] [ref=e1]:
+  - banner "IBM Cloud" [ref=e2]:
+    - link "Skip to content" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - generic [ref=e4]:
+      - link "IBM Cloud" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: IBM Cloud
+      - menubar [ref=e8]:
+        - menuitem "Privacy" [ref=e9]:
+          - link "Privacy" [ref=e10] [cursor=pointer]:
+            - /url: https://www.ibm.com/privacy
+            - img [ref=e11]
+            - generic [ref=e17]: Privacy
+        - menuitem "Catalog" [ref=e18]:
+          - link "Catalog" [ref=e19] [cursor=pointer]:
+            - /url: /catalog
+            - img [ref=e20]
+            - generic [ref=e23]: Catalog
+        - menuitem "Cost Estimator" [ref=e24]:
+          - link "Cost Estimator" [ref=e25] [cursor=pointer]:
+            - /url: /estimator/review
+            - img [ref=e26]
+            - generic [ref=e39]: Cost Estimator
+        - menuitem [ref=e40]:
+          - menu "help menu" [ref=e41] [cursor=pointer]:
+            - menuitem "Help" [ref=e42]:
+              - img [ref=e43]
+              - generic [ref=e48]: Help
+              - img [ref=e49]
+            - listitem:
+              - menu
+    - menubar [ref=e53]:
+      - menuitem "Log in" [ref=e54] [cursor=pointer]
+      - menuitem "Sign up" [ref=e55] [cursor=pointer]
+  - main [ref=e56]:
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - generic [ref=e62]:
+          - link "Sell on IBM Cloud" [ref=e63] [cursor=pointer]:
+            - /url: /partner-center/sell
+          - link "Catalog settings" [ref=e64] [cursor=pointer]:
+            - /url: /content-mgmt/catalog-settings
+        - generic [ref=e66]:
+          - heading "IBM Cloud catalog" [level=1] [ref=e67]
+          - search "Search the catalog" [ref=e72]:
+            - generic:
+              - img
+            - generic [ref=e73]: Search the catalog
+            - searchbox "Search the catalog" [ref=e74]
+      - tablist "Catalog categories" [ref=e79]:
+        - tab "Highlights" [selected] [ref=e80]:
+          - generic "Highlights" [ref=e81]
+        - tab "Deployable architectures" [ref=e82]:
+          - generic "Deployable architectures" [ref=e83]
+        - tab "Cloud essentials" [ref=e84]:
+          - generic "Cloud essentials" [ref=e85]
+        - tab "IBM products" [ref=e86]:
+          - generic "IBM products" [ref=e87]
+        - tab "Partner products" [ref=e88]:
+          - generic "Partner products" [ref=e89]
+        - tab "Professional services" [ref=e90]:
+          - generic "Professional services" [ref=e91]
+        - tab "All products" [ref=e92]:
+          - generic "All products" [ref=e93]
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e98]:
+            - heading "Cloud essentials" [level=2] [ref=e99]
+            - paragraph [ref=e100]: Get up and running with essential cloud services by deploying solutions expertly designed and managed by IBM Cloud.
+          - generic [ref=e101]:
+            - generic [ref=e103] [cursor=pointer]:
+              - generic [ref=e106]:
+                - paragraph [ref=e107]: Containers
+                - list [ref=e108]:
+                  - listitem [ref=e109]: By IBM
+              - generic [ref=e110]:
+                - generic "Run and manage secure, highly available containerized applications. Choose from OpenShift, Kubernetes, or serverless." [ref=e112]
+                - generic [ref=e113]:
+                  - generic "Hub" [ref=e118]
+                  - img "Containers" [ref=e122]
+            - generic [ref=e124] [cursor=pointer]:
+              - generic [ref=e127]:
+                - paragraph [ref=e128]: Databases
+                - list [ref=e129]:
+                  - listitem [ref=e130]: By IBM
+              - generic [ref=e131]:
+                - generic "Store data in SQL and NoSQL databases using a fully managed Cloud service." [ref=e133]
+                - generic [ref=e134]:
+                  - generic "Hub" [ref=e139]
+                  - img "Databases" [ref=e143]
+            - generic [ref=e145] [cursor=pointer]:
+              - generic [ref=e148]:
+                - paragraph [ref=e149]: Infrastructure
+                - list [ref=e150]:
+                  - listitem [ref=e151]: By IBM
+              - generic [ref=e152]:
+                - generic "Provision your compute, network, and storage resources on a secure virtual private cloud." [ref=e154]
+                - generic [ref=e155]:
+                  - generic "Hub" [ref=e160]
+                  - img "Infrastructure" [ref=e164]
+            - generic [ref=e166] [cursor=pointer]:
+              - generic [ref=e169]:
+                - paragraph [ref=e170]: Observability
+                - list [ref=e171]:
+                  - listitem [ref=e172]: By IBM
+              - generic [ref=e173]:
+                - generic "Troubleshoot apps and services, identify threats, detect performance issues, trigger alerts." [ref=e175]
+                - generic [ref=e176]:
+                  - generic "Hub" [ref=e181]
+                  - img "Observability" [ref=e185]
+            - generic [ref=e187] [cursor=pointer]:
+              - generic [ref=e190]:
+                - paragraph [ref=e191]: Platform Automation
+                - list [ref=e192]:
+                  - listitem [ref=e193]: By IBM
+              - generic [ref=e194]:
+                - generic "Simplify the management of complex enterprise apps by streamlining common platform tasks." [ref=e196]
+                - generic [ref=e197]:
+                  - generic "Hub" [ref=e202]
+                  - img "Platform Automation" [ref=e206]
+            - generic [ref=e208] [cursor=pointer]:
+              - generic [ref=e211]:
+                - paragraph [ref=e212]: Security
+                - list [ref=e213]:
+                  - listitem [ref=e214]: By IBM
+              - generic [ref=e215]:
+                - generic "Provision and manage controls related to access, data security and compliance for protection across cloud applications." [ref=e217]
+                - generic [ref=e218]:
+                  - generic "Hub" [ref=e223]
+                  - img "Security" [ref=e227]
+        - generic [ref=e228]:
+          - generic [ref=e229]:
+            - generic [ref=e230]:
+              - heading "IBM products" [level=2] [ref=e231]
+              - paragraph [ref=e232]: Solve the most challenging needs of organizations large and small worldwide with IBM services and software.
+            - button "View all" [ref=e234] [cursor=pointer]:
+              - text: View all
+              - img [ref=e235]
+          - generic [ref=e237]:
+            - link "Analytics Engine By IBM Submit your Apache Spark applications as needed and customize the Spark runtimes to satisfy the requirements of your application. Service Analytics Engine" [ref=e238] [cursor=pointer]:
+              - /url: /catalog/services/analytics-engine
+              - generic [ref=e239]:
+                - generic [ref=e242]:
+                  - paragraph [ref=e243]: Analytics Engine
+                  - list [ref=e244]:
+                    - listitem [ref=e245]: By IBM
+                - generic [ref=e246]:
+                  - generic "Submit your Apache Spark applications as needed and customize the Spark runtimes to satisfy the requirements of your application." [ref=e248]
+                  - generic [ref=e249]:
+                    - generic "Service" [ref=e254]
+                    - img "Analytics Engine" [ref=e258]
+            - link "API Connect By IBM An enterprise-grade platform for creating, securing, managing, sharing, monetizing, and analyzing custom APIs located on-premises and on the cloud. Service API Connect" [ref=e259] [cursor=pointer]:
+              - /url: /catalog/services/api-connect
+              - generic [ref=e260]:
+                - generic [ref=e263]:
+                  - paragraph [ref=e264]: API Connect
+                  - list [ref=e265]:
+                    - listitem [ref=e266]: By IBM
+                - generic [ref=e267]:
+                  - generic "An enterprise-grade platform for creating, securing, managing, sharing, monetizing, and analyzing custom APIs located on-premises and on the cloud." [ref=e269]
+                  - generic [ref=e270]:
+                    - generic "Service" [ref=e275]
+                    - img "API Connect" [ref=e279]
+            - link "App Configuration By IBM Centralized, in-flight configuration for web and mobile applications and distributed environments. Service App Configuration" [ref=e280] [cursor=pointer]:
+              - /url: /catalog/services/app-configuration
+              - generic [ref=e281]:
+                - generic [ref=e284]:
+                  - paragraph [ref=e285]: App Configuration
+                  - list [ref=e286]:
+                    - listitem [ref=e287]: By IBM
+                - generic [ref=e288]:
+                  - generic "Centralized, in-flight configuration for web and mobile applications and distributed environments." [ref=e290]
+                  - generic [ref=e291]:
+                    - generic "Service" [ref=e296]
+                    - img "App Configuration" [ref=e300]
+            - link "App ID By IBM User Authentication and User Profiles for your apps. Service App ID" [ref=e301] [cursor=pointer]:
+              - /url: /catalog/services/app-id
+              - generic [ref=e302]:
+                - generic [ref=e305]:
+                  - paragraph [ref=e306]: App ID
+                  - list [ref=e307]:
+                    - listitem [ref=e308]: By IBM
+                - generic [ref=e309]:
+                  - generic "User Authentication and User Profiles for your apps." [ref=e311]
+                  - generic [ref=e312]:
+                    - generic "Service" [ref=e317]
+                    - img "App ID" [ref=e321]
+        - generic [ref=e322]:
+          - generic [ref=e323]:
+            - generic [ref=e324]:
+              - heading "Partner products" [level=2] [ref=e325]
+              - paragraph [ref=e326]: Tap into new technologies with purpose-built partner services.
+            - button "View all" [ref=e328] [cursor=pointer]:
+              - text: View all
+              - img [ref=e329]
+          - generic [ref=e331]:
+            - link "FalconStor StorSafe PowerVS Deployable Architecture By FalconStor Software Preview Reduce your monthly PowerVS backup storage cost by up to 90%, while improving your existing backup solution performance. Deployable architecture FalconStor StorSafe PowerVS Deployable Architecture" [ref=e332] [cursor=pointer]:
+              - /url: /catalog/architecture/storsafe-pvs-da-921f7e70-d116-449c-8b3f-a6263b907c11-global
+              - generic [ref=e333]:
+                - generic [ref=e335]:
+                  - generic [ref=e336]:
+                    - paragraph [ref=e337]: FalconStor StorSafe PowerVS Deployable Architecture
+                    - list [ref=e338]:
+                      - listitem [ref=e339]: By FalconStor Software
+                  - generic [ref=e341]:
+                    - button "Preview" [ref=e343]:
+                      - img [ref=e344]
+                    - tooltip
+                - generic [ref=e347]:
+                  - generic "Reduce your monthly PowerVS backup storage cost by up to 90%, while improving your existing backup solution performance." [ref=e349]
+                  - generic [ref=e350]:
+                    - generic "Deployable architecture" [ref=e355]
+                    - img "FalconStor StorSafe PowerVS Deployable Architecture" [ref=e359]
+            - link "Payment HSM Interface (PHI) By Utimaco Preview Launch Payment HSM Interface in IBM, connect apps, authenticate via TLS, and load balance across HSMs. Deployable architecture Payment HSM Interface (PHI)" [ref=e360] [cursor=pointer]:
+              - /url: /catalog/architecture/phi::1-f60b73f0-f81f-465b-8afb-98f772f5cd20-global
+              - generic [ref=e361]:
+                - generic [ref=e363]:
+                  - generic [ref=e364]:
+                    - paragraph [ref=e365]: Payment HSM Interface (PHI)
+                    - list [ref=e366]:
+                      - listitem [ref=e367]: By Utimaco
+                  - generic [ref=e369]:
+                    - button "Preview" [ref=e371]:
+                      - img [ref=e372]
+                    - tooltip
+                - generic [ref=e375]:
+                  - generic "Launch Payment HSM Interface in IBM, connect apps, authenticate via TLS, and load balance across HSMs." [ref=e377]
+                  - generic [ref=e378]:
+                    - generic "Deployable architecture" [ref=e383]
+                    - img "Payment HSM Interface (PHI)" [ref=e387]
+            - link "AgileCDN By AGILEWING TECHNOLOGY CO. LIMITED A one-stop global CDN acceleration platform Global acceleration for websites and applications. Service AgileCDN" [ref=e388] [cursor=pointer]:
+              - /url: /catalog/services/agilecdn
+              - generic [ref=e389]:
+                - generic [ref=e392]:
+                  - paragraph [ref=e393]: AgileCDN
+                  - list [ref=e394]:
+                    - listitem [ref=e395]: By AGILEWING TECHNOLOGY CO. LIMITED
+                - generic [ref=e396]:
+                  - generic "A one-stop global CDN acceleration platform Global acceleration for websites and applications." [ref=e398]
+                  - generic [ref=e399]:
+                    - generic "Service" [ref=e404]
+                    - img "AgileCDN" [ref=e408]
+            - link "AI Squared Sparx By AI Squared Global AI-driven “chat with your data” platform that connects to your data and delivers instant insights through natural-language search. Service AI Squared Sparx" [ref=e409] [cursor=pointer]:
+              - /url: /catalog/services/ai-squared-sparx
+              - generic [ref=e410]:
+                - generic [ref=e413]:
+                  - paragraph [ref=e414]: AI Squared Sparx
+                  - list [ref=e415]:
+                    - listitem [ref=e416]: By AI Squared Global
+                - generic [ref=e417]:
+                  - generic "AI-driven “chat with your data” platform that connects to your data and delivers instant insights through natural-language search." [ref=e419]
+                  - generic [ref=e420]:
+                    - generic "Service" [ref=e425]
+                    - img "AI Squared Sparx" [ref=e429]
+        - generic [ref=e430]:
+          - generic [ref=e431]:
+            - generic [ref=e432]:
+              - heading "Professional services" [level=2] [ref=e433]
+              - paragraph [ref=e434]: Drive agility and fuel growth with the help of our IBM Cloud and AI experts.
+            - button "View all" [ref=e436] [cursor=pointer]:
+              - text: View all
+              - img [ref=e437]
+          - generic [ref=e439]:
+            - link "Celerity CopyAssure for PowerVS By Celerity Continuous recovery and clean room testing with snapshots, clones & exports—aligned with IBM Cyber Vault. Professional services Celerity CopyAssure for PowerVS" [ref=e440] [cursor=pointer]:
+              - /url: /catalog/services/celerity-copyassure-for-powervs
+              - generic [ref=e441]:
+                - generic [ref=e444]:
+                  - paragraph [ref=e445]: Celerity CopyAssure for PowerVS
+                  - list [ref=e446]:
+                    - listitem [ref=e447]: By Celerity
+                - generic [ref=e448]:
+                  - generic "Continuous recovery and clean room testing with snapshots, clones & exports—aligned with IBM Cyber Vault." [ref=e450]
+                  - generic [ref=e451]:
+                    - generic "Professional services" [ref=e456]
+                    - img "Celerity CopyAssure for PowerVS" [ref=e460]
+            - link "Celerity Professional Services for PowerVS By Celerity Expert services for IBM i, AIX & Linux on PowerVS including Migrations, Cyber Resilience, Backups & DR + Performance Optimisation Professional services Celerity Professional Services for PowerVS" [ref=e461] [cursor=pointer]:
+              - /url: /catalog/services/celerity-professional-services-for-powervs
+              - generic [ref=e462]:
+                - generic [ref=e465]:
+                  - paragraph [ref=e466]: Celerity Professional Services for PowerVS
+                  - list [ref=e467]:
+                    - listitem [ref=e468]: By Celerity
+                - generic [ref=e469]:
+                  - generic "Expert services for IBM i, AIX & Linux on PowerVS including Migrations, Cyber Resilience, Backups & DR + Performance Optimisation" [ref=e471]
+                  - generic [ref=e472]:
+                    - generic "Professional services" [ref=e477]
+                    - img "Celerity Professional Services for PowerVS" [ref=e481]
+            - link "Cloud Platform Professional Services By Lyticly Pty Ltd Professional services to support cloud platform operations and enable customers to build and optimise custom software solutions. Professional services Cloud Platform Professional Services" [ref=e482] [cursor=pointer]:
+              - /url: /catalog/services/cloud-platform-professional-services
+              - generic [ref=e483]:
+                - generic [ref=e486]:
+                  - paragraph [ref=e487]: Cloud Platform Professional Services
+                  - list [ref=e488]:
+                    - listitem [ref=e489]: By Lyticly Pty Ltd
+                - generic [ref=e490]:
+                  - generic "Professional services to support cloud platform operations and enable customers to build and optimise custom software solutions." [ref=e492]
+                  - generic [ref=e493]:
+                    - generic "Professional services" [ref=e498]
+                    - img "Cloud Platform Professional Services" [ref=e502]
+            - link "Container Security Services By IBM Assess, design, implement and manage Container Security solutions that will help secure your entire DevSecOps processes and infrastructure Professional services Container Security Services" [ref=e503] [cursor=pointer]:
+              - /url: /catalog/infrastructure/container-consulting-referral
+              - generic [ref=e504]:
+                - generic [ref=e507]:
+                  - paragraph [ref=e508]: Container Security Services
+                  - list [ref=e509]:
+                    - listitem [ref=e510]: By IBM
+                - generic [ref=e511]:
+                  - generic "Assess, design, implement and manage Container Security solutions that will help secure your entire DevSecOps processes and infrastructure" [ref=e513]
+                  - generic [ref=e514]:
+                    - generic "Professional services" [ref=e519]
+                    - img "Container Security Services" [ref=e523]
+        - generic [ref=e524]:
+          - generic [ref=e525]: Can't find what you're looking for?
+          - generic [ref=e526]: Explore the full IBM Cloud public catalog or apply filters to find exactly what you need.
+          - button "View all products" [ref=e527] [cursor=pointer]:
+            - text: View all products
+            - img [ref=e528]
+      - img [ref=e532]

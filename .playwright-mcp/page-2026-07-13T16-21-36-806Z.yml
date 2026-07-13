@@ -1,0 +1,2052 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e4]:
+    - generic [ref=f5e7]:
+      - generic [ref=f5e9]:
+        - generic:
+          - navigation "Skip to content":
+            - link "Skip to content" [ref=f5e10] [cursor=pointer]:
+              - /url: "#main-content"
+              - generic [ref=f5e11]: Skip to content
+          - link "IBM logo" [ref=f5e13] [cursor=pointer]:
+            - /url: https://www.ibm.com/
+            - img [ref=f5e15]
+        - generic [ref=f5e19]:
+          - navigation "Primary navigation" [ref=f5e23]:
+            - generic [ref=f5e25]:
+              - generic:
+                - button "Software" [ref=f5e27] [cursor=pointer]:
+                  - text: Software
+                  - img [ref=f5e28]
+                - button "Infrastructure" [ref=f5e31] [cursor=pointer]:
+                  - text: Infrastructure
+                  - img [ref=f5e32]
+                - generic "Consulting" [ref=f5e34]:
+                  - link "Consulting" [ref=f5e35] [cursor=pointer]:
+                    - /url: https://www.ibm.com/consulting?lnk=L0G
+                    - generic [ref=f5e37]: Consulting
+                - button "Support" [ref=f5e39] [cursor=pointer]:
+                  - text: Support
+                  - img [ref=f5e40]
+                - generic "Think" [ref=f5e42]:
+                  - link "Think" [ref=f5e43] [cursor=pointer]:
+                    - /url: https://www.ibm.com/think
+                    - generic [ref=f5e45]: Think
+          - button "Open IBM search field" [ref=f5e48] [cursor=pointer]:
+            - img [ref=f5e49]
+        - generic [ref=f5e51]:
+          - generic:
+            - generic:
+              - link "Contact" [ref=f5e53] [cursor=pointer]:
+                - /url: javascript:void 0
+                - img [ref=f5e54]
+              - button [ref=f5e57] [cursor=pointer]:
+                - img [ref=f5e58]
+              - generic [ref=f5e60]:
+                - button "User profile" [ref=f5e61] [cursor=pointer]:
+                  - img [ref=f5e62]
+                - generic: My IBM
+                - generic: Log in
+      - generic [ref=f5e65]:
+        - link "watsonx" [ref=f5e68] [cursor=pointer]:
+          - /url: https://www.ibm.com/products/watsonx
+        - list [ref=f5e71]:
+          - listitem [ref=f5e72]:
+            - link "watsonx.ai" [ref=f5e73] [cursor=pointer]:
+              - /url: https://www.ibm.com/products/watsonx-ai
+          - listitem [ref=f5e74]:
+            - button "Features" [ref=f5e75]:
+              - text: Features
+              - img [ref=f5e76]
+          - listitem [ref=f5e78]:
+            - link "Model library" [ref=f5e79] [cursor=pointer]:
+              - /url: https://www.ibm.com/products/watsonx-ai/foundation-models
+          - listitem [ref=f5e80]:
+            - link "Pricing" [ref=f5e81] [cursor=pointer]:
+              - /url: https://www.ibm.com/products/watsonx-ai/pricing
+        - link "Book a live demo" [ref=f5e83] [cursor=pointer]:
+          - /url: https://www.ibm.com/forms/mkt-demo-dataaiwatsonxai
+        - button [ref=f5e85]:
+          - img [ref=f5e87]
+    - generic [ref=f5e98]:
+      - generic [ref=f5e100]:
+        - generic [ref=f5e101]:
+          - navigation "Breadcrumb" [ref=f5e102]:
+            - list [ref=f5e103]:
+              - listitem [ref=f5e104]:
+                - link "Home" [ref=f5e105] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=f5e106]: Home
+                - text: /
+              - listitem [ref=f5e107]:
+                - link "Products" [ref=f5e108] [cursor=pointer]:
+                  - /url: /products
+                  - generic [ref=f5e109]: Products
+                - text: /
+              - listitem [ref=f5e110]:
+                - link "watsonx.ai" [ref=f5e111] [cursor=pointer]:
+                  - /url: /products/watsonx-ai
+                  - generic [ref=f5e112]: watsonx.ai
+                - text: /
+              - listitem [ref=f5e113]:
+                - generic [ref=f5e114]: Pricing
+          - heading "watsonx.ai pricing" [level=1] [ref=f5e115]
+        - generic [ref=f5e116]:
+          - paragraph [ref=f5e121]: A one-stop, integrated AI development studio for end-to-end AI application development
+          - list [ref=f5e123]:
+            - link "Start your free trial" [ref=f5e124] [cursor=pointer]:
+              - /url: https://dataplatform.cloud.ibm.com/registration/stepone?context=wx
+              - listitem "Start your free trial" [ref=f5e125]:
+                - button "Start your free trial" [ref=f5e126]:
+                  - generic [ref=f5e127]: Start your free trial
+                  - img [ref=f5e130]: ","
+      - img "watsonx.ai dashboard UI with listed sandbox projects and deployment options" [ref=f5e138]
+    - generic [ref=f5e144]:
+      - generic [ref=f5e146]:
+        - heading "watsonx.ai pricing" [level=2] [ref=f5e148]:
+          - generic [ref=f5e149]: watsonx.ai pricing
+        - generic [ref=f5e150]:
+          - paragraph [ref=f5e153]: Explore the pricing tiers for our trial, essentials and standard plans on IBM® watsonx.ai®. For model pricing, explore IBM's foundation and embedding model section, as well as third-party foundation and embedding models pricing.
+          - generic:
+            - list
+      - generic [ref=f5e160]:
+        - generic:
+          - generic [ref=f5e161]:
+            - img [ref=f5e163]
+            - heading "Foundation models from IBM" [level=4] [ref=f5e165]:
+              - generic: Foundation models from IBM
+            - paragraph [ref=f5e169]: Includes pay-as-you-go pricing per million tokens and hourly rates for on-demand model hosting and deployment.
+            - link "Learn more" [ref=f5e171] [cursor=pointer]:
+              - /url: "#foundationmodelsibm"
+              - link "Learn more" [ref=f5e173]:
+                - /url: "#foundationmodelsibm"
+                - generic [ref=f5e174]:
+                  - generic: Learn more
+                - img [ref=f5e177]
+          - generic [ref=f5e179]:
+            - img [ref=f5e181]
+            - heading "Embedding models" [level=4] [ref=f5e183]:
+              - generic: Embedding models
+            - paragraph [ref=f5e187]: Includes IBM and third-party models available for USD 0.10 per million tokens.
+            - link "Learn more" [ref=f5e189] [cursor=pointer]:
+              - /url: "#Embeddingmodels"
+              - link "Learn more" [ref=f5e191]:
+                - /url: "#Embeddingmodels"
+                - generic [ref=f5e192]:
+                  - generic: Learn more
+                - img [ref=f5e195]
+          - generic [ref=f5e197]:
+            - img [ref=f5e199]
+            - heading "Third-party foundation models" [level=4] [ref=f5e201]:
+              - generic: Third-party foundation models
+            - paragraph [ref=f5e205]: Includes third-party models from Meta, Google, DeepSeek, Mistral, and more, with pay-as-you-go pricing per million tokens and hourly options for on-demand hosting and deployment.
+            - link "Learn more" [ref=f5e207] [cursor=pointer]:
+              - /url: "#Third-partyfoundationmodels"
+              - link "Learn more" [ref=f5e209]:
+                - /url: "#Third-partyfoundationmodels"
+                - generic [ref=f5e210]:
+                  - generic: Learn more
+                - img [ref=f5e213]
+          - generic [ref=f5e215]:
+            - img [ref=f5e217]
+            - heading "Use case specific pricing" [level=4] [ref=f5e219]:
+              - generic: Use case specific pricing
+            - paragraph [ref=f5e223]: Includes use case-based pricing for machine learning, text extraction, and model customization, with Essential and Standard package options.
+            - link "Learn more" [ref=f5e225] [cursor=pointer]:
+              - /url: "#Usecasespecificpricing"
+              - link "Learn more" [ref=f5e227]:
+                - /url: "#Usecasespecificpricing"
+                - generic [ref=f5e228]:
+                  - generic: Learn more
+                - img [ref=f5e231]
+      - heading "Pricing plans — multiple payment options available" [level=2] [ref=f5e236]: Pricing plans — multiple payment options available
+      - generic [ref=f5e242]:
+        - table [ref=f5e246]:
+          - generic [ref=f5e247]:
+            - generic:
+              - rowgroup [ref=f5e249]:
+                - 'row "Free Toolbox playground Foundation Models: Up to 300,000 tokens per month Machine Learning Tools: Up to 20 Compute Usage Hours (CUH) per month Text Extraction: Up to 100 documents per month Start your free trial Essentials (Pay-as-you-go) Production deployments Starting at USD 0/month* Model price breakdown*** Feature-specific price breakdown** Standard (Pay-as-you-go) Enterprise production Starting at USD 1110/month* Model price breakdown*** Feature-specific price breakdown**" [ref=f5e250]':
+                  - generic:
+                    - columnheader [ref=f5e251]
+                    - 'columnheader "Free Toolbox playground Foundation Models: Up to 300,000 tokens per month Machine Learning Tools: Up to 20 Compute Usage Hours (CUH) per month Text Extraction: Up to 100 documents per month Start your free trial" [ref=f5e252]':
+                      - generic [ref=f5e254]:
+                        - generic [ref=f5e255]:
+                          - generic: Free
+                        - generic [ref=f5e257]:
+                          - generic:
+                            - generic [ref=f5e258] [cursor=pointer]: Toolbox playground
+                            - generic [ref=f5e260]:
+                              - paragraph [ref=f5e261]:
+                                - strong [ref=f5e262]: Foundation Models
+                                - text: ": Up to 300,000 tokens per month"
+                              - paragraph [ref=f5e263]:
+                                - strong [ref=f5e264]: "Machine Learning Tools:"
+                                - text: Up to 20 Compute Usage Hours (CUH) per month
+                              - paragraph [ref=f5e265]:
+                                - strong [ref=f5e266]: "Text Extraction:"
+                                - text: Up to 100 documents per month
+                            - link "Start your free trial" [ref=f5e267] [cursor=pointer]:
+                              - /url: https://dataplatform.cloud.ibm.com/registration/stepone?context=wx
+                              - listitem [ref=f5e268]:
+                                - button "Start your free trial" [ref=f5e269]:
+                                  - generic [ref=f5e270]: Start your free trial
+                                  - img [ref=f5e273]: ","
+                    - columnheader "Essentials (Pay-as-you-go) Production deployments Starting at USD 0/month* Model price breakdown*** Feature-specific price breakdown**" [ref=f5e275]:
+                      - generic [ref=f5e276]:
+                        - generic [ref=f5e277]:
+                          - generic [ref=f5e278]:
+                            - generic: Essentials (Pay-as-you-go)
+                          - generic [ref=f5e280]:
+                            - generic:
+                              - generic [ref=f5e281] [cursor=pointer]: Production deployments
+                              - generic [ref=f5e283]:
+                                - paragraph [ref=f5e284]:
+                                  - text: Starting at USD 0/month
+                                  - superscript [ref=f5e285]: "*"
+                                - paragraph [ref=f5e286]:
+                                  - link "Model price breakdown" [ref=f5e287] [cursor=pointer]:
+                                    - /url: "#foundationmodelsibm"
+                                  - superscript [ref=f5e288]: "***"
+                                - paragraph [ref=f5e289]:
+                                  - link "Feature-specific price breakdown" [ref=f5e290] [cursor=pointer]:
+                                    - /url: "#Usecasespecificpricing"
+                                  - superscript [ref=f5e291]: "**"
+                        - listitem [ref=f5e293]:
+                          - button [ref=f5e294] [cursor=pointer]:
+                            - img [ref=f5e295]
+                    - columnheader "Standard (Pay-as-you-go) Enterprise production Starting at USD 1110/month* Model price breakdown*** Feature-specific price breakdown**" [ref=f5e298]:
+                      - generic [ref=f5e299]:
+                        - generic [ref=f5e300]:
+                          - generic [ref=f5e301]:
+                            - generic: Standard (Pay-as-you-go)
+                          - generic [ref=f5e303]:
+                            - generic:
+                              - generic [ref=f5e304] [cursor=pointer]: Enterprise production
+                              - generic [ref=f5e306]:
+                                - paragraph [ref=f5e307]: Starting at USD 1110/month*
+                                - paragraph [ref=f5e308]:
+                                  - link "Model price breakdown" [ref=f5e309] [cursor=pointer]:
+                                    - /url: "#foundationmodelsibm"
+                                  - text: "***"
+                                - paragraph [ref=f5e310]:
+                                  - link "Feature-specific price breakdown" [ref=f5e311] [cursor=pointer]:
+                                    - /url: "#Usecasespecificpricing"
+                                  - text: "**"
+                        - listitem [ref=f5e313]:
+                          - button [ref=f5e314] [cursor=pointer]:
+                            - img [ref=f5e315]
+              - rowgroup [ref=f5e318]:
+                - generic:
+                  - generic "Features":
+                    - row "Features" [ref=f5e319]:
+                      - columnheader "Features" [ref=f5e320]
+                  - row "Playground UI" [ref=f5e321]:
+                    - generic:
+                      - columnheader "Playground UI" [ref=f5e322]:
+                        - paragraph [ref=f5e328]: Playground UI
+                      - cell [ref=f5e329]:
+                        - img [ref=f5e333]
+                      - cell [ref=f5e336]:
+                        - img [ref=f5e340]
+                      - cell [ref=f5e343]:
+                        - img [ref=f5e347]
+                  - row "Inferencing" [ref=f5e350]:
+                    - generic:
+                      - columnheader "Inferencing" [ref=f5e351]:
+                        - paragraph [ref=f5e357]: Inferencing
+                      - cell [ref=f5e358]:
+                        - img [ref=f5e362]
+                      - cell [ref=f5e365]:
+                        - img [ref=f5e369]
+                      - cell [ref=f5e372]:
+                        - img [ref=f5e376]
+                  - row "Open source models" [ref=f5e379]:
+                    - generic:
+                      - columnheader "Open source models" [ref=f5e380]:
+                        - paragraph [ref=f5e386]: Open source models
+                      - cell [ref=f5e387]:
+                        - img [ref=f5e391]
+                      - cell [ref=f5e394]:
+                        - img [ref=f5e398]
+                      - cell [ref=f5e401]:
+                        - img [ref=f5e405]
+                  - row "IBM watsonx® models" [ref=f5e408]:
+                    - generic:
+                      - columnheader "IBM watsonx® models" [ref=f5e409]:
+                        - paragraph [ref=f5e415]: IBM watsonx® models
+                      - cell [ref=f5e416]:
+                        - img [ref=f5e420]
+                      - cell [ref=f5e423]:
+                        - img [ref=f5e427]
+                      - cell [ref=f5e430]:
+                        - img [ref=f5e434]
+                  - row "Work with foundational models (PromptLab)" [ref=f5e437]:
+                    - generic:
+                      - columnheader "Work with foundational models (PromptLab)" [ref=f5e438]:
+                        - paragraph [ref=f5e444]: Work with foundational models (PromptLab)
+                      - cell [ref=f5e445]:
+                        - img [ref=f5e449]
+                      - cell [ref=f5e452]:
+                        - img [ref=f5e456]
+                      - cell [ref=f5e459]:
+                        - img [ref=f5e463]
+                  - row "Supports retrieval augmented generation (RAG)" [ref=f5e466]:
+                    - generic:
+                      - columnheader "Supports retrieval augmented generation (RAG)" [ref=f5e467]:
+                        - paragraph [ref=f5e473]: Supports retrieval augmented generation (RAG)
+                      - cell [ref=f5e474]:
+                        - img [ref=f5e478]
+                      - cell [ref=f5e481]:
+                        - img [ref=f5e485]
+                      - cell [ref=f5e488]:
+                        - img [ref=f5e492]
+                  - row "Work with agents (AgentLab)" [ref=f5e495]:
+                    - generic:
+                      - columnheader "Work with agents (AgentLab)" [ref=f5e496]:
+                        - paragraph [ref=f5e502]: Work with agents (AgentLab)
+                      - cell [ref=f5e503]:
+                        - img [ref=f5e507]
+                      - cell [ref=f5e510]:
+                        - img [ref=f5e514]
+                      - cell [ref=f5e517]:
+                        - img [ref=f5e521]
+                  - row "Synthetic data generator" [ref=f5e524]:
+                    - generic:
+                      - columnheader "Synthetic data generator" [ref=f5e525]:
+                        - paragraph [ref=f5e531]: Synthetic data generator
+                      - cell [ref=f5e532]:
+                        - img [ref=f5e536]
+                      - cell [ref=f5e539]:
+                        - img [ref=f5e543]
+                      - cell [ref=f5e546]:
+                        - img [ref=f5e550]
+                  - row "ML functionality**" [ref=f5e553]:
+                    - generic:
+                      - columnheader "ML functionality**" [ref=f5e554]:
+                        - paragraph [ref=f5e560]:
+                          - text: ML functionality
+                          - superscript [ref=f5e561]: "**"
+                      - cell [ref=f5e562]:
+                        - img [ref=f5e566]
+                      - cell [ref=f5e569]:
+                        - img [ref=f5e573]
+                      - cell [ref=f5e576]:
+                        - img [ref=f5e580]
+                  - row "Text extraction**" [ref=f5e583]:
+                    - generic:
+                      - columnheader "Text extraction**" [ref=f5e584]:
+                        - paragraph [ref=f5e590]:
+                          - text: Text extraction
+                          - superscript [ref=f5e591]: "**"
+                      - cell [ref=f5e592]:
+                        - img [ref=f5e596]
+                      - cell [ref=f5e599]:
+                        - img [ref=f5e603]
+                      - cell [ref=f5e606]:
+                        - img [ref=f5e610]
+                  - row "LoRA/QLoRA Fine-tuning*" [ref=f5e613]:
+                    - generic:
+                      - columnheader "LoRA/QLoRA Fine-tuning*" [ref=f5e614]:
+                        - paragraph [ref=f5e620]:
+                          - text: LoRA/QLoRA Fine-tuning
+                          - superscript [ref=f5e621]: "*"
+                      - cell [ref=f5e622]
+                      - cell [ref=f5e623]
+                      - cell [ref=f5e624]:
+                        - img [ref=f5e628]
+                  - row "Custom foundation models***" [ref=f5e631]:
+                    - generic:
+                      - columnheader "Custom foundation models***" [ref=f5e632]:
+                        - paragraph [ref=f5e638]:
+                          - text: Custom foundation models
+                          - superscript [ref=f5e639]: "***"
+                      - cell [ref=f5e640]
+                      - cell [ref=f5e641]
+                      - cell [ref=f5e642]:
+                        - img [ref=f5e646]
+                  - row "Model hosting***" [ref=f5e649]:
+                    - generic:
+                      - columnheader "Model hosting***" [ref=f5e650]:
+                        - paragraph [ref=f5e656]:
+                          - text: Model hosting
+                          - superscript [ref=f5e657]: "***"
+                      - cell [ref=f5e658]
+                      - cell [ref=f5e659]
+                      - cell [ref=f5e660]:
+                        - img [ref=f5e664]
+                  - row "Deploy on-demand models***" [ref=f5e667]:
+                    - generic:
+                      - columnheader "Deploy on-demand models***" [ref=f5e668]:
+                        - paragraph [ref=f5e674]:
+                          - text: Deploy on-demand models
+                          - superscript [ref=f5e675]: "***"
+                      - cell [ref=f5e676]
+                      - cell [ref=f5e677]
+                      - cell [ref=f5e678]:
+                        - img [ref=f5e682]
+                  - generic "Additional":
+                    - row "Additional" [ref=f5e685]:
+                      - columnheader "Additional" [ref=f5e686]
+                  - 'row "Support watsonx community and online chatbot Basic support included: 24x7 access to tech support through cases Basic support included: 24x7 access to tech support through cases" [ref=f5e687]':
+                    - generic:
+                      - columnheader "Support" [ref=f5e688]:
+                        - paragraph [ref=f5e694]:
+                          - strong [ref=f5e695]: Support
+                      - cell "watsonx community and online chatbot" [ref=f5e696]:
+                        - paragraph [ref=f5e700]: watsonx community and online chatbot
+                      - 'cell "Basic support included: 24x7 access to tech support through cases" [ref=f5e701]':
+                        - paragraph [ref=f5e705]: "Basic support included: 24x7 access to tech support through cases"
+                      - 'cell "Basic support included: 24x7 access to tech support through cases" [ref=f5e706]':
+                        - paragraph [ref=f5e710]: "Basic support included: 24x7 access to tech support through cases"
+                  - row "Options available Advanced support with SLAs available starting at USD 200 per month Advanced support with SLAs available starting at USD 200 per month" [ref=f5e711]:
+                    - generic:
+                      - columnheader "Options available" [ref=f5e712]:
+                        - paragraph [ref=f5e718]:
+                          - strong [ref=f5e719]: Options available
+                      - cell [ref=f5e720]
+                      - cell "Advanced support with SLAs available starting at USD 200 per month" [ref=f5e721]:
+                        - paragraph [ref=f5e725]: Advanced support with SLAs available starting at USD 200 per month
+                      - cell "Advanced support with SLAs available starting at USD 200 per month" [ref=f5e726]:
+                        - paragraph [ref=f5e730]: Advanced support with SLAs available starting at USD 200 per month
+        - paragraph [ref=f5e734]: "*Prices shown are indicative, may vary by country, exclude any applicable taxes and duties, and are subject to product offering availability in a locale."
+      - generic [ref=f5e745]:
+        - generic [ref=f5e746]:
+          - heading "Find the right bundle for your AI use case" [level=3] [ref=f5e747]
+          - heading "Launch the watsonx advisor to learn how to align your business goals with the necessary AI technology from IBM . This streamlined process highlights how watsonx can unlock value faster and help you achieve meaningful results" [level=4] [ref=f5e748]
+          - button "Start" [ref=f5e749] [cursor=pointer]:
+            - text: Start
+            - img [ref=f5e750]
+        - img "banner-image" [ref=f5e753]
+      - heading "IBM Foundation Models" [level=2] [ref=f5e757]
+      - generic [ref=f5e763]:
+        - table [ref=f5e767]:
+          - generic [ref=f5e768]:
+            - generic:
+              - rowgroup [ref=f5e770]:
+                - row "Model name Pay as you go Per million tokens Model hosting/Deploy on demand Per hour Prices based on GPU config" [ref=f5e771]:
+                  - generic:
+                    - columnheader "Model name" [ref=f5e772]:
+                      - generic [ref=f5e774]:
+                        - generic: Model name
+                    - columnheader "Pay as you go Per million tokens" [ref=f5e775]:
+                      - generic [ref=f5e777]:
+                        - generic [ref=f5e778]:
+                          - generic: Pay as you go
+                        - generic [ref=f5e781] [cursor=pointer]: Per million tokens
+                    - columnheader "Model hosting/Deploy on demand Per hour Prices based on GPU config" [ref=f5e782]:
+                      - generic [ref=f5e784]:
+                        - generic [ref=f5e785]:
+                          - generic: Model hosting/Deploy on demand
+                        - generic [ref=f5e787]:
+                          - generic:
+                            - generic [ref=f5e788] [cursor=pointer]: Per hour
+                            - generic [ref=f5e789] [cursor=pointer]: Prices based on GPU config
+              - rowgroup [ref=f5e790]:
+                - generic:
+                  - row "granite-4-h-small USD 0.06 per 1M tokens input / USD 0.25 per 1M tokens output Not available" [ref=f5e791]:
+                    - generic:
+                      - columnheader "granite-4-h-small" [ref=f5e792]:
+                        - paragraph [ref=f5e798]:
+                          - strong [ref=f5e799]: granite-4-h-small
+                      - cell "USD 0.06 per 1M tokens input / USD 0.25 per 1M tokens output" [ref=f5e800]:
+                        - paragraph [ref=f5e804]: USD 0.06 per 1M tokens input / USD 0.25 per 1M tokens output
+                      - cell "Not available" [ref=f5e805]:
+                        - paragraph [ref=f5e809]: Not available
+                  - row "granite-vision-3-3-2b Not available" [ref=f5e810]:
+                    - generic:
+                      - columnheader "granite-vision-3-3-2b" [ref=f5e811]:
+                        - paragraph [ref=f5e817]:
+                          - strong [ref=f5e818]: granite-vision-3-3-2b
+                      - cell "Not available" [ref=f5e819]:
+                        - paragraph [ref=f5e823]: Not available
+                      - cell [ref=f5e824]:
+                        - img [ref=f5e828]
+                  - row "granite-vision-3-2-2b1 USD 0.10 Not available" [ref=f5e831]:
+                    - generic:
+                      - columnheader "granite-vision-3-2-2b1" [ref=f5e832]:
+                        - paragraph [ref=f5e838]:
+                          - strong [ref=f5e839]:
+                            - text: granite-vision-3-2-2b
+                            - superscript [ref=f5e840]:
+                              - link "1" [ref=f5e841] [cursor=pointer]:
+                                - /url: "#footnotes1"
+                      - cell "USD 0.10" [ref=f5e842]:
+                        - paragraph [ref=f5e846]: USD 0.10
+                      - cell "Not available" [ref=f5e847]:
+                        - paragraph [ref=f5e851]: Not available
+                  - row "granite-3-2b-instruct (v3.1)1 USD 0.10 Not available" [ref=f5e852]:
+                    - generic:
+                      - columnheader "granite-3-2b-instruct (v3.1)1" [ref=f5e853]:
+                        - generic [ref=f5e858]:
+                          - paragraph [ref=f5e859]:
+                            - strong [ref=f5e860]:
+                              - text: granite-3-2b-instruct (v3.1)
+                              - link "1" [ref=f5e861] [cursor=pointer]:
+                                - /url: "#footnotes1"
+                                - superscript [ref=f5e862]: "1"
+                          - paragraph [ref=f5e863]
+                      - cell "USD 0.10" [ref=f5e864]:
+                        - paragraph [ref=f5e868]: USD 0.10
+                      - cell "Not available" [ref=f5e869]:
+                        - paragraph [ref=f5e873]: Not available
+                  - row "granite-guardian-3-2b (v3.1)1 (Deprecated) USD 0.10 Not available" [ref=f5e874]:
+                    - generic:
+                      - columnheader "granite-guardian-3-2b (v3.1)1 (Deprecated)" [ref=f5e875]:
+                        - paragraph [ref=f5e881]:
+                          - strong [ref=f5e882]:
+                            - text: granite-guardian-3-2b (v3.1)
+                            - link "1" [ref=f5e883] [cursor=pointer]:
+                              - /url: "#footnotes1"
+                              - superscript [ref=f5e884]: "1"
+                            - text: (Deprecated)
+                      - cell "USD 0.10" [ref=f5e885]:
+                        - paragraph [ref=f5e889]: USD 0.10
+                      - cell "Not available" [ref=f5e890]:
+                        - paragraph [ref=f5e894]: Not available
+                  - row "granite-guardian-3-8b (v3.1)1 USD 0.20 Not available" [ref=f5e895]:
+                    - generic:
+                      - columnheader "granite-guardian-3-8b (v3.1)1" [ref=f5e896]:
+                        - paragraph [ref=f5e902]:
+                          - strong [ref=f5e903]:
+                            - text: granite-guardian-3-8b (v3.1)
+                            - superscript [ref=f5e904]:
+                              - link "1" [ref=f5e905] [cursor=pointer]:
+                                - /url: "#footnotes1"
+                      - cell "USD 0.20" [ref=f5e906]:
+                        - paragraph [ref=f5e910]: USD 0.20
+                      - cell "Not available" [ref=f5e911]:
+                        - paragraph [ref=f5e915]: Not available
+                  - row "granite-timeseries-ttm-r21 USD 0.38 Not available" [ref=f5e916]:
+                    - generic:
+                      - columnheader "granite-timeseries-ttm-r21" [ref=f5e917]:
+                        - paragraph [ref=f5e923]:
+                          - strong [ref=f5e924]:
+                            - text: granite-timeseries-ttm-r2
+                            - superscript [ref=f5e925]:
+                              - link "1" [ref=f5e926] [cursor=pointer]:
+                                - /url: "#footnotes1"
+                      - cell "USD 0.38" [ref=f5e927]:
+                        - paragraph [ref=f5e931]: USD 0.38
+                      - cell "Not available" [ref=f5e932]:
+                        - paragraph [ref=f5e936]: Not available
+                  - row "granite-13b-instruct1 (Deprecated) USD 0.60 Not available" [ref=f5e937]:
+                    - generic:
+                      - columnheader "granite-13b-instruct1 (Deprecated)" [ref=f5e938]:
+                        - paragraph [ref=f5e944]:
+                          - strong [ref=f5e945]:
+                            - text: granite-13b-instruct
+                            - link "1" [ref=f5e946] [cursor=pointer]:
+                              - /url: "#footnotes1"
+                              - superscript [ref=f5e947]: "1"
+                            - text: (Deprecated)
+                      - cell "USD 0.60" [ref=f5e948]:
+                        - paragraph [ref=f5e952]: USD 0.60
+                      - cell "Not available" [ref=f5e953]:
+                        - paragraph [ref=f5e957]: Not available
+                  - row "granite-3-8b-instruct (v3.1) USD 0.20 Not available" [ref=f5e958]:
+                    - generic:
+                      - columnheader "granite-3-8b-instruct (v3.1)" [ref=f5e959]:
+                        - paragraph [ref=f5e965]:
+                          - strong [ref=f5e966]: granite-3-8b-instruct (v3.1)
+                      - cell "USD 0.20" [ref=f5e967]:
+                        - paragraph [ref=f5e971]: USD 0.20
+                      - cell "Not available" [ref=f5e972]:
+                        - paragraph [ref=f5e976]: Not available
+                  - row "granite-8b-code-instruct USD 0.20" [ref=f5e977]:
+                    - generic:
+                      - columnheader "granite-8b-code-instruct" [ref=f5e978]:
+                        - paragraph [ref=f5e984]:
+                          - strong [ref=f5e985]: granite-8b-code-instruct
+                      - cell "USD 0.20" [ref=f5e986]:
+                        - paragraph [ref=f5e990]: USD 0.20
+                      - cell [ref=f5e991]:
+                        - img [ref=f5e995]
+                  - row "granite-3-2-8b-instruct USD 0.20" [ref=f5e998]:
+                    - generic:
+                      - columnheader "granite-3-2-8b-instruct" [ref=f5e999]:
+                        - paragraph [ref=f5e1005]:
+                          - strong [ref=f5e1006]: granite-3-2-8b-instruct
+                      - cell "USD 0.20" [ref=f5e1007]:
+                        - paragraph [ref=f5e1011]: USD 0.20
+                      - cell [ref=f5e1012]:
+                        - img [ref=f5e1016]
+                  - row "granite-3-1-8b-base Not available" [ref=f5e1019]:
+                    - generic:
+                      - columnheader "granite-3-1-8b-base" [ref=f5e1020]:
+                        - paragraph [ref=f5e1026]:
+                          - strong [ref=f5e1027]: granite-3-1-8b-base
+                      - cell "Not available" [ref=f5e1028]:
+                        - paragraph [ref=f5e1032]: Not available
+                      - cell [ref=f5e1033]:
+                        - img [ref=f5e1037]
+                  - row "granite-20b-code-base-sql-gen1 Not available" [ref=f5e1040]:
+                    - generic:
+                      - columnheader "granite-20b-code-base-sql-gen1" [ref=f5e1041]:
+                        - paragraph [ref=f5e1047]:
+                          - strong [ref=f5e1048]:
+                            - text: granite-20b-code-base-sql-gen
+                            - link "1" [ref=f5e1049] [cursor=pointer]:
+                              - /url: "#footnotes1"
+                              - superscript [ref=f5e1050]: "1"
+                      - cell "Not available" [ref=f5e1051]:
+                        - paragraph [ref=f5e1055]: Not available
+                      - cell [ref=f5e1056]:
+                        - img [ref=f5e1060]
+                  - row "granite-20b-code-base-schema-linking1 Not available" [ref=f5e1063]:
+                    - generic:
+                      - columnheader "granite-20b-code-base-schema-linking1" [ref=f5e1064]:
+                        - generic [ref=f5e1069]:
+                          - paragraph [ref=f5e1070]:
+                            - strong [ref=f5e1071]:
+                              - text: granite-20b-code-base-schema-linking
+                              - link "1" [ref=f5e1072] [cursor=pointer]:
+                                - /url: "#footnotes1"
+                                - superscript [ref=f5e1073]: "1"
+                          - paragraph [ref=f5e1074]
+                      - cell "Not available" [ref=f5e1075]:
+                        - paragraph [ref=f5e1079]: Not available
+                      - cell [ref=f5e1080]:
+                        - img [ref=f5e1084]
+                  - row "granite-3-8b-base1 Not available" [ref=f5e1087]:
+                    - generic:
+                      - columnheader "granite-3-8b-base1" [ref=f5e1088]:
+                        - paragraph [ref=f5e1094]:
+                          - strong [ref=f5e1095]:
+                            - text: granite-3-8b-base
+                            - link "1" [ref=f5e1096] [cursor=pointer]:
+                              - /url: "#footnotes1"
+                              - superscript [ref=f5e1097]: "1"
+                      - cell "Not available" [ref=f5e1098]:
+                        - paragraph [ref=f5e1102]: Not available
+                      - cell [ref=f5e1103]:
+                        - img [ref=f5e1107]
+                  - row "granite-7b-lab1 Not available" [ref=f5e1110]:
+                    - generic:
+                      - columnheader "granite-7b-lab1" [ref=f5e1111]:
+                        - generic [ref=f5e1116]:
+                          - paragraph [ref=f5e1117]:
+                            - strong [ref=f5e1118]:
+                              - text: granite-7b-lab
+                              - superscript [ref=f5e1119]:
+                                - link "1" [ref=f5e1120] [cursor=pointer]:
+                                  - /url: "#footnotes1"
+                          - paragraph [ref=f5e1121]
+                      - cell "Not available" [ref=f5e1122]:
+                        - paragraph [ref=f5e1126]: Not available
+                      - cell [ref=f5e1127]:
+                        - img [ref=f5e1131]
+                  - row "granite-8b-japanese1 Not available" [ref=f5e1134]:
+                    - generic:
+                      - columnheader "granite-8b-japanese1" [ref=f5e1135]:
+                        - paragraph [ref=f5e1141]:
+                          - strong [ref=f5e1142]:
+                            - text: granite-8b-japanese
+                            - superscript [ref=f5e1143]:
+                              - link "1" [ref=f5e1144] [cursor=pointer]:
+                                - /url: "#footnotes1"
+                      - cell "Not available" [ref=f5e1145]:
+                        - paragraph [ref=f5e1149]: Not available
+                      - cell [ref=f5e1150]:
+                        - img [ref=f5e1154]
+                  - row "granite-4-1-3b Not available" [ref=f5e1157]:
+                    - generic:
+                      - columnheader "granite-4-1-3b" [ref=f5e1158]:
+                        - paragraph [ref=f5e1164]:
+                          - strong [ref=f5e1165]: granite-4-1-3b
+                      - cell "Not available" [ref=f5e1166]:
+                        - paragraph [ref=f5e1170]: Not available
+                      - cell [ref=f5e1171]:
+                        - img [ref=f5e1175]
+                  - row "granite-4-1-8b Not available" [ref=f5e1178]:
+                    - generic:
+                      - columnheader "granite-4-1-8b" [ref=f5e1179]:
+                        - paragraph [ref=f5e1185]:
+                          - strong [ref=f5e1186]: granite-4-1-8b
+                      - cell "Not available" [ref=f5e1187]:
+                        - paragraph [ref=f5e1191]: Not available
+                      - cell [ref=f5e1192]:
+                        - img [ref=f5e1196]
+                  - row "granite-4-1-30b Not available" [ref=f5e1199]:
+                    - generic:
+                      - columnheader "granite-4-1-30b" [ref=f5e1200]:
+                        - paragraph [ref=f5e1206]:
+                          - strong [ref=f5e1207]: granite-4-1-30b
+                      - cell "Not available" [ref=f5e1208]:
+                        - paragraph [ref=f5e1212]: Not available
+                      - cell [ref=f5e1213]:
+                        - img [ref=f5e1217]
+                  - row "granite-vision-4-1-4b Not available" [ref=f5e1220]:
+                    - generic:
+                      - columnheader "granite-vision-4-1-4b" [ref=f5e1221]:
+                        - paragraph [ref=f5e1227]:
+                          - strong [ref=f5e1228]: granite-vision-4-1-4b
+                      - cell "Not available" [ref=f5e1229]:
+                        - paragraph [ref=f5e1233]: Not available
+                      - cell [ref=f5e1234]:
+                        - img [ref=f5e1238]
+                  - row "granite-4-h-small USD 0.0636 per 1M tokens input USD 0.265 per 1M tokens output" [ref=f5e1241]:
+                    - generic:
+                      - columnheader "granite-4-h-small" [ref=f5e1242]:
+                        - paragraph [ref=f5e1248]:
+                          - strong [ref=f5e1249]: granite-4-h-small
+                      - cell "USD 0.0636 per 1M tokens input USD 0.265 per 1M tokens output" [ref=f5e1250]:
+                        - generic [ref=f5e1253]:
+                          - paragraph [ref=f5e1254]: USD 0.0636 per 1M tokens input
+                          - paragraph [ref=f5e1255]: USD 0.265 per 1M tokens output
+                      - cell [ref=f5e1256]:
+                        - img [ref=f5e1260]
+                  - row "granite-4-h-tiny Not available" [ref=f5e1263]:
+                    - generic:
+                      - columnheader "granite-4-h-tiny" [ref=f5e1264]:
+                        - paragraph [ref=f5e1270]:
+                          - strong [ref=f5e1271]: granite-4-h-tiny
+                      - cell "Not available" [ref=f5e1272]:
+                        - paragraph [ref=f5e1276]: Not available
+                      - cell [ref=f5e1277]:
+                        - img [ref=f5e1281]
+                  - row "granite-4-h-micro Not available" [ref=f5e1284]:
+                    - generic:
+                      - columnheader "granite-4-h-micro" [ref=f5e1285]:
+                        - paragraph [ref=f5e1291]:
+                          - strong [ref=f5e1292]: granite-4-h-micro
+                      - cell "Not available" [ref=f5e1293]:
+                        - paragraph [ref=f5e1297]: Not available
+                      - cell [ref=f5e1298]:
+                        - img [ref=f5e1302]
+                  - row "granite-vision-3-3-2b Not available" [ref=f5e1305]:
+                    - generic:
+                      - columnheader "granite-vision-3-3-2b" [ref=f5e1306]:
+                        - paragraph [ref=f5e1312]:
+                          - strong [ref=f5e1313]: granite-vision-3-3-2b
+                      - cell "Not available" [ref=f5e1314]:
+                        - paragraph [ref=f5e1318]: Not available
+                      - cell [ref=f5e1319]:
+                        - img [ref=f5e1323]
+                  - row "granite-3-3-8b-instruct Not available" [ref=f5e1326]:
+                    - generic:
+                      - columnheader "granite-3-3-8b-instruct" [ref=f5e1327]:
+                        - paragraph [ref=f5e1333]:
+                          - strong [ref=f5e1334]: granite-3-3-8b-instruct
+                      - cell "Not available" [ref=f5e1335]:
+                        - paragraph [ref=f5e1339]: Not available
+                      - cell [ref=f5e1340]:
+                        - img [ref=f5e1344]
+                  - row "granite-3-3-2b-instruct Not available" [ref=f5e1347]:
+                    - generic:
+                      - columnheader "granite-3-3-2b-instruct" [ref=f5e1348]:
+                        - paragraph [ref=f5e1354]:
+                          - strong [ref=f5e1355]: granite-3-3-2b-instruct
+                      - cell "Not available" [ref=f5e1356]:
+                        - paragraph [ref=f5e1360]: Not available
+                      - cell [ref=f5e1361]:
+                        - img [ref=f5e1365]
+                  - row "granite-3-1-8b-base Not available" [ref=f5e1368]:
+                    - generic:
+                      - columnheader "granite-3-1-8b-base" [ref=f5e1369]:
+                        - paragraph [ref=f5e1375]:
+                          - strong [ref=f5e1376]: granite-3-1-8b-base
+                      - cell "Not available" [ref=f5e1377]:
+                        - paragraph [ref=f5e1381]: Not available
+                      - cell [ref=f5e1382]:
+                        - img [ref=f5e1386]
+                  - row "granite-3-8b-base Not available" [ref=f5e1389]:
+                    - generic:
+                      - columnheader "granite-3-8b-base" [ref=f5e1390]:
+                        - paragraph [ref=f5e1396]:
+                          - strong [ref=f5e1397]: granite-3-8b-base
+                      - cell "Not available" [ref=f5e1398]:
+                        - paragraph [ref=f5e1402]: Not available
+                      - cell [ref=f5e1403]:
+                        - img [ref=f5e1407]
+                  - row "granite-7b-lab Not available" [ref=f5e1410]:
+                    - generic:
+                      - columnheader "granite-7b-lab" [ref=f5e1411]:
+                        - paragraph [ref=f5e1417]:
+                          - strong [ref=f5e1418]: granite-7b-lab
+                      - cell "Not available" [ref=f5e1419]:
+                        - paragraph [ref=f5e1423]: Not available
+                      - cell [ref=f5e1424]:
+                        - img [ref=f5e1428]
+                  - row "granite-guardian-3-8b USD 0.212" [ref=f5e1431]:
+                    - generic:
+                      - columnheader "granite-guardian-3-8b" [ref=f5e1432]:
+                        - paragraph [ref=f5e1438]:
+                          - strong [ref=f5e1439]: granite-guardian-3-8b
+                      - cell "USD 0.212" [ref=f5e1440]:
+                        - paragraph [ref=f5e1444]: USD 0.212
+                      - cell [ref=f5e1445]:
+                        - img [ref=f5e1449]
+                  - row "granite-timeseries-ttm-r2 USD 0.1378 per 1M data points input USD 0.4028 per 1M data output output" [ref=f5e1452]:
+                    - generic:
+                      - columnheader "granite-timeseries-ttm-r2" [ref=f5e1453]:
+                        - paragraph [ref=f5e1459]:
+                          - strong [ref=f5e1460]: granite-timeseries-ttm-r2
+                      - cell "USD 0.1378 per 1M data points input USD 0.4028 per 1M data output output" [ref=f5e1461]:
+                        - generic [ref=f5e1464]:
+                          - paragraph [ref=f5e1465]: USD 0.1378 per 1M data points input
+                          - paragraph [ref=f5e1466]: USD 0.4028 per 1M data output output
+                      - cell [ref=f5e1467]
+                  - row "granite-8b-code-instruct USD 0.636" [ref=f5e1468]:
+                    - generic:
+                      - columnheader "granite-8b-code-instruct" [ref=f5e1469]:
+                        - paragraph [ref=f5e1475]:
+                          - strong [ref=f5e1476]: granite-8b-code-instruct
+                      - cell "USD 0.636" [ref=f5e1477]:
+                        - paragraph [ref=f5e1481]: USD 0.636
+                      - cell [ref=f5e1482]:
+                        - img [ref=f5e1486]
+                  - row "granite-8b-japanese Not available" [ref=f5e1489]:
+                    - generic:
+                      - columnheader "granite-8b-japanese" [ref=f5e1490]:
+                        - paragraph [ref=f5e1496]:
+                          - strong [ref=f5e1497]: granite-8b-japanese
+                      - cell "Not available" [ref=f5e1498]:
+                        - paragraph [ref=f5e1502]: Not available
+                      - cell [ref=f5e1503]:
+                        - img [ref=f5e1507]
+                  - row "granite-20b-multilingual Not available" [ref=f5e1510]:
+                    - generic:
+                      - columnheader "granite-20b-multilingual" [ref=f5e1511]:
+                        - paragraph [ref=f5e1517]:
+                          - strong [ref=f5e1518]: granite-20b-multilingual
+                      - cell "Not available" [ref=f5e1519]:
+                        - paragraph [ref=f5e1523]: Not available
+                      - cell [ref=f5e1524]:
+                        - img [ref=f5e1528]
+                  - row "granite-3b-code-instruct Not available" [ref=f5e1531]:
+                    - generic:
+                      - columnheader "granite-3b-code-instruct" [ref=f5e1532]:
+                        - paragraph [ref=f5e1538]:
+                          - strong [ref=f5e1539]: granite-3b-code-instruct
+                      - cell "Not available" [ref=f5e1540]:
+                        - paragraph [ref=f5e1544]: Not available
+                      - cell [ref=f5e1545]:
+                        - img [ref=f5e1549]
+                  - row "granite-8b-code-instruct Not available" [ref=f5e1552]:
+                    - generic:
+                      - columnheader "granite-8b-code-instruct" [ref=f5e1553]:
+                        - paragraph [ref=f5e1559]:
+                          - strong [ref=f5e1560]: granite-8b-code-instruct
+                      - cell "Not available" [ref=f5e1561]:
+                        - paragraph [ref=f5e1565]: Not available
+                      - cell [ref=f5e1566]:
+                        - img [ref=f5e1570]
+                  - row "granite-20b-code-instruct Not available" [ref=f5e1573]:
+                    - generic:
+                      - columnheader "granite-20b-code-instruct" [ref=f5e1574]:
+                        - paragraph [ref=f5e1580]:
+                          - strong [ref=f5e1581]: granite-20b-code-instruct
+                      - cell "Not available" [ref=f5e1582]:
+                        - paragraph [ref=f5e1586]: Not available
+                      - cell [ref=f5e1587]:
+                        - img [ref=f5e1591]
+                  - row "granite-34b-code-instruct Not available" [ref=f5e1594]:
+                    - generic:
+                      - columnheader "granite-34b-code-instruct" [ref=f5e1595]:
+                        - paragraph [ref=f5e1601]:
+                          - strong [ref=f5e1602]: granite-34b-code-instruct
+                      - cell "Not available" [ref=f5e1603]:
+                        - paragraph [ref=f5e1607]: Not available
+                      - cell [ref=f5e1608]:
+                        - img [ref=f5e1612]
+                  - row "granite-20b-code-base-schema-linking Not available" [ref=f5e1615]:
+                    - generic:
+                      - columnheader "granite-20b-code-base-schema-linking" [ref=f5e1616]:
+                        - paragraph [ref=f5e1622]:
+                          - strong [ref=f5e1623]: granite-20b-code-base-schema-linking
+                      - cell "Not available" [ref=f5e1624]:
+                        - paragraph [ref=f5e1628]: Not available
+                      - cell [ref=f5e1629]:
+                        - img [ref=f5e1633]
+                  - row "granite-20b-code-base-sql-gen Not available" [ref=f5e1636]:
+                    - generic:
+                      - columnheader "granite-20b-code-base-sql-gen" [ref=f5e1637]:
+                        - paragraph [ref=f5e1643]:
+                          - strong [ref=f5e1644]: granite-20b-code-base-sql-gen
+                      - cell "Not available" [ref=f5e1645]:
+                        - paragraph [ref=f5e1649]: Not available
+                      - cell [ref=f5e1650]:
+                        - img [ref=f5e1654]
+                  - row "granite-13b-chat-v2 Not available" [ref=f5e1657]:
+                    - generic:
+                      - columnheader "granite-13b-chat-v2" [ref=f5e1658]:
+                        - paragraph [ref=f5e1664]:
+                          - strong [ref=f5e1665]: granite-13b-chat-v2
+                      - cell "Not available" [ref=f5e1666]:
+                        - paragraph [ref=f5e1670]: Not available
+                      - cell [ref=f5e1671]:
+                        - img [ref=f5e1675]
+        - paragraph [ref=f5e1681]: "*Prices shown are indicative, may vary by country, exclude any applicable taxes and duties, and are subject to product offering availability in a locale."
+      - generic [ref=f5e1683]:
+        - heading "Embedding models" [level=2] [ref=f5e1685]
+        - generic [ref=f5e1686]:
+          - paragraph [ref=f5e1689]: All embedding models are USD 0.106 per million tokens. This includes IBM models (granite-embedding-278m-multilingual, slate-125m-english-rtrvr-v2, slate-30m-english-rtrvr-v2) and third-party models (all-mini-l6-v2 and multilingual-e5-large). The reranking model (ms-marco-minilm-l-12-v2) is USD 0.005 per million tokens.
+          - generic:
+            - list
+      - heading "Third-party foundation models" [level=2] [ref=f5e1693]
+      - generic [ref=f5e1699]:
+        - table [ref=f5e1703]:
+          - generic [ref=f5e1704]:
+            - generic:
+              - rowgroup [ref=f5e1706]:
+                - row "Model name Provider Pay as you go Per million tokens Model hosting/Deploy on demand^ Per hour Prices based on GPU config" [ref=f5e1707]:
+                  - generic:
+                    - columnheader "Model name" [ref=f5e1708]:
+                      - generic [ref=f5e1710]:
+                        - generic: Model name
+                    - columnheader "Provider" [ref=f5e1711]:
+                      - generic [ref=f5e1714]:
+                        - generic: Provider
+                    - columnheader "Pay as you go Per million tokens" [ref=f5e1715]:
+                      - generic [ref=f5e1717]:
+                        - generic [ref=f5e1718]:
+                          - generic: Pay as you go
+                        - generic [ref=f5e1721] [cursor=pointer]: Per million tokens
+                    - columnheader "Model hosting/Deploy on demand^ Per hour Prices based on GPU config" [ref=f5e1722]:
+                      - generic [ref=f5e1724]:
+                        - generic [ref=f5e1725]:
+                          - generic: Model hosting/Deploy on demand^
+                        - generic [ref=f5e1727]:
+                          - generic:
+                            - generic [ref=f5e1728] [cursor=pointer]: Per hour
+                            - generic [ref=f5e1729] [cursor=pointer]: Prices based on GPU config
+              - rowgroup [ref=f5e1730]:
+                - generic:
+                  - row "llama-4-maverick-17b-128e-instruct-int4 Meta Not available" [ref=f5e1731]:
+                    - generic:
+                      - columnheader "llama-4-maverick-17b-128e-instruct-int4" [ref=f5e1732]:
+                        - paragraph [ref=f5e1738]:
+                          - strong [ref=f5e1739]: llama-4-maverick-17b-128e-instruct-int4
+                      - cell "Meta" [ref=f5e1740]:
+                        - paragraph [ref=f5e1744]: Meta
+                      - cell "Not available" [ref=f5e1745]:
+                        - paragraph [ref=f5e1749]: Not available
+                      - cell [ref=f5e1750]:
+                        - img [ref=f5e1754]
+                  - row "llama-4-maverick-17b-128e-instruct-fp8 Meta USD 0.35 tokens input USD 1.40 tokens output Not available" [ref=f5e1757]:
+                    - generic:
+                      - columnheader "llama-4-maverick-17b-128e-instruct-fp8" [ref=f5e1758]:
+                        - paragraph [ref=f5e1764]:
+                          - strong [ref=f5e1767]: llama-4-maverick-17b-128e-instruct-fp8
+                      - cell "Meta" [ref=f5e1768]:
+                        - paragraph [ref=f5e1772]: Meta
+                      - cell "USD 0.35 tokens input USD 1.40 tokens output" [ref=f5e1773]:
+                        - generic [ref=f5e1776]:
+                          - paragraph [ref=f5e1777]: USD 0.35 tokens input
+                          - paragraph [ref=f5e1778]: USD 1.40 tokens output
+                      - cell "Not available" [ref=f5e1779]:
+                        - paragraph [ref=f5e1783]: Not available
+                  - row "llama-3-2-1b-instruct Meta USD 0.10 Not available" [ref=f5e1784]:
+                    - generic:
+                      - columnheader "llama-3-2-1b-instruct" [ref=f5e1785]:
+                        - paragraph [ref=f5e1791]:
+                          - strong [ref=f5e1792]: llama-3-2-1b-instruct
+                      - cell "Meta" [ref=f5e1793]:
+                        - paragraph [ref=f5e1797]: Meta
+                      - cell "USD 0.10" [ref=f5e1798]:
+                        - paragraph [ref=f5e1802]: USD 0.10
+                      - cell "Not available" [ref=f5e1803]:
+                        - paragraph [ref=f5e1807]: Not available
+                  - row "llama-3-2-3b-instruct Meta USD 0.15 Not available" [ref=f5e1808]:
+                    - generic:
+                      - columnheader "llama-3-2-3b-instruct" [ref=f5e1809]:
+                        - paragraph [ref=f5e1815]:
+                          - strong [ref=f5e1816]: llama-3-2-3b-instruct
+                      - cell "Meta" [ref=f5e1817]:
+                        - paragraph [ref=f5e1821]: Meta
+                      - cell "USD 0.15" [ref=f5e1822]:
+                        - paragraph [ref=f5e1826]: USD 0.15
+                      - cell "Not available" [ref=f5e1827]:
+                        - paragraph [ref=f5e1831]: Not available
+                  - row "llama-3-2-90b-vision-instruct Meta USD 2.00 Not available" [ref=f5e1832]:
+                    - generic:
+                      - columnheader "llama-3-2-90b-vision-instruct" [ref=f5e1833]:
+                        - paragraph [ref=f5e1839]:
+                          - strong [ref=f5e1840]: llama-3-2-90b-vision-instruct
+                      - cell "Meta" [ref=f5e1841]:
+                        - paragraph [ref=f5e1845]: Meta
+                      - cell "USD 2.00" [ref=f5e1846]:
+                        - paragraph [ref=f5e1850]: USD 2.00
+                      - cell "Not available" [ref=f5e1851]:
+                        - paragraph [ref=f5e1855]: Not available
+                  - row "llama-3-405b-instruct Meta USD 5.00 tokens input USD 16.00 tokens output Not available" [ref=f5e1856]:
+                    - generic:
+                      - columnheader "llama-3-405b-instruct" [ref=f5e1857]:
+                        - paragraph [ref=f5e1863]:
+                          - strong [ref=f5e1864]: llama-3-405b-instruct
+                      - cell "Meta" [ref=f5e1865]:
+                        - paragraph [ref=f5e1869]: Meta
+                      - cell "USD 5.00 tokens input USD 16.00 tokens output" [ref=f5e1870]:
+                        - generic [ref=f5e1873]:
+                          - paragraph [ref=f5e1874]: USD 5.00 tokens input
+                          - paragraph [ref=f5e1875]: USD 16.00 tokens output
+                      - cell "Not available" [ref=f5e1876]:
+                        - paragraph [ref=f5e1880]: Not available
+                  - row "llama-guard-3-11b-vision Meta USD 0.35 Not available" [ref=f5e1881]:
+                    - generic:
+                      - columnheader "llama-guard-3-11b-vision" [ref=f5e1882]:
+                        - paragraph [ref=f5e1888]:
+                          - strong [ref=f5e1889]: llama-guard-3-11b-vision
+                      - cell "Meta" [ref=f5e1890]:
+                        - paragraph [ref=f5e1894]: Meta
+                      - cell "USD 0.35" [ref=f5e1895]:
+                        - paragraph [ref=f5e1899]: USD 0.35
+                      - cell "Not available" [ref=f5e1900]:
+                        - paragraph [ref=f5e1904]: Not available
+                  - row "mistral-medium-2505 Mistral AI USD 3.00 input USD 10.00 tokens output Not available" [ref=f5e1905]:
+                    - generic:
+                      - columnheader "mistral-medium-2505" [ref=f5e1906]:
+                        - paragraph [ref=f5e1912]:
+                          - strong [ref=f5e1913]: mistral-medium-2505
+                      - cell "Mistral AI" [ref=f5e1914]:
+                        - paragraph [ref=f5e1918]: Mistral AI
+                      - cell "USD 3.00 input USD 10.00 tokens output" [ref=f5e1919]:
+                        - generic [ref=f5e1922]:
+                          - paragraph [ref=f5e1923]: USD 3.00 input
+                          - paragraph [ref=f5e1924]: USD 10.00 tokens output
+                      - cell "Not available" [ref=f5e1925]:
+                        - paragraph [ref=f5e1929]: Not available
+                  - row "mistral-large-22 (Deprecated) Mistral AI USD 3.00 tokens input USD 10.00 tokens output Not available" [ref=f5e1930]:
+                    - generic:
+                      - columnheader "mistral-large-22 (Deprecated)" [ref=f5e1931]:
+                        - paragraph [ref=f5e1937]:
+                          - strong [ref=f5e1938]:
+                            - text: mistral-large-2
+                            - superscript [ref=f5e1939]:
+                              - link "2" [ref=f5e1940] [cursor=pointer]:
+                                - /url: "#footnotes2"
+                            - text: (Deprecated)
+                      - cell "Mistral AI" [ref=f5e1941]:
+                        - paragraph [ref=f5e1945]: Mistral AI
+                      - cell "USD 3.00 tokens input USD 10.00 tokens output" [ref=f5e1946]:
+                        - generic [ref=f5e1949]:
+                          - paragraph [ref=f5e1950]: USD 3.00 tokens input
+                          - paragraph [ref=f5e1951]: USD 10.00 tokens output
+                      - cell "Not available" [ref=f5e1952]:
+                        - paragraph [ref=f5e1956]: Not available
+                  - row "mistral-small-3-1-24b-instruct-25032 Mistral AI USD 0.10 input USD 0.30 output Not available" [ref=f5e1957]:
+                    - generic:
+                      - columnheader "mistral-small-3-1-24b-instruct-25032" [ref=f5e1958]:
+                        - paragraph [ref=f5e1964]:
+                          - strong [ref=f5e1965]:
+                            - text: mistral-small-3-1-24b-instruct-2503
+                            - superscript [ref=f5e1966]:
+                              - link "2" [ref=f5e1967] [cursor=pointer]:
+                                - /url: "#footnotes2"
+                      - cell "Mistral AI" [ref=f5e1968]:
+                        - paragraph [ref=f5e1972]: Mistral AI
+                      - cell "USD 0.10 input USD 0.30 output" [ref=f5e1973]:
+                        - generic [ref=f5e1976]:
+                          - paragraph [ref=f5e1977]: USD 0.10 input
+                          - paragraph [ref=f5e1978]: USD 0.30 output
+                      - cell "Not available" [ref=f5e1979]:
+                        - paragraph [ref=f5e1983]: Not available
+                  - row "pixtral-12b2 (Deprecated) Mistral AI USD 0.35 Not available" [ref=f5e1984]:
+                    - generic:
+                      - columnheader "pixtral-12b2 (Deprecated)" [ref=f5e1985]:
+                        - paragraph [ref=f5e1991]:
+                          - strong [ref=f5e1992]:
+                            - text: pixtral-12b
+                            - superscript [ref=f5e1993]:
+                              - link "2" [ref=f5e1994] [cursor=pointer]:
+                                - /url: "#footnotes2"
+                            - text: (Deprecated)
+                      - cell "Mistral AI" [ref=f5e1995]:
+                        - paragraph [ref=f5e1999]: Mistral AI
+                      - cell "USD 0.35" [ref=f5e2000]:
+                        - paragraph [ref=f5e2004]: USD 0.35
+                      - cell "Not available" [ref=f5e2005]:
+                        - paragraph [ref=f5e2009]: Not available
+                  - row "llama-3-3-70b-instruct Meta USD 0.71" [ref=f5e2010]:
+                    - generic:
+                      - columnheader "llama-3-3-70b-instruct" [ref=f5e2011]:
+                        - paragraph [ref=f5e2017]:
+                          - strong [ref=f5e2018]: llama-3-3-70b-instruct
+                      - cell "Meta" [ref=f5e2019]:
+                        - paragraph [ref=f5e2023]: Meta
+                      - cell "USD 0.71" [ref=f5e2024]:
+                        - paragraph [ref=f5e2028]: USD 0.71
+                      - cell [ref=f5e2029]:
+                        - img [ref=f5e2033]
+                  - row "flan-t5-xl-3b Deprecated Google USD 0.60" [ref=f5e2036]:
+                    - generic:
+                      - columnheader "flan-t5-xl-3b Deprecated" [ref=f5e2037]:
+                        - generic [ref=f5e2041]:
+                          - generic:
+                            - paragraph [ref=f5e2043]:
+                              - strong [ref=f5e2044]: flan-t5-xl-3b
+                            - generic [ref=f5e2046] [cursor=pointer]: Deprecated
+                      - cell "Google" [ref=f5e2047]:
+                        - paragraph [ref=f5e2051]: Google
+                      - cell "USD 0.60" [ref=f5e2052]:
+                        - paragraph [ref=f5e2056]: USD 0.60
+                      - cell [ref=f5e2057]:
+                        - img [ref=f5e2061]
+                  - row "allam-1-13b-instruct SDAIA USD 1.80" [ref=f5e2064]:
+                    - generic:
+                      - columnheader "allam-1-13b-instruct" [ref=f5e2065]:
+                        - paragraph [ref=f5e2071]:
+                          - strong [ref=f5e2072]: allam-1-13b-instruct
+                      - cell "SDAIA" [ref=f5e2073]:
+                        - paragraph [ref=f5e2077]: SDAIA
+                      - cell "USD 1.80" [ref=f5e2078]:
+                        - paragraph [ref=f5e2082]: USD 1.80
+                      - cell [ref=f5e2083]:
+                        - img [ref=f5e2087]
+                  - row "gpt-oss-120b Open AI USD 0.15 tokens input USD 0.60 tokens output" [ref=f5e2090]:
+                    - generic:
+                      - columnheader "gpt-oss-120b" [ref=f5e2091]:
+                        - paragraph [ref=f5e2097]:
+                          - strong [ref=f5e2098]: gpt-oss-120b
+                      - cell "Open AI" [ref=f5e2099]:
+                        - paragraph [ref=f5e2103]: Open AI
+                      - cell "USD 0.15 tokens input USD 0.60 tokens output" [ref=f5e2104]:
+                        - generic [ref=f5e2107]:
+                          - paragraph [ref=f5e2108]: USD 0.15 tokens input
+                          - paragraph [ref=f5e2109]: USD 0.60 tokens output
+                      - cell [ref=f5e2110]:
+                        - img [ref=f5e2114]
+                  - row "llama-3-2-11b-vision-instruct Meta USD 0.35" [ref=f5e2117]:
+                    - generic:
+                      - columnheader "llama-3-2-11b-vision-instruct" [ref=f5e2118]:
+                        - paragraph [ref=f5e2124]:
+                          - strong [ref=f5e2125]: llama-3-2-11b-vision-instruct
+                      - cell "Meta" [ref=f5e2126]:
+                        - paragraph [ref=f5e2130]: Meta
+                      - cell "USD 0.35" [ref=f5e2131]:
+                        - paragraph [ref=f5e2135]: USD 0.35
+                      - cell [ref=f5e2136]:
+                        - img [ref=f5e2140]
+                  - row "llama-3-13b-chat (Deprecated) Meta USD 0.0006 /1,000 tokens for input and output" [ref=f5e2143]:
+                    - generic:
+                      - columnheader "llama-3-13b-chat (Deprecated)" [ref=f5e2144]:
+                        - generic [ref=f5e2149]:
+                          - paragraph [ref=f5e2150]: llama-3-13b-chat (Deprecated)
+                          - paragraph [ref=f5e2151]
+                      - cell "Meta" [ref=f5e2152]:
+                        - paragraph [ref=f5e2156]: Meta
+                      - cell "USD 0.0006 /1,000 tokens for input and output" [ref=f5e2157]:
+                        - paragraph [ref=f5e2161]: USD 0.0006 /1,000 tokens for input and output
+                      - cell [ref=f5e2162]:
+                        - img [ref=f5e2166]
+                  - row "deepseek-r1-distill-llama-70b DeepSeek Not available" [ref=f5e2169]:
+                    - generic:
+                      - columnheader "deepseek-r1-distill-llama-70b" [ref=f5e2170]:
+                        - paragraph [ref=f5e2176]:
+                          - strong [ref=f5e2177]: deepseek-r1-distill-llama-70b
+                      - cell "DeepSeek" [ref=f5e2178]:
+                        - paragraph [ref=f5e2182]: DeepSeek
+                      - cell "Not available" [ref=f5e2183]:
+                        - paragraph [ref=f5e2187]: Not available
+                      - cell [ref=f5e2188]:
+                        - img [ref=f5e2192]
+                  - row "deepseek-r1-distill-llama-8b DeepSeek Not available" [ref=f5e2195]:
+                    - generic:
+                      - columnheader "deepseek-r1-distill-llama-8b" [ref=f5e2196]:
+                        - paragraph [ref=f5e2202]:
+                          - strong [ref=f5e2203]: deepseek-r1-distill-llama-8b
+                      - cell "DeepSeek" [ref=f5e2204]:
+                        - paragraph [ref=f5e2208]: DeepSeek
+                      - cell "Not available" [ref=f5e2209]:
+                        - paragraph [ref=f5e2213]: Not available
+                      - cell [ref=f5e2214]:
+                        - img [ref=f5e2218]
+                  - row "eurollm-1-7b-instruct Utter Project Not available" [ref=f5e2221]:
+                    - generic:
+                      - columnheader "eurollm-1-7b-instruct" [ref=f5e2222]:
+                        - paragraph [ref=f5e2228]:
+                          - strong [ref=f5e2229]: eurollm-1-7b-instruct
+                      - cell "Utter Project" [ref=f5e2230]:
+                        - paragraph [ref=f5e2234]: Utter Project
+                      - cell "Not available" [ref=f5e2235]:
+                        - paragraph [ref=f5e2239]: Not available
+                      - cell [ref=f5e2240]:
+                        - img [ref=f5e2244]
+                  - row "eurollm-9b-instruct Utter Project Not available" [ref=f5e2247]:
+                    - generic:
+                      - columnheader "eurollm-9b-instruct" [ref=f5e2248]:
+                        - paragraph [ref=f5e2254]:
+                          - strong [ref=f5e2255]: eurollm-9b-instruct
+                      - cell "Utter Project" [ref=f5e2256]:
+                        - paragraph [ref=f5e2260]: Utter Project
+                      - cell "Not available" [ref=f5e2261]:
+                        - paragraph [ref=f5e2265]: Not available
+                      - cell [ref=f5e2266]:
+                        - img [ref=f5e2270]
+                  - row "llama-2-70b-chat Meta Not available" [ref=f5e2273]:
+                    - generic:
+                      - columnheader "llama-2-70b-chat" [ref=f5e2274]:
+                        - paragraph [ref=f5e2280]: llama-2-70b-chat
+                      - cell "Meta" [ref=f5e2281]:
+                        - paragraph [ref=f5e2285]: Meta
+                      - cell "Not available" [ref=f5e2286]:
+                        - paragraph [ref=f5e2290]: Not available
+                      - cell [ref=f5e2291]:
+                        - img [ref=f5e2295]
+                  - row "llama-3-1-70b Meta Not available" [ref=f5e2298]:
+                    - generic:
+                      - columnheader "llama-3-1-70b" [ref=f5e2299]:
+                        - paragraph [ref=f5e2305]:
+                          - strong [ref=f5e2306]: llama-3-1-70b
+                      - cell "Meta" [ref=f5e2307]:
+                        - paragraph [ref=f5e2311]: Meta
+                      - cell "Not available" [ref=f5e2312]:
+                        - paragraph [ref=f5e2316]: Not available
+                      - cell [ref=f5e2317]:
+                        - img [ref=f5e2321]
+                  - row "llama-3-1-8b Meta Not available" [ref=f5e2324]:
+                    - generic:
+                      - columnheader "llama-3-1-8b" [ref=f5e2325]:
+                        - paragraph [ref=f5e2331]:
+                          - strong [ref=f5e2332]: llama-3-1-8b
+                      - cell "Meta" [ref=f5e2333]:
+                        - paragraph [ref=f5e2337]: Meta
+                      - cell "Not available" [ref=f5e2338]:
+                        - paragraph [ref=f5e2342]: Not available
+                      - cell [ref=f5e2343]:
+                        - img [ref=f5e2347]
+                  - row "llama-3-3-70b-instruct-hf Meta Not available" [ref=f5e2350]:
+                    - generic:
+                      - columnheader "llama-3-3-70b-instruct-hf" [ref=f5e2351]:
+                        - paragraph [ref=f5e2357]:
+                          - strong [ref=f5e2358]: llama-3-3-70b-instruct-hf
+                      - cell "Meta" [ref=f5e2359]:
+                        - paragraph [ref=f5e2363]: Meta
+                      - cell "Not available" [ref=f5e2364]:
+                        - paragraph [ref=f5e2368]: Not available
+                      - cell [ref=f5e2369]:
+                        - img [ref=f5e2373]
+                  - row "mistral-large-instruct-24112 Mistral AI Not available" [ref=f5e2376]:
+                    - generic:
+                      - columnheader "mistral-large-instruct-24112" [ref=f5e2377]:
+                        - paragraph [ref=f5e2383]:
+                          - strong [ref=f5e2384]:
+                            - text: mistral-large-instruct-2411
+                            - superscript [ref=f5e2385]:
+                              - link "2" [ref=f5e2386] [cursor=pointer]:
+                                - /url: "#footnotes2"
+                      - cell "Mistral AI" [ref=f5e2387]:
+                        - paragraph [ref=f5e2391]: Mistral AI
+                      - cell "Not available" [ref=f5e2392]:
+                        - paragraph [ref=f5e2396]: Not available
+                      - cell [ref=f5e2397]:
+                        - img [ref=f5e2401]
+                  - row "mistral-nemo-instruct-24072 Mistral AI Not available" [ref=f5e2404]:
+                    - generic:
+                      - columnheader "mistral-nemo-instruct-24072" [ref=f5e2405]:
+                        - paragraph [ref=f5e2411]:
+                          - strong [ref=f5e2412]:
+                            - text: mistral-nemo-instruct-2407
+                            - superscript [ref=f5e2413]:
+                              - link "2" [ref=f5e2414] [cursor=pointer]:
+                                - /url: "#footnotes2"
+                      - cell "Mistral AI" [ref=f5e2415]:
+                        - paragraph [ref=f5e2419]: Mistral AI
+                      - cell "Not available" [ref=f5e2420]:
+                        - paragraph [ref=f5e2424]: Not available
+                      - cell [ref=f5e2425]:
+                        - img [ref=f5e2429]
+                  - row "mixtral-8x7b-base2 Mistral AI Not available" [ref=f5e2432]:
+                    - generic:
+                      - columnheader "mixtral-8x7b-base2" [ref=f5e2433]:
+                        - paragraph [ref=f5e2439]:
+                          - strong [ref=f5e2440]:
+                            - text: mixtral-8x7b-base
+                            - superscript [ref=f5e2441]:
+                              - link "2" [ref=f5e2442] [cursor=pointer]:
+                                - /url: "#footnotes2"
+                      - cell "Mistral AI" [ref=f5e2443]:
+                        - paragraph [ref=f5e2447]: Mistral AI
+                      - cell "Not available" [ref=f5e2448]:
+                        - paragraph [ref=f5e2452]: Not available
+                      - cell [ref=f5e2453]:
+                        - img [ref=f5e2457]
+                  - row "poro-34b-chat LumiOpen Not available" [ref=f5e2460]:
+                    - generic:
+                      - columnheader "poro-34b-chat" [ref=f5e2461]:
+                        - paragraph [ref=f5e2467]:
+                          - strong [ref=f5e2468]: poro-34b-chat
+                      - cell "LumiOpen" [ref=f5e2469]:
+                        - paragraph [ref=f5e2473]: LumiOpen
+                      - cell "Not available" [ref=f5e2474]:
+                        - paragraph [ref=f5e2478]: Not available
+                      - cell [ref=f5e2479]:
+                        - img [ref=f5e2483]
+                  - row "allam-1-13b-instruct SDAIA USD 1.908" [ref=f5e2486]:
+                    - generic:
+                      - columnheader "allam-1-13b-instruct" [ref=f5e2487]:
+                        - paragraph [ref=f5e2493]:
+                          - strong [ref=f5e2494]: allam-1-13b-instruct
+                      - cell "SDAIA" [ref=f5e2495]:
+                        - paragraph [ref=f5e2499]: SDAIA
+                      - cell "USD 1.908" [ref=f5e2500]:
+                        - paragraph [ref=f5e2504]: USD 1.908
+                      - cell [ref=f5e2505]:
+                        - img [ref=f5e2509]
+                  - row "codellama-34b-instruct-hf Code Llama Not available" [ref=f5e2512]:
+                    - generic:
+                      - columnheader "codellama-34b-instruct-hf" [ref=f5e2513]:
+                        - paragraph [ref=f5e2519]: codellama-34b-instruct-hf
+                      - cell "Code Llama" [ref=f5e2520]:
+                        - paragraph [ref=f5e2524]: Code Llama
+                      - cell "Not available" [ref=f5e2525]:
+                        - paragraph [ref=f5e2529]: Not available
+                      - cell [ref=f5e2530]:
+                        - img [ref=f5e2534]
+                  - row "codestral-2501 Mistral AI Not available" [ref=f5e2537]:
+                    - generic:
+                      - columnheader "codestral-2501" [ref=f5e2538]:
+                        - paragraph [ref=f5e2544]:
+                          - strong [ref=f5e2545]: codestral-2501
+                      - cell "Mistral AI" [ref=f5e2546]:
+                        - paragraph [ref=f5e2550]: Mistral AI
+                      - cell "Not available" [ref=f5e2551]:
+                        - paragraph [ref=f5e2555]: Not available
+                      - cell [ref=f5e2556]:
+                        - img [ref=f5e2560]
+                  - row "deepseek-r1-distill-llama-70b DeepSeek Not available" [ref=f5e2563]:
+                    - generic:
+                      - columnheader "deepseek-r1-distill-llama-70b" [ref=f5e2564]:
+                        - paragraph [ref=f5e2570]:
+                          - strong [ref=f5e2571]: deepseek-r1-distill-llama-70b
+                      - cell "DeepSeek" [ref=f5e2572]:
+                        - paragraph [ref=f5e2576]: DeepSeek
+                      - cell "Not available" [ref=f5e2577]:
+                        - paragraph [ref=f5e2581]: Not available
+                      - cell [ref=f5e2582]:
+                        - img [ref=f5e2586]
+                  - row "deepseek-r1-distill-llama-8b DeepSeek Not available" [ref=f5e2589]:
+                    - generic:
+                      - columnheader "deepseek-r1-distill-llama-8b" [ref=f5e2590]:
+                        - paragraph [ref=f5e2596]:
+                          - strong [ref=f5e2597]: deepseek-r1-distill-llama-8b
+                      - cell "DeepSeek" [ref=f5e2598]:
+                        - paragraph [ref=f5e2602]: DeepSeek
+                      - cell "Not available" [ref=f5e2603]:
+                        - paragraph [ref=f5e2607]: Not available
+                      - cell [ref=f5e2608]:
+                        - img [ref=f5e2612]
+                  - row "eurollm-1-7b-instruct Utter Project Not available" [ref=f5e2615]:
+                    - generic:
+                      - columnheader "eurollm-1-7b-instruct" [ref=f5e2616]:
+                        - paragraph [ref=f5e2622]:
+                          - strong [ref=f5e2623]: eurollm-1-7b-instruct
+                      - cell "Utter Project" [ref=f5e2624]:
+                        - paragraph [ref=f5e2628]: Utter Project
+                      - cell "Not available" [ref=f5e2629]:
+                        - paragraph [ref=f5e2633]: Not available
+                      - cell [ref=f5e2634]:
+                        - img [ref=f5e2638]
+                  - row "eurollm-9b-instruct Utter Project Not available" [ref=f5e2641]:
+                    - generic:
+                      - columnheader "eurollm-9b-instruct" [ref=f5e2642]:
+                        - paragraph [ref=f5e2648]: eurollm-9b-instruct
+                      - cell "Utter Project" [ref=f5e2649]:
+                        - paragraph [ref=f5e2653]: Utter Project
+                      - cell "Not available" [ref=f5e2654]:
+                        - paragraph [ref=f5e2658]: Not available
+                      - cell [ref=f5e2659]:
+                        - img [ref=f5e2663]
+                  - row "gpt-oss-120b Open AI USD 0.1590 per 1M tokens input USD 0.636 per 1M tokens output" [ref=f5e2666]:
+                    - generic:
+                      - columnheader "gpt-oss-120b" [ref=f5e2667]:
+                        - paragraph [ref=f5e2673]:
+                          - strong [ref=f5e2674]: gpt-oss-120b
+                      - cell "Open AI" [ref=f5e2675]:
+                        - paragraph [ref=f5e2679]: Open AI
+                      - cell "USD 0.1590 per 1M tokens input USD 0.636 per 1M tokens output" [ref=f5e2680]:
+                        - generic [ref=f5e2683]:
+                          - paragraph [ref=f5e2684]: USD 0.1590 per 1M tokens input
+                          - paragraph [ref=f5e2685]: USD 0.636 per 1M tokens output
+                      - cell [ref=f5e2686]:
+                        - img [ref=f5e2690]
+                  - row "gpt-oss-20b Open AI Not available" [ref=f5e2693]:
+                    - generic:
+                      - columnheader "gpt-oss-20b" [ref=f5e2694]:
+                        - paragraph [ref=f5e2700]:
+                          - strong [ref=f5e2701]: gpt-oss-20b
+                      - cell "Open AI" [ref=f5e2702]:
+                        - paragraph [ref=f5e2706]: Open AI
+                      - cell "Not available" [ref=f5e2707]:
+                        - paragraph [ref=f5e2711]: Not available
+                      - cell [ref=f5e2712]:
+                        - img [ref=f5e2716]
+                  - row "llama-2-70b-chat Meta Not available" [ref=f5e2719]:
+                    - generic:
+                      - columnheader "llama-2-70b-chat" [ref=f5e2720]:
+                        - paragraph [ref=f5e2726]:
+                          - strong [ref=f5e2727]: llama-2-70b-chat
+                      - cell "Meta" [ref=f5e2728]:
+                        - paragraph [ref=f5e2732]: Meta
+                      - cell "Not available" [ref=f5e2733]:
+                        - paragraph [ref=f5e2737]: Not available
+                      - cell [ref=f5e2738]:
+                        - img [ref=f5e2742]
+                  - row "llama-3-1-405b-instruct-fp8 Meta Not available" [ref=f5e2745]:
+                    - generic:
+                      - columnheader "llama-3-1-405b-instruct-fp8" [ref=f5e2746]:
+                        - paragraph [ref=f5e2752]:
+                          - strong [ref=f5e2753]: llama-3-1-405b-instruct-fp8
+                      - cell "Meta" [ref=f5e2754]:
+                        - paragraph [ref=f5e2758]: Meta
+                      - cell "Not available" [ref=f5e2759]:
+                        - paragraph [ref=f5e2763]: Not available
+                      - cell [ref=f5e2764]:
+                        - img [ref=f5e2768]
+                  - row "llama-3-1-70b Meta Not available" [ref=f5e2771]:
+                    - generic:
+                      - columnheader "llama-3-1-70b" [ref=f5e2772]:
+                        - paragraph [ref=f5e2778]:
+                          - strong [ref=f5e2779]: llama-3-1-70b
+                      - cell "Meta" [ref=f5e2780]:
+                        - paragraph [ref=f5e2784]: Meta
+                      - cell "Not available" [ref=f5e2785]:
+                        - paragraph [ref=f5e2789]: Not available
+                      - cell [ref=f5e2790]:
+                        - img [ref=f5e2794]
+                  - row "llama-3-1-70b-gptq Meta Not available" [ref=f5e2797]:
+                    - generic:
+                      - columnheader "llama-3-1-70b-gptq" [ref=f5e2798]:
+                        - paragraph [ref=f5e2804]:
+                          - strong [ref=f5e2805]: llama-3-1-70b-gptq
+                      - cell "Meta" [ref=f5e2806]:
+                        - paragraph [ref=f5e2810]: Meta
+                      - cell "Not available" [ref=f5e2811]:
+                        - paragraph [ref=f5e2815]: Not available
+                      - cell [ref=f5e2816]:
+                        - img [ref=f5e2820]
+                  - row "llama-3-1-70b-instruct Meta Not available" [ref=f5e2823]:
+                    - generic:
+                      - columnheader "llama-3-1-70b-instruct" [ref=f5e2824]:
+                        - paragraph [ref=f5e2830]:
+                          - strong [ref=f5e2831]: llama-3-1-70b-instruct
+                      - cell "Meta" [ref=f5e2832]:
+                        - paragraph [ref=f5e2836]: Meta
+                      - cell "Not available" [ref=f5e2837]:
+                        - paragraph [ref=f5e2841]: Not available
+                      - cell [ref=f5e2842]:
+                        - img [ref=f5e2846]
+                  - row "llama-3-1-8b Meta Not available" [ref=f5e2849]:
+                    - generic:
+                      - columnheader "llama-3-1-8b" [ref=f5e2850]:
+                        - paragraph [ref=f5e2856]:
+                          - strong [ref=f5e2857]: llama-3-1-8b
+                      - cell "Meta" [ref=f5e2858]:
+                        - paragraph [ref=f5e2862]: Meta
+                      - cell "Not available" [ref=f5e2863]:
+                        - paragraph [ref=f5e2867]: Not available
+                      - cell [ref=f5e2868]:
+                        - img [ref=f5e2872]
+                  - row "llama-3-1-8b-instruct Meta Not available" [ref=f5e2875]:
+                    - generic:
+                      - columnheader "llama-3-1-8b-instruct" [ref=f5e2876]:
+                        - paragraph [ref=f5e2882]:
+                          - strong [ref=f5e2883]: llama-3-1-8b-instruct
+                      - cell "Meta" [ref=f5e2884]:
+                        - paragraph [ref=f5e2888]: Meta
+                      - cell "Not available" [ref=f5e2889]:
+                        - paragraph [ref=f5e2893]: Not available
+                      - cell [ref=f5e2894]:
+                        - img [ref=f5e2898]
+                  - row "llama-3-1-nemotron-ultra-253b-v1-fp8 NVIDIA Not available" [ref=f5e2901]:
+                    - generic:
+                      - columnheader "llama-3-1-nemotron-ultra-253b-v1-fp8" [ref=f5e2902]:
+                        - paragraph [ref=f5e2908]:
+                          - strong [ref=f5e2909]: llama-3-1-nemotron-ultra-253b-v1-fp8
+                      - cell "NVIDIA" [ref=f5e2910]:
+                        - paragraph [ref=f5e2914]: NVIDIA
+                      - cell "Not available" [ref=f5e2915]:
+                        - paragraph [ref=f5e2919]: Not available
+                      - cell [ref=f5e2920]:
+                        - img [ref=f5e2924]
+                  - row "llama-3-2-11b-vision-instruct Meta USD 0.371" [ref=f5e2927]:
+                    - generic:
+                      - columnheader "llama-3-2-11b-vision-instruct" [ref=f5e2928]:
+                        - paragraph [ref=f5e2934]:
+                          - strong [ref=f5e2935]: llama-3-2-11b-vision-instruct
+                      - cell "Meta" [ref=f5e2936]:
+                        - paragraph [ref=f5e2940]: Meta
+                      - cell "USD 0.371" [ref=f5e2941]:
+                        - paragraph [ref=f5e2945]: USD 0.371
+                      - cell [ref=f5e2946]:
+                        - img [ref=f5e2950]
+                  - row "llama-3-2-90b-vision-instruct Meta Not available" [ref=f5e2953]:
+                    - generic:
+                      - columnheader "llama-3-2-90b-vision-instruct" [ref=f5e2954]:
+                        - paragraph [ref=f5e2960]:
+                          - strong [ref=f5e2961]: llama-3-2-90b-vision-instruct
+                      - cell "Meta" [ref=f5e2962]:
+                        - paragraph [ref=f5e2966]: Meta
+                      - cell "Not available" [ref=f5e2967]:
+                        - paragraph [ref=f5e2971]: Not available
+                      - cell [ref=f5e2972]:
+                        - img [ref=f5e2976]
+                  - row "llama-3-3-70b-instruct Meta USD 0.7526" [ref=f5e2979]:
+                    - generic:
+                      - columnheader "llama-3-3-70b-instruct" [ref=f5e2980]:
+                        - paragraph [ref=f5e2986]:
+                          - strong [ref=f5e2987]: llama-3-3-70b-instruct
+                      - cell "Meta" [ref=f5e2988]:
+                        - paragraph [ref=f5e2992]: Meta
+                      - cell "USD 0.7526" [ref=f5e2993]:
+                        - paragraph [ref=f5e2997]: USD 0.7526
+                      - cell [ref=f5e2998]:
+                        - img [ref=f5e3002]
+                  - row "llama-3-3-70b-instruct-hf Meta Not available" [ref=f5e3005]:
+                    - generic:
+                      - columnheader "llama-3-3-70b-instruct-hf" [ref=f5e3006]:
+                        - paragraph [ref=f5e3012]:
+                          - strong [ref=f5e3013]: llama-3-3-70b-instruct-hf
+                      - cell "Meta" [ref=f5e3014]:
+                        - paragraph [ref=f5e3018]: Meta
+                      - cell "Not available" [ref=f5e3019]:
+                        - paragraph [ref=f5e3023]: Not available
+                      - cell [ref=f5e3024]:
+                        - img [ref=f5e3028]
+                  - row "llama-3-70b-instruct Meta Not available" [ref=f5e3031]:
+                    - generic:
+                      - columnheader "llama-3-70b-instruct" [ref=f5e3032]:
+                        - paragraph [ref=f5e3038]:
+                          - strong [ref=f5e3039]: llama-3-70b-instruct
+                      - cell "Meta" [ref=f5e3040]:
+                        - paragraph [ref=f5e3044]: Meta
+                      - cell "Not available" [ref=f5e3045]:
+                        - paragraph [ref=f5e3049]: Not available
+                      - cell [ref=f5e3050]:
+                        - img [ref=f5e3054]
+                  - row "llama-3-8b-instruct Meta Not available" [ref=f5e3057]:
+                    - generic:
+                      - columnheader "llama-3-8b-instruct" [ref=f5e3058]:
+                        - paragraph [ref=f5e3064]:
+                          - strong [ref=f5e3065]: llama-3-8b-instruct
+                      - cell "Meta" [ref=f5e3066]:
+                        - paragraph [ref=f5e3070]: Meta
+                      - cell "Not available" [ref=f5e3071]:
+                        - paragraph [ref=f5e3075]: Not available
+                      - cell [ref=f5e3076]:
+                        - img [ref=f5e3080]
+                  - row "llama-4-maverick-17b-128e-instruct-fp8 Meta USD 0.371 per 1M tokens input USD 1.484 per 1M tokens output" [ref=f5e3083]:
+                    - generic:
+                      - columnheader "llama-4-maverick-17b-128e-instruct-fp8" [ref=f5e3084]:
+                        - paragraph [ref=f5e3090]: llama-4-maverick-17b-128e-instruct-fp8
+                      - cell "Meta" [ref=f5e3091]:
+                        - paragraph [ref=f5e3095]: Meta
+                      - cell "USD 0.371 per 1M tokens input USD 1.484 per 1M tokens output" [ref=f5e3096]:
+                        - generic [ref=f5e3099]:
+                          - paragraph [ref=f5e3100]: USD 0.371 per 1M tokens input
+                          - paragraph [ref=f5e3101]: USD 1.484 per 1M tokens output
+                      - cell [ref=f5e3102]:
+                        - img [ref=f5e3106]
+                  - row "llama-4-maverick-17b-128e-instruct-int4 Meta Not available" [ref=f5e3109]:
+                    - generic:
+                      - columnheader "llama-4-maverick-17b-128e-instruct-int4" [ref=f5e3110]:
+                        - paragraph [ref=f5e3116]:
+                          - strong [ref=f5e3117]: llama-4-maverick-17b-128e-instruct-int4
+                      - cell "Meta" [ref=f5e3118]:
+                        - paragraph [ref=f5e3122]: Meta
+                      - cell "Not available" [ref=f5e3123]:
+                        - paragraph [ref=f5e3127]: Not available
+                      - cell [ref=f5e3128]:
+                        - img [ref=f5e3132]
+                  - row "llama-4-scout-17b-16e-instruct-fp8-dynamic Meta Not available" [ref=f5e3135]:
+                    - generic:
+                      - columnheader "llama-4-scout-17b-16e-instruct-fp8-dynamic" [ref=f5e3136]:
+                        - paragraph [ref=f5e3142]:
+                          - strong [ref=f5e3143]: llama-4-scout-17b-16e-instruct-fp8-dynamic
+                      - cell "Meta" [ref=f5e3144]:
+                        - paragraph [ref=f5e3148]: Meta
+                      - cell "Not available" [ref=f5e3149]:
+                        - paragraph [ref=f5e3153]: Not available
+                      - cell [ref=f5e3154]:
+                        - img [ref=f5e3158]
+                  - row "llama-guard-3-11b-vision Meta USD 0.371" [ref=f5e3161]:
+                    - generic:
+                      - columnheader "llama-guard-3-11b-vision" [ref=f5e3162]:
+                        - paragraph [ref=f5e3168]: llama-guard-3-11b-vision
+                      - cell "Meta" [ref=f5e3169]:
+                        - paragraph [ref=f5e3173]: Meta
+                      - cell "USD 0.371" [ref=f5e3174]:
+                        - paragraph [ref=f5e3178]: USD 0.371
+                      - cell [ref=f5e3179]:
+                        - img [ref=f5e3183]
+                  - row "ministral-3b-instruct-2512 Mistral AI Not available" [ref=f5e3186]:
+                    - generic:
+                      - columnheader "ministral-3b-instruct-2512" [ref=f5e3187]:
+                        - paragraph [ref=f5e3193]:
+                          - strong [ref=f5e3194]: ministral-3b-instruct-2512
+                      - cell "Mistral AI" [ref=f5e3195]:
+                        - paragraph [ref=f5e3199]: Mistral AI
+                      - cell "Not available" [ref=f5e3200]:
+                        - paragraph [ref=f5e3204]: Not available
+                      - cell [ref=f5e3205]:
+                        - img [ref=f5e3209]
+                  - row "ministral-8b-instruct-2410 Mistral AI Not available" [ref=f5e3212]:
+                    - generic:
+                      - columnheader "ministral-8b-instruct-2410" [ref=f5e3213]:
+                        - paragraph [ref=f5e3219]: ministral-8b-instruct-2410
+                      - cell "Mistral AI" [ref=f5e3220]:
+                        - paragraph [ref=f5e3224]: Mistral AI
+                      - cell "Not available" [ref=f5e3225]:
+                        - paragraph [ref=f5e3229]: Not available
+                      - cell [ref=f5e3230]:
+                        - img [ref=f5e3234]
+                  - row "ministral-8b-instruct-2512 Mistral AI Not available" [ref=f5e3237]:
+                    - generic:
+                      - columnheader "ministral-8b-instruct-2512" [ref=f5e3238]:
+                        - paragraph [ref=f5e3244]:
+                          - strong [ref=f5e3245]: ministral-8b-instruct-2512
+                      - cell "Mistral AI" [ref=f5e3246]:
+                        - paragraph [ref=f5e3250]: Mistral AI
+                      - cell "Not available" [ref=f5e3251]:
+                        - paragraph [ref=f5e3255]: Not available
+                      - cell [ref=f5e3256]:
+                        - img [ref=f5e3260]
+                  - row "mistral-large-2512 Mistral AI USD 0.636 per 1M tokens input USD 1.908 per 1M tokens output" [ref=f5e3263]:
+                    - generic:
+                      - columnheader "mistral-large-2512" [ref=f5e3264]:
+                        - paragraph [ref=f5e3270]:
+                          - strong [ref=f5e3271]: mistral-large-2512
+                      - cell "Mistral AI" [ref=f5e3272]:
+                        - paragraph [ref=f5e3276]: Mistral AI
+                      - cell "USD 0.636 per 1M tokens input USD 1.908 per 1M tokens output" [ref=f5e3277]:
+                        - generic [ref=f5e3280]:
+                          - paragraph [ref=f5e3281]: USD 0.636 per 1M tokens input
+                          - paragraph [ref=f5e3282]: USD 1.908 per 1M tokens output
+                      - cell [ref=f5e3283]:
+                        - img [ref=f5e3287]
+                  - row "mistral-large-instruct-2407 Mistral AI Not available" [ref=f5e3290]:
+                    - generic:
+                      - columnheader "mistral-large-instruct-2407" [ref=f5e3291]:
+                        - paragraph [ref=f5e3297]:
+                          - strong [ref=f5e3298]: mistral-large-instruct-2407
+                      - cell "Mistral AI" [ref=f5e3299]:
+                        - paragraph [ref=f5e3303]: Mistral AI
+                      - cell "Not available" [ref=f5e3304]:
+                        - paragraph [ref=f5e3308]: Not available
+                      - cell [ref=f5e3309]:
+                        - img [ref=f5e3313]
+                  - row "mistral-large-instruct-2411 Mistral AI Not available" [ref=f5e3316]:
+                    - generic:
+                      - columnheader "mistral-large-instruct-2411" [ref=f5e3317]:
+                        - paragraph [ref=f5e3323]:
+                          - strong [ref=f5e3324]: mistral-large-instruct-2411
+                      - cell "Mistral AI" [ref=f5e3325]:
+                        - paragraph [ref=f5e3329]: Mistral AI
+                      - cell "Not available" [ref=f5e3330]:
+                        - paragraph [ref=f5e3334]: Not available
+                      - cell [ref=f5e3335]:
+                        - img [ref=f5e3339]
+                  - row "mistral-medium-2505 Mistral AI USD 3.37 per 1M tokens input USD 10.07 per 1M tokens output" [ref=f5e3342]:
+                    - generic:
+                      - columnheader "mistral-medium-2505" [ref=f5e3343]:
+                        - paragraph [ref=f5e3349]:
+                          - strong [ref=f5e3350]: mistral-medium-2505
+                      - cell "Mistral AI" [ref=f5e3351]:
+                        - paragraph [ref=f5e3355]: Mistral AI
+                      - cell "USD 3.37 per 1M tokens input USD 10.07 per 1M tokens output" [ref=f5e3356]:
+                        - generic [ref=f5e3359]:
+                          - paragraph [ref=f5e3360]: USD 3.37 per 1M tokens input
+                          - paragraph [ref=f5e3361]: USD 10.07 per 1M tokens output
+                      - cell [ref=f5e3362]:
+                        - img [ref=f5e3366]
+                  - row "mistral-medium-2508 Mistral AI Not available" [ref=f5e3369]:
+                    - generic:
+                      - columnheader "mistral-medium-2508" [ref=f5e3370]:
+                        - paragraph [ref=f5e3376]:
+                          - strong [ref=f5e3377]: mistral-medium-2508
+                      - cell "Mistral AI" [ref=f5e3378]:
+                        - paragraph [ref=f5e3382]: Mistral AI
+                      - cell "Not available" [ref=f5e3383]:
+                        - paragraph [ref=f5e3387]: Not available
+                      - cell [ref=f5e3388]:
+                        - img [ref=f5e3392]
+                  - row "mistral-nemo-instruct-2407 Mistral AI Not available" [ref=f5e3395]:
+                    - generic:
+                      - columnheader "mistral-nemo-instruct-2407" [ref=f5e3396]:
+                        - paragraph [ref=f5e3402]: mistral-nemo-instruct-2407
+                      - cell "Mistral AI" [ref=f5e3403]:
+                        - paragraph [ref=f5e3407]: Mistral AI
+                      - cell "Not available" [ref=f5e3408]:
+                        - paragraph [ref=f5e3412]: Not available
+                      - cell [ref=f5e3413]:
+                        - img [ref=f5e3417]
+                  - row "mistral-small-3-1-24b-instruct-2503 Mistral AI USD 0.106 per 1M tokens input USD 0.318 per 1M tokens output" [ref=f5e3420]:
+                    - generic:
+                      - columnheader "mistral-small-3-1-24b-instruct-2503" [ref=f5e3421]:
+                        - paragraph [ref=f5e3427]:
+                          - strong [ref=f5e3428]: mistral-small-3-1-24b-instruct-2503
+                      - cell "Mistral AI" [ref=f5e3429]:
+                        - paragraph [ref=f5e3433]: Mistral AI
+                      - cell "USD 0.106 per 1M tokens input USD 0.318 per 1M tokens output" [ref=f5e3434]:
+                        - generic [ref=f5e3437]:
+                          - paragraph [ref=f5e3438]: USD 0.106 per 1M tokens input
+                          - paragraph [ref=f5e3439]: USD 0.318 per 1M tokens output
+                      - cell [ref=f5e3440]:
+                        - img [ref=f5e3444]
+                  - row "mixtral-8x7b-base Mistral AI Not available" [ref=f5e3447]:
+                    - generic:
+                      - columnheader "mixtral-8x7b-base" [ref=f5e3448]:
+                        - paragraph [ref=f5e3454]:
+                          - strong [ref=f5e3455]: mixtral-8x7b-base
+                      - cell "Mistral AI" [ref=f5e3456]:
+                        - paragraph [ref=f5e3460]: Mistral AI
+                      - cell "Not available" [ref=f5e3461]:
+                        - paragraph [ref=f5e3465]: Not available
+                      - cell [ref=f5e3466]:
+                        - img [ref=f5e3470]
+                  - row "mixtral-8x7b-instruct-v01 Mistral AI Not available" [ref=f5e3473]:
+                    - generic:
+                      - columnheader "mixtral-8x7b-instruct-v01" [ref=f5e3474]:
+                        - paragraph [ref=f5e3480]:
+                          - strong [ref=f5e3481]: mixtral-8x7b-instruct-v01
+                      - cell "Mistral AI" [ref=f5e3482]:
+                        - paragraph [ref=f5e3486]: Mistral AI
+                      - cell "Not available" [ref=f5e3487]:
+                        - paragraph [ref=f5e3491]: Not available
+                      - cell [ref=f5e3492]:
+                        - img [ref=f5e3496]
+                  - row "mt0-xxl-13b BigScience Not available" [ref=f5e3499]:
+                    - generic:
+                      - columnheader "mt0-xxl-13b" [ref=f5e3500]:
+                        - paragraph [ref=f5e3506]:
+                          - strong [ref=f5e3507]: mt0-xxl-13b
+                      - cell "BigScience" [ref=f5e3508]:
+                        - paragraph [ref=f5e3512]: BigScience
+                      - cell "Not available" [ref=f5e3513]:
+                        - paragraph [ref=f5e3517]: Not available
+                      - cell [ref=f5e3518]:
+                        - img [ref=f5e3522]
+                  - row "nvidia-nemotron-3-super-120b-a12b-fp8 NVIDIA Not available" [ref=f5e3525]:
+                    - generic:
+                      - columnheader "nvidia-nemotron-3-super-120b-a12b-fp8" [ref=f5e3526]:
+                        - paragraph [ref=f5e3532]:
+                          - strong [ref=f5e3533]: nvidia-nemotron-3-super-120b-a12b-fp8
+                      - cell "NVIDIA" [ref=f5e3534]:
+                        - paragraph [ref=f5e3538]: NVIDIA
+                      - cell "Not available" [ref=f5e3539]:
+                        - paragraph [ref=f5e3543]: Not available
+                      - cell [ref=f5e3544]:
+                        - img [ref=f5e3548]
+                  - row "nvidia-nemotron-nano-12b-v2-vl-fp8 NVIDIA Not available" [ref=f5e3551]:
+                    - generic:
+                      - columnheader "nvidia-nemotron-nano-12b-v2-vl-fp8" [ref=f5e3552]:
+                        - paragraph [ref=f5e3558]:
+                          - strong [ref=f5e3559]: nvidia-nemotron-nano-12b-v2-vl-fp8
+                      - cell "NVIDIA" [ref=f5e3560]:
+                        - paragraph [ref=f5e3564]: NVIDIA
+                      - cell "Not available" [ref=f5e3565]:
+                        - paragraph [ref=f5e3569]: Not available
+                      - cell [ref=f5e3570]:
+                        - img [ref=f5e3574]
+                  - row "pixtral-12b Mistral AI Not available" [ref=f5e3577]:
+                    - generic:
+                      - columnheader "pixtral-12b" [ref=f5e3578]:
+                        - paragraph [ref=f5e3584]:
+                          - strong [ref=f5e3585]: pixtral-12b
+                      - cell "Mistral AI" [ref=f5e3586]:
+                        - paragraph [ref=f5e3590]: Mistral AI
+                      - cell "Not available" [ref=f5e3591]:
+                        - paragraph [ref=f5e3595]: Not available
+                      - cell [ref=f5e3596]:
+                        - img [ref=f5e3600]
+                  - row "poro-34b-chat LumiOpen Not available" [ref=f5e3603]:
+                    - generic:
+                      - columnheader "poro-34b-chat" [ref=f5e3604]:
+                        - paragraph [ref=f5e3610]:
+                          - strong [ref=f5e3611]: poro-34b-chat
+                      - cell "LumiOpen" [ref=f5e3612]:
+                        - paragraph [ref=f5e3616]: LumiOpen
+                      - cell "Not available" [ref=f5e3617]:
+                        - paragraph [ref=f5e3621]: Not available
+                      - cell [ref=f5e3622]:
+                        - img [ref=f5e3626]
+        - paragraph [ref=f5e3632]: "*Prices shown are indicative, may vary by country, exclude any applicable taxes and duties, and are subject to product offering availability in a locale."
+      - heading "Features specific pricing" [level=2] [ref=f5e3636]
+      - generic [ref=f5e3642]:
+        - table [ref=f5e3646]:
+          - generic [ref=f5e3647]:
+            - generic:
+              - rowgroup [ref=f5e3649]:
+                - row "Use case Essentials plan Standard plan" [ref=f5e3650]:
+                  - generic:
+                    - columnheader "Use case" [ref=f5e3651]:
+                      - generic [ref=f5e3653]:
+                        - generic: Use case
+                    - columnheader "Essentials plan" [ref=f5e3654]:
+                      - generic [ref=f5e3657]:
+                        - generic: Essentials plan
+                    - columnheader "Standard plan" [ref=f5e3658]:
+                      - generic [ref=f5e3661]:
+                        - generic: Standard plan
+              - rowgroup [ref=f5e3662]:
+                - generic:
+                  - row "Machine learning models 0.55 USD / Capacity Unit-Hour 0.45 USD / Capacity Unit-Hour" [ref=f5e3663]:
+                    - generic:
+                      - columnheader "Machine learning models" [ref=f5e3664]:
+                        - paragraph [ref=f5e3670]:
+                          - strong [ref=f5e3671]: Machine learning models
+                      - cell "0.55 USD / Capacity Unit-Hour" [ref=f5e3672]:
+                        - paragraph [ref=f5e3676]: 0.55 USD / Capacity Unit-Hour
+                      - cell "0.45 USD / Capacity Unit-Hour" [ref=f5e3677]:
+                        - paragraph [ref=f5e3681]: 0.45 USD / Capacity Unit-Hour
+                  - row "Text extraction3 0.0403 USD / Page 0.0318 USD / Page" [ref=f5e3682]:
+                    - generic:
+                      - columnheader "Text extraction3" [ref=f5e3683]:
+                        - paragraph [ref=f5e3689]:
+                          - strong [ref=f5e3690]:
+                            - text: Text extraction
+                            - superscript [ref=f5e3691]:
+                              - link "3" [ref=f5e3692] [cursor=pointer]:
+                                - /url: "#footnote"
+                      - cell "0.0403 USD / Page" [ref=f5e3693]:
+                        - paragraph [ref=f5e3697]: 0.0403 USD / Page
+                      - cell "0.0318 USD / Page" [ref=f5e3698]:
+                        - paragraph [ref=f5e3702]: 0.0318 USD / Page
+                  - 'row "LoRA fine-tuning Not available NVIDIA 1 x A100 GPU: 6.3 USD / Hour NVIDIA 1 x H100 GPU: 14.85 USD / Hour" [ref=f5e3703]':
+                    - generic:
+                      - columnheader "LoRA fine-tuning" [ref=f5e3704]:
+                        - paragraph [ref=f5e3710]:
+                          - strong [ref=f5e3711]: LoRA fine-tuning
+                      - cell "Not available" [ref=f5e3712]:
+                        - paragraph [ref=f5e3716]: Not available
+                      - 'cell "NVIDIA 1 x A100 GPU: 6.3 USD / Hour NVIDIA 1 x H100 GPU: 14.85 USD / Hour" [ref=f5e3717]':
+                        - generic [ref=f5e3720]:
+                          - paragraph [ref=f5e3721]: "NVIDIA 1 x A100 GPU: 6.3 USD / Hour"
+                          - paragraph [ref=f5e3722]: "NVIDIA 1 x H100 GPU: 14.85 USD / Hour"
+                  - 'row "Model hosting/Deploy on demand Not available NVIDIA 1 x L40S GPU: 4.43 USD / Hour NVIDIA 2 x L40S GPU: 8.86 USD / Hour NVIDIA 1 x A100 GPU: 5.8 USD / Hour NVIDIA 2 x A100 GPU: 11.6 USD / Hour NVIDIA 4 x A100 GPU: 23.2 USD / Hour NVIDIA 8 x A100 GPU: 46.4 USD / Hour NVIDIA 1 x H100 GPU: 14.5 USD / Hour NVIDIA 2 x H100 GPU: 29 USD / Hour NVIDIA 4 x H100 GPU: 58 USD / Hour NVIDIA 8 x H100 GPU: 116 USD / Hour NVIDIA 1 x H200 GPU: 16 USD / Hour NVIDIA 2 x H200 GPU: 32 USD / Hour NVIDIA 4 x H200 GPU: 64 USD / Hour NVIDIA 8 x H200 GPU: 128 USD / Hour" [ref=f5e3723]':
+                    - generic:
+                      - columnheader "Model hosting/Deploy on demand" [ref=f5e3724]:
+                        - paragraph [ref=f5e3730]:
+                          - strong [ref=f5e3731]: Model hosting/Deploy on demand
+                      - cell "Not available" [ref=f5e3732]:
+                        - paragraph [ref=f5e3736]: Not available
+                      - 'cell "NVIDIA 1 x L40S GPU: 4.43 USD / Hour NVIDIA 2 x L40S GPU: 8.86 USD / Hour NVIDIA 1 x A100 GPU: 5.8 USD / Hour NVIDIA 2 x A100 GPU: 11.6 USD / Hour NVIDIA 4 x A100 GPU: 23.2 USD / Hour NVIDIA 8 x A100 GPU: 46.4 USD / Hour NVIDIA 1 x H100 GPU: 14.5 USD / Hour NVIDIA 2 x H100 GPU: 29 USD / Hour NVIDIA 4 x H100 GPU: 58 USD / Hour NVIDIA 8 x H100 GPU: 116 USD / Hour NVIDIA 1 x H200 GPU: 16 USD / Hour NVIDIA 2 x H200 GPU: 32 USD / Hour NVIDIA 4 x H200 GPU: 64 USD / Hour NVIDIA 8 x H200 GPU: 128 USD / Hour" [ref=f5e3737]':
+                        - generic [ref=f5e3740]:
+                          - paragraph [ref=f5e3741]: "NVIDIA 1 x L40S GPU: 4.43 USD / Hour"
+                          - paragraph [ref=f5e3742]: "NVIDIA 2 x L40S GPU: 8.86 USD / Hour"
+                          - paragraph [ref=f5e3743]: "NVIDIA 1 x A100 GPU: 5.8 USD / Hour"
+                          - paragraph [ref=f5e3744]: "NVIDIA 2 x A100 GPU: 11.6 USD / Hour"
+                          - paragraph [ref=f5e3745]: "NVIDIA 4 x A100 GPU: 23.2 USD / Hour"
+                          - paragraph [ref=f5e3746]: "NVIDIA 8 x A100 GPU: 46.4 USD / Hour"
+                          - paragraph [ref=f5e3747]: "NVIDIA 1 x H100 GPU: 14.5 USD / Hour"
+                          - paragraph [ref=f5e3748]: "NVIDIA 2 x H100 GPU: 29 USD / Hour"
+                          - paragraph [ref=f5e3749]: "NVIDIA 4 x H100 GPU: 58 USD / Hour"
+                          - paragraph [ref=f5e3750]: "NVIDIA 8 x H100 GPU: 116 USD / Hour"
+                          - paragraph [ref=f5e3751]: "NVIDIA 1 x H200 GPU: 16 USD / Hour"
+                          - paragraph [ref=f5e3752]: "NVIDIA 2 x H200 GPU: 32 USD / Hour"
+                          - paragraph [ref=f5e3753]: "NVIDIA 4 x H200 GPU: 64 USD / Hour"
+                          - paragraph [ref=f5e3754]: "NVIDIA 8 x H200 GPU: 128 USD / Hour"
+        - paragraph [ref=f5e3758]: "*Prices shown are indicative, may vary by country, exclude any applicable taxes and duties, and are subject to product offering availability in a locale."
+      - generic [ref=f5e3761]:
+        - generic [ref=f5e3763]:
+          - heading "Take the next step" [level=2] [ref=f5e3764]
+          - paragraph [ref=f5e3768]: Try watsonx.ai at no cost or continue your journey of discovery.
+          - list [ref=f5e3769]:
+            - listitem [ref=f5e3770]:
+              - link "Start your free trial" [ref=f5e3771] [cursor=pointer]:
+                - /url: https://dataplatform.cloud.ibm.com/registration/stepone?context=wx
+                - generic [ref=f5e3772]: Start your free trial
+                - img [ref=f5e3773]
+            - listitem [ref=f5e3775]:
+              - link "Book a live demo" [ref=f5e3776] [cursor=pointer]:
+                - /url: https://www.ibm.com/forms/mkt-demo-dataaiwatsonxai
+                - generic [ref=f5e3777]: Book a live demo
+                - img [ref=f5e3778]
+        - generic [ref=f5e3782]:
+          - heading "More ways to explore" [level=4] [ref=f5e3783]
+          - list [ref=f5e3784]:
+            - link "Become an IBM Business Partner" [ref=f5e3786] [cursor=pointer]:
+              - /url: https://www.ibm.com/partnerplus
+              - generic [ref=f5e3787]: Become an IBM Business Partner
+              - img [ref=f5e3788]
+            - link "Connect with the IBM Community" [ref=f5e3791] [cursor=pointer]:
+              - /url: https://community.ibm.com/community/user/my-community
+              - generic [ref=f5e3792]: Connect with the IBM Community
+              - img [ref=f5e3793]
+            - link "Support" [ref=f5e3796] [cursor=pointer]:
+              - /url: https://dataplatform.cloud.ibm.com/docs/content/wsj/troubleshoot/troubleshoot.html?context=wx&audience=wdp
+              - generic [ref=f5e3797]: Support
+              - img [ref=f5e3798]
+      - generic [ref=f5e3804]:
+        - heading "Footnotes" [level=5] [ref=f5e3807]
+        - generic [ref=f5e3810]:
+          - paragraph [ref=f5e3811]:
+            - superscript [ref=f5e3812]: "1"
+            - text: For foundation model inference, charges are based on a Resource Unit (RU) metric equivalent to 1000 tokens (including both input and output tokens).
+          - paragraph [ref=f5e3813]:
+            - superscript [ref=f5e3814]: "2"
+            - text: Mistral commercial models have a GPU hosting fee and a model access fee. For more information, view the documentation.
+          - paragraph [ref=f5e3815]:
+            - superscript [ref=f5e3816]: "*"
+            - text: Prices shown are indicative, may vary by country, exclude any applicable taxes and duties, and are subject to product offering availability in a locale.
+            - superscript [ref=f5e3817]: ^
+            - text: Capacity Unit Hour pricing depends on the environment and tools utilized within a billing month.
+          - paragraph [ref=f5e3818]:
+            - superscript [ref=f5e3819]: "3"
+            - text: Unless otherwise specified under Software pricing, all features, capabilities, and potential updates refer exclusively to SaaS. IBM makes no representation that SaaS and software features and capabilities will be the same.
+          - paragraph [ref=f5e3820]
+    - contentinfo "footer" [ref=f5e3824]:
+      - generic [ref=f5e3828]:
+        - link "IBM logo" [ref=f5e3830] [cursor=pointer]:
+          - /url: https://www.ibm.com/
+          - img "IBM Logo" [ref=f5e3831]
+        - navigation "Footer navigation" [ref=f5e3833]:
+          - list [ref=f5e3834]:
+            - generic:
+              - listitem [ref=f5e3835]:
+                - heading "Discover" [level=2] [ref=f5e3836]:
+                  - generic [ref=f5e3837]: Discover
+                - list [ref=f5e3839]:
+                  - generic:
+                    - listitem [ref=f5e3840]:
+                      - link "Products" [ref=f5e3841] [cursor=pointer]:
+                        - /url: https://www.ibm.com/products?lnk=flatitem
+                        - generic: Products
+                    - listitem [ref=f5e3842]:
+                      - link "Consulting services" [ref=f5e3843] [cursor=pointer]:
+                        - /url: https://www.ibm.com/consulting?lnk=flatitem
+                        - generic: Consulting services
+                    - listitem [ref=f5e3844]:
+                      - link "Industries" [ref=f5e3845] [cursor=pointer]:
+                        - /url: https://www.ibm.com/industries?lnk=flatitem
+                        - generic: Industries
+                    - listitem [ref=f5e3846]:
+                      - link "Case studies" [ref=f5e3847] [cursor=pointer]:
+                        - /url: https://www.ibm.com/case-studies?lnk=flatitem
+                        - generic: Case studies
+                    - listitem [ref=f5e3848]:
+                      - link "Financing" [ref=f5e3849] [cursor=pointer]:
+                        - /url: https://www.ibm.com/financing?lnk=flatitem
+                        - generic: Financing
+                    - listitem [ref=f5e3850]:
+                      - link "Research" [ref=f5e3851] [cursor=pointer]:
+                        - /url: https://research.ibm.com/?lnk=flatitem
+                        - generic: Research
+              - listitem [ref=f5e3852]:
+                - heading "Follow" [level=2] [ref=f5e3853]:
+                  - generic [ref=f5e3854]: Follow
+                - list [ref=f5e3856]:
+                  - generic:
+                    - listitem [ref=f5e3857]:
+                      - link "LinkedIn" [ref=f5e3858] [cursor=pointer]:
+                        - /url: https://www.linkedin.com/company/ibm
+                        - generic: LinkedIn
+                    - listitem [ref=f5e3859]:
+                      - link "X" [ref=f5e3860] [cursor=pointer]:
+                        - /url: https://www.twitter.com/ibm
+                        - generic: X
+                    - listitem [ref=f5e3861]:
+                      - link "Instagram" [ref=f5e3862] [cursor=pointer]:
+                        - /url: https://www.instagram.com/ibm
+                        - generic: Instagram
+                    - listitem [ref=f5e3863]:
+                      - link "YouTube" [ref=f5e3864] [cursor=pointer]:
+                        - /url: https://www.youtube.com/@IBM
+                        - generic: YouTube
+                    - listitem [ref=f5e3865]:
+                      - link "Podcasts" [ref=f5e3866] [cursor=pointer]:
+                        - /url: https://www.ibm.com/think/podcasts
+                        - generic: Podcasts
+              - listitem [ref=f5e3867]:
+                - heading "Connect" [level=2] [ref=f5e3868]:
+                  - generic [ref=f5e3869]: Connect
+                - list [ref=f5e3871]:
+                  - generic:
+                    - listitem [ref=f5e3872]:
+                      - link "Business partners" [ref=f5e3873] [cursor=pointer]:
+                        - /url: https://www.ibm.com/partnerplus/directory/companies
+                        - generic: Business partners
+                    - listitem [ref=f5e3874]:
+                      - link "Documentation" [ref=f5e3875] [cursor=pointer]:
+                        - /url: https://www.ibm.com/docs/en?lnk=flathl
+                        - generic: Documentation
+                    - listitem [ref=f5e3876]:
+                      - link "Events" [ref=f5e3877] [cursor=pointer]:
+                        - /url: https://www.ibm.com/events/
+                        - generic: Events
+                    - listitem [ref=f5e3878]:
+                      - link "Newsletters" [ref=f5e3879] [cursor=pointer]:
+                        - /url: https://www.ibm.com/subscribe/
+                        - generic: Newsletters
+                    - listitem [ref=f5e3880]:
+                      - link "Support" [ref=f5e3881] [cursor=pointer]:
+                        - /url: https://www.ibm.com/mysupport/s/?language=en_US&lnk=flathl
+                        - generic: Support
+                    - listitem [ref=f5e3882]:
+                      - link "TechXchange community" [ref=f5e3883] [cursor=pointer]:
+                        - /url: https://community.ibm.com/community/user/home?lnk=fpo
+                        - generic: TechXchange community
+              - listitem [ref=f5e3884]:
+                - heading "About" [level=2] [ref=f5e3885]:
+                  - generic [ref=f5e3886]: About
+                - list [ref=f5e3888]:
+                  - generic:
+                    - listitem [ref=f5e3889]:
+                      - link "Overview" [ref=f5e3890] [cursor=pointer]:
+                        - /url: https://www.ibm.com/about/?lnk=flatitem
+                        - generic: Overview
+                    - listitem [ref=f5e3891]:
+                      - link "Careers" [ref=f5e3892] [cursor=pointer]:
+                        - /url: https://www.ibm.com/careers/us-en?lnk=flathl
+                        - generic: Careers
+                    - listitem [ref=f5e3893]:
+                      - link "Investor relations" [ref=f5e3894] [cursor=pointer]:
+                        - /url: https://www.ibm.com/investor?lnk=flatitem
+                        - generic: Investor relations
+                    - listitem [ref=f5e3895]:
+                      - link "Leadership" [ref=f5e3896] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/executive-bios
+                        - generic: Leadership
+                    - listitem [ref=f5e3897]:
+                      - link "Newsroom" [ref=f5e3898] [cursor=pointer]:
+                        - /url: https://newsroom.ibm.com/?lnk=flatitem
+                        - generic: Newsroom
+                    - listitem [ref=f5e3899]:
+                      - link "Security, privacy and trust" [ref=f5e3900] [cursor=pointer]:
+                        - /url: https://www.ibm.com/trust?lnk=flatitem
+                        - generic: Security, privacy and trust
+      - navigation "Legal Navigation" [ref=f5e3902]:
+        - list [ref=f5e3904]:
+          - generic:
+            - listitem [ref=f5e3905]:
+              - link "Contact IBM" [ref=f5e3906] [cursor=pointer]:
+                - /url: https://www.ibm.com/contact/global
+                - generic: Contact IBM
+            - listitem [ref=f5e3907]:
+              - link "Privacy" [ref=f5e3908] [cursor=pointer]:
+                - /url: https://www.ibm.com/us-en/privacy
+                - generic: Privacy
+            - listitem [ref=f5e3909]:
+              - link "Terms of use" [ref=f5e3910] [cursor=pointer]:
+                - /url: https://www.ibm.com/legal?lnk=flg-tous-usen
+                - generic: Terms of use
+            - listitem [ref=f5e3911]:
+              - link "Accessibility" [ref=f5e3912] [cursor=pointer]:
+                - /url: https://www.ibm.com/able/?lnk=flg-acce-usen
+                - generic: Accessibility
+            - link "Cookie Preferences, opens a dedicated popup modal window" [ref=f5e3914] [cursor=pointer]: Cookie Preferences
+  - banner "consent_blackbar":
+    - generic [ref=f5e3916]:
+      - button "close icon" [ref=f5e3918] [cursor=pointer]
+      - generic [ref=f5e3920]:
+        - generic [ref=f5e3923]:
+          - text: About cookies on this site
+          - generic [ref=f5e3924]:
+            - generic [ref=f5e3925]: Our websites require some cookies to function properly (required). In addition, other cookies may be used with your consent to analyze site usage, improve the user experience and for advertising.
+            - generic [ref=f5e3926]:
+              - text: For more information, please review your
+              - button "cookie preferences" [ref=f5e3927] [cursor=pointer]
+              - text: options. By visiting our website, you agree to our processing of information as described in IBM’s
+              - link "privacy statement" [ref=f5e3928] [cursor=pointer]:
+                - /url: https://www.ibm.com/privacy
+              - text: .
+            - generic [ref=f5e3929]:
+              - text: To provide a smooth navigation, your cookie preferences will be shared across the IBM web domains listed
+              - link "here" [ref=f5e3930] [cursor=pointer]:
+                - /url: "#truste_domain_list"
+              - text: .
+        - generic [ref=f5e3931]:
+          - button "Accept all" [ref=f5e3932] [cursor=pointer]
+          - button "More options" [ref=f5e3933] [cursor=pointer]
+  - generic [ref=f5e3935]:
+    - img [ref=f5e3937]
+    - img [ref=f5e3943]

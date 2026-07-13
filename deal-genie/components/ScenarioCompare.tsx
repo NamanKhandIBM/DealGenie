@@ -471,16 +471,39 @@ function VariablePicker({
 function ScenarioCards({
   result,
   baselinePrice,
+  effectiveAnswers,
+  product,
   onLock,
 }: {
   result: CompareResult;
   baselinePrice: number | null;
+  effectiveAnswers: Record<string, string | number | boolean | string[]>;
+  product: Product;
   onLock: (scenario: Scenario, varLabel: string) => void;
 }) {
-  const scenarios = result.scenarios;
-  const cheapest = scenarios[scenarios.length - 1];
   const varLabel = result.forkVars[0]?.label ?? "";
+  const forkKey  = result.forkVars[0]?.key ?? "";
+
+  // Recompute each scenario's price against effectiveAnswers (which includes
+  // any add-on toggles the user has made in the right panel since opening).
+  const scenarios = result.scenarios.map((s) => ({
+    ...s,
+    annualList:  computeScenarioPrice(product, effectiveAnswers, s.overrides),
+    monthlyList: Math.round(computeScenarioPrice(product, effectiveAnswers, s.overrides) / 12),
+  }));
+  // Re-sort high → low after recompute (add-ons shift absolute prices but not relative order; keep stable)
+  scenarios.sort((a, b) => b.annualList - a.annualList);
+
+  const cheapest = scenarios[scenarios.length - 1];
   const cols = scenarios.length <= 2 ? 2 : scenarios.length <= 3 ? 3 : scenarios.length <= 4 ? 2 : 3;
+
+  // Determine which scenario index matches the current quote's value for this variable.
+  // Compare stringified values for robustness (arrays, numbers, strings).
+  const currentVal = effectiveAnswers[forkKey];
+  const currentStr = JSON.stringify(currentVal);
+  const currentQuoteIdx = scenarios.findIndex(
+    (s) => JSON.stringify(s.overrides[forkKey]) === currentStr
+  );
 
   return (
     <>
@@ -490,8 +513,9 @@ function ScenarioCards({
 
       <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(cols, scenarios.length)}, 1fr)` }}>
         {scenarios.map((s, i) => {
-          const isCheapest = i === scenarios.length - 1;
-          const isMid = scenarios.length >= 3 && i === result.recommendedIdx;
+          const isCheapest    = i === scenarios.length - 1;
+          const isMid         = scenarios.length >= 3 && i === result.recommendedIdx;
+          const isCurrentQuote = i === currentQuoteIdx;
           const c = COLORS[i % COLORS.length];
           const delta = baselinePrice != null ? s.annualList - baselinePrice : s.annualList - cheapest.annualList;
           const vsLabel = baselinePrice != null ? "vs locked baseline" : "vs lowest";
@@ -501,24 +525,34 @@ function ScenarioCards({
               key={i}
               className="rounded-xl p-4 flex flex-col gap-2"
               style={{
-                border: isMid ? `1.5px solid ${c}` : BORDERS[i % BORDERS.length],
-                background: isMid ? BGS[i % BGS.length] : "rgba(255,255,255,0.025)",
+                border: isCurrentQuote
+                  ? "2px solid rgba(251,191,36,0.7)"
+                  : isMid ? `1.5px solid ${c}` : BORDERS[i % BORDERS.length],
+                background: isCurrentQuote
+                  ? "rgba(251,191,36,0.07)"
+                  : isMid ? BGS[i % BGS.length] : "rgba(255,255,255,0.025)",
               }}
             >
               <div className="flex flex-wrap gap-1 min-h-[18px]">
-                {i === 0 && (
+                {isCurrentQuote && (
+                  <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
+                    style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.35)" }}>
+                    Your quote
+                  </span>
+                )}
+                {i === 0 && !isCurrentQuote && (
                   <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
                     style={{ background: "rgba(255,255,255,0.05)", color: "rgba(147,180,253,0.45)", border: "1px solid rgba(255,255,255,0.09)" }}>
                     Highest
                   </span>
                 )}
-                {isMid && (
+                {isMid && !isCurrentQuote && (
                   <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
                     style={{ background: `${c}22`, color: c, border: `1px solid ${c}44` }}>
                     Mid-range
                   </span>
                 )}
-                {isCheapest && (
+                {isCheapest && !isCurrentQuote && (
                   <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
                     style={{ background: "rgba(52,211,153,0.08)", color: "#34d399", border: "1px solid rgba(52,211,153,0.2)" }}>
                     Lowest
@@ -526,7 +560,7 @@ function ScenarioCards({
                 )}
               </div>
 
-              <p className="font-bold text-xs leading-snug" style={{ color: c }}>{s.name}</p>
+              <p className="font-bold text-xs leading-snug" style={{ color: isCurrentQuote ? "#fbbf24" : c }}>{s.name}</p>
 
               <div>
                 <div className="text-xl font-extrabold tabular-nums" style={{ color: "#e8eaed" }}>
@@ -799,6 +833,8 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
                 <ScenarioCards
                   result={result}
                   baselinePrice={lockedBaselinePrice}
+                  effectiveAnswers={effectiveAnswers}
+                  product={product}
                   onLock={handleLock}
                 />
                 <SliderPanel result={result} product={product} answers={effectiveAnswers} />
