@@ -2,6 +2,8 @@
 
 AI-powered quoting assistant for IBM Security sellers. Generates accurate, structured quotes for IBM Security Verify, IBM HashiCorp Vault, and NS1 Connect from a conversational interface. Outputs part numbers + quantities ready to paste into CPQ.
 
+Created by **Ranya El-Shinawy** and **Naman Khandelwal** — IBM
+
 ---
 
 ## Running locally
