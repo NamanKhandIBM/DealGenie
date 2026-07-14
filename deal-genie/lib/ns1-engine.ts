@@ -149,18 +149,26 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     `ballpark $${ballparkMRR.toLocaleString()}/month`;
 
   // ── 3. Tier routing ────────────────────────────────────────────────────────
-  // Essentials: ≤30M (30M included) · Standard: 31M–1B (50M included) · Premium: >1B · Hybrid: >10B
+  // Essentials: ≤30M (30M included) · Standard: 31M–999M (50M included) · Premium: ≥1B · Hybrid: >10B
   // Essentials has no record/filter/monitor add-ons — queries only.
-  // Standard includes spike protection — do NOT add DDoS as a line item.
+  // Standard spike protection is INCLUDED; D10ATZX added as $0 line item when requested.
   let tier: NS1Tier;
   if (effectiveMQ > 10_000) {
     tier = "Hybrid";
-  } else if (effectiveMQ > 1_000) {
+  } else if (effectiveMQ >= 1_000) {
     tier = "Premium";
   } else if (effectiveMQ > 30) {
     tier = "Standard";
   } else {
     tier = "Essentials";
+  }
+
+  // ── Growth headroom flag ──────────────────────────────────────────────────
+  if (inputs.expectedGrowthPct && inputs.expectedGrowthPct > 0) {
+    flags.push(`${inputs.expectedGrowthPct}% growth headroom applied: ${inputs.queryVolumeMQ}M → ${effectiveMQ}M MQ effective.`);
+  }
+  if (inputs.growthMQ && inputs.growthMQ > 0) {
+    flags.push(`+${inputs.growthMQ}M absolute growth headroom applied: ${inputs.queryVolumeMQ}M → ${effectiveMQ}M MQ effective.`);
   }
 
   // ── 4. Derived sizing ──────────────────────────────────────────────────────
@@ -286,7 +294,19 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       });
     }
 
-    // NOTE: DDoS/Spike protection is INCLUDED in Standard — never add as a line item.
+    // DDoS/Spike protection is INCLUDED in Standard — add D10ATZX as a $0 line item to confirm.
+    if (inputs.ddosProtection) {
+      partNumbers.push({
+        partNumber: "D10ATZX",
+        description: "IBM NS1 Connect Standard Spike Protection",
+        quantity: 1,
+        unit: "included",
+        listPrice: 0,
+        extendedPrice: 0,
+        notes: "Spike/DDoS protection is INCLUDED in NS1 Connect Standard at no extra charge ($0). No separate line item needed in CPQ.",
+      });
+    }
+
     // NOTE: NXD Waiver, RUM/GSLB, Dedicated DNS, Insights, China DNS are Premium-only features.
 
     // IBM Cloud Sync (optional, all tiers)
@@ -314,6 +334,7 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       "per month (required)",
       "Required SLA part on every NS1 Connect Premium order. CPQ will not validate without this."
     ));
+    flags.push("D0GNDZX SLA (qty=1) is required on every Premium order — CPQ will not validate without it.");
 
     // Managed DNS Requests (1 Request = 10M queries)
     const dnsRequests = Math.max(1, Math.ceil(effectiveMQ / 10));
@@ -427,12 +448,14 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
         "per 10M queries/month",
         `Qty must equal Managed DNS Requests (D0GNEZX = ${dnsRequests}). This is a CPQ requirement.`
       ));
+      flags.push(`DNS Insights (D0GN6ZX) qty must equal Managed DNS Requests (D0GNEZX) = ${dnsRequests}.`);
     }
 
     // China DNS (1 Request = 10M queries)
     let chinaMQ = inputs.chinaMQ;
     if (chinaMQ !== undefined) {
       if (chinaMQ < 50) {
+        flags.push(`China DNS: requested ${chinaMQ}M queries is below the minimum of 50M queries — bumped to 50M (5 Requests).`);
         chinaMQ = 50;
       }
       const chinaRequests = Math.ceil(chinaMQ / 10);
@@ -451,6 +474,9 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     // Dedicated DNS (Premium: Small = D0GNBZX, Large = D0GNAZX)
     if (inputs.dedicatedPoPs !== undefined && inputs.dedicatedPoPs > 0) {
       const pops = Math.max(3, Math.min(12, inputs.dedicatedPoPs));
+      if (inputs.dedicatedPoPs < 3) {
+        flags.push(`Dedicated DNS: requested ${inputs.dedicatedPoPs} PoPs is below minimum — the minimum is 3 PoPs. Bumped to 3.`);
+      }
       const recordCount = inputs.recordCount ?? 0;
       const dedicatedPart = recordCount >= 200_000 ? "D0GNAZX" : "D0GNBZX";
       const dedicatedDesc = recordCount >= 200_000
@@ -478,6 +504,7 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       "per month (required)",
       "Required SLA part on every Hybrid Cloud DNS order. CPQ will not validate without this."
     ));
+    flags.push("D0GZ2ZX SLA (qty=1) is required on every Hybrid order — CPQ will not validate without it.");
 
     // Bundle selection based on record count
     const recordCount = inputs.recordCount ?? 0;
