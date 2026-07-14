@@ -19,7 +19,7 @@ const WELCOME_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
   content:
-    "👋 Welcome to the **IBM Quoting Assistant**.\n\nI turn client requirements into **part numbers + quantities** ready to paste into CPQ.\n\nWhich product would you like to quote today?",
+    "👋 Welcome to **Deal Genie**.\n\nI turn client requirements into **part numbers + quantities** ready to paste into CPQ.\n\nWhich product would you like to quote today?",
   timestamp: Date.now(),
 };
 
