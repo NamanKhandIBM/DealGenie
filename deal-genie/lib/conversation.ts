@@ -588,14 +588,6 @@ function computeNS1Result(state: ConversationState): string {
 
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
 
-  const bestPracticesSection = result.bestPractices.slice(0, 3).map((practice, idx) =>
-    `<div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-2">
-      <p class="font-semibold text-sm text-gray-900">${idx + 1}. ${practice.category}</p>
-      <p class="text-xs text-gray-700 italic mt-1">"${practice.question}"</p>
-      <p class="text-xs text-gray-600 mt-1">${practice.tips[0]}</p>
-    </div>`
-  ).join("");
-
   const tierLabel = result.tier === "Hybrid"
     ? "Hybrid Cloud DNS (5900B5C)"
     : result.tier === "Premium"
@@ -648,9 +640,6 @@ function computeNS1Result(state: ConversationState): string {
 
 <div class="result-section-label mt-4">📥 CPQ INPUT SUMMARY</div>
 <table style="margin-bottom:8px;">${cpqSummaryRows}</table>
-
-<div class="result-section-label mt-4">💡 BEST PRACTICES (Top 3 of ${result.bestPractices.length})</div>
-${bestPracticesSection}
 
 <div class="result-next">
   ✅ <strong>Part numbers ready for CPQ</strong><br/>
