@@ -462,7 +462,7 @@ export default function ChatPage() {
 
           <div className="flex flex-col">
             <h1 className="font-semibold text-base leading-tight" style={{ color: "#e8eaed" }}>
-              Quoting Assistant
+              Deal Genie
             </h1>
             <p className="text-[11px] leading-none mt-0.5" style={{ color: "rgba(147,180,253,0.7)" }}>
               Requirements → Part Numbers → CPQ
