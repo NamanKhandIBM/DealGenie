@@ -13,7 +13,7 @@ import QuoteCompare from "@/components/QuoteCompare";
 import ScenarioCompare from "@/components/ScenarioCompare";
 import { normaliseAnswersForQuote } from "@/lib/compare-engine";
 import type { SavedQuote } from "@/lib/quote-history";
-import { exportPartsCsv } from "@/lib/export-csv";
+import { exportPartsCsv, exportQuoteCsv } from "@/lib/export-csv";
 
 const WELCOME_MESSAGE: Message = {
   id: "welcome",
@@ -448,13 +448,13 @@ export default function ChatPage() {
 
       <div className="flex flex-col h-screen relative" style={{ zIndex: 1 }}>
         {/* ── Header ─────────────────────────────────────────────────────────── */}
-        <header className="header-glass px-6 py-3.5 flex items-center gap-3 flex-shrink-0">
+        <header className="header-glass px-6 py-3.5 flex items-center gap-3 flex-shrink-0" style={{ height: "56px" }}>
           {/* Deal Genie logo */}
           <img
             src="/dealgenie-icon.png"
             alt="Deal Genie"
-            className="w-9 h-9 rounded-md flex-shrink-0"
-            style={{ objectFit: "cover" }}
+            className="rounded-xl flex-shrink-0"
+            style={{ objectFit: "cover", objectPosition: "center", width: "50px", height: "50px" }}
           />
 
           <div className="flex flex-col">
@@ -614,7 +614,7 @@ export default function ChatPage() {
                 {state.phase === "result" && resultSource === "parts" && (
                   <>
                     <button
-                      onClick={() => state.product && exportPartsCsv(state.product)}
+                      onClick={() => state.product && exportQuoteCsv(state.product, state.answers)}
                       disabled={loading || !state.product}
                       className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
                       style={{
@@ -657,9 +657,26 @@ export default function ChatPage() {
                   </>
                 )}
 
-                {/* After a QUOTE RESULT → Save + Compare Scenarios + Best Practices + Start Quoting */}
+                {/* After a QUOTE RESULT → Export CSV + Save + Compare Scenarios + Best Practices + Start Quoting */}
                 {state.phase === "result" && resultSource === "quote" && (
                   <>
+                    {/* Export CSV */}
+                    <button
+                      onClick={() => state.product && exportQuoteCsv(state.product, state.answers)}
+                      disabled={loading || !state.product}
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        background: "rgba(74,222,128,0.08)",
+                        border: "1px solid rgba(74,222,128,0.25)",
+                        color: "#4ade80",
+                      }}
+                    >
+                      <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M8 2v8M5 7l3 3 3-3" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 12h10" strokeLinecap="round"/>
+                      </svg>
+                      Export CSV
+                    </button>
                     {/* Save Quote */}
                     <button
                       onClick={() => setSaveModalOpen(true)}
@@ -1042,7 +1059,7 @@ function MessageBubble({ message }: { message: Message }) {
     <div className={`flex items-end gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {/* Assistant avatar */}
       {!isUser && (
-        <div className="w-7 h-7 flex-shrink-0 mb-0.5 rounded-full overflow-hidden" style={{ minWidth: "28px" }}>
+        <div className="w-10 h-10 flex-shrink-0 mb-0.5 rounded-full overflow-hidden" style={{ minWidth: "40px" }}>
           <img src="/dealgenie-icon.png" alt="Deal Genie" className="w-full h-full" style={{ objectFit: "cover" }} />
         </div>
       )}
