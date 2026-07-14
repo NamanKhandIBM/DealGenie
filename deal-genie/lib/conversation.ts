@@ -424,7 +424,6 @@ function computeVerifyResult(state: ConversationState): string {
 
 <div class="result-price-row">
   <div class="result-price">~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
-  <div class="result-price-note">LIST — confirm exact pricing, discount &amp; approval in CPQ</div>
 </div>
 
 <ul class="result-flags">${flags}</ul>
@@ -510,7 +509,6 @@ function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLa
 
 <div class="result-price-row">
   <div class="result-price">~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
-  <div class="result-price-note">LIST — confirm exact pricing, discount &amp; approval in CPQ</div>
 </div>
 
 <ul class="result-flags">${flags}</ul>
@@ -626,9 +624,9 @@ function computeNS1Result(state: ConversationState): string {
 <div class="result-price-row">
   ${result.totalMonthlyList > 0
     ? `<div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
-       <div class="result-price-note">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })} /yr list${result.hasPendingPrices ? " · ⚠️ partial — some parts still pending CPQ" : " · confirmed prices"}</div>`
+       <div class="result-price-note">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>`
     : `<div class="result-price">~$${result.ballparkMRR.toLocaleString()}<span>/mo est.</span></div>
-       <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()} /yr estimated &nbsp;·&nbsp; confirm final pricing in CPQ</div>`
+       <div class="result-price-note">~$${result.ballparkAnnual.toLocaleString()}<span>/yr est.</span></div>`
   }
 </div>
 
