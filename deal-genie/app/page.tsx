@@ -449,16 +449,13 @@ export default function ChatPage() {
       <div className="flex flex-col h-screen relative" style={{ zIndex: 1 }}>
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <header className="header-glass px-6 py-3.5 flex items-center gap-3 flex-shrink-0">
-          {/* IBM logo block */}
-          <div
-            className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0"
-            style={{
-              background: "linear-gradient(135deg, #0f62fe 0%, #0043ce 100%)",
-              boxShadow: "0 2px 12px rgba(15,98,254,0.45)",
-            }}
-          >
-            <span className="text-white font-bold text-[11px] tracking-tight">IBM</span>
-          </div>
+          {/* Deal Genie logo */}
+          <img
+            src="/dealgenie-icon.png"
+            alt="Deal Genie"
+            className="w-9 h-9 rounded-md flex-shrink-0"
+            style={{ objectFit: "cover" }}
+          />
 
           <div className="flex flex-col">
             <h1 className="font-semibold text-base leading-tight" style={{ color: "#e8eaed" }}>
@@ -1045,10 +1042,8 @@ function MessageBubble({ message }: { message: Message }) {
     <div className={`flex items-end gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {/* Assistant avatar */}
       {!isUser && (
-        <div className="avatar-ring w-7 h-7 flex-shrink-0 mb-0.5" style={{ minWidth: "28px" }}>
-          <div className="avatar-inner">
-            <span className="font-bold text-[9px]" style={{ color: "#93b4fd" }}>Q</span>
-          </div>
+        <div className="w-7 h-7 flex-shrink-0 mb-0.5 rounded-full overflow-hidden" style={{ minWidth: "28px" }}>
+          <img src="/dealgenie-icon.png" alt="Deal Genie" className="w-full h-full" style={{ objectFit: "cover" }} />
         </div>
       )}
 
