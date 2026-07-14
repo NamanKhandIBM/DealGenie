@@ -132,11 +132,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
   const growthFactor = 1 + (inputs.expectedGrowthPct ?? 0) / 100;
   const effectiveMQ = Math.ceil(inputs.queryVolumeMQ * growthFactor) + growthAddMQ;
 
-  if (growthAddMQ > 0) {
-    flags.push(`Query volume sized with +${growthAddMQ}M headroom (${inputs.queryVolumeMQ}M + ${growthAddMQ}M = ${effectiveMQ}M).`);
-  } else if (inputs.expectedGrowthPct && inputs.expectedGrowthPct > 0) {
-    flags.push(`Query volume sized with ${inputs.expectedGrowthPct}% growth headroom to avoid overages.`);
-  }
 
   // ── 2. Ballpark MRR/Annual (used for display only — tier routing now MQ-based) ──
   const pricingTier = getNS1Tier(effectiveMQ);
@@ -160,11 +155,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     tier = "Essentials";
   }
 
-  flags.push(
-    `Tier: ${tier} (${effectiveMQ.toLocaleString()}M queries/month).` +
-    (tier === "Hybrid" ? " Confirm with Tony Nicolakis / Nick Lammert." :
-     tier === "Premium" ? " Contact NS1 sales team for pricing." : "")
-  );
 
   // ── 4. Derived sizing ──────────────────────────────────────────────────────
   // Standard/Essentials: 1K records included; Premium: 1K records minimum required
@@ -220,7 +210,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
         "per 1,000 records/month (1-9)",
         `${(inputs.recordCount ?? 1000).toLocaleString()} total − 1,000 included = ${billableRecords.toLocaleString()} billable → ${recordUnits} × 1K-record units.`
       ));
-      flags.push(`${billableRecords.toLocaleString()} billable records → ${recordUnits} × 1,000-record units (D10AWZX).`);
     }
 
     // Filter Chains / Resource Units (beyond 1 included)
@@ -279,7 +268,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       "per month (required)",
       "Required SLA part on every NS1 Connect Premium order. CPQ will not validate without this."
     ));
-    flags.push("D0GNDZX (SLA) qty=1 is required on all Premium orders — do not omit.");
 
     // Managed DNS Requests (1 Request = 10M queries)
     const dnsRequests = Math.max(1, Math.ceil(effectiveMQ / 10));
@@ -337,7 +325,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
           "per 1M RUM queries/month (5M blocks)",
           `${effectiveMQ.toLocaleString()}M queries → ${rumAdv} Interactions (1M each). Min 5, must be multiple of 5. Private RUM data feed. Confirm with Tony/Nick.`
         ));
-        flags.push(`RUM Advanced (D0GNNZX): ${rumAdv} Interactions — min 5, multiples of 5. Confirm pricing with Tony/Nick.`);
       } else {
         // Standard RUM: min 1M queries (1 Interaction min), sold per 1M blocks
         const rumStd = Math.max(1, effectiveMQ);
@@ -349,7 +336,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
           "per 1M RUM queries/month",
           `${effectiveMQ.toLocaleString()}M queries → ${rumStd} Interactions (1M each). Min 1M (1 Interaction). NS1-provided RUM data. Confirm with Tony/Nick.`
         ));
-        flags.push(`RUM Standard (D0GNQZX): ${rumStd} Interactions — min 1. Confirm pricing with Tony/Nick.`);
       }
     }
 
@@ -395,7 +381,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
         "per 10M queries/month",
         `Qty must equal Managed DNS Requests (D0GNEZX = ${dnsRequests}). This is a CPQ requirement.`
       ));
-      flags.push(`DNS Insights (D0GN6ZX) qty must equal Managed DNS Requests (${dnsRequests}) — CPQ rule.`);
     }
 
     // China DNS (1 Request = 10M queries)
@@ -403,7 +388,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     if (chinaMQ !== undefined) {
       if (chinaMQ < 50) {
         chinaMQ = 50;
-        flags.push("DNS for China has a minimum of 50M queries — sized to 50 MQ.");
       }
       const chinaRequests = Math.ceil(chinaMQ / 10);
       partNumbers.push(partLine(
@@ -411,9 +395,8 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
         "IBM NS1 Connect DNS for China Request per Month",
         chinaRequests,
         "per 10M China-origin queries/month",
-        `${chinaMQ}M China-origin queries ÷ 10 = ${chinaRequests} Requests. Min 50M (5 Requests). Confirm pricing with Tony Nicolakis.`
+        `${chinaMQ}M China-origin queries ÷ 10 = ${chinaRequests} Requests. Min 50M (5 Requests).`
       ));
-      flags.push(`DNS for China (D0GN8ZX): ${chinaRequests} Requests (${chinaMQ}M queries) — confirm pricing with Tony Nicolakis.`);
 
       // Reattach updated value so it surfaces in result
       (inputs as NS1Inputs).chinaMQ = chinaMQ;
@@ -434,8 +417,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
         "PoPs/month",
         `Dedicated DNS. ${pops} PoPs (min 3, max 12). Confirm pricing with Tony/Nick.`
       ));
-      if (inputs.dedicatedPoPs < 3) flags.push("Dedicated DNS minimum is 3 PoPs — sized to 3 PoPs.");
-      else if (inputs.dedicatedPoPs > 12) flags.push("Dedicated DNS maximum is 12 PoPs — capped at 12 PoPs.");
     }
 
   } else {
@@ -451,7 +432,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       "per month (required)",
       "Required SLA part on every Hybrid Cloud DNS order. CPQ will not validate without this."
     ));
-    flags.push("D0GZ2ZX (SLA) qty=1 is required on all Hybrid Cloud DNS orders — do not omit.");
 
     // Bundle selection based on record count
     const recordCount = inputs.recordCount ?? 0;
@@ -472,14 +452,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       " Confirm pricing with Tony Nicolakis / Nick Lammert."
     ));
 
-    if (effectiveMQ < 10_000) {
-      flags.push(`Hybrid bundle requires minimum 10B QPM (10,000 MQ / 1,000 Requests) — sized to minimum. Confirm with Tony/Nick.`);
-    }
-    flags.push(
-      `Hybrid bundle: ${recordCount >= 200_000 ? "Enterprise Plus (D0GYWZX)" : "Enterprise (D0GYUZX)"} — ` +
-      `includes Dedicated DNS, DNS Insights, NXD Waiver, DDoS, Enhanced Monitor Interval, Vanity Name Server. ` +
-      `Min ACV: ${recordCount >= 200_000 ? "~$670K" : "~$350K"} pre-discount. Confirm with Tony/Nick.`
-    );
 
     // GSLB upsell on Hybrid (RUM Standard = D0GZ0ZX, Advanced = D0GYYZX)
     if (inputs.rumBased && filterChains > 0) {
@@ -495,7 +467,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
           "per 1M RUM queries/month (5M blocks)",
           `${effectiveMQ.toLocaleString()}M → ${rumAdv} Interactions. Min 5,000 (5B queries), multiples of 5. Private RUM data feed. Confirm with Tony/Nick.`
         ));
-        flags.push(`GSLB Advanced (D0GYYZX): ${rumAdv} Interactions. Min 5,000, multiples of 5. Confirm pricing with Tony/Nick.`);
       } else {
         // Standard: min 1B queries (1,000 Interactions), sold per 1M blocks
         const rumStd = Math.max(1_000, effectiveMQ);
@@ -507,7 +478,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
           "per 1M RUM queries/month",
           `${effectiveMQ.toLocaleString()}M → ${rumStd} Interactions. Min 1,000 (1B queries). NS1-provided RUM data. Confirm with Tony/Nick.`
         ));
-        flags.push(`GSLB Standard (D0GZ0ZX): ${rumStd} Interactions. Min 1,000. Confirm pricing with Tony/Nick.`);
       }
     }
 
@@ -516,7 +486,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     if (chinaMQ !== undefined) {
       if (chinaMQ < 50) {
         chinaMQ = 50;
-        flags.push("DNS for China has a minimum of 50M queries — sized to 50 MQ.");
       }
       const chinaRequests = Math.ceil(chinaMQ / 10);
       partNumbers.push(partLine(
@@ -524,9 +493,8 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
         "IBM NS1 Connect DNS for China Request per Month",
         chinaRequests,
         "per 10M China-origin queries/month",
-        `${chinaMQ}M China-origin queries ÷ 10 = ${chinaRequests} Requests. Confirm with Tony Nicolakis.`
+        `${chinaMQ}M China-origin queries ÷ 10 = ${chinaRequests} Requests. Min 50M (5 Requests).`
       ));
-      flags.push(`DNS for China (D0GN8ZX): ${chinaRequests} Requests (${chinaMQ}M queries) — confirm with Tony Nicolakis.`);
       (inputs as NS1Inputs).chinaMQ = chinaMQ;
     }
   }
@@ -546,20 +514,6 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     p => p.listPrice === 0 && !FREE_PARTS.has(p.partNumber) && !KNOWN_EXCEPTIONS.has(p.partNumber)
   );
 
-  // Per-part $0 warnings (item 13 from Nick)
-  for (const p of partNumbers) {
-    if (p.listPrice === 0 && !FREE_PARTS.has(p.partNumber)) {
-      if (KNOWN_EXCEPTIONS.has(p.partNumber)) {
-        flags.push(`ℹ️ ${p.partNumber} (${p.description.replace("IBM NS1 Connect ", "")}): price not exposed in CPQ — known exception. Confirm manually.`);
-      } else {
-        flags.push(`⚠️ ${p.partNumber} (${p.description.replace("IBM NS1 Connect ", "").replace("IBM Hybrid Cloud DNS ", "")}): price could not be validated. Please verify in CPQ.`);
-      }
-    }
-  }
-
-  if (hasPendingPrices) {
-    flags.push("⚠️ Some line items have unconfirmed list prices — verify all $0 parts in IBM Software CPQ before sharing with a customer.");
-  }
 
   return {
     tier,
