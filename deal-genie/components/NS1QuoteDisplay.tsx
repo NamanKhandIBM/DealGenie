@@ -204,10 +204,9 @@ function PartNumbersTab({ result }: { result: NS1SizingResult }) {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="font-semibold text-blue-900 mb-2">Next Steps</h3>
         <ol className="list-decimal list-inside space-y-1 text-sm text-blue-900">
-          <li>Verify part numbers in SAP CPQ (placeholders marked as D0XXXZX)</li>
-          <li>Contact Tony Nicolakis or Nick Lammert for actual part numbers</li>
-          <li>Enter quantities into CPQ</li>
-          <li>Apply appropriate discounts per IBM pricing guidelines</li>
+          <li>Paste part numbers and quantities into SAP CPQ</li>
+          <li>Apply discounts per IBM pricing guidelines</li>
+          <li>Get approval through the standard CPQ workflow</li>
         </ol>
       </div>
     </div>

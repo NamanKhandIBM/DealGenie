@@ -540,8 +540,7 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
       hybridRequests,
       "per 10M queries/month",
       `${effectiveMQ.toLocaleString()} MQ ÷ 10 = ${hybridRequests} Requests (min 1,000 = 10B QPM). ` +
-      (recordCount >= 200_000 ? "Enterprise Plus: 200K–2M records included." : "Enterprise: up to 200K records included.") +
-      " Confirm pricing with Tony Nicolakis / Nick Lammert."
+      (recordCount >= 200_000 ? "Enterprise Plus: 200K–2M records included." : "Enterprise: up to 200K records included.")
     ));
 
 

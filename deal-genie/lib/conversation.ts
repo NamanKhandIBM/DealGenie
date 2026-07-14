@@ -65,7 +65,7 @@ function getProductOpening(product: Product): string {
     case "Verify":
       return "**IBM Security Verify** — I'll ask you a few questions about the client's needs and calculate everything automatically.\n\nLet's start:";
     case "NS1":
-      return "⚠️ **NS1 Connect** — I can size the deal and give a ballpark estimate, but NS1 CPQ part numbers must come from CPQ or Tony Nicolakis / Nick Lammert. Prices shown are illustrative only.\n\nLet's go through the sizing questions:";
+      return "**NS1 Connect** — Let's size this deal. I'll ask a few questions and generate a full quote with part numbers, quantities, and pricing.\n\nLet's go through the sizing questions:";
     case "Vault":
       return "**IBM HashiCorp Vault** — Self-managed (PID 5900BJF), 12-month minimum. There are two pricing models — let me ask the first question to determine which applies:";
   }
