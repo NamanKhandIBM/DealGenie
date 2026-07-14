@@ -163,16 +163,16 @@ export const NS1_QUESTIONS: Question[] = [
   {
     key: "queryMQ",
     ask: "How many DNS queries does the client handle per month?",
-    subtext: "Essentials: <50M · Standard: 50M–1B · Premium: >1B",
+    subtext: "Essentials: ≤30M ($99/mo) · Standard: 31M–1B ($349/mo+) · Premium: >1B (custom)",
     type: "single",
     allowOther: true,
     options: [
-      { label: "< 50M",       value: "25",   hint: "NS1 Connect Essentials" },
-      { label: "50M – 200M",  value: "100",  hint: "NS1 Connect Standard" },
-      { label: "200M – 500M", value: "300",  hint: "NS1 Connect Standard" },
-      { label: "500M – 1B",   value: "700",  hint: "NS1 Connect Standard" },
-      { label: "1B – 5B",     value: "2000", hint: "NS1 Connect Premium" },
-      { label: "5B+",         value: "7500", hint: "NS1 Connect Premium" },
+      { label: "≤ 30M",       value: "25",   hint: "Essentials — $99/mo base" },
+      { label: "31M – 200M",  value: "100",  hint: "Standard — $349/mo base" },
+      { label: "200M – 500M", value: "300",  hint: "Standard — $349/mo base" },
+      { label: "500M – 1B",   value: "700",  hint: "Standard — $349/mo base" },
+      { label: "1B – 5B",     value: "2000", hint: "Premium — custom pricing" },
+      { label: "5B+",         value: "7500", hint: "Premium — custom pricing" },
     ],
     placeholder: "Enter exact millions (e.g. 150)",
     unit: "million queries/month",
@@ -181,22 +181,24 @@ export const NS1_QUESTIONS: Question[] = [
   {
     key: "recordCount",
     ask: "How many DNS records do they manage?",
-    subtext: "1K records included on all tiers.",
+    subtext: "1K records included on all tiers. Standard: $50/mo per additional 1K. Essentials: records capped at 1K.",
     type: "single",
     allowOther: true,
     options: [
-      { label: "Under 1,000",      value: "500" },
-      { label: "1,000 – 10,000",   value: "5000" },
-      { label: "10,000+ / Custom", value: "25000" },
+      { label: "Under 1,000 (included)", value: "500" },
+      { label: "1,000 – 5,000",          value: "3000" },
+      { label: "5,000 – 10,000",         value: "7500" },
+      { label: "10,000+ (Premium only)", value: "25000" },
     ],
     placeholder: "Enter exact record count",
     unit: "records",
   },
-  // ── Core sizing — Q3 Filter Chains ───────────────────────────────────────
+  // ── Core sizing — Q3 Filter Chains ────────────────────────────────────────
+  // Essentials: capped at included 1 chain (no add-ons). Standard: $40/mo per extra chain.
   {
     key: "filterChainCount",
     ask: "How many Filter Chains do they need?",
-    subtext: "A Filter Chain = one traffic steering policy (failover, geo, load balance). 1 included on Essentials/Standard.",
+    subtext: "One traffic steering policy = 1 filter chain. 1 included on all tiers. Standard: $40/mo per additional chain. Essentials: no add-ons.",
     type: "single",
     allowOther: true,
     options: [
@@ -210,10 +212,11 @@ export const NS1_QUESTIONS: Question[] = [
     unit: "filter chains",
   },
   // ── Core sizing — Q4 Monitors ─────────────────────────────────────────────
+  // Essentials: capped at 2 included monitors (no add-ons). Standard: $1.30/mo per extra monitor.
   {
     key: "monitors",
     ask: "How many Monitors do they need?",
-    subtext: "A Monitor checks the health of one hostname or IP. 2 included on Essentials/Standard.",
+    subtext: "One health-checked hostname = 1 monitor. 2 included on all tiers. Standard: $1.30/mo per additional monitor. Essentials: no add-ons.",
     type: "single",
     allowOther: true,
     options: [
@@ -226,11 +229,14 @@ export const NS1_QUESTIONS: Question[] = [
     placeholder: "Enter number of monitors",
     unit: "monitors",
   },
-  // ── Advanced Features ─────────────────────────────────────────────────────
+  // ── Advanced Features — Premium only ─────────────────────────────────────
+  // These questions are only relevant for Premium (>1B queries). Standard includes spike protection
+  // and has no RUM, Dedicated DNS, DNS Insights, China DNS, or NXD Waiver options.
   {
     key: "ddos",
-    ask: "Do they need DDoS + NXD Protection?",
-    subtext: "DDoS: covers query spikes beyond contracted volume (D0GN5ZX). NXD Waiver: waives failed-lookup charges (D0GNMZX). Both Premium only. Note: spike protection is already included in Standard.",
+    ask: "Do they need DDoS overage protection or NXD Waiver?",
+    subtext: "Premium only. DDoS (D0GN5ZX) covers query spikes beyond contract. NXD Waiver (D0GNMZX) waives failed-lookup charges. Spike protection is already included in Standard at no charge.",
+    conditional: (a) => Number(a.queryMQ ?? 0) > 1000,
     type: "single",
     options: [
       { label: "No",                   value: "no" },
@@ -242,7 +248,8 @@ export const NS1_QUESTIONS: Question[] = [
   {
     key: "gslb",
     ask: "Do they need GSLB (Global Server Load Balancing / Pulsar)?",
-    subtext: "RUM-based geo/performance routing. Available on Premium and Hybrid.",
+    subtext: "Premium and Hybrid only. RUM-based geo/latency/performance routing.",
+    conditional: (a) => Number(a.queryMQ ?? 0) > 1000,
     type: "single",
     options: [
       { label: "No",                                     value: "no" },
@@ -253,7 +260,8 @@ export const NS1_QUESTIONS: Question[] = [
   {
     key: "insights",
     ask: "Do they need DNS Insights (observability & analytics)?",
-    subtext: "D0GN6ZX — Premium only. Qty in CPQ must equal Managed DNS Requests.",
+    subtext: "Premium only (D0GN6ZX). Qty in CPQ must equal Managed DNS Requests. Included in Hybrid bundles.",
+    conditional: (a) => Number(a.queryMQ ?? 0) > 1000,
     type: "single",
     options: [
       { label: "No",   value: "no" },
@@ -263,7 +271,8 @@ export const NS1_QUESTIONS: Question[] = [
   {
     key: "dedicated",
     ask: "Do they need Dedicated DNS (single-tenant infrastructure)?",
-    subtext: "D0GNAZX (Large) or D0GNBZX (Small). Min 3 PoPs, max 12. Premium only.",
+    subtext: "Premium only. D0GNAZX (Large) or D0GNBZX (Small). Min 3 PoPs, max 12. Included in Hybrid bundles.",
+    conditional: (a) => Number(a.queryMQ ?? 0) > 1000,
     type: "single",
     options: [
       { label: "No",            value: "no" },
@@ -275,7 +284,8 @@ export const NS1_QUESTIONS: Question[] = [
   {
     key: "china",
     ask: "Do they need DNS coverage in mainland China?",
-    subtext: "D0GN8ZX — minimum 50M China-origin queries/month.",
+    subtext: "Premium only (D0GN8ZX). Minimum 50M China-origin queries/month.",
+    conditional: (a) => Number(a.queryMQ ?? 0) > 1000,
     type: "single",
     options: [
       { label: "No",   value: "no" },

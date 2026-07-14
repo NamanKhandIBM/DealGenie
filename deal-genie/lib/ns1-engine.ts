@@ -1,20 +1,26 @@
 // NS1 quoting engine — sizing + ballpark pricing + part numbers
 //
-// FOUR TIERS (as shown in IBM Software CPQ configurator):
-//   Essentials — D10AYZX base — 30M queries, 1K records, 2 monitors, 1 filter chain included
-//   Standard   — D10AYZX base — 50M queries, 1K records, 2 monitors, 1 filter chain included; add-ons D10AWZX/D10AUZX/D10B2ZX
+// FOUR TIERS:
+//   Essentials — D10AYZX base $99/mo — 30M queries, 1K records, 1 filter chain, 2 monitors included
+//                Add-on: queries only ($50/Request = $50/10M queries). No record/filter/monitor add-ons.
+//   Standard   — D10AYZX base $349/mo — 50M queries, 1K records, 1 filter chain, 2 monitors, spike protection included
+//                Add-ons: queries $50/Request, records $50/1K, filter chains $40/RU, monitors $1.30/Job
 //   Premium    — D0GN* a la carte — Product 5900B4J — ARR $45K+
 //   Hybrid     — D0GY*/D0GZ* bundles — Product 5900B5C — ARR $250K+
 //
-// Tier routing: MQ ≤ 30  → Essentials
-//               MQ ≤ 50  → Standard
-//               MQ ≤ 10,000 → Premium
-//               MQ > 10,000 → Hybrid
+// Tier routing: MQ ≤ 30   → Essentials
+//               MQ ≤ 1000 → Standard   (up to 1B queries)
+//               MQ ≤ 10000→ Premium
+//               MQ > 10000→ Hybrid
 //
-// CPQ metric conversions:
-//   Standard queries: entered in millions directly (qty 10 = 10M queries, multiples of 10, range 10–70)
-//   Premium/Hybrid:   1 Request = 10M queries; 1 Record = 1,000 DNS records
-//   1 Interaction = 1M RUM queries
+// Confirmed public prices (IBM.com product pages):
+//   D10AYZX (Essentials): $99.00/mo base
+//   D10AYZX (Standard):   $349.00/mo base  (same part, different tier price)
+//   D10AZZX: $50.00/mo per Request (1 Request = 10M queries) — both Essentials and Standard
+//   D10AWZX: $50.00/mo per 1,000 records — Standard only
+//   D10AUZX: $40.00/mo per Resource Unit / filter chain — Standard only
+//   D10B2ZX: $1.30/mo per Job / monitor — Standard only
+//   D16MXZX: $75.00/mo per instance — all tiers
 //
 // Confirmed CPQ list prices (12-month term, sourced from IBM Software CPQ):
 //   D0GNEZX: $1.343/mo per Request (10M queries)
@@ -22,8 +28,8 @@
 //   D0GNDZX: $0 (SLA — free, required)
 //   D0GYUZX: $31.718/mo per Request (Enterprise bundle)
 //   D0GZ2ZX: $0 (Hybrid SLA — free, required)
-// All other parts: listPrice still PENDING — confirm in CPQ.
 // DDoS/NXD: qty=1 each (not tied to DNS Request qty) — confirmed in CPQ
+// Spike protection: INCLUDED in Standard — do NOT add as line item for Standard deals.
 // Discounting: ≤35% pre-auth; +10% with leadership; >45% needs product team.
 
 import { NS1_PRICING_TIERS } from "./data";
@@ -142,22 +148,22 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
     `${effectiveMQ.toLocaleString()} MQ → ` +
     `ballpark $${ballparkMRR.toLocaleString()}/month`;
 
-  // ── 3. Tier routing — aligned with NS1 package tiers per Nick Lammert ────
-  // Essentials: <50M · Standard: 50M–1B · Premium: >1B · Hybrid: enterprise bundles
+  // ── 3. Tier routing ────────────────────────────────────────────────────────
+  // Essentials: ≤30M (30M included) · Standard: 31M–1B (50M included) · Premium: >1B · Hybrid: >10B
+  // Essentials has no record/filter/monitor add-ons — queries only.
+  // Standard includes spike protection — do NOT add DDoS as a line item.
   let tier: NS1Tier;
   if (effectiveMQ > 10_000) {
     tier = "Hybrid";
-  } else if (effectiveMQ >= 1_000) {
+  } else if (effectiveMQ > 1_000) {
     tier = "Premium";
-  } else if (effectiveMQ >= 50) {
+  } else if (effectiveMQ > 30) {
     tier = "Standard";
   } else {
     tier = "Essentials";
   }
 
-
   // ── 4. Derived sizing ──────────────────────────────────────────────────────
-  // Standard/Essentials: 1K records included; Premium: 1K records minimum required
   const billableRecords = Math.max(0, (inputs.recordCount ?? 1000) - 1000);
   const filterChains = inputs.filterChains ?? 0;
   const monitors = inputs.monitors ?? 0;
@@ -167,93 +173,133 @@ export function computeNS1Quote(inputs: NS1Inputs): NS1SizingResult {
 
   // ── 5. Build part number list by tier ─────────────────────────────────────
 
-  if (tier === "Essentials" || tier === "Standard") {
-    // ── ESSENTIALS / STANDARD tier: D10A*/D10B* (Product 5900B4J) ─────────
-    // CPQ: Essentials = 30M base, Standard = 50M base
-    // Add-on queries entered in millions directly (multiples of 10, range 10–70)
-    // 1K records included; 2 monitors included; 1 filter chain included
+  if (tier === "Essentials") {
+    // ── ESSENTIALS: $99/mo base, query add-ons only ────────────────────────
+    // Includes: 30M queries, 1K records, 1 filter chain, 2 monitors — NO add-ons for records/filters/monitors
+    // Source: IBM.com public product page
 
-    const tierLabel = tier === "Essentials"
-      ? "Essentials (30M queries, 1K records, 2 monitors, 1 filter chain)"
-      : "Standard (50M queries, 1K records, 2 monitors, 1 filter chain)";
+    partNumbers.push({
+      partNumber: "D10AYZX",
+      description: "IBM NS1 Connect Essentials Access Per Month",
+      quantity: 1,
+      unit: "per month (base fee)",
+      listPrice: 99,
+      extendedPrice: 99,
+      notes: "Required base. Includes: 30M queries, 1K records, 1 filter chain, 2 monitors, 100% uptime SLA. $99/mo (IBM.com public price).",
+    });
 
-    // Base access (required)
-    partNumbers.push(partLine(
-      "D10AYZX",
-      `IBM NS1 Connect ${tier} Access Per Month`,
-      1,
-      "per month (base fee)",
-      `Required base. Includes: ${tierLabel}.`
-    ));
-
-    // Add-on query volume (in millions directly, multiples of 10)
-    const baseIncludedMQ = tier === "Essentials" ? 30 : 50;
-    const addOnMQ = Math.max(0, effectiveMQ - baseIncludedMQ);
+    // Query add-on: $50/mo per Request (1 Request = 10M queries)
+    const addOnMQ = Math.max(0, effectiveMQ - 30);
     if (addOnMQ > 0) {
-      const addOnQty = Math.ceil(addOnMQ / 10) * 10; // round up to nearest 10M
-      partNumbers.push(partLine(
-        "D10AZZX",
-        "IBM NS1 Connect Standard 10M Query Add-On Request Per Month",
-        addOnQty,
-        "million queries/month (multiples of 10)",
-        `${effectiveMQ}M total − ${baseIncludedMQ}M included = ${addOnMQ}M add-on, rounded to ${addOnQty}M. Enter ${addOnQty} in CPQ.`
-      ));
+      const addOnRequests = Math.ceil(addOnMQ / 10);
+      partNumbers.push({
+        partNumber: "D10AZZX",
+        description: "IBM NS1 Connect Essentials Query Add-On Request Per Month",
+        quantity: addOnRequests,
+        unit: "per 10M queries/month",
+        listPrice: 50,
+        extendedPrice: 50 * addOnRequests,
+        notes: `${effectiveMQ}M total − 30M included = ${addOnMQ}M add-on → ${addOnRequests} Requests × $50/mo. Source: IBM.com public price.`,
+      });
     }
 
-    // Additional DNS Records (beyond 1K included)
+    // IBM Cloud Sync (optional, all tiers)
+    if (inputs.cloudSync) {
+      partNumbers.push({
+        partNumber: "D16MXZX",
+        description: "IBM Cloud Sync Add-on",
+        quantity: 1,
+        unit: "per instance/month",
+        listPrice: 75,
+        extendedPrice: 75,
+        notes: "Multi-provider DNS sync. $75/mo per instance. Source: IBM.com public price.",
+      });
+    }
+
+  } else if (tier === "Standard") {
+    // ── STANDARD: $349/mo base, full add-on menu ───────────────────────────
+    // Includes: 50M queries, 1K records, 1 filter chain, 2 monitors, spike protection included
+    // Source: IBM.com public product page
+
+    partNumbers.push({
+      partNumber: "D10AYZX",
+      description: "IBM NS1 Connect Standard Access Per Month",
+      quantity: 1,
+      unit: "per month (base fee)",
+      listPrice: 349,
+      extendedPrice: 349,
+      notes: "Required base. Includes: 50M queries, 1K records, 1 filter chain, 2 monitors, spike/DDoS protection, zone backup/restore. $349/mo (IBM.com public price).",
+    });
+
+    // Query add-on: $50/mo per Request (1 Request = 10M queries)
+    const addOnMQ = Math.max(0, effectiveMQ - 50);
+    if (addOnMQ > 0) {
+      const addOnRequests = Math.ceil(addOnMQ / 10);
+      partNumbers.push({
+        partNumber: "D10AZZX",
+        description: "IBM NS1 Connect Standard Additional Queries Per Month",
+        quantity: addOnRequests,
+        unit: "per 10M queries/month",
+        listPrice: 50,
+        extendedPrice: 50 * addOnRequests,
+        notes: `${effectiveMQ}M total − 50M included = ${addOnMQ}M add-on → ${addOnRequests} Requests × $50/mo. Source: IBM.com public price.`,
+      });
+    }
+
+    // Additional DNS Records: $50/mo per 1,000 records (Standard only)
     if (billableRecords > 0) {
       const recordUnits = Math.ceil(billableRecords / 1000);
-      partNumbers.push(partLine(
-        "D10AWZX",
-        "IBM NS1 Connect Standard Records Add-On 1000 Records Per Month",
-        recordUnits,
-        "per 1,000 records/month (1-9)",
-        `${(inputs.recordCount ?? 1000).toLocaleString()} total − 1,000 included = ${billableRecords.toLocaleString()} billable → ${recordUnits} × 1K-record units.`
-      ));
+      partNumbers.push({
+        partNumber: "D10AWZX",
+        description: "IBM NS1 Connect Standard Records Add-On Per Month",
+        quantity: recordUnits,
+        unit: "per 1,000 records/month",
+        listPrice: 50,
+        extendedPrice: 50 * recordUnits,
+        notes: `${(inputs.recordCount ?? 1000).toLocaleString()} total − 1,000 included = ${billableRecords.toLocaleString()} billable → ${recordUnits} × 1K units × $50/mo. Source: IBM.com public price.`,
+      });
     }
 
-    // Filter Chains / Resource Units (beyond 1 included)
+    // Filter Chains: $40/mo per Resource Unit (Standard only)
     if (filterChains > 0) {
-      partNumbers.push(partLine(
-        "D10AUZX",
-        "IBM NS1 Connect Standard Filter Chains Add-On Resource Unit Per Month",
-        filterChains,
-        "per filter chain/month (1-99)",
-        `${filterChains} additional filter chains beyond the 1 included. Max 99.`
-      ));
+      partNumbers.push({
+        partNumber: "D10AUZX",
+        description: "IBM NS1 Connect Standard Filter Chains Per Month",
+        quantity: filterChains,
+        unit: "per filter chain/month",
+        listPrice: 40,
+        extendedPrice: 40 * filterChains,
+        notes: `${filterChains} additional filter chains beyond the 1 included × $40/mo each. Source: IBM.com public price.`,
+      });
     }
 
-    // Monitors / Jobs (beyond 2 included)
+    // Monitors (Jobs): $1.30/mo per Job (Standard only)
     if (monitors > 0) {
-      partNumbers.push(partLine(
-        "D10B2ZX",
-        "IBM NS1 Connect Standard Monitors Add-On Job Per Month",
-        monitors,
-        "per monitor/month (1-98)",
-        `${monitors} additional monitors beyond the 2 included. Max 98.`
-      ));
+      partNumbers.push({
+        partNumber: "D10B2ZX",
+        description: "IBM NS1 Connect Standard Monitors Per Month",
+        quantity: monitors,
+        unit: "per monitor/month",
+        listPrice: 1.30,
+        extendedPrice: 1.30 * monitors,
+        notes: `${monitors} additional monitors beyond the 2 included × $1.30/mo each. Source: IBM.com public price.`,
+      });
     }
 
-    // DDoS / Spike Protection
-    if (inputs.ddosProtection) {
-      partNumbers.push(partLine(
-        "D10ATZX",
-        "IBM NS1 Connect Standard Spike Protection / DDoS Add-On Per Month",
-        1,
-        "per month",
-        "Spike and DDoS protection add-on."
-      ));
-    }
+    // NOTE: DDoS/Spike protection is INCLUDED in Standard — never add as a line item.
+    // NOTE: NXD Waiver, RUM/GSLB, Dedicated DNS, Insights, China DNS are Premium-only features.
 
-    // IBM Cloud Sync
+    // IBM Cloud Sync (optional, all tiers)
     if (inputs.cloudSync) {
-      partNumbers.push(partLine(
-        "D16MXZX",
-        "IBM Cloud Sync Add-on",
-        1,
-        "per instance",
-        "Syncs NS1 DNS zones with IBM Cloud."
-      ));
+      partNumbers.push({
+        partNumber: "D16MXZX",
+        description: "IBM Cloud Sync Add-on",
+        quantity: 1,
+        unit: "per instance/month",
+        listPrice: 75,
+        extendedPrice: 75,
+        notes: "Multi-provider DNS sync. $75/mo per instance. Source: IBM.com public price.",
+      });
     }
 
   } else if (tier === "Premium") {

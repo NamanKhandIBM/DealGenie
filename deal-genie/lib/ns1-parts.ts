@@ -1,9 +1,18 @@
 // NS1 Part Numbers and Pricing Data
-// Source: NS1 Sales Decoder Ring – CPQ.pdf (via IBM Seismic, 2025)
+// Source: NS1 Sales Decoder Ring – CPQ.pdf (IBM Seismic, 2025) + IBM.com public product pages
 //
 // TWO SEPARATE PRODUCTS:
 //   1. NS1 Connect Standard  — Product ID 5900B4J  — D10A*/D10B* SKUs  — ARR $4K–$40K
 //   2. NS1 Connect Premium / Hybrid Cloud DNS — Product ID 5900B5C — D0GN*/D0GY*/D0GZ* SKUs — ARR $45K–$1M+
+//
+// Prices confirmed from IBM.com public product pages (monthly list, US pricing):
+//   D10AYZX (Essentials base): $99.00/mo  ($1,188/yr annual)
+//   D10AYZX (Standard base):   $349.00/mo ($4,188/yr annual)  — same part, different tier
+//   D10AZZX (query add-on):    $50.00/mo per Request (1 Request = 10M queries) — same rate for both tiers
+//   D10AWZX (records):         $50.00/mo per 1,000 records (Standard only)
+//   D10AUZX (filter chains):   $40.00/mo per Resource Unit / filter chain (Standard only)
+//   D10B2ZX (monitors/jobs):   $1.30/mo per Job / monitor (Standard only)
+//   D16MXZX (Cloud Sync):      $75.00/mo per instance (both tiers)
 //
 // Prices confirmed from IBM Software CPQ (12-month term):
 //   D0GNEZX: $77,362.80/yr at 4,800 qty  → $1.343/mo per 10M queries
@@ -33,24 +42,24 @@ export interface NS1Part {
 export const NS1_STANDARD_PARTS: NS1Part[] = [
   {
     partNumber: "D10AYZX",
-    description: "IBM NS1 Connect Standard Access Per Month",
-    listPrice: 0, // PENDING — base tier $349/mo; confirm exact in CPQ
+    description: "IBM NS1 Connect Essentials / Standard Access Per Month",
+    listPrice: 99, // Essentials: $99.00/mo. Standard: $349.00/mo. Same part, price differs by tier. Source: IBM.com public product page.
     unit: "per month (base access)",
     category: "Standard",
-    notes: "Required base subscription for every Standard deal. Tier range: $99–$349/month. Add query/records/chains via add-ons."
+    notes: "Required base subscription. Essentials = $99/mo (30M queries, 1K records, 1 filter chain, 2 monitors). Standard = $349/mo (50M queries, 1K records, 1 filter chain, 2 monitors, spike protection included)."
   },
   {
     partNumber: "D10AZZX",
-    description: "IBM NS1 Connect Standard 10M Query Add-On Request Per Month",
-    listPrice: 0, // PENDING — tiered; confirm rate in CPQ. 1 Request = 10M queries.
-    unit: "per 10M queries/month (committed)",
+    description: "IBM NS1 Connect Query Add-On Request Per Month",
+    listPrice: 50, // $50.00/mo per Request. 1 Request = 10M queries. Source: IBM.com public product page (same rate for Essentials and Standard).
+    unit: "per 10M queries/month",
     category: "Standard",
-    notes: "Committed query volume in 10M blocks. Quantity = CEIL(effectiveMQ / 10). Tiered pricing — more = cheaper per block."
+    notes: "$50/mo per Request (1 Request = 10M queries). Same rate for both Essentials and Standard. Quantity = CEIL((effectiveMQ − baseIncluded) / 10)."
   },
   {
     partNumber: "D10B0ZX",
     description: "IBM NS1 Connect Standard 10M Query Add-On Request Overage",
-    listPrice: 0, // PENDING — confirm in CPQ
+    listPrice: 0, // Overage rate — billed monthly. Confirm exact rate in CPQ.
     unit: "per 10M queries/month (overage)",
     category: "Standard",
     notes: "Overage SKU — fires when actual queries exceed committed D10AZZX band. Include alongside D10AZZX for reference."
@@ -58,7 +67,7 @@ export const NS1_STANDARD_PARTS: NS1Part[] = [
   {
     partNumber: "D1250ZX",
     description: "IBM NS1 Connect Standard Access 10M Queries Pay Per Use",
-    listPrice: 0, // PENDING — confirm in CPQ
+    listPrice: 0, // Pay-per-use variant — confirm in CPQ.
     unit: "per 10M queries (pay-per-use)",
     category: "Standard",
     notes: "Pay-per-use alternative. Use for short-term or variable workloads."
@@ -66,15 +75,15 @@ export const NS1_STANDARD_PARTS: NS1Part[] = [
   {
     partNumber: "D10AWZX",
     description: "IBM NS1 Connect Standard Records Add-On 1000 Records Per Month",
-    listPrice: 0, // PENDING — confirm rate in CPQ. 1 IBM Record = 1,000 DNS records.
-    unit: "per 1,000 records/month (committed)",
+    listPrice: 50, // $50.00/mo per 1,000 records. Source: IBM.com Standard product page.
+    unit: "per 1,000 records/month",
     category: "Standard",
-    notes: "First 1,000 records included in base. Quantity = CEIL(billableRecords / 1000). 1 IBM Record = 1,000 DNS records."
+    notes: "First 1,000 records included in base. $50/mo per 1,000 records above that. Quantity = CEIL(billableRecords / 1000). Standard only — Essentials has no record add-on."
   },
   {
     partNumber: "D10AXZX",
     description: "IBM NS1 Connect Standard Records Add-On 1000 Records Overage",
-    listPrice: 0, // PENDING — confirm in CPQ
+    listPrice: 0, // Overage rate — billed monthly.
     unit: "per 1,000 records/month (overage)",
     category: "Standard",
     notes: "Overage SKU for records. Include alongside D10AWZX for reference."
@@ -82,15 +91,15 @@ export const NS1_STANDARD_PARTS: NS1Part[] = [
   {
     partNumber: "D10AUZX",
     description: "IBM NS1 Connect Standard Filter Chains Add-On Resource Unit Per Month",
-    listPrice: 0, // PENDING — confirm rate in CPQ. 1 Resource Unit = 1 filter chain.
-    unit: "per filter chain/month (committed)",
+    listPrice: 40, // $40.00/mo per Resource Unit (1 RU = 1 filter chain). Source: IBM.com Standard product page.
+    unit: "per filter chain/month",
     category: "Standard",
-    notes: "One filter chain = one traffic steering policy (non-RUM). Up to 100 filter chains on Standard. 1 Resource Unit = 1 filter chain."
+    notes: "$40/mo per filter chain (Resource Unit). 1 filter chain included in base. Up to 100 filter chains on Standard. Standard only — Essentials has no filter chain add-on."
   },
   {
     partNumber: "D10AVZX",
     description: "IBM NS1 Connect Standard Filter Chains Add-On Resource Unit Overage",
-    listPrice: 0, // PENDING — confirm in CPQ
+    listPrice: 0, // Overage rate — billed monthly.
     unit: "per filter chain/month (overage)",
     category: "Standard",
     notes: "Overage SKU for filter chains. Include alongside D10AUZX for reference."
@@ -98,26 +107,34 @@ export const NS1_STANDARD_PARTS: NS1Part[] = [
   {
     partNumber: "D10B2ZX",
     description: "IBM NS1 Connect Standard Monitors Add-On Job Per Month",
-    listPrice: 0, // PENDING — confirm rate in CPQ. 1 Job = 1 monitor.
-    unit: "per monitor/month (committed)",
+    listPrice: 1.30, // $1.30/mo per Job (1 Job = 1 monitor). Source: IBM.com Standard product page.
+    unit: "per monitor/month",
     category: "Standard",
-    notes: "One monitor = one health-checked hostname or IP (1 Job = 1 monitor). Up to 100 monitors on Standard."
+    notes: "$1.30/mo per monitor (Job). 2 monitors included in base. Up to 100 monitors on Standard. Standard only — Essentials has no monitor add-on."
   },
   {
     partNumber: "D10B3ZX",
     description: "IBM NS1 Connect Standard Monitors Add-On Job Overage",
-    listPrice: 0, // PENDING — confirm in CPQ
+    listPrice: 0, // Overage rate — billed monthly.
     unit: "per monitor/month (overage)",
     category: "Standard",
     notes: "Overage SKU for monitors. Include alongside D10B2ZX for reference."
   },
   {
     partNumber: "D10ATZX",
-    description: "IBM NS1 Connect Standard Spike Protection Add-On Request Per Month",
-    listPrice: 0, // PENDING — confirm in CPQ
-    unit: "per month",
+    description: "IBM NS1 Connect Standard Spike Protection",
+    listPrice: 0, // Included in Standard tier — $0 add-on cost. Source: IBM.com Standard product page.
+    unit: "included",
     category: "Standard",
-    notes: "DDoS/spike protection. Included in Standard tier by default. Enter same value as query requests."
+    notes: "Spike/DDoS protection is INCLUDED in NS1 Connect Standard at no extra charge. Do not add as a line item for Standard deals."
+  },
+  {
+    partNumber: "D16MXZX",
+    description: "IBM Cloud Sync Add-on",
+    listPrice: 75, // $75.00/mo per instance. Source: IBM.com product pages (both Essentials and Standard).
+    unit: "per instance/month",
+    category: "Add-on",
+    notes: "$75/mo per instance. Available on all tiers. Multi-provider DNS sync (Route 53, NS1) and backup/restore to S3."
   }
 ];
 
