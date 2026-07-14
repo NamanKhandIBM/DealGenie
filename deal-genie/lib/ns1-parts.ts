@@ -25,7 +25,7 @@
 export interface NS1Part {
   partNumber: string;
   description: string;
-  listPrice: number;       // 0 = price pending; confirm in IBM Software CPQ
+  listPrice: number;       // entry-level list price; use scaleQtyPrice for graduated pricing
   unit: string;
   category: "Core" | "Add-on" | "Premium" | "Hybrid Bundle" | "GSLB" | "Standard";
   notes?: string;
@@ -33,6 +33,8 @@ export interface NS1Part {
     quantity?: number;
     description?: string;
   };
+  /** IBM Marketplace graduated pricing tiers (descending qty order: first bracket ≥ qty applies) */
+  scaleQtyPrice?: Array<{ qty: number; price: number }>;
 }
 
 // ─── NS1 CONNECT STANDARD (Product ID 5900B4J) ───────────────────────────────
@@ -170,109 +172,171 @@ export const NS1_PREMIUM_PARTS: NS1Part[] = [
   {
     partNumber: "D0GNIZX",
     description: "IBM NS1 Connect Managed DNS Jobs per Month",
-    listPrice: 0,
+    listPrice: 2.44, // $2.44/mo per job at qty<50 (graduated: $0.64 at high volume). Source: IBM Marketplace API.
     unit: "per monitor/month",
     category: "Add-on",
-    notes: "Health-check monitors. 1 Job = 1 monitor."
+    notes: "Health-check monitors. 1 Job = 1 monitor. Graduated pricing: $2.44/mo (<50), $1.35 (50–249), $0.92 (250–499), $0.64 (500+). Source: IBM Marketplace API (confirmed).",
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 0.64 }, { qty: 500, price: 0.92 },
+      { qty: 250, price: 1.35 }, { qty: 50, price: 2.44 }
+    ]
   },
   {
     partNumber: "D0GNKZX",
     description: "IBM NS1 Connect Managed DNS Resource Unit per Month",
-    listPrice: 0,
+    listPrice: 73.10, // $73.10/mo per RU at qty<10 (graduated: $3.82 at very high volume). Source: IBM Marketplace API.
     unit: "per filter chain/month",
     category: "Add-on",
-    notes: "Standard (non-RUM) filter chains. 1 Resource Unit = 1 filter chain."
+    notes: "Standard (non-RUM) filter chains. 1 Resource Unit = 1 filter chain. Graduated: $73.10 (<10), $51.20 (10–24), $23.05 (25–49), $19.60 (50–249), $11.75 (250–499), $6.47 (500–999), $5.82 (1K–2.4K), $5.24 (2.5K–4.9K), $4.71 (5K–9.9K), $4.24 (10K–24.9K), $3.82 (25K+). Source: IBM Marketplace API.",
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 3.82 }, { qty: 25000, price: 4.24 },
+      { qty: 10000, price: 4.71 }, { qty: 5000, price: 5.24 },
+      { qty: 2500, price: 5.82 }, { qty: 1000, price: 6.47 },
+      { qty: 500, price: 11.75 }, { qty: 250, price: 19.60 },
+      { qty: 50, price: 23.05 }, { qty: 25, price: 51.20 },
+      { qty: 10, price: 73.10 }
+    ]
   },
   {
     partNumber: "D0GN5ZX",
     description: "IBM NS1 Connect DDoS Overage Protection Request per Month",
-    listPrice: 0,
+    listPrice: 13.65, // $13.65/mo per Request at qty<10 (graduated: $0.64 at high volume). Source: IBM Marketplace API.
     unit: "per 10M queries/month",
     category: "Add-on",
-    notes: "Optional DDoS spike protection. Enter same quantity as D0GNEZX (Managed DNS Requests)."
+    notes: "DDoS overage protection. 1 Request = 10M queries. Graduated pricing (same rate schedule as D0GNEZX). Qty=1 in CPQ (confirmed). Source: IBM Marketplace API.",
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 0.64 }, { qty: 5000, price: 0.67 },
+      { qty: 2500, price: 0.74 }, { qty: 1000, price: 0.88 },
+      { qty: 500, price: 1.03 }, { qty: 250, price: 1.88 },
+      { qty: 100, price: 2.68 }, { qty: 50, price: 3.83 },
+      { qty: 25, price: 5.47 }, { qty: 10, price: 13.65 }
+    ]
   },
   {
     partNumber: "D0GNMZX",
     description: "IBM NS1 Connect NXD Waiver Request per Month",
-    listPrice: 0,
+    listPrice: 13.65, // $13.65/mo per Request at qty<10 (graduated: $0.64 at high volume). Source: IBM Marketplace API.
     unit: "per 10M queries/month",
     category: "Add-on",
-    notes: "Optional NXDOMAIN request waiver. Enter same quantity as D0GNEZX."
+    notes: "NXDOMAIN request waiver. 1 Request = 10M queries. Same graduated rate as D0GN5ZX. Qty=1 in CPQ (confirmed). Source: IBM Marketplace API.",
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 0.64 }, { qty: 5000, price: 0.67 },
+      { qty: 2500, price: 0.74 }, { qty: 1000, price: 0.88 },
+      { qty: 500, price: 1.03 }, { qty: 250, price: 1.88 },
+      { qty: 100, price: 2.68 }, { qty: 50, price: 3.83 },
+      { qty: 25, price: 5.47 }, { qty: 10, price: 13.65 }
+    ]
   },
   {
     partNumber: "D0GNCZX",
     description: "IBM NS1 Connect Enhanced Monitor Interval Access per Month",
-    listPrice: 0,
+    listPrice: 1120, // $1,120/mo flat. Source: IBM Marketplace API (VALU pricing model).
     unit: "per month (0 or 1)",
     category: "Add-on",
-    notes: "Upgrades monitor check interval from default 30s to 5s. Quantity: 0 or 1."
+    notes: "Upgrades monitor check interval from 30s to 5s. Flat rate $1,120/mo (qty 0 or 1). Source: IBM Marketplace API (confirmed)."
   },
   {
     partNumber: "D0GNRZX",
     description: "IBM NS1 Connect Vanity Name Server Access per Month",
-    listPrice: 0,
+    listPrice: 2250, // $2,250/mo flat. Source: IBM Marketplace API (VALU pricing model).
     unit: "per month (0 or 1)",
     category: "Add-on",
-    notes: "Custom branded nameservers. Quantity: 0 or 1."
+    notes: "Custom branded nameservers. Flat rate $2,250/mo (qty 0 or 1). Source: IBM Marketplace API (confirmed)."
   },
   {
     partNumber: "D0GN8ZX",
     description: "IBM NS1 Connect DNS for China Request per Month",
-    listPrice: 0,
+    listPrice: 182, // $182/mo per Request at qty<10 (graduated: $5.19 at very high volume). Source: IBM Marketplace API.
     unit: "per 10M queries/month",
     category: "Add-on",
-    notes: "China-origin DNS traffic. 1 Request = 10M queries. Min: 50M queries (5 Requests). Must check China box in CPQ before Managed DNS section.",
-    minimums: { quantity: 5, description: "Minimum 50M queries (5 Requests = 5 × 10M)" }
+    notes: "China-origin DNS traffic. 1 Request = 10M queries. Min: 50M queries (5 Requests). Graduated pricing. Source: IBM Marketplace API (confirmed).",
+    minimums: { quantity: 5, description: "Minimum 50M queries (5 Requests = 5 × 10M)" },
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 5.19 }, { qty: 25000, price: 6.11 },
+      { qty: 10000, price: 7.19 }, { qty: 5000, price: 8.45 },
+      { qty: 2500, price: 9.94 }, { qty: 1000, price: 11.70 },
+      { qty: 500, price: 13.80 }, { qty: 250, price: 25.00 },
+      { qty: 100, price: 35.70 }, { qty: 50, price: 51.10 },
+      { qty: 25, price: 72.90 }, { qty: 10, price: 182 }
+    ]
   },
   {
     partNumber: "D0GN6ZX",
     description: "IBM NS1 Connect DNS Insights Request per Month",
-    listPrice: 0,
+    listPrice: 13.65, // $13.65/mo per Request at qty<10 (graduated: $0.64 at high volume). Source: IBM Marketplace API.
     unit: "per 10M queries/month",
     category: "Add-on",
-    notes: "DNS Insights analytics. Enter same quantity as D0GNEZX. Must check Insights box in CPQ before Managed DNS section."
+    notes: "DNS Insights analytics. Qty must equal D0GNEZX (Managed DNS Requests). Same graduated rate as D0GN5ZX. Source: IBM Marketplace API (confirmed).",
+    scaleQtyPrice: [
+      { qty: 10000, price: 0.64 }, { qty: 5000, price: 0.67 },
+      { qty: 2500, price: 0.74 }, { qty: 1000, price: 0.88 },
+      { qty: 500, price: 1.03 }, { qty: 250, price: 1.88 },
+      { qty: 100, price: 2.68 }, { qty: 50, price: 3.83 },
+      { qty: 25, price: 5.47 }, { qty: 10, price: 13.65 }
+    ]
   },
   {
     partNumber: "D0GN7ZX",
     description: "IBM NS1 Connect DNS Insights Job per Month",
-    listPrice: 0,
+    listPrice: 106, // $106/mo per Job at qty<10 (graduated: $54.20 at high volume). Source: IBM Marketplace API.
     unit: "per custom policy/month",
     category: "Add-on",
-    notes: "Custom DNS Insights policies beyond the 3 included in the base package. No minimum."
+    notes: "Custom DNS Insights policies beyond the 3 included in base package. Graduated: $106 (<10), $74.20 (10–24), $66.80 (25–49), $60.10 (50–99), $54.20 (100+). Source: IBM Marketplace API (confirmed).",
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 54.20 }, { qty: 100, price: 60.10 },
+      { qty: 50, price: 66.80 }, { qty: 25, price: 74.20 },
+      { qty: 10, price: 106 }
+    ]
   },
   {
     partNumber: "D0GNQZX",
     description: "IBM NS1 Connect RUM Traffic Steering Standard Interaction per Month",
-    listPrice: 0,
+    listPrice: 14.40, // $14.40/mo per Interaction at qty<10 (graduated: $1.09 at high volume). Source: IBM Marketplace API.
     unit: "per 1M RUM queries/month",
     category: "Add-on",
-    notes: "RUM-based GSLB using NS1-provided data. 1 Interaction = 1M queries. Min: 1M queries. Must be a subset of total Managed DNS queries."
+    notes: "RUM-based GSLB using NS1-provided data. 1 Interaction = 1M queries. Min: 1M queries. Graduated pricing. Source: IBM Marketplace API (confirmed).",
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 1.09 }, { qty: 25000, price: 1.36 },
+      { qty: 10000, price: 1.81 }, { qty: 5000, price: 2.27 },
+      { qty: 2500, price: 2.83 }, { qty: 1000, price: 3.77 },
+      { qty: 500, price: 4.72 }, { qty: 250, price: 5.90 },
+      { qty: 100, price: 7.38 }, { qty: 50, price: 9.22 },
+      { qty: 25, price: 11.55 }, { qty: 10, price: 14.40 }
+    ]
   },
   {
     partNumber: "D0GNNZX",
     description: "IBM NS1 Connect RUM Traffic Steering Advanced Interaction per Month",
-    listPrice: 0,
+    listPrice: 22.90, // $22.90/mo per Interaction at qty<10 (graduated: $1.73 at high volume). Source: IBM Marketplace API.
     unit: "per 1M RUM queries/month",
     category: "Add-on",
-    notes: "RUM-based GSLB using customer-ingested private data. 1 Interaction = 1M queries. Min: 5M queries (5 Interactions). Must be multiple of 5.",
-    minimums: { quantity: 5, description: "Minimum 5M queries (5 Interactions = 5 × 1M)" }
+    notes: "RUM-based GSLB using customer-ingested private data. 1 Interaction = 1M queries. Min: 5M queries (5 Interactions). Must be multiple of 5. Source: IBM Marketplace API (confirmed).",
+    minimums: { quantity: 5, description: "Minimum 5M queries (5 Interactions = 5 × 1M)" },
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 1.73 }, { qty: 25000, price: 2.16 },
+      { qty: 10000, price: 2.88 }, { qty: 5000, price: 3.60 },
+      { qty: 2500, price: 4.49 }, { qty: 1000, price: 6.00 },
+      { qty: 500, price: 7.49 }, { qty: 250, price: 9.37 },
+      { qty: 100, price: 11.70 }, { qty: 50, price: 14.65 },
+      { qty: 25, price: 18.35 }, { qty: 10, price: 22.90 }
+    ]
   },
   {
     partNumber: "D0GNAZX",
     description: "IBM NS1 Connect Dedicated DNS Large Location per Month",
-    listPrice: 0,
+    listPrice: 2430, // $2,430/mo per PoP flat. Source: IBM Marketplace API (QNTY pricing model).
     unit: "per PoP/month",
     category: "Premium",
-    notes: "Large Dedicated DNS instance: 64GB RAM, 16 cores, up to 50M record capacity, up to 75B QPM. Min 3, max 12 PoPs.",
+    notes: "Large Dedicated DNS instance: 64GB RAM, 16 cores, up to 50M records, up to 75B QPM. $2,430/mo per PoP. Min 3, max 12 PoPs. Source: IBM Marketplace API (confirmed).",
     minimums: { quantity: 3, description: "Minimum 3 PoPs, maximum 12 PoPs" }
   },
   {
     partNumber: "D0GNBZX",
     description: "IBM NS1 Connect Dedicated DNS Small Location per Month",
-    listPrice: 0,
+    listPrice: 1220, // $1,220/mo per PoP flat. Source: IBM Marketplace API (QNTY pricing model).
     unit: "per PoP/month",
     category: "Premium",
-    notes: "Standard Dedicated DNS instance: 8GB RAM, 4 cores, up to 2.5M record capacity, up to 10B QPM. Min 3, max 12 PoPs.",
+    notes: "Standard Dedicated DNS instance: 8GB RAM, 4 cores, up to 2.5M records, up to 10B QPM. $1,220/mo per PoP. Min 3, max 12 PoPs. Source: IBM Marketplace API (confirmed).",
     minimums: { quantity: 3, description: "Minimum 3 PoPs, maximum 12 PoPs" }
   }
 ];
@@ -303,29 +367,53 @@ export const NS1_HYBRID_PARTS: NS1Part[] = [
   {
     partNumber: "D0GYWZX",
     description: "IBM Hybrid Cloud DNS Enterprise Plus Request per Month",
-    listPrice: 0, // Min pre-discount ACV ~$670K. Confirm rate in CPQ.
+    listPrice: 91.20, // $91.20/mo per Request at qty<10 (graduated: $3.45 at high volume). Source: IBM Marketplace API.
     unit: "per 10M queries/month",
     category: "Hybrid Bundle",
-    notes: "Enterprise Plus bundle baseline QPM. 1 Request = 10M queries. Min: 10B queries (1,000 Requests). Includes: up to 2M records, 1,000 filter chains, 2,000 monitors, 5 Dedicated DNS Large (64GB/16-core, 50M records, 75B QPM each), DNS Insights + 10 policies, NXD Waiver, DDoS Overage Protection, Enhanced Monitor Interval (5s), Vanity Name Server. Min pre-discount ACV ~$670K.",
-    minimums: { quantity: 1000, description: "Minimum 10B queries/month (1,000 Requests × 10M)" }
+    notes: "Enterprise Plus bundle QPM. 1 Request = 10M queries. Min: 10B queries (1,000 Requests). Includes: up to 2M records, 1,000 filter chains, 2,000 monitors, 5 Dedicated DNS Large. Graduated pricing. Source: IBM Marketplace API (confirmed).",
+    minimums: { quantity: 1000, description: "Minimum 10B queries/month (1,000 Requests × 10M)" },
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 3.45 }, { qty: 25000, price: 3.63 },
+      { qty: 10000, price: 4.03 }, { qty: 5000, price: 4.47 },
+      { qty: 2500, price: 4.97 }, { qty: 1000, price: 5.85 },
+      { qty: 500, price: 6.88 }, { qty: 250, price: 12.50 },
+      { qty: 100, price: 17.85 }, { qty: 50, price: 25.50 },
+      { qty: 25, price: 36.50 }, { qty: 10, price: 91.20 }
+    ]
   },
   {
     partNumber: "D0GZ0ZX",
     description: "IBM Hybrid Cloud DNS GSLB Standard Interaction per Month",
-    listPrice: 0, // Min pre-discount ACV ~$55K. Confirm rate in CPQ.
+    listPrice: 14.40, // $14.40/mo per Interaction at qty<10 (graduated: $1.09 at high volume). Source: IBM Marketplace API.
     unit: "per 1M GSLB queries/month",
     category: "GSLB",
-    notes: "GSLB upsell using NS1-provided RUM data. 1 Interaction = 1M queries. Min: 1B queries (1,000 Interactions). Sold in 1M blocks. Includes 100 filter chains + NS1 RUM data package. Min pre-discount ACV ~$55K.",
-    minimums: { quantity: 1000, description: "Minimum 1B queries (1,000 Interactions × 1M)" }
+    notes: "GSLB upsell using NS1-provided RUM data. 1 Interaction = 1M queries. Min: 1B queries (1,000 Interactions). Same rate schedule as D0GNQZX. Source: IBM Marketplace API (confirmed).",
+    minimums: { quantity: 1000, description: "Minimum 1B queries (1,000 Interactions × 1M)" },
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 1.09 }, { qty: 25000, price: 1.36 },
+      { qty: 10000, price: 1.81 }, { qty: 5000, price: 2.27 },
+      { qty: 2500, price: 2.83 }, { qty: 1000, price: 3.77 },
+      { qty: 500, price: 4.72 }, { qty: 250, price: 5.90 },
+      { qty: 100, price: 7.38 }, { qty: 50, price: 9.22 },
+      { qty: 25, price: 11.55 }, { qty: 10, price: 14.40 }
+    ]
   },
   {
     partNumber: "D0GYYZX",
     description: "IBM Hybrid Cloud DNS GSLB Advanced Interaction per Month",
-    listPrice: 0, // Min pre-discount ACV ~$87K. Confirm rate in CPQ.
+    listPrice: 22.90, // $22.90/mo per Interaction at qty<10 (graduated: $1.73 at high volume). Source: IBM Marketplace API.
     unit: "per 1M GSLB queries/month",
     category: "GSLB",
-    notes: "GSLB upsell using customer-ingested private RUM data. 1 Interaction = 1M queries. Min: 5B queries (5,000 Interactions). Sold in 5M (5-Interaction) packages. Includes 100 filter chains + private data ingestion. Min pre-discount ACV ~$87K.",
-    minimums: { quantity: 5000, description: "Minimum 5B queries (5,000 Interactions × 1M); must be multiple of 5" }
+    notes: "GSLB upsell using customer-ingested private RUM data. 1 Interaction = 1M queries. Min: 5B queries (5,000 Interactions). Multiple of 5. Same rate schedule as D0GNNZX. Source: IBM Marketplace API (confirmed).",
+    minimums: { quantity: 5000, description: "Minimum 5B queries (5,000 Interactions × 1M); must be multiple of 5" },
+    scaleQtyPrice: [
+      { qty: 1000000000, price: 1.73 }, { qty: 25000, price: 2.16 },
+      { qty: 10000, price: 2.88 }, { qty: 5000, price: 3.60 },
+      { qty: 2500, price: 4.49 }, { qty: 1000, price: 6.00 },
+      { qty: 500, price: 7.49 }, { qty: 250, price: 9.37 },
+      { qty: 100, price: 11.70 }, { qty: 50, price: 14.65 },
+      { qty: 25, price: 18.35 }, { qty: 10, price: 22.90 }
+    ]
   }
 ];
 

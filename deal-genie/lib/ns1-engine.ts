@@ -43,10 +43,29 @@ import {
   type NS1Part
 } from "./ns1-parts";
 
-/** Look up the confirmed list price for a part number from the catalog. Returns 0 if not yet confirmed. */
-function catalogPrice(partNumber: string): number {
+/** Look up the catalog entry for a part number. Returns undefined if not found. */
+function catalogPart(partNumber: string) {
   const all = [...NS1_STANDARD_PARTS, ...NS1_PREMIUM_PARTS, ...NS1_HYBRID_PARTS];
-  return all.find(p => p.partNumber === partNumber)?.listPrice ?? 0;
+  return all.find(p => p.partNumber === partNumber);
+}
+
+/**
+ * Look up the confirmed list price for a part at a given quantity.
+ * Uses graduated (GRAD) pricing from scaleQtyPrice if available;
+ * falls back to the flat listPrice. Returns 0 if part not found.
+ */
+function catalogPrice(partNumber: string, quantity = 1): number {
+  const part = catalogPart(partNumber);
+  if (!part) return 0;
+  if (part.scaleQtyPrice && part.scaleQtyPrice.length > 0) {
+    // scaleQtyPrice is sorted descending by qty; find the first bracket where quantity >= qty
+    for (const tier of part.scaleQtyPrice) {
+      if (quantity >= tier.qty) return tier.price;
+    }
+    // quantity is below the smallest tier — use the smallest tier price
+    return part.scaleQtyPrice[part.scaleQtyPrice.length - 1].price;
+  }
+  return part.listPrice;
 }
 
 export type NS1Tier = "Essentials" | "Standard" | "Premium" | "Hybrid";
@@ -120,7 +139,7 @@ function partLine(
   unit: string,
   notes: string
 ): NS1PartLineItem {
-  const listPrice = catalogPrice(partNumber);
+  const listPrice = catalogPrice(partNumber, quantity);
   const extendedPrice = listPrice * quantity;
   return { partNumber, description, quantity, unit, listPrice, extendedPrice, notes };
 }
