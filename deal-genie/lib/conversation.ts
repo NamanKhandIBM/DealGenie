@@ -492,9 +492,6 @@ function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLa
     `<tr><td><code>${l.part}</code></td><td>${l.description}</td><td>${l.quantity.toLocaleString()}</td><td>$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${l.rationale}</td></tr>`
   ).join("");
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
-  const netLine = result.ballparkNet
-    ? `<div class="result-net">Approx. net after discount: ~$${result.ballparkNet.toLocaleString()} / yr</div>`
-    : "";
 
   return `<div class="result-card">
 
@@ -515,7 +512,6 @@ function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLa
   <div class="result-price">~$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
   <div class="result-price-note">LIST — confirm exact pricing, discount &amp; approval in CPQ</div>
 </div>
-${netLine}
 
 <ul class="result-flags">${flags}</ul>
 

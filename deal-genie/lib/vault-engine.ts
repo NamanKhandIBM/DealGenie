@@ -222,9 +222,6 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
     const totalAnnualList = lines.reduce((s, l) => s + l.annualList, 0);
     const ballparkNet = Math.round(ruAnnual * (1 - recDiscount) + installAnnual);
 
-    flags.push(
-      `Rec. RU discount ~${Math.round(recDiscount * 100)}% based on ${ruMonthly.toLocaleString()} RU/month; ballpark net ≈ $${ballparkNet.toLocaleString()}/yr (CPQ is authoritative).`
-    );
     flags.push("Model A (Platform/RU) — may NOT be mixed with Model B for this customer.");
 
     return {
@@ -342,15 +339,6 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
     ? Math.round(installAnnual * (1 - installRec) + clientAnnual * (1 - clientRec))
     : Math.round(installAnnual * (1 - installRec)); // install-only estimate when client discount unknown
 
-  if (clientDiscountKnown) {
-    flags.push(
-      `Rec. install discount ~${Math.round(installRec * 100)}% (${inputs.edition}); rec. client discount ~${Math.round(clientRec * 100)}% for ${inputs.clientCount.toLocaleString()} clients. Ballpark net ≈ $${ballparkNet.toLocaleString()}/yr.`
-    );
-  } else {
-    flags.push(
-      `Rec. install discount ~${Math.round(installRec * 100)}% (${inputs.edition}). Client discount guidance is only published for 100+ clients — confirm exact client pricing in CPQ. Ballpark net (install only) ≈ $${ballparkNet.toLocaleString()}/yr.`
-    );
-  }
   flags.push("Model B (Clients/RVU) — may NOT be mixed with Model A for this customer.");
   if (inputs.edition === "Premium" && inputs.installCount < 2) {
     flags.push("Premium edition: buy ≥ 2 installs for Performance Replication / DR.");
