@@ -292,18 +292,42 @@ export function getForkVariables(
         },
       ];
     }
-    // Model A
+    // Model A — use business inputs, not raw RU numbers (sellers can't reason about RU counts)
     return [
       {
-        key: "rusMonthly",
-        label: "Monthly resource units (RU)",
-        impact: "Platform model: $48/RU/month ($576/yr) before volume discounts",
+        key: "staticSecretCount",
+        label: "Secrets stored (passwords, API keys, configs)",
+        impact: "1 secret = 1 RU/month — most common Vault use case. 500 secrets → ~$288K/yr list at 1-cluster",
         options: [
-          { label: "100 RU/mo",    value: 100 },
-          { label: "500 RU/mo",    value: 500 },
-          { label: "1,000 RU/mo",  value: 1000 },
-          { label: "5,000 RU/mo",  value: 5000 },
-          { label: "10,000 RU/mo", value: 10000 },
+          { label: "< 25 secrets",        value: 12 },
+          { label: "~100 secrets",        value: 100 },
+          { label: "~500 secrets",        value: 500 },
+          { label: "~1,000 secrets",      value: 1000 },
+          { label: "~5,000 secrets",      value: 5000 },
+        ],
+      },
+      {
+        key: "dynamicRoles",
+        label: "Auto-rotating credential roles (DB, cloud, SSH)",
+        impact: "1 role = 1 RU/month — each DB connection or IAM role Vault auto-rotates",
+        options: [
+          { label: "None",             value: 0 },
+          { label: "~10 roles",        value: 10 },
+          { label: "~50 roles",        value: 50 },
+          { label: "~200 roles",       value: 200 },
+          { label: "~1,000 roles",     value: 1000 },
+        ],
+      },
+      {
+        key: "pkiCertsPerMonth",
+        label: "SSL/TLS certificates issued per month",
+        impact: "certs/month x (lifetime / 730h) = RU. 500 certs at 90-day lifetime = ~1,461 RU/mo extra",
+        options: [
+          { label: "None",               value: 0 },
+          { label: "~50 certs/month",    value: 50 },
+          { label: "~250 certs/month",   value: 250 },
+          { label: "~1,000 certs/month", value: 1000 },
+          { label: "~2,000 certs/month", value: 2000 },
         ],
       },
       {
@@ -502,10 +526,20 @@ export function computeScenarioPrice(
       const result = computeVaultQuote({ model: "B-Clients", edition, installCount: installs, clientCount: clients, includeNonProd, pkiCerts, adpKeyMgmt });
       return result.totalAnnualList;
     }
-    const ru = Number(a.rusMonthly ?? 100);
     const includeNonProd = String(a.includeNonProd ?? "no") === "yes";
     const includeKMIP = String(a.includeKMIP ?? "no") === "yes";
-    const result = computeVaultQuote({ model: "A-Platform", installCount: installs, useCaseInputs: { staticSecretCount: ru }, includeNonProd, includeKMIP });
+    // Build use-case inputs from business-level keys so compare scenarios show
+    // activity-based differences (secrets/roles/certs) not opaque RU numbers.
+    // Legacy rusMonthly fallback: old quotes that have rusMonthly but not
+    // staticSecretCount still price correctly.
+    const certCount = Number(a.pkiCertsPerMonth ?? 0);
+    const useCaseInputs = {
+      staticSecretCount: Number(a.staticSecretCount ?? a.rusMonthly ?? 100),
+      dynamicRoles:      Number(a.dynamicRoles ?? 0) || undefined,
+      pkiCertsPerMonth:  certCount || undefined,
+      pkiCertLifetimeHours: certCount > 0 ? Number(a.pkiCertLifetime ?? 2160) : undefined,
+    };
+    const result = computeVaultQuote({ model: "A-Platform", installCount: installs, useCaseInputs, includeNonProd, includeKMIP });
     return result.totalAnnualList;
   }
 
@@ -679,7 +713,9 @@ export function buildFanOut(
     ? sliderForkVar.label.toLowerCase().includes("user") ? "users"
     : sliderForkVar.label.toLowerCase().includes("query") ? "MQ/mo"
     : sliderForkVar.label.toLowerCase().includes("client") ? "clients"
-    : sliderForkVar.label.toLowerCase().includes("ru") ? "RU/mo"
+    : sliderForkVar.label.toLowerCase().includes("secret") ? "secrets"
+    : sliderForkVar.label.toLowerCase().includes("role") ? "roles"
+    : sliderForkVar.label.toLowerCase().includes("cert") ? "certs/mo"
     : ""
     : "";
   const sliderCurrentValue = typeof answers[sliderKey] === "number"
@@ -732,8 +768,8 @@ function buildInsight(
     if (forkVars.some((v) => v.key === "clientCount")) {
       return `Client count (RVU) scales linearly at $1,296/client/yr — the ${pctDiff}% spread of ${diffStr}/yr is driven entirely by the number of connecting apps and services.`;
     }
-    if (forkVars.some((v) => v.key === "rusMonthly")) {
-      return `Platform-model (Model A) pricing scales with monthly RU consumption at $48/RU/month ($576/yr). The ${pctDiff}% spread of ${diffStr}/yr reflects different usage profiles. Volume discounts reduce the effective rate significantly at scale.`;
+    if (forkVars.some((v) => ["staticSecretCount", "dynamicRoles", "pkiCertsPerMonth"].includes(v.key))) {
+      return `Platform-model (Model A) converts your activity into monthly RUs at $48/RU ($576/yr). Secrets stored and dynamic roles each contribute 1 RU each; PKI certificates add RUs based on cert lifetime. The ${pctDiff}% spread of ${diffStr}/yr reflects how much Vault activity drives the consumption meter.`;
     }
   }
   if (product === "NS1") {
