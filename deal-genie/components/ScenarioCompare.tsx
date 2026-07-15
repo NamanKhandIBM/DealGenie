@@ -272,26 +272,40 @@ function RunningTotal({
   basePrice,
   addonTotal,
   total,
+  quoteTotal,
   crumbCount,
 }: {
   basePrice: number;
   addonTotal: number;
   total: number;
+  quoteTotal: number;   // the original quote price — always shown for reference
   crumbCount: number;
 }) {
+  const delta = total - quoteTotal;
+  const isModified = Math.abs(delta) > 1; // ignore floating-point dust
+
   return (
     <div
       className="rounded-2xl p-4"
-      style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.22)" }}
+      style={{
+        background: isModified ? "rgba(59,130,246,0.08)" : "rgba(59,130,246,0.06)",
+        border: isModified ? "1px solid rgba(59,130,246,0.35)" : "1px solid rgba(59,130,246,0.22)",
+      }}
     >
-      <p className="text-[10px] font-semibold tracking-widest uppercase mb-3" style={{ color: "rgba(96,165,250,0.6)" }}>
-        Running total
-      </p>
+      {/* Header row: label + quote anchor */}
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: "rgba(96,165,250,0.6)" }}>
+          Running total
+        </p>
+        <span className="text-[10px] tabular-nums" style={{ color: "rgba(147,180,253,0.35)" }}>
+          Quote: {fmt(quoteTotal)}/yr
+        </span>
+      </div>
 
       <div className="flex flex-col gap-1.5 text-xs mb-3">
         <div className="flex justify-between">
           <span style={{ color: "rgba(147,180,253,0.55)" }}>
-            Core{crumbCount > 0 ? ` (${crumbCount} adjustment${crumbCount > 1 ? "s" : ""})` : ""}
+            Core{crumbCount > 0 ? ` (${crumbCount} change${crumbCount > 1 ? "s" : ""})` : ""}
           </span>
           <span className="font-semibold tabular-nums" style={{ color: "#e8eaed" }}>
             {fmt(basePrice)}
@@ -320,6 +334,20 @@ function RunningTotal({
             {fmt(total / 12)}/mo
           </span>
         </div>
+        {isModified && (
+          <div
+            className="flex justify-between pt-1.5 mt-0.5"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+          >
+            <span style={{ color: "rgba(147,180,253,0.4)" }}>vs your quote</span>
+            <span
+              className="font-semibold tabular-nums"
+              style={{ color: delta < 0 ? "#34d399" : "#f87171" }}
+            >
+              {delta < 0 ? "−" : "+"}{fmt(Math.abs(delta))}/yr
+            </span>
+          </div>
+        )}
       </div>
 
       <p className="text-[10px]" style={{ color: "rgba(147,180,253,0.3)", lineHeight: 1.5 }}>
@@ -498,11 +526,31 @@ function ScenarioCards({
   const cols = scenarios.length <= 2 ? 2 : scenarios.length <= 3 ? 3 : scenarios.length <= 4 ? 2 : 3;
 
   // Determine which scenario index matches the current quote's value for this variable.
-  // Compare stringified values for robustness (arrays, numbers, strings).
+  // Normalise both sides to string before comparing so that:
+  //   • NS1 queryMQ stored as "2000" (string from question flow) matches fork option 2000 (number)
+  //   • Vault edition stored as "1"/"2"/"3" is translated to "Essentials"/"Standard"/"Premium"
+  //   • Array capabilities compared via sorted JSON
+  const VAULT_EDITION_CODES: Record<string, string> = { "1": "Essentials", "2": "Standard", "3": "Premium" };
+
+  function normaliseForCompare(val: unknown, key: string): string {
+    if (val === undefined || val === null) return "";
+    // Vault edition: translate numeric code to name
+    if (key === "edition") {
+      const s = String(val);
+      return VAULT_EDITION_CODES[s] ?? s;
+    }
+    // Arrays: sort before stringify so order doesn't matter
+    if (Array.isArray(val)) return JSON.stringify([...val].sort());
+    // Numbers stored as strings: coerce to number then back for consistent comparison
+    const n = Number(val);
+    if (!isNaN(n) && String(val).trim() !== "") return String(n);
+    return String(val);
+  }
+
   const currentVal = effectiveAnswers[forkKey];
-  const currentStr = JSON.stringify(currentVal);
+  const currentStr = normaliseForCompare(currentVal, forkKey);
   const currentQuoteIdx = scenarios.findIndex(
-    (s) => JSON.stringify(s.overrides[forkKey]) === currentStr
+    (s) => normaliseForCompare(s.overrides[forkKey], forkKey) === currentStr
   );
 
   return (
@@ -720,12 +768,17 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
     return merged;
   }, [answers, crumbs, addonDefs, addonChecked, nonProdSelection]);
 
+  // Original quote price — computed once from the raw answers prop, never changes.
+  // This is the anchor shown as "Quote: $X" in the RunningTotal header.
+  const quotePrice = useMemo(
+    () => computeScenarioPrice(product, answers, {}),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [] // intentionally stable — only the opening answers matter
+  );
+
   // Base price = effective answers with core vars locked, add-ons stripped
   // Used so RunningTotal can split "core" vs "add-on" lines
   const basePriceNoAddons = useMemo(() => {
-    const stripped = { ...effectiveAnswers };
-    for (const a of addonDefs) stripped[a.key] = a.noValue;
-    if (product === "Verify") stripped["addOns"] = [];
     return computeScenarioPrice(product, effectiveAnswers, Object.fromEntries(
       addonDefs.map((a) => [a.key, a.noValue])
     ));
@@ -848,6 +901,7 @@ export default function ScenarioCompare({ product, answers, onClose, onBuildQuot
               basePrice={basePriceNoAddons}
               addonTotal={addonTotal > 0 ? addonTotal : 0}
               total={totalPrice}
+              quoteTotal={quotePrice}
               crumbCount={crumbs.length}
             />
 
