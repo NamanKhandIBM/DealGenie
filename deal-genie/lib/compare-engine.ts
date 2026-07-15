@@ -411,6 +411,8 @@ export function computeScenarioPrice(
     const pop = Number(a.population ?? basePop);
     const logins = Math.max(1, Math.min(12, Number(a.avgLogins ?? 12)));
     const term = String(a.term ?? "12-month") as "12-month" | "3-year";
+    // regions — must be read from answers so multi-region quotes price correctly
+    const regions = Math.max(1, Number(a.regions ?? 1));
     let managed = 0;
     if (caps.includes("Lifecycle")) {
       const baseMgd = Number(base.managedUsers ?? basePop);
@@ -421,52 +423,64 @@ export function computeScenarioPrice(
       }
     }
 
-    // Build add-on list from both the base answers (existing addOns array)
-    // and any individual addon_* comparison overrides.
-    // IMPORTANT: verify-engine treats addOn.listPrice as ANNUAL (annualList = listPrice × qty).
-    // Monthly-rated add-ons must be multiplied by 12 here before passing to the engine.
+    // Build add-on list.
+    // Rules:
+    //   - Start from base.addOns array (the original question-flow answer) but strip
+    //     any non-prod parts — those are controlled exclusively by the `nonProd` key.
+    //   - Apply binary addon_* override keys (yes/no toggles from the compare panel).
+    //   - Apply the `nonProd` key (single-choice: "D22PGLL" | "D21CWLL" | "none").
+    //   - NEVER double-count: nonProd must appear at most once in the final list.
+    // IMPORTANT: verify-engine annualList = listPrice × qty, so monthly-rated parts
+    // must already be multiplied by 12 here.
     const ADDON_PRICES: Record<string, { description: string; listPrice: number; unit: string }> = {
-      D02T6ZX: { description: "SMS and Email MFA Only",        listPrice: 33.70,       unit: "per event per thousand" },
-      D01UQZX: { description: "Hosted Application Gateway",   listPrice: 22500  * 12,  unit: "per instance / year" },
-      D01URZX: { description: "Vanity Domain",                 listPrice: 562    * 12,  unit: "per instance / year" },
-      D22PGLL: { description: "Non-Production with SLA",       listPrice: 2810   * 12,  unit: "per instance / year" },
-      D21CWLL: { description: "Non-Production without SLA",    listPrice: 1410   * 12,  unit: "per instance / year" },
+      D02T6ZX: { description: "SMS and Email MFA Only",       listPrice: 33.70,      unit: "per event per thousand" },
+      D01UQZX: { description: "Hosted Application Gateway",  listPrice: 22500 * 12,  unit: "per instance / year"   },
+      D01URZX: { description: "Vanity Domain",                listPrice: 562   * 12,  unit: "per instance / year"   },
+      D22PGLL: { description: "Non-Production with SLA",      listPrice: 2810  * 12,  unit: "per instance / year"   },
+      D21CWLL: { description: "Non-Production without SLA",   listPrice: 1410  * 12,  unit: "per instance / year"   },
     };
-    // Start from whatever add-ons were in the original answers
+
+    // Non-prod part numbers — always managed via the `nonProd` key, never via addOns array
+    const NON_PROD_PARTS = new Set(["D22PGLL", "D21CWLL"]);
+
+    // Start from original addOns array, stripped of any non-prod entries
     const baseAddOns: string[] = (base.addOns as string[] | undefined) ?? [];
-    // Build a mutable set — remove any legacy non-prod parts first (they come from nonProd key now)
-    const addOnSet = new Set(baseAddOns.filter((p) => p !== "none" && p !== "D22PGLL" && p !== "D21CWLL"));
+    const addOnSet = new Set(baseAddOns.filter((p) => p !== "none" && !NON_PROD_PARTS.has(p)));
 
-    // Apply nonProd from base answers (the single-choice part number or "none")
-    const baseNonProd = String(a.nonProd ?? "none");
-    if (baseNonProd !== "none" && ADDON_PRICES[baseNonProd]) addOnSet.add(baseNonProd);
-
-    // Binary toggle overrides for SMS/HAG/Vanity
+    // Apply binary toggle overrides (addon_sms, addon_hag, addon_vanity)
     const binaryAddonMap: Record<string, string> = {
       addon_sms:    "D02T6ZX",
       addon_hag:    "D01UQZX",
       addon_vanity: "D01URZX",
     };
     for (const [key, part] of Object.entries(binaryAddonMap)) {
-      if (key in overrides) {
-        if (String(overrides[key]) === "yes") addOnSet.add(part);
-        else addOnSet.delete(part);
-      }
+      // Use override value if present, otherwise fall back to base answer key
+      const val = key in overrides ? String(overrides[key]) :
+                  key in base     ? String(base[key])       : null;
+      if (val === "yes") addOnSet.add(part);
+      else if (val === "no") addOnSet.delete(part);
+      // null → leave addOnSet unchanged (already seeded from baseAddOns)
     }
 
-    // nonProd override from compare panel — value is the part number or "none"
-    if ("nonProd" in overrides) {
-      // Remove both non-prod variants, then add the chosen one (if any)
-      addOnSet.delete("D22PGLL");
-      addOnSet.delete("D21CWLL");
-      const chosen = String(overrides.nonProd);
-      if (chosen !== "none" && ADDON_PRICES[chosen]) addOnSet.add(chosen);
-    }
+    // Apply nonProd — resolved from merged `a` (base + overrides)
+    const nonProdVal = String(a.nonProd ?? "none");
+    // Ensure no stale non-prod part from a previous state leaks in
+    NON_PROD_PARTS.forEach((p) => addOnSet.delete(p));
+    if (nonProdVal !== "none" && ADDON_PRICES[nonProdVal]) addOnSet.add(nonProdVal);
+
     const addOns = Array.from(addOnSet)
       .filter((p) => ADDON_PRICES[p])
       .map((p) => ({ part: p, quantity: 1, ...ADDON_PRICES[p] }));
 
-    const result = computeVerifyQuote({ capabilities: caps as VerifyCapability[], population: pop, avgLoginsPerYear: logins, managedUsers: managed, term, addOns });
+    const result = computeVerifyQuote({
+      capabilities: caps as VerifyCapability[],
+      population: pop,
+      avgLoginsPerYear: logins,
+      managedUsers: managed,
+      regions,
+      term,
+      addOns,
+    });
     return result.totalAnnualList;
   }
 
@@ -548,10 +562,14 @@ export function normaliseAnswersForQuote(
     addon_vanity: "D01URZX",
   };
 
-  // Start from the existing addOns array — strip out any legacy non-prod parts
-  // (they are now controlled exclusively by the nonProd key)
+  // Non-prod part numbers — controlled exclusively via the `nonProd` key.
+  // computeVerifyResult reads `nonProd` directly, so we must NOT also add it
+  // to the `addOns` array or it will be counted twice.
+  const NON_PROD_PARTS = new Set(["D22PGLL", "D21CWLL"]);
+
+  // Start from the existing addOns array, stripped of any non-prod entries
   const baseAddOns: string[] = (answers.addOns as string[] | undefined) ?? [];
-  const addOnSet = new Set(baseAddOns.filter((p) => p !== "none" && p !== "D22PGLL" && p !== "D21CWLL"));
+  const addOnSet = new Set(baseAddOns.filter((p) => p !== "none" && !NON_PROD_PARTS.has(p)));
 
   // Apply each binary addon_* key if present
   for (const [key, part] of Object.entries(BINARY_ADDON_MAP)) {
@@ -561,9 +579,9 @@ export function normaliseAnswersForQuote(
     }
   }
 
-  // Apply nonProd — single-choice: "D22PGLL" | "D21CWLL" | "none"
-  const nonProdVal = String(answers.nonProd ?? "none");
-  if (nonProdVal !== "none") addOnSet.add(nonProdVal);
+  // nonProd is intentionally NOT added to the addOns array here.
+  // computeVerifyResult reads a.nonProd separately and appends it once.
+  // Adding it here would cause a duplicate line item.
 
   return { ...answers, addOns: Array.from(addOnSet) };
 }
