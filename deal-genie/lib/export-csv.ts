@@ -172,9 +172,11 @@ export function exportQuoteCsv(
       term: String(a.term ?? "12-month") === "3-year" ? "3-year" : "12-month",
     });
 
+    const stripSource = (s: string) =>
+      s.replace(/\.\s*Source:[^.]+\./gi, ".").replace(/\s*Source:[^.]+\./gi, "").trim();
     const header = ["Part Number", "Description", "Quantity", "Unit", "List $/mo", "Extended $/mo", "Notes"].join(",");
     const lines = result.partNumbers.map((p) =>
-      [escapeCsv(p.partNumber), escapeCsv(p.description), escapeCsv(p.quantity), escapeCsv(p.unit), escapeCsv(p.listPrice > 0 ? p.listPrice.toFixed(3) : "TBD"), escapeCsv(p.extendedPrice > 0 ? p.extendedPrice.toFixed(0) : "TBD"), escapeCsv(p.notes)].join(",")
+      [escapeCsv(p.partNumber), escapeCsv(p.description), escapeCsv(p.quantity), escapeCsv(p.unit), escapeCsv(p.listPrice > 0 ? p.listPrice.toFixed(2) : "TBD"), escapeCsv(p.extendedPrice > 0 ? p.extendedPrice.toFixed(0) : "TBD"), escapeCsv(stripSource(p.notes))].join(",")
     );
     triggerDownload([header, ...lines].join("\n"), "IBM_NS1_Quote.csv");
   }

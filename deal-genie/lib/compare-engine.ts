@@ -495,14 +495,29 @@ export function computeScenarioPrice(
     return result.totalAnnualList;
   }
 
-  // NS1
+  // NS1 — use totalAnnualList (confirmed marketplace prices) so the displayed price
+  // matches the quote result. Pass all inputs that the quote engine uses.
   const mq = Number(a.queryMQ ?? 50);
   const fc = Number(a.filterChainCount ?? 0);
   const mon = Number(a.monitors ?? 0);
   const records = Number(a.recordCount ?? 0);
-  const ddos = String(a.ddosProtection ?? "no") === "yes";
-  const result = computeNS1Quote({ queryVolumeMQ: mq, filterChains: fc, monitors: mon, recordCount: records, ddosProtection: ddos });
-  return result.ballparkAnnual;
+  const gslbRaw = String(a.gslb ?? "no");
+  const ddosNxdRaw = String(a.ddos ?? "no");
+  const result = computeNS1Quote({
+    queryVolumeMQ:    mq,
+    filterChains:     fc,
+    monitors:         mon,
+    recordCount:      records,
+    rumBased:         gslbRaw === "yes-rum" || gslbRaw === "yes-rum-advanced",
+    rumAdvanced:      gslbRaw === "yes-rum-advanced",
+    ddosProtection:   ddosNxdRaw === "ddos" || ddosNxdRaw === "both" || ddosNxdRaw === "yes" || String(a.ddosProtection ?? "no") === "yes",
+    nxdWaiver:        ddosNxdRaw === "nxd" || ddosNxdRaw === "both",
+    dnsInsights:      String(a.insights ?? "no") === "yes",
+    cloudSync:        String(a.cloudSync ?? "no") === "yes",
+    growthMQ:         Number(a.growthMQ ?? 0),
+    expectedGrowthPct: Number(a.growth ?? 0),
+  });
+  return result.totalAnnualList;
 }
 
 // ─── Normalise answers for the quoting engine ─────────────────────────────────
