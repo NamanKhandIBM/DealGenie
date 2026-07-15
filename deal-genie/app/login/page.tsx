@@ -122,15 +122,12 @@ export default function LoginPage() {
         >
           {/* Logo + title */}
           <div className="flex flex-col items-center gap-3 mb-8">
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center"
-              style={{
-                background: "linear-gradient(135deg, #0f62fe 0%, #0043ce 100%)",
-                boxShadow: "0 4px 20px rgba(15,98,254,0.45)",
-              }}
-            >
-              <span className="text-white font-bold text-sm tracking-tight">IBM</span>
-            </div>
+            <img
+              src="/dealgenie-icon.png"
+              alt="Deal Genie"
+              className="w-12 h-12 rounded-xl"
+              style={{ objectFit: "contain" }}
+            />
             <div className="text-center">
               <h1 className="font-bold text-lg" style={{ color: "#e8eaed" }}>
                 Deal Genie
