@@ -14,15 +14,16 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Password: **garland**
 
 ## Running tests
 
 ```bash
+cd deal-genie
 npx jest --no-coverage
 ```
 
-All 48 tests should pass.
+50 tests pass (36 NS1 + 14 Verify).
 
 ---
 
@@ -42,6 +43,67 @@ CLOUDANT_API_KEY=...
 
 # IBM Search AI — live IBM Docs context injected into Genie system prompt
 IBM_SEARCH_API_KEY=...
+
+# Password gate
+APP_PASSWORD=garland
+```
+
+---
+
+## What it does
+
+| Feature | Detail |
+|---|---|
+| **Conversational quoting** | Ask discovery questions, compute RUs / part counts / line items |
+| **Three products** | IBM Security Verify, IBM HashiCorp Vault, NS1 Connect |
+| **Confirmed prices** | NS1 prices sourced from IBM Marketplace API; Verify/Vault from CPQ |
+| **CSV export** | Part numbers + quantities + pricing ready for CPQ entry |
+| **Compare Scenarios** | Explore pricing levers deterministically (no AI); running total matches quote |
+| **Quote history** | Save, retrieve, compare past quotes via Cloudant |
+| **Best Practices / AI SME** | watsonx.ai–powered product guide and seller coaching |
+| **Password gate** | Proxy middleware; login page before any content |
+
+---
+
+## Architecture
+
+```
+app/
+  page.tsx                      — Chat UI
+  api/chat/route.ts             — Quoting conversation endpoint
+  api/best-practices/route.ts   — Best practices AI endpoint
+  api/compute-quote/route.ts    — Direct quote compute endpoint
+  api/quotes/route.ts           — Quote history (Cloudant)
+  api/search-health/route.ts    — IBM Search AI health check
+  api/auth/login/route.ts       — Password gate auth endpoint
+
+lib/
+  watsonx.ts                    — watsonx.ai wrapper (IAM auth + text generation)
+  ibm-search.ts                 — IBM Search AI client (live IBM Docs context)
+  extractor.ts                  — AI entity extraction from user messages
+  best-practices-ai.ts          — Injects IBM Docs into Genie system prompt
+  conversation.ts               — Conversation state machine
+  data.ts                       — Pricing data (Verify, Vault, NS1 tiers)
+  types.ts                      — Shared types
+  questions.ts                  — Per-product discovery question flows
+  verify-engine.ts              — IBM Security Verify quote calculation
+  vault-engine.ts               — IBM HashiCorp Vault quote calculation
+  ns1-engine.ts                 — NS1 Connect quote calculation (Essentials/Standard/Premium/Hybrid)
+  ns1-parts.ts                  — NS1 part catalog with confirmed IBM Marketplace prices + graduated tiers
+  verify-parts.ts               — Verify part catalog
+  vault-parts.ts                — Vault part catalog
+  export-csv.ts                 — CSV export (quote + full catalog)
+  quote-history.ts              — Cloudant persistence helpers
+  compare-engine.ts             — Scenario comparison engine (deterministic, no AI)
+
+components/
+  QuestionInput.tsx             — Structured question UI (buttons, multi-select, free text)
+  NS1QuoteDisplay.tsx           — NS1 tabbed quote display (Summary/Parts/Best Practices/Tutorial/Quick Ref)
+  QuoteCompare.tsx              — Side-by-side saved quote comparison
+  QuoteHistoryDrawer.tsx        — Saved quote history drawer
+  ScenarioCompare.tsx           — Scenario comparison view (fork variables + add-on toggles)
+
+proxy.ts                        — Password gate middleware
 ```
 
 ---
@@ -87,9 +149,8 @@ docker push us.icr.io/deal-genie/app:latest
 ibmcloud ce project create --name deal-genie
 ibmcloud ce project select --name deal-genie
 
-# Registry pull secret — lets Code Engine pull from ICR
+# Registry pull secret
 ibmcloud iam api-key-create deal-genie-registry-key --output json
-# Copy the "apikey" value from the output, then:
 ibmcloud ce registry create \
   --name icr-secret \
   --server us.icr.io \
@@ -103,7 +164,8 @@ ibmcloud ce secret create --name deal-genie-env \
   --from-literal WATSONX_URL=https://us-south.ml.cloud.ibm.com \
   --from-literal CLOUDANT_URL=... \
   --from-literal CLOUDANT_API_KEY=... \
-  --from-literal IBM_SEARCH_API_KEY=...
+  --from-literal IBM_SEARCH_API_KEY=... \
+  --from-literal APP_PASSWORD=garland
 ```
 
 **Deploy:**
@@ -130,8 +192,6 @@ ibmcloud ce app get --name deal-genie
 
 ### Redeploying after code changes (~5 min)
 
-Every time you make changes and want to push them live — just 3 commands:
-
 ```bash
 # 1. Rebuild with your new code
 docker build --platform linux/amd64 -t us.icr.io/deal-genie/app:latest .
@@ -152,55 +212,18 @@ ibmcloud ce secret update --name deal-genie-env \
 ibmcloud ce app update --name deal-genie --image us.icr.io/deal-genie/app:latest
 ```
 
-**To stream live logs** (useful for debugging):
+**To stream live logs:**
 ```bash
 ibmcloud ce app logs --name deal-genie --follow
 ```
 
 ---
 
-## Architecture
-
-```
-app/
-  page.tsx                      — Chat UI
-  api/chat/route.ts             — Quoting conversation endpoint
-  api/best-practices/route.ts   — Best practices AI endpoint
-  api/compute-quote/route.ts    — Direct quote compute endpoint
-  api/quotes/route.ts           — Quote history (Cloudant)
-  api/search-health/route.ts    — IBM Search AI health check
-
-lib/
-  watsonx.ts                    — watsonx.ai wrapper (IAM auth + text generation)
-  ibm-search.ts                 — IBM Search AI client (live IBM Docs context)
-  extractor.ts                  — AI entity extraction from user messages
-  best-practices-ai.ts          — Injects IBM Docs into Genie system prompt
-  conversation.ts               — Conversation state machine
-  data.ts                       — Pricing data (Verify, Vault, NS1 tiers)
-  types.ts                      — Shared types
-  questions.ts                  — Per-product discovery question flows
-  verify-engine.ts              — IBM Security Verify quote calculation
-  vault-engine.ts               — IBM HashiCorp Vault quote calculation
-  ns1-engine.ts                 — NS1 Connect quote calculation (Standard/Premium/Hybrid)
-  ns1-parts.ts                  — NS1 part catalog + confirmed CPQ list prices
-  export-csv.ts                 — CSV export for part number lists
-  quote-history.ts              — Cloudant persistence helpers
-  compare-engine.ts             — Side-by-side quote comparison
-
-components/
-  QuestionInput.tsx             — Structured question UI (buttons, multi-select, free text)
-  NS1QuoteDisplay.tsx           — NS1 tabbed quote display
-  QuoteCompare.tsx              — Side-by-side quote comparison
-  QuoteHistoryDrawer.tsx        — Saved quote history drawer
-  ScenarioCompare.tsx           — Scenario comparison view
-```
-
 ## Key contacts
 
 | Area | Contact |
 |---|---|
 | IBM Security Verify | Dennis Weru |
-| NS1 Connect pricing | Tony Nicolakis / Nick Lammert |
 | IBM HashiCorp Vault | Olivia Erdman |
 | Project owner | Naman Khandelwal (IBM intern) |
 
