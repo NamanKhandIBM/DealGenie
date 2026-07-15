@@ -400,9 +400,9 @@ export function getForkVariables(
     {
       key: "recordCount",
       label: "DNS record count",
-      impact: "First 3,000 records are free — billable in 1,000-record blocks above that",
+      impact: "First 1,000 records are free on Standard — billable in 1,000-record blocks above that",
       options: [
-        { label: "< 3,000 (all free)", value: 2000 },
+        { label: "≤ 1,000 (all free)", value: 1000 },
         { label: "6,000 records",      value: 6000 },
         { label: "25,000 records",     value: 25000 },
         { label: "50,000 records",     value: 50000 },

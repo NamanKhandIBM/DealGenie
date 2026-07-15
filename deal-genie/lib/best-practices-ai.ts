@@ -524,11 +524,11 @@ What specific scenario or area would you like to dig into?`;
 **Common mistakes to avoid:**
 - Not adding 20-30% growth headroom to query volume (causes first-year overages)
 - Confusing web page views with DNS query volume
-- Counting DNS zones instead of individual records (first 3,000 are free)
+- Counting DNS zones instead of individual records (first 1,000 are free on Standard)
 - Missing RUM pack requirement when RUM-based GSLB is selected
 
 **Quick example:**
-150M queries/month average → quote 200M (with headroom). 5,000 records → 2,000 billable. 3 filter chains for GSLB.
+150M queries/month average → quote 200M (with headroom). 5,000 records → 4,000 billable on Standard. 3 filter chains for GSLB.
 
 ---
 What specific scenario or area would you like to dig into?`;

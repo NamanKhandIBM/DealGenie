@@ -72,7 +72,7 @@ export type NS1Tier = "Essentials" | "Standard" | "Premium" | "Hybrid";
 
 export interface NS1Inputs {
   queryVolumeMQ: number;        // millions of queries/month
-  recordCount?: number;         // total DNS records (first 3,000 free on Standard; required on Premium)
+  recordCount?: number;         // total DNS records (first 1,000 free on Standard; always billable on Premium)
   filterChains?: number;        // traffic steering / GSLB filter chains
   rumBased?: boolean;           // if true, RUM packs apply (Standard RUM = D0GZ0ZX, Advanced = D0GYYZX)
   rumAdvanced?: boolean;        // if true, use D0GYYZX (private data feed); min 5M, multiples of 5
