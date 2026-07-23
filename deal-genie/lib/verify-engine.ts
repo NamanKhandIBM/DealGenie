@@ -1,7 +1,6 @@
 // Verify quoting engine — MAU calculation and graduated bracket RU math.
 import {
   VERIFY_RU_TIERS,
-  VERIFY_RU_PRICE,
   VERIFY_PARTS,
   type VerifyCapability,
   VERIFY_MAU_CAPABILITIES,

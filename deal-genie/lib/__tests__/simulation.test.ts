@@ -25,7 +25,7 @@ import type { Product } from "../types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function assertFinitePositive(n: number, label: string): number {
+function assertFinitePositive(n: number): number {
   expect(isFinite(n)).toBe(true);
   expect(n).toBeGreaterThan(0);
   // Nothing in these three products should cost more than $50M list
@@ -45,7 +45,7 @@ function runCompare(product: Product, answers: Record<string, unknown>) {
   expect(result.scenarios.length).toBeGreaterThanOrEqual(1);
 
   for (const s of result.scenarios) {
-    assertFinitePositive(s.annualList, `${product} scenario ${s.name}`);
+    assertFinitePositive(s.annualList);
     // monthlyList = annualList/12 — allow rounding differences up to $1
     expect(Math.abs(s.monthlyList - s.annualList / 12)).toBeLessThan(1);
   }
@@ -70,7 +70,7 @@ function npAddon(part: "D22PGLL" | "D21CWLL") {
 describe("Verify — quoting engine", () => {
   test("SIM-V01: SSO only, 1,000 users, 12mo", () => {
     const r = computeVerifyQuote({ capabilities: ["SSO"], population: 1000, avgLoginsPerYear: 48, term: "12-month", regions: 1 });
-    assertFinitePositive(r.totalAnnualList, "SIM-V01");
+    assertFinitePositive(r.totalAnnualList);
     expect(r.totalAnnualList).toBeGreaterThan(1000);
   });
 

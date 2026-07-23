@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { SavedQuote } from "@/lib/quote-history";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   onClose: () => void;
   quotes: SavedQuote[];
   loading: boolean;
-  onDelete: (id: string, rev: string) => void;
+  onDelete: (quote: SavedQuote) => void;
   onCompare: (selected: SavedQuote[]) => void;
   onLoad: (quote: SavedQuote) => void;
 }
@@ -38,15 +38,37 @@ export default function QuoteHistoryDrawer({
     });
   };
 
+  const linkedGroupSizes = useMemo(() => {
+    const sizes = new Map<string, number>();
+    for (const quote of quotes) {
+      if (!quote.linkedQuoteGroupId) continue;
+      sizes.set(quote.linkedQuoteGroupId, (sizes.get(quote.linkedQuoteGroupId) ?? 0) + 1);
+    }
+    return sizes;
+  }, [quotes]);
+
   const term = search.toLowerCase().trim();
   const filteredQuotes = term
     ? quotes.filter((q) =>
         (q.name ?? "").toLowerCase().includes(term) ||
         q.product.toLowerCase().includes(term) ||
         q.label.toLowerCase().includes(term) ||
-        q.summary.keyMetrics.some((m) => m.toLowerCase().includes(term))
+        q.summary.keyMetrics.some((m) => m.toLowerCase().includes(term)) ||
+        (q.linkedQuoteRole ?? "").toLowerCase().includes(term)
       )
     : quotes;
+
+  const linkedQuotesById = useMemo(() => {
+    const byId = new Map<string, SavedQuote[]>();
+    for (const quote of quotes) {
+      if (!quote.linkedQuoteGroupId) continue;
+      const linkedQuotes = quotes
+        .filter((candidate) => candidate.linkedQuoteGroupId === quote.linkedQuoteGroupId)
+        .sort((a, b) => a.savedAt - b.savedAt);
+      byId.set(quote.id, linkedQuotes);
+    }
+    return byId;
+  }, [quotes]);
 
   const selectedQuotes = quotes.filter((q) => selected.has(q.id));
 
@@ -70,6 +92,7 @@ export default function QuoteHistoryDrawer({
 
   const productColor: Record<string, string> = {
     Verify: "rgba(15,98,254,0.8)",
+    MaaS360: "rgba(245,158,11,0.85)",
     NS1: "rgba(8,189,130,0.8)",
     Vault: "rgba(168,85,247,0.8)",
   };
@@ -199,7 +222,7 @@ export default function QuoteHistoryDrawer({
             return (
               <div
                 key={q.id}
-                className="rounded-lg p-3 transition-all"
+                className="group rounded-lg p-3 transition-all"
                 style={{
                   background: isSelected
                     ? "rgba(15,98,254,0.1)"
@@ -242,6 +265,31 @@ export default function QuoteHistoryDrawer({
                         {q.name || q.summary.keyMetrics.join(" · ") || q.label}
                       </p>
 
+                      {q.linkedQuoteGroupId && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full"
+                            style={{
+                              background: "rgba(255,255,255,0.06)",
+                              color: "rgba(203,213,225,0.75)",
+                              border: "1px solid rgba(255,255,255,0.08)",
+                            }}
+                          >
+                            {q.linkedQuoteRole === "base" ? "Base quote" : "Cross-sell"}
+                          </span>
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded-full"
+                            style={{
+                              background: "rgba(15,98,254,0.12)",
+                              color: "rgba(147,180,253,0.85)",
+                              border: "1px solid rgba(15,98,254,0.22)",
+                            }}
+                          >
+                            Linked set of {linkedGroupSizes.get(q.linkedQuoteGroupId)}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Price */}
                       {q.summary.totalAnnual && (
                         <p className="text-[11px] mt-0.5" style={{ color: "rgba(147,180,253,0.6)" }}>
@@ -250,7 +298,7 @@ export default function QuoteHistoryDrawer({
                       )}
 
                       {/* Date + Load */}
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>
                           {formatDate(q.savedAt)}
                         </span>
@@ -261,6 +309,31 @@ export default function QuoteHistoryDrawer({
                         >
                           Load
                         </button>
+                        {q.linkedQuoteGroupId && (
+                          <span className="text-[10px]" style={{ color: "rgba(147,180,253,0.45)" }}>
+                            Pair:
+                          </span>
+                        )}
+                        {linkedQuotesById.get(q.id)?.map((linkedQuote) => (
+                          <button
+                            key={linkedQuote.id}
+                            onClick={() => onLoad(linkedQuote)}
+                            className="text-[10px] px-1.5 py-0.5 rounded"
+                            style={{
+                              background:
+                                linkedQuote.id === q.id ? "rgba(255,255,255,0.07)" : "rgba(15,98,254,0.12)",
+                              color:
+                                linkedQuote.id === q.id ? "rgba(203,213,225,0.65)" : "rgba(147,180,253,0.9)",
+                              border:
+                                linkedQuote.id === q.id
+                                  ? "1px solid rgba(255,255,255,0.08)"
+                                  : "1px solid rgba(15,98,254,0.22)",
+                            }}
+                            title={linkedQuote.name ?? linkedQuote.label}
+                          >
+                            {linkedQuote.linkedQuoteRole === "base" ? "Base" : linkedQuote.product}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -269,11 +342,11 @@ export default function QuoteHistoryDrawer({
                   {isConfirming ? (
                     <div className="flex flex-col gap-1 flex-shrink-0">
                       <button
-                        onClick={() => { onDelete(q.id, q._rev ?? ""); setConfirmDelete(null); }}
+                        onClick={() => { onDelete(q); setConfirmDelete(null); }}
                         className="text-[10px] px-1.5 py-0.5 rounded"
                         style={{ background: "rgba(239,68,68,0.2)", color: "#f87171" }}
                       >
-                        Delete
+                        {q.linkedQuoteGroupId ? "Delete set" : "Delete"}
                       </button>
                       <button
                         onClick={() => setConfirmDelete(null)}

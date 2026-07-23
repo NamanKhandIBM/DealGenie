@@ -23,7 +23,6 @@ import {
   computeScenarioPrice,
   getAddonDefinitions,
   type AddonDefinition,
-  type ForkVariable,
   type CompareResult,
   type Scenario,
 } from "@/lib/compare-engine";

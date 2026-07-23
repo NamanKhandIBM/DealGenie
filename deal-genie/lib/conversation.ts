@@ -6,18 +6,62 @@ import type { ExtractedEntities } from "./extractor";
 import type { Question } from "./questions";
 import {
   VERIFY_QUESTIONS,
+  VERIFY_CROSS_SELL_QUESTIONS,
+  VAULT_CROSS_SELL_QUESTIONS,
+  MAAS360_QUESTIONS,
   NS1_QUESTIONS,
   VAULT_QUESTIONS_COMMON,
   VAULT_QUESTIONS_MODEL_A,
   VAULT_QUESTIONS_MODEL_B,
+  INSTANA_QUESTIONS,
+  TURBONOMIC_QUESTIONS,
+  TERRAFORM_QUESTIONS,
+  CONCERT_QUESTIONS,
+  WEBMETHODS_QUESTIONS,
 } from "./questions";
+import {
+  buildCrossSellHint,
+  buildCrossSellResultMessage,
+  recommendMaaS360ToVerifyAttach,
+  recommendVaultToVerifyAttach,
+  recommendVerifyCrossSellAttach,
+  recommendVerifyToMaaS360Attach,
+  shouldShowCrossSellHint,
+} from "./cross-sell";
 import { computeVerifyQuote } from "./verify-engine";
 import { computeVaultQuote, type VaultEdition, type VaultUseCaseInputs } from "./vault-engine";
 import { computeNS1Quote } from "./ns1-engine";
+import { computeMaaS360Estimate, recommendMaaS360Plan } from "./maas360-engine";
+import { formatMaaS360PlanLabel } from "./maas360-data";
 import type { VerifyCapability } from "./data";
 import { NS1_BEST_PRACTICES, NS1_ALL_PARTS } from "./ns1-parts";
 import { VAULT_BEST_PRACTICES, VAULT_ALL_PARTS } from "./vault-parts";
 import { VERIFY_BEST_PRACTICES, VERIFY_ALL_PARTS } from "./verify-parts";
+import { computeInstanaQuote, type InstanaInputs } from "./instana-engine";
+import { computeTurbonomicScope, type TurbonomicInputs } from "./turbonomic-engine";
+import { computeTerraformRecommendation, type TerraformInputs } from "./terraform-engine";
+import { computeConcertRecommendation, type ConcertInputs } from "./concert-engine";
+import { computeWebMethodsScope, type WebMethodsInputs } from "./webmethods-engine";
+import {
+  INSTANA_BEST_PRACTICES,
+  INSTANA_QUICK_REFERENCE,
+} from "./instana-data";
+import {
+  TURBONOMIC_BEST_PRACTICES,
+  TURBONOMIC_QUICK_REFERENCE,
+} from "./turbonomic-data";
+import {
+  TERRAFORM_BEST_PRACTICES,
+  TERRAFORM_QUICK_REFERENCE,
+} from "./terraform-data";
+import {
+  CONCERT_BEST_PRACTICES,
+  CONCERT_QUICK_REFERENCE,
+} from "./concert-data";
+import {
+  WEBMETHODS_BEST_PRACTICES,
+  WEBMETHODS_QUICK_REFERENCE,
+} from "./webmethods-data";
 
 // ─── The active question to render in the UI ─────────────────────────────────
 // When non-null, the UI should show option buttons instead of a plain textarea.
@@ -56,7 +100,13 @@ function parseYesNo(s: string): boolean {
 function detectProduct(msg: string): Product | null {
   if (/verify|ibm security verify/i.test(msg) || msg.trim() === "1") return "Verify";
   if (/ns1|ns 1|connect/i.test(msg) || msg.trim() === "2") return "NS1";
-  if (/vault|hashicorp/i.test(msg) || msg.trim() === "3") return "Vault";
+  if (/vault|hashicorp vault/i.test(msg) || msg.trim() === "3") return "Vault";
+  if (/maas360|maa.?s360/i.test(msg) || msg.trim() === "4") return "MaaS360";
+  if (/instana/i.test(msg) || msg.trim() === "5") return "Instana";
+  if (/turbonomic/i.test(msg) || msg.trim() === "6") return "Turbonomic";
+  if (/terraform/i.test(msg) || msg.trim() === "7") return "Terraform";
+  if (/concert/i.test(msg) || msg.trim() === "8") return "Concert";
+  if (/webmethods|web methods|webmethod/i.test(msg) || msg.trim() === "9") return "webMethods";
   return null;
 }
 
@@ -68,12 +118,29 @@ function getProductOpening(product: Product): string {
       return "**NS1 Connect** — Let's size this deal. I'll ask a few questions and generate a full quote with part numbers, quantities, and pricing.\n\nLet's go through the sizing questions:";
     case "Vault":
       return "**IBM HashiCorp Vault** — Self-managed (PID 5900BJF), 12-month minimum. There are two pricing models — let me ask the first question to determine which applies:";
+    case "MaaS360":
+      return "**IBM MaaS360** — I'll help you build a public-price estimate and uncover whether it should be paired with identity for a stronger zero-trust story.\n\nLet's start:";
+    case "Instana":
+      return "**IBM Instana Observability** — I'll size the deal by Managed Virtual Server (MVS) count using public list pricing.\n\nLet's start:";
+    case "Turbonomic":
+      return "**IBM Turbonomic** — Application Resource Management (ARM). Pricing is contact-for-quote; I'll build a scoping summary and seller positioning guide.\n\nLet's start:";
+    case "Terraform":
+      return "**IBM HashiCorp Terraform** — Infrastructure Lifecycle Management (ILM). I'll recommend the right HCP Terraform edition and scope the deal.\n\nLet's start:";
+    case "Concert":
+      return "**IBM Concert** — Agentic ITOps platform. Pricing is contact-for-quote; I'll recommend Concert modules and build the seller positioning.\n\nLet's start:";
+    case "webMethods":
+      return "**IBM webMethods Integration** — Hybrid iPaaS and integration platform. Pricing is contact-for-quote; I'll scope the deal and build the seller positioning.\n\nLet's start:";
   }
 }
 
 // ─── Question list helpers ───────────────────────────────────────────────────
 
 function getVaultQuestions(state: ConversationState): Question[] {
+  const source = String(state.answers.crossSellSource ?? "");
+  if (source === "Verify") {
+    return VAULT_CROSS_SELL_QUESTIONS;
+  }
+
   // Model A = usage/consumption-based (aligns with Vault 2.0 direction)
   // Model B = client/seat-based (classic Vault 1.0)
   const model = String(state.answers.vaultModel ?? "");
@@ -82,11 +149,21 @@ function getVaultQuestions(state: ConversationState): Question[] {
 }
 
 function getQuestions(state: ConversationState): Question[] {
+  if (state.product === "Verify" && state.answers.crossSellSource) {
+    return VERIFY_CROSS_SELL_QUESTIONS;
+  }
+
   switch (state.product) {
     case "Verify": return VERIFY_QUESTIONS;
-    case "NS1":    return NS1_QUESTIONS;
-    case "Vault":  return getVaultQuestions(state);
-    default:       return [];
+    case "MaaS360": return MAAS360_QUESTIONS;
+    case "NS1": return NS1_QUESTIONS;
+    case "Vault": return getVaultQuestions(state);
+    case "Instana": return INSTANA_QUESTIONS;
+    case "Turbonomic": return TURBONOMIC_QUESTIONS;
+    case "Terraform": return TERRAFORM_QUESTIONS;
+    case "Concert": return CONCERT_QUESTIONS;
+    case "webMethods": return WEBMETHODS_QUESTIONS;
+    default: return [];
   }
 }
 
@@ -171,6 +248,12 @@ function applyEntities(s: ConversationState, e: ExtractedEntities): void {
   if (e.monitors)         set("monitors",          e.monitors);
 }
 
+function maybeAppendCrossSellHint(state: ConversationState, reply: string): string {
+  if (!shouldShowCrossSellHint(state.product, state.answers)) return reply;
+  const hint = buildCrossSellHint(state.product);
+  return hint ? `${reply}\n\n${hint}` : reply;
+}
+
 // ─── MAIN PROCESSOR ──────────────────────────────────────────────────────────
 
 export function processUserMessage(
@@ -196,7 +279,7 @@ export function processUserMessage(
     if (!product) {
       return {
         state: s,
-        reply: "I can help with **IBM Security Verify**, **NS1 Connect**, or **IBM HashiCorp Vault**. Which one would you like to quote?",
+        reply: "I can help with **IBM Security Verify**, **IBM MaaS360**, **NS1 Connect**, or **IBM HashiCorp Vault**. Which one would you like to quote?",
         activeQuestion: null,
       };
     }
@@ -279,6 +362,54 @@ export function processUserMessage(
       // If "quote", continue with normal flow
     }
 
+    if (s.product === "MaaS360" && currentQ?.key === "maas360Action") {
+      const action = msg.trim();
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
+      }
+    }
+
+    if (s.product === "Instana" && currentQ?.key === "instanaAction") {
+      const action = msg.trim();
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatInstanaBestPractices(), activeQuestion: null };
+      }
+    }
+
+    if (s.product === "Turbonomic" && currentQ?.key === "turbonomicAction") {
+      const action = msg.trim();
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatTurbonomicBestPractices(), activeQuestion: null };
+      }
+    }
+
+    if (s.product === "Terraform" && currentQ?.key === "terraformAction") {
+      const action = msg.trim();
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatTerraformBestPractices(), activeQuestion: null };
+      }
+    }
+
+    if (s.product === "Concert" && currentQ?.key === "concertAction") {
+      const action = msg.trim();
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatConcertBestPractices(), activeQuestion: null };
+      }
+    }
+
+    if (s.product === "webMethods" && currentQ?.key === "webMethodsAction") {
+      const action = msg.trim();
+      if (action === "bestpractices") {
+        s.phase = "result";
+        return { state: s, reply: formatWebMethodsBestPractices(), activeQuestion: null };
+      }
+    }
+
     // Inline Q&A: if the message looks like a question (not an option answer) and a product
     // is already selected, try to answer it from static knowledge before storing as an answer.
     // This means sellers can type "what counts as a client?" mid-flow and get a real answer.
@@ -314,7 +445,13 @@ export function processUserMessage(
       s.phase = "computing";
       const result = computeResult(s);
       s.phase = "result";
-      return { state: s, reply: result, activeQuestion: null };
+      const resultWithCrossSell = maybeAppendCrossSellHint(s, result);
+      const crossSellMessage = s.answers.crossSellSource ? null : buildCrossSellResultMessage(s.product);
+      return {
+        state: s,
+        reply: crossSellMessage ? `${resultWithCrossSell}\n\n${crossSellMessage}` : resultWithCrossSell,
+        activeQuestion: null,
+      };
     }
 
     const nextQ = updatedQuestions[s.discoveryStep];
@@ -340,9 +477,147 @@ export function processUserMessage(
         activeQuestion: firstQ ? { question: firstQ } : null,
       };
     }
+    if (/^cross-sell$/i.test(msg)) {
+      if (s.product === "MaaS360") {
+        s.product = "Verify";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "MaaS360",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Security Verify**\n\nBased on the MaaS360 quote, I'll recommend the best-fit Verify identity attach so the client can turn managed-device posture into stronger SSO, MFA, and adaptive access policy.",
+          activeQuestion: { question: VERIFY_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Vault") {
+        // Vault → Verify (original play)
+        s.product = "Verify";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Vault",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Security Verify**\n\nBased on the Vault quote, I'll recommend the best-fit Verify identity attach so the client can connect workforce identity with secrets, certificates, and machine-level trust.",
+          activeQuestion: { question: VERIFY_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Terraform") {
+        // Terraform → Vault (ILM + SLM)
+        s.product = "Vault";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Terraform",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Terraform scoping, I'll size the Vault attach so the client can eliminate secrets sprawl and secure every credential their infrastructure automation generates — IBM's ILM + SLM story.",
+          activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Instana") {
+        // Instana → Turbonomic (see it → act on it)
+        s.product = "Turbonomic";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Instana",
+          turbonomicInstana: "yes",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Instana quote, I'll scope the Turbonomic attach so the client can close the loop — automatically acting on the observability data Instana captures, with full application-aware resource optimization.",
+          activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+        };
+      }
+
+      if (s.product === "Concert") {
+        // Concert → route to Turbonomic if optimize pain, otherwise Instana
+        const concertPain = String(s.answers.concertPain ?? "alertFatigue");
+        if (concertPain === "costOptimization" || concertPain === "all") {
+          // Concert + Optimize module → Turbonomic (required for Concert Optimize)
+          s.product = "Turbonomic";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = {
+            crossSellSource: "Concert",
+          };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Concert scoping, I'll size the Turbonomic attach. Concert Optimize is *powered by IBM Turbonomic* — configuring Turbonomic targets is a required setup step to enable the Optimize module. This is not just a cross-sell; it's an architectural dependency.",
+            activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+          };
+        }
+        // Concert → Instana (observability enrichment — Concert Observe requires Instana agents)
+        s.product = "Instana";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Concert",
+          instanaAction: "quote",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Instana Observability**\n\nBased on the Concert scoping, I'll size the Instana attach. Concert Observe *requires Instana agents* as its observability data source — Instana is not just complementary, it's the required telemetry feed for Concert's AI engine.",
+          activeQuestion: { question: INSTANA_QUESTIONS[1] },
+        };
+      }
+
+      if (s.product === "webMethods") {
+        // webMethods → Verify (identity-secured API fabric)
+        s.product = "Verify";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "webMethods",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Security Verify**\n\nBased on the webMethods scoping, I'll size the Verify attach so the client can secure every API endpoint and integration surface with modern OAuth 2.0/OIDC identity governance — no more static API keys.",
+          activeQuestion: { question: VERIFY_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Verify") {
+        const attachDecision = recommendVerifyCrossSellAttach(s.answers);
+        if (attachDecision.target === "Vault") {
+          s.product = "Vault";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = {
+            crossSellSource: "Verify",
+          };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Verify quote, I'll recommend the best-fit Vault attach so the client can extend workforce identity into secrets, certificates, privileged credentials, and machine-level trust.",
+            activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+          };
+        }
+
+        s.product = "MaaS360";
+        s.phase = "discovery";
+        s.discoveryStep = 1;
+        s.answers = {
+          maas360Action: "quote",
+          crossSellSource: "Verify",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM MaaS360**\n\nBased on the Verify quote, I'll recommend the best-fit MaaS360 package for the client and attach any obvious endpoint add-ons so you don't leave endpoint trust revenue on the table.",
+          activeQuestion: { question: MAAS360_QUESTIONS[1] },
+        };
+      }
+    }
     return {
       state: s,
-      reply: "Say **'restart'** to start a new quote, or tell me which product to quote next.",
+      reply: "Say **'restart'** to start a new quote, tell me which product to quote next, or type **cross-sell** to launch the adjacent product mini-flow.",
       activeQuestion: null,
     };
   }
@@ -355,8 +630,14 @@ export function processUserMessage(
 export function computeResult(state: ConversationState): string {
   switch (state.product) {
     case "Verify": return computeVerifyResult(state);
+    case "MaaS360": return computeMaaS360Result(state);
     case "Vault":  return computeVaultResult(state);
     case "NS1":    return computeNS1Result(state);
+    case "Instana": return computeInstanaResult(state);
+    case "Turbonomic": return computeTurbonomicResult(state);
+    case "Terraform": return computeTerraformResult(state);
+    case "Concert": return computeConcertResult(state);
+    case "webMethods": return computeWebMethodsResult(state);
     default: return "Unknown product.";
   }
 }
@@ -365,10 +646,19 @@ export function computeResult(state: ConversationState): string {
 
 function computeVerifyResult(state: ConversationState): string {
   const a = state.answers;
-  const caps = (a.capabilities as string[]) ?? ["SSO"];
-  const population = parseNumber(String(a.population ?? 500));
-  const avgLogins = Math.max(1, Math.min(12, parseNumber(String(a.avgLogins ?? 12))));
-  const managedUsers = parseNumber(String(a.managedUsers ?? 0));
+  const crossSellSource = String(a.crossSellSource ?? "");
+  const isCrossSell = crossSellSource === "MaaS360" || crossSellSource === "Vault" || crossSellSource === "webMethods";
+  const caps = isCrossSell
+    ? [
+        ...(parseYesNo(String(a.verifyNeedsSSO ?? "yes")) ? ["SSO"] : []),
+        ...(parseYesNo(String(a.verifyNeedsMFA ?? "yes")) ? ["MFA"] : []),
+        ...(parseYesNo(String(a.verifyNeedsAdaptive ?? "no")) ? ["Adaptive"] : []),
+        ...(parseYesNo(String(a.verifyNeedsLifecycle ?? "no")) ? ["Lifecycle"] : []),
+      ] as VerifyCapability[]
+    : ((a.capabilities as string[]) ?? ["SSO"] as string[]);
+  const population = parseNumber(String((isCrossSell ? a.verifyPopulation : a.population) ?? 500));
+  const avgLogins = Math.max(1, Math.min(12, parseNumber(String(a.avgLogins ?? (isCrossSell ? 12 : 12)))));
+  const managedUsers = parseNumber(String((isCrossSell ? a.verifyManagedUsers : a.managedUsers) ?? 0));
   const regions = Math.max(1, parseNumber(String(a.regions ?? "1")));
   const term = String(a.term ?? "12-month") as "12-month" | "3-year";
 
@@ -405,6 +695,26 @@ function computeVerifyResult(state: ConversationState): string {
   ).join("");
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
 
+  const verifyAttach = crossSellSource === "Vault"
+    ? recommendVaultToVerifyAttach(a)
+    : recommendVerifyToMaaS360Attach({
+        capabilities: caps,
+        population,
+      });
+  const verifyEvidence = verifyAttach.evidence
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+  const crossSellReason = String(a.verifyCrossSellReason ?? "");
+  const crossSellContext = isCrossSell
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Verify quote was launched from <strong>${crossSellSource === "Vault" ? "IBM HashiCorp Vault" : crossSellSource === "webMethods" ? "IBM webMethods Integration" : "IBM MaaS360"}</strong>${crossSellReason ? ` because the seller is trying to solve <strong>${crossSellReason}</strong>` : ""}. ${crossSellSource === "Vault" ? "Use this when the client has secrets, certificates, or privileged machine access in scope and now needs stronger workforce SSO, MFA, or lifecycle governance to complete the trust story." : crossSellSource === "webMethods" ? "Use this when the client is publishing APIs or integration endpoints via webMethods and needs modern OAuth 2.0/OIDC identity governance to secure them." : "Use this when managed devices, endpoint posture, or mobile risk should feed directly into SSO, MFA, and adaptive access decisions."}</div>`
+    : `<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+<div class="result-section-label">BEST ADJACENT ATTACH</div>
+<ul class="result-flags"><li><strong>Why this attach:</strong> ${verifyAttach.headline}</li><li>${verifyAttach.rationale}</li>${verifyEvidence}</ul>`;
+
+  const nextStepMessage = isCrossSell
+    ? `<div class="result-next">This cross-sell attach is complete. To avoid looping back into the same product again, the next guided attach will only suggest a different adjacent product after you finish a new base quote.</div>`
+    : "";
+
   return `<div class="result-card">
 
 <div class="result-header">
@@ -428,7 +738,77 @@ function computeVerifyResult(state: ConversationState): string {
 
 <ul class="result-flags">${flags}</ul>
 
-<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+${crossSellContext}
+${nextStepMessage}
+
+</div>`;
+}
+
+// ─── MAAS360 ─────────────────────────────────────────────────────────────────
+
+function computeMaaS360Result(state: ConversationState): string {
+  const a = state.answers;
+  const devices = parseNumber(String(a.maas360Devices ?? "1")) || 1;
+  const recommendation = recommendMaaS360Plan({
+    secureMail: parseYesNo(String(a.maas360SecureMail ?? "no")),
+    advancedApps: parseYesNo(String(a.maas360AdvancedApps ?? "no")),
+    threatDefense: parseYesNo(String(a.maas360ThreatDefense ?? "no")),
+    remoteSupport: parseYesNo(String(a.maas360RemoteSupport ?? "no")),
+  });
+  const includeConcierge = String(a.maas360Concierge ?? "no") === "yes";
+  const result = computeMaaS360Estimate({
+    devices,
+    planKey: recommendation.planKey,
+    addOnKeys: recommendation.addOnKeys,
+    includeConcierge,
+  });
+  const rows = result.lines.map((line) =>
+    `<tr><td>${line.label}</td><td>${line.quantity.toLocaleString()}</td><td>$${line.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${line.notes}</td></tr>`
+  ).join("");
+  const flags = result.flags.map((flag) => `<li>${flag}</li>`).join("");
+  const reasons = recommendation.reasons.map((reason) => `<li>${reason}</li>`).join("");
+  const maas360Attach = recommendMaaS360ToVerifyAttach(a);
+  const maas360Evidence = maas360Attach.evidence
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+  const crossSellSource = String(a.crossSellSource ?? "");
+  const crossSellContext = crossSellSource
+    ? `<div class="result-next"><strong>Why this attach:</strong> This MaaS360 quote was launched from <strong>${crossSellSource === "Verify" ? "IBM Security Verify" : crossSellSource}</strong> so the seller can turn identity requirements into device trust, endpoint control, and remediation coverage.</div>`
+    : `<div class="result-section-label">BEST ADJACENT ATTACH</div>
+<ul class="result-flags"><li><strong>Why this attach:</strong> ${maas360Attach.headline}</li><li>${maas360Attach.rationale}</li>${maas360Evidence}</ul>`;
+
+  const nextStepMessage = crossSellSource
+    ? `<div class="result-next">This cross-sell attach is complete. To avoid looping back into the same product again, the next guided attach will only suggest a different adjacent product after you finish a new base quote.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM MaaS360</span>
+  <span class="result-badge">MaaS360</span>
+</div>
+
+<div class="result-inputs">
+  ${devices.toLocaleString()} managed devices &nbsp;·&nbsp; recommended package: <strong>${formatMaaS360PlanLabel(recommendation.planKey)}</strong> &nbsp;·&nbsp; public pricing estimate
+</div>
+
+<div class="result-section-label">RECOMMENDED PACKAGE</div>
+<ul class="result-flags">${reasons}</ul>
+
+<div class="result-section-label">PUBLIC-PRICE ESTIMATE</div>
+<table class="result-table">
+  <thead><tr><th>Line</th><th>Qty</th><th>Annual List</th><th>Notes</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+
+<div class="result-price-row">
+  <div class="result-price">~$${result.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+  <div class="result-price-note">~$${result.monthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
+</div>
+
+<ul class="result-flags">${flags}</ul>
+${crossSellContext}
+${nextStepMessage}
 
 </div>`;
 }
@@ -464,7 +844,7 @@ function computeVaultResult(state: ConversationState): string {
       includeNonProd: parseYesNo(String(a.includeNonProd ?? "no")),
       includeKMIP: parseYesNo(String(a.includeKMIP ?? "no")),
     });
-    return formatVaultResult(result, "A — Platform / Usage-based");
+    return formatVaultResult(result, "A — Platform / Usage-based", a);
   }
 
   const editionMap: Record<string, VaultEdition> = { "1": "Essentials", "2": "Standard", "3": "Premium" };
@@ -483,14 +863,22 @@ function computeVaultResult(state: ConversationState): string {
     adpKeyMgmt: parseNumber(String(a.adpKeyMgmt ?? "0")),
     adpTransformClients: adpTransformClients > 0 ? adpTransformClients : undefined,
   });
-  return formatVaultResult(result, `B — Clients / RVU (${edition})`);
+  return formatVaultResult(result, `B — Clients / RVU (${edition})`, a);
 }
 
-function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLabel: string): string {
+function formatVaultResult(
+  result: ReturnType<typeof computeVaultQuote>,
+  modelLabel: string,
+  answers: ConversationState["answers"]
+): string {
   const rows = result.lines.map((l) =>
     `<tr><td><code>${l.part}</code></td><td>${l.description}</td><td>${l.quantity.toLocaleString()}</td><td>$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${l.rationale}</td></tr>`
   ).join("");
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
+  const verifyAttach = recommendVaultToVerifyAttach(answers);
+  const verifyEvidence = verifyAttach.evidence.map((item) => `<li>${item}</li>`).join("");
+  const crossSellSource = String(answers.crossSellSource ?? "");
+  const crossSellReason = String(answers.vaultCrossSellReason ?? "");
 
   return `<div class="result-card">
 
@@ -513,7 +901,12 @@ function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLa
 
 <ul class="result-flags">${flags}</ul>
 
-<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+${(crossSellSource === "Verify" || crossSellSource === "Terraform")
+  ? `<div class="result-next"><strong>Why this attach:</strong> This Vault quote was launched from <strong>${crossSellSource === "Terraform" ? "IBM HashiCorp Terraform" : "IBM Security Verify"}</strong>${crossSellReason ? ` because the seller is trying to solve <strong>${crossSellReason}</strong>` : ""}. ${crossSellSource === "Terraform" ? "Use this when infrastructure automation is already in scope — Vault eliminates secrets sprawl by providing dynamic credentials to every Terraform provisioning run." : "Use this when workforce identity is already in play and the client now needs secrets governance, certificate lifecycle, or machine-identity controls to close the remaining trust gap."}</div>
+<div class="result-next">This cross-sell attach is complete. To avoid looping back into the same product again, the next guided attach will only suggest a different adjacent product after you finish a new base quote.</div>`
+  : `<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+<div class="result-section-label">BEST ADJACENT ATTACH</div>
+<ul class="result-flags"><li><strong>Why this attach:</strong> ${verifyAttach.headline}</li><li>${verifyAttach.rationale}</li>${verifyEvidence}</ul>`}
 
 </div>`;
 }
@@ -1161,8 +1554,416 @@ DDoS Overage Protection (D0GN5ZX), NXD Waiver (D0GNMZX), and DNS Insights (D0GN6
 // ─── WELCOME ─────────────────────────────────────────────────────────────────
 
 export const WELCOME_REPLY =
-  "Which product would you like to quote?\n\n1. **IBM Security Verify**\n2. **NS1 Connect**\n3. **IBM HashiCorp Vault**\n\nPick one below or type the name.";
+  "Which product would you like to quote?\n\n**Security & Identity**\n1. **IBM Security Verify** — IAM, SSO, MFA, Lifecycle\n2. **IBM HashiCorp Vault** — Secrets, PKI, Machine Identity\n\n**Infrastructure & Integration**\n3. **NS1 Connect** — Intelligent DNS\n4. **IBM MaaS360** — Unified Endpoint Management\n5. **IBM HashiCorp Terraform** — Infrastructure as Code\n6. **IBM webMethods Integration** — Hybrid iPaaS\n\n**Observability & AIOps**\n7. **IBM Instana Observability** — Full-Stack APM\n8. **IBM Turbonomic** — Application Resource Management\n9. **IBM Concert** — Agentic ITOps\n\nPick one or type the product name.";
 
 export function getInitialActiveQuestion(): ActiveQuestion | null {
   return null; // product selection is handled by quick-pick buttons in the UI
+}
+
+// ─── INSTANA ──────────────────────────────────────────────────────────────────
+
+function computeInstanaResult(state: ConversationState): string {
+  const a = state.answers;
+  const mvs = parseNumber(String(a.instanaMVS ?? 50));
+  const tier = (String(a.instanaTier ?? "Standard")) as "Essentials" | "Standard";
+  const model = (String(a.instanaModel ?? "SaaS")) as "PayPerUse" | "SaaS" | "SelfHosted";
+  const addLogs = parseYesNo(String(a.instanaLogsInContext ?? "no"));
+  const logGB = parseNumber(String(a.instanaLogGB ?? 0));
+
+  const inputs: InstanaInputs = {
+    model,
+    tier,
+    mvsCount: mvs,
+    addLogsInContext: addLogs,
+    estimatedLogGB: logGB > 0 ? logGB : undefined,
+  };
+
+  const result = computeInstanaQuote(inputs);
+
+  const lineRows = result.lines.map((l) =>
+    `<tr>
+      <td>${l.label}</td>
+      <td class="text-right">${l.quantity.toLocaleString()}</td>
+      <td class="text-right">$${l.monthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo</td>
+      <td class="text-right">$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}/yr</td>
+      <td style="font-size:11px;color:#94a3b8;">${l.notes}</td>
+    </tr>`
+  ).join("");
+
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+  const instanaCrossSource = String(a.crossSellSource ?? "");
+  const instanaCrossContext = instanaCrossSource === "Concert"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Instana estimate was launched from <strong>IBM Concert</strong>. Concert Observe is architecturally built on Instana agents — Instana is a required data source, not just complementary. Concert Protect also auto-imports Kubernetes clusters, container images, and application components from Instana (no manual SBOM files). <strong>Sidekick:</strong> Instana users see Concert CVE/resilience data inline without switching tools. Combined positioning: "Instana captures the signals; Concert tells you what matters and orchestrates the response."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : instanaCrossSource === "Turbonomic"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Instana estimate was launched from <strong>IBM Turbonomic</strong>. Instana feeds Turbonomic's AI engine with real-time APM data, making resource decisions application-aware. <strong>Automated integration:</strong> when both products are under the same IBM account (min 200 MVS Instana Standard SaaS), setup is one-click from the Instana Optimizations tab. <strong>Sidekick:</strong> Turbonomic resource actions appear inline in Instana's UI. Combined positioning: "See it with Instana, act on it with Turbonomic."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM Instana Observability</span>
+  <span class="result-badge instana">Instana · ${result.tier}</span>
+</div>
+
+<div class="result-inputs">
+  ${mvs.toLocaleString()} MVS &nbsp;·&nbsp; ${result.model} &nbsp;·&nbsp; ${result.tier} tier
+</div>
+
+<div class="result-section-label">💰 ESTIMATE</div>
+<table class="result-table">
+  <thead><tr><th>Description</th><th class="text-right">Qty</th><th class="text-right">Monthly List</th><th class="text-right">Annual List</th><th>Notes</th></tr></thead>
+  <tbody>${lineRows}</tbody>
+</table>
+
+<div class="result-price-row">
+  <div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
+  <div class="result-price">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+${instanaCrossContext}
+
+</div>`;
+}
+
+function formatInstanaBestPractices(): string {
+  const bpRows = INSTANA_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = INSTANA_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM Instana Observability</span><span class="result-badge instana">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── TURBONOMIC ───────────────────────────────────────────────────────────────
+
+function computeTurbonomicResult(state: ConversationState): string {
+  const a = state.answers;
+  const deployment = (String(a.turbonomicDeployment ?? "SaaS")) as "SaaS" | "SaaSGov" | "OnPrem" | "Parking";
+  const mvs = parseNumber(String(a.turbonomicMVS ?? 0));
+  const cloudSpend = parseNumber(String(a.turbonomicCloudSpend ?? 0));
+  const scopingModel = (String(a.turbonomicScopingModel ?? "mvs")) as "mvs" | "essentials";
+  const hasCloud = parseYesNo(String(a.turbonomicCloud ?? "yes"));
+  const hasK8s = parseYesNo(String(a.turbonomicKubernetes ?? "no"));
+  const driver = (String(a.turbonomicDriver ?? "both")) as "cost" | "performance" | "both";
+  const hasInstana = parseYesNo(String(a.turbonomicInstana ?? "no"));
+
+  const inputs: TurbonomicInputs = {
+    deployment,
+    estimatedMVS: mvs,
+    annualCloudSpend: cloudSpend > 0 ? cloudSpend : undefined,
+    scopingModel,
+    isGovernment: deployment === "SaaSGov",
+    includesPublicCloud: hasCloud,
+    includesKubernetes: hasK8s,
+    includesDatacenter: deployment === "OnPrem",
+    primaryDriver: driver,
+    instanaAlreadyOwned: hasInstana,
+    includeServices: true,
+  };
+
+  const result = computeTurbonomicScope(inputs);
+
+  const hasEstimate = result.lines.length > 0 && result.totalAnnualList > 0;
+  const lineRows = result.lines.map((l) =>
+    `<tr>
+      <td><code>${l.part}</code></td>
+      <td>${l.description}</td>
+      <td class="text-right">${l.quantity.toLocaleString()} ${l.unit}</td>
+      <td class="text-right">${l.monthlyList > 0 ? "$" + l.monthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 }) + "/mo" : "—"}</td>
+      <td class="text-right">$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}/yr</td>
+      <td style="font-size:11px;color:#94a3b8;">${l.notes}</td>
+    </tr>`
+  ).join("");
+
+  const scopeRows = result.scopeItems.map((s) => `<li>${s}</li>`).join("");
+  const featureRows = result.keyFeatures.map((f) => `<li>${f}</li>`).join("");
+  const talkingRows = result.sellerTalkingPoints.map((t) => `<li>${t}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  const turboCrossSource = String(a.crossSellSource ?? "");
+  const turboCrossContext = turboCrossSource === "Instana"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>IBM Instana Observability</strong>. Turbonomic ingests Instana's real-time APM telemetry to make resource decisions application-aware — it will not right-size a resource that is actively causing a performance degradation. <strong>Automated integration (IBM confirmed):</strong> both under the same IBM account with 200+ MVS Instana Standard SaaS → one-click setup from Instana Optimizations tab. <strong>Sidekick:</strong> Instana performance metrics appear in Turbonomic's UI via the Sidekick sidebar. Combined positioning: "See it with Instana, act on it with Turbonomic."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : turboCrossSource === "Concert"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>IBM Concert</strong>. Concert Optimize is powered by Turbonomic — Turbonomic target configuration is a required step when deploying the Optimize module. The two products form IBM's AIOps optimization loop: Concert surfaces the recommendation, Turbonomic executes it. <strong>Sidekick:</strong> Concert users see Turbonomic optimization insights inline. Combined positioning: "Concert sees the opportunity; Turbonomic acts on it."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM Turbonomic</span>
+  <span class="result-badge turbonomic">ARM · ${result.deploymentLabel}</span>
+</div>
+
+${hasEstimate ? `
+<div class="result-section-label">💰 ESTIMATE</div>
+<table class="result-table">
+  <thead><tr><th>Part #</th><th>Description</th><th class="text-right">Qty</th><th class="text-right">Monthly List</th><th class="text-right">Annual List</th><th>Notes</th></tr></thead>
+  <tbody>${lineRows}</tbody>
+</table>
+<div class="result-price-row">
+  ${result.totalMonthlyList > 0 ? `<div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>` : ""}
+  <div class="result-price">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+</div>
+` : ""}
+
+<div class="result-section-label">📋 SCOPE SUMMARY</div>
+<ul class="result-list">${scopeRows}</ul>
+
+<div class="result-section-label">✅ KEY FEATURES IN SCOPE</div>
+<ul class="result-list">${featureRows}</ul>
+
+${result.instanaNote ? `<div class="result-section-label">🔗 INSTANA INTEGRATION</div><div class="bp-body">${result.instanaNote}</div>` : ""}
+
+<div class="result-section-label">💬 SELLER TALKING POINTS</div>
+<ul class="result-list">${talkingRows}</ul>
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+${turboCrossContext}
+
+</div>`;
+}
+
+function formatTurbonomicBestPractices(): string {
+  const bpRows = TURBONOMIC_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = TURBONOMIC_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM Turbonomic</span><span class="result-badge turbonomic">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── TERRAFORM ────────────────────────────────────────────────────────────────
+
+function computeTerraformResult(state: ConversationState): string {
+  const a = state.answers;
+  const deployment = (String(a.terraformDeployment ?? "HCP")) as "HCP" | "Enterprise";
+  const resources = parseNumber(String(a.terraformResources ?? 250));
+  const team = parseNumber(String(a.terraformTeam ?? 5));
+  const governance = String(a.terraformGovernance ?? "none");
+  const vaultOwned = parseYesNo(String(a.terraformVault ?? "no"));
+
+  const inputs: TerraformInputs = {
+    deployment,
+    estimatedManagedResources: resources,
+    teamSize: team,
+    needsGovernance: governance === "governance" || governance === "audit",
+    needsAuditLog: governance === "audit",
+    needsAirGap: deployment === "Enterprise",
+    vaultAlreadyOwned: vaultOwned,
+  };
+
+  const result = computeTerraformRecommendation(inputs);
+
+  const rationaleRows = result.rationale.map((r) => `<li>${r}</li>`).join("");
+  const featureRows = result.keyFeatures.map((f) => `<li>${f}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM HashiCorp Terraform</span>
+  <span class="result-badge terraform">Terraform · ${result.editionLabel}</span>
+</div>
+
+<div class="result-inputs">
+  ~${result.estimatedManagedResources.toLocaleString()} managed resources &nbsp;·&nbsp; ~${result.workspaceCount} workspaces &nbsp;·&nbsp; ${result.deployment}
+</div>
+
+<div class="result-section-label">📋 RECOMMENDED EDITION: ${result.editionLabel}</div>
+<ul class="result-list">${rationaleRows}</ul>
+
+<div class="result-section-label">✅ KEY FEATURES</div>
+<ul class="result-list">${featureRows}</ul>
+
+${result.vaultNote ? `<div class="result-section-label">🔗 VAULT / SLM NOTE</div><div class="bp-body">${result.vaultNote}</div>` : ""}
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+</div>`;
+}
+
+function formatTerraformBestPractices(): string {
+  const bpRows = TERRAFORM_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = TERRAFORM_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM HashiCorp Terraform</span><span class="result-badge terraform">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── CONCERT ─────────────────────────────────────────────────────────────────
+
+function computeConcertResult(state: ConversationState): string {
+  const a = state.answers;
+  const pain = (String(a.concertPain ?? "alertFatigue")) as ConcertInputs["primaryPain"];
+  const hasInstana = parseYesNo(String(a.concertInstana ?? "no"));
+  const needsAutomation = parseYesNo(String(a.concertAutomation ?? "no"));
+  const apps = parseNumber(String(a.concertApplications ?? 0));
+  const concertMVS = parseNumber(String(a.concertMVS ?? 0));
+
+  const inputs: ConcertInputs = {
+    primaryPain: pain,
+    hasInstana,
+    needsWorkflowAutomation: needsAutomation,
+    needsCostOptimization: pain === "costOptimization" || pain === "all",
+    needsSecurityRisk: pain === "riskPosture" || pain === "all",
+    estimatedApplications: apps > 0 ? apps : undefined,
+    estimatedMVS: concertMVS > 0 ? concertMVS : undefined,
+  };
+
+  const result = computeConcertRecommendation(inputs);
+
+  const moduleRows = result.moduleDescriptions
+    .map((m) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${m.label}</td><td>${m.summary}</td></tr>`)
+    .join("");
+  const positioningRows = result.sellerPositioning.map((p) => `<li>${p}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  const concertCrossSource = String(a.crossSellSource ?? "");
+  const concertCrossContext = concertCrossSource === "Instana"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Concert scoping was launched from <strong>IBM Instana Observability</strong>. Concert Observe requires Instana agents as its data source. Concert Protect auto-imports Kubernetes clusters and container images from Instana — eliminating manual SBOM file creation. <strong>Sidekick:</strong> Concert users see Instana performance metrics inline. Combined positioning: "Instana captures the signals; Concert tells you what matters and orchestrates the response."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM Concert</span>
+  <span class="result-badge concert">Concert · Agentic ITOps</span>
+</div>
+
+<div class="result-section-label">📋 RECOMMENDED MODULES</div>
+<table class="result-table"><tbody>${moduleRows}</tbody></table>
+
+${result.instanaNote ? `<div class="result-section-label">🔗 INSTANA NOTE</div><div class="bp-body">${result.instanaNote}</div>` : ""}
+
+<div class="result-section-label">💬 SELLER POSITIONING</div>
+<ul class="result-list">${positioningRows}</ul>
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+${concertCrossContext}
+
+</div>`;
+}
+
+function formatConcertBestPractices(): string {
+  const bpRows = CONCERT_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = CONCERT_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM Concert</span><span class="result-badge concert">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── WEBMETHODS ───────────────────────────────────────────────────────────────
+
+function computeWebMethodsResult(state: ConversationState): string {
+  const a = state.answers;
+  const needs = Array.isArray(a.webMethodsNeeds) ? (a.webMethodsNeeds as string[]) : [];
+  const deploymentRaw = String(a.webMethodsDeployment ?? "saas");
+  const industry = (String(a.webMethodsIndustry ?? "other")) as WebMethodsInputs["industryVertical"];
+  const verifyOwned = parseYesNo(String(a.webMethodsVerify ?? "no"));
+  const intTxn = parseNumber(String(a.webMethodsIntTxn ?? 0));
+  const apiTxn = parseNumber(String(a.webMethodsApiTxn ?? 0));
+
+  const inputs: WebMethodsInputs = {
+    needsAppIntegration: needs.includes("appIntegration"),
+    needsAPIManagement: needs.includes("apiManagement"),
+    needsB2B: needs.includes("b2b"),
+    needsEventDriven: needs.includes("eventDriven"),
+    preferSaaS: deploymentRaw === "saas",
+    industryVertical: industry,
+    verifyAlreadyOwned: verifyOwned,
+    estimatedIntegrations: intTxn > 0 ? intTxn : undefined,
+    estimatedAPITransactions: apiTxn > 0 ? apiTxn : undefined,
+  };
+
+  const result = computeWebMethodsScope(inputs);
+
+  const capRows = result.capabilityDescriptions
+    .map((c) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${c.label}</td><td>${c.summary}</td></tr>`)
+    .join("");
+  const positioningRows = result.sellerPositioning.map((p) => `<li>${p}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM webMethods Integration</span>
+  <span class="result-badge webmethods">webMethods · Hybrid iPaaS</span>
+</div>
+
+<div class="result-section-label">📋 RECOMMENDED CAPABILITIES</div>
+<table class="result-table"><tbody>${capRows}</tbody></table>
+
+<div class="result-section-label">🏗️ DEPLOYMENT</div>
+<div class="bp-body">${result.deploymentRecommendation}</div>
+
+${result.verifyNote ? `<div class="result-section-label">🔗 VERIFY NOTE</div><div class="bp-body">${result.verifyNote}</div>` : ""}
+
+<div class="result-section-label">💬 SELLER POSITIONING</div>
+<ul class="result-list">${positioningRows}</ul>
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+</div>`;
+}
+
+function formatWebMethodsBestPractices(): string {
+  const bpRows = WEBMETHODS_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = WEBMETHODS_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM webMethods Integration</span><span class="result-badge webmethods">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
 }

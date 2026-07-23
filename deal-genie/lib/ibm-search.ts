@@ -85,9 +85,15 @@ export interface SearchResult {
 
 export const PRODUCT_QUERIES: Record<string, { query: string; scope: string }> = {
   // ibmdocs = IBM product documentation — returns actual ibm.com/docs content for each product
-  NS1:    { query: "NS1 Connect DNS query pricing configuration",        scope: "ibmdocs" },
-  Verify: { query: "IBM Security Verify identity access management SSO", scope: "ibmdocs" },
-  Vault:  { query: "IBM HashiCorp Vault secrets management deployment",  scope: "ibmdocs" },
+  NS1: { query: "NS1 Connect DNS query pricing configuration", scope: "ibmdocs" },
+  Verify: { query: "IBM Security Verify identity access management SSO adaptive access lifecycle", scope: "ibmdocs" },
+  Vault: { query: "IBM HashiCorp Vault secrets management deployment", scope: "ibmdocs" },
+  MaaS360: { query: "IBM MaaS360 unified endpoint management mobile threat defense secure productivity suite", scope: "ibmdocs" },
+  Instana: { query: "IBM Instana Observability full stack APM distributed tracing MVS pricing", scope: "ibmdocs" },
+  Turbonomic: { query: "IBM Turbonomic application resource management ARM workload optimization hybrid cloud", scope: "ibmdocs" },
+  Terraform: { query: "IBM HashiCorp Terraform HCP infrastructure lifecycle management IaC provisioning", scope: "ibmdocs" },
+  Concert: { query: "IBM Concert agentic ITOps observability incident management cross domain intelligence", scope: "ibmdocs" },
+  webMethods: { query: "IBM webMethods integration iPaaS API management B2B hybrid integration platform", scope: "ibmdocs" },
 };
 
 // ─── Core search ─────────────────────────────────────────────────────────────
@@ -181,7 +187,7 @@ export async function ibmSearch(
 // ─── Product-level helper ─────────────────────────────────────────────────────
 
 export async function fetchProductContext(
-  product: "NS1" | "Verify" | "Vault"
+  product: string
 ): Promise<SearchResult[] | null> {
   const cfg = PRODUCT_QUERIES[product];
   if (!cfg) return null;

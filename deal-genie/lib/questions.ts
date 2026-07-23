@@ -23,18 +23,7 @@ export interface Question {
 
 // ─── IBM SECURITY VERIFY ─────────────────────────────────────────────────────
 
-export const VERIFY_QUESTIONS: Question[] = [
-  {
-    key: "verifyAction",
-    ask: "What would you like to do?",
-    subtext: "Choose an option to get started with Verify quoting",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "📋 View Part Numbers", value: "parts", hint: "See all Verify SKUs" },
-      { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
-    ],
-  },
+export const VERIFY_QUOTE_QUESTIONS: Question[] = [
   {
     key: "capabilities",
     conditional: (a) => String(a.verifyAction ?? "quote") === "quote",
@@ -127,6 +116,310 @@ export const VERIFY_QUESTIONS: Question[] = [
   },
 ];
 
+export const VERIFY_CROSS_SELL_QUESTIONS: Question[] = [
+  {
+    key: "verifyPopulation",
+    ask: "How many users need identity and access controls?",
+    subtext: "Use the total user population that would rely on SSO, MFA, or adaptive access.",
+    type: "number",
+    placeholder: "e.g. 5000",
+    unit: "users",
+  },
+  {
+    key: "verifyNeedsSSO",
+    ask: "Does the client need single sign-on for business applications?",
+    type: "single",
+    options: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
+  },
+  {
+    key: "verifyNeedsMFA",
+    ask: "Is stronger authentication such as MFA clearly required?",
+    type: "single",
+    options: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
+  },
+  {
+    key: "verifyNeedsAdaptive",
+    ask: "Should access decisions account for device posture, risk, location, or behavior?",
+    subtext: "This is the strongest signal for adaptive access in the Verify attach motion.",
+    type: "single",
+    options: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
+  },
+  {
+    key: "verifyNeedsLifecycle",
+    ask: "Do they also need provisioning or deprovisioning of user accounts?",
+    subtext: "Use this only when lifecycle management is part of the opportunity.",
+    type: "single",
+    options: [
+      { label: "Yes", value: "yes" },
+      { label: "No", value: "no" },
+    ],
+  },
+  {
+    key: "verifyManagedUsers",
+    conditional: (a) => String(a.verifyNeedsLifecycle ?? "no") === "yes",
+    ask: "How many of those users will be actively managed by lifecycle workflows?",
+    type: "number",
+    placeholder: "e.g. 2500",
+    unit: "managed users",
+  },
+  {
+    key: "verifyCrossSellReason",
+    ask: "What is the main reason to attach Verify here?",
+    subtext: "This helps position the right identity story around the adjacent quote.",
+    type: "single",
+    options: [
+      { label: "Identity-aware access for managed devices", value: "device-trust" },
+      { label: "SSO and MFA modernization", value: "access-modernization" },
+      { label: "Adaptive zero trust policy", value: "adaptive-zero-trust" },
+      { label: "Lifecycle and identity governance", value: "lifecycle" },
+      { label: "Unified human and machine identity story", value: "human-machine-identity" },
+      { label: "Privileged access and operator trust", value: "privileged-access" },
+    ],
+  },
+];
+
+export const VAULT_CROSS_SELL_QUESTIONS: Question[] = [
+  {
+    key: "vaultModel",
+    ask: "Is this a new Vault motion or an existing renewal / mature deployment?",
+    subtext: "Use new when you are opening a fresh attach from Verify. Use existing if the client already runs Vault and you need the renewal-style model.",
+    type: "single",
+    options: [
+      { label: "New or expanding Vault motion", value: "A" },
+      { label: "Existing Vault renewal / mature deployment", value: "B" },
+    ],
+  },
+  {
+    key: "installCount",
+    ask: "How many production Vault clusters are likely in scope?",
+    subtext: "For most cross-sell motions, 1 production cluster is the right starting point.",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "1 cluster", value: "1" },
+      { label: "2 clusters", value: "2" },
+      { label: "3 clusters", value: "3" },
+      { label: "4+ clusters", value: "4" },
+    ],
+    placeholder: "Enter exact number of production clusters",
+    unit: "production clusters",
+  },
+  {
+    key: "useCases",
+    conditional: (a) => String(a.vaultModel ?? "A") === "A",
+    ask: "Which Vault outcome best matches the attach motion?",
+    subtext: "Select all that clearly apply so the quote sizes the right machine-identity and secrets motion.",
+    type: "multi",
+    options: [
+      { label: "Store passwords, API keys, or app secrets", value: "static" },
+      { label: "Auto-rotate database or cloud credentials", value: "dynamic" },
+      { label: "Automate certificate issuance and renewal", value: "pki" },
+      { label: "Secure SSH access and ephemeral credentials", value: "ssh" },
+    ],
+  },
+  {
+    key: "staticSecretCount",
+    conditional: (a) => {
+      const uc = a.useCases as string[] | undefined;
+      return String(a.vaultModel ?? "A") === "A" && !!uc?.includes("static");
+    },
+    ask: "Roughly how many secrets would Vault manage?",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "Under 25", value: "12" },
+      { label: "25 – 100", value: "50" },
+      { label: "100 – 500", value: "250" },
+      { label: "500+", value: "1000" },
+    ],
+    placeholder: "Enter secret count",
+    unit: "secrets",
+  },
+  {
+    key: "dynamicRoles",
+    conditional: (a) => {
+      const uc = a.useCases as string[] | undefined;
+      return String(a.vaultModel ?? "A") === "A" && !!uc?.includes("dynamic");
+    },
+    ask: "How many dynamic credential roles are likely needed?",
+    subtext: "Use one role per distinct database, cloud, or privileged access pattern.",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "Under 50", value: "25" },
+      { label: "50 – 200", value: "100" },
+      { label: "200 – 1,000", value: "500" },
+      { label: "1,000+", value: "1000" },
+    ],
+    placeholder: "Enter role count",
+    unit: "roles",
+  },
+  {
+    key: "pkiCertsPerMonth",
+    conditional: (a) => {
+      const uc = a.useCases as string[] | undefined;
+      return String(a.vaultModel ?? "A") === "A" && !!uc?.includes("pki");
+    },
+    ask: "How many certificates per month would they issue or renew?",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "Under 100/month", value: "50" },
+      { label: "100 – 500/month", value: "250" },
+      { label: "500 – 2,000/month", value: "1000" },
+      { label: "2,000+/month", value: "2000" },
+    ],
+    placeholder: "Enter certs per month",
+    unit: "certs/month",
+  },
+  {
+    key: "pkiCertLifetime",
+    conditional: (a) => {
+      const uc = a.useCases as string[] | undefined;
+      return String(a.vaultModel ?? "A") === "A" && !!uc?.includes("pki");
+    },
+    ask: "What's the average certificate lifetime?",
+    subtext: "Shorter lifetimes increase active certificate load.",
+    type: "single",
+    options: [
+      { label: "30 days", value: "720" },
+      { label: "90 days", value: "2160" },
+      { label: "1 year", value: "8760" },
+    ],
+  },
+  {
+    key: "clientCount",
+    conditional: (a) => String(a.vaultModel ?? "A") === "B",
+    ask: "How many unique applications, services, or users authenticate to Vault today?",
+    subtext: "Use this when the attach is really a renewal-style or mature existing Vault environment.",
+    type: "number",
+    placeholder: "e.g. 50",
+    unit: "clients",
+  },
+  {
+    key: "includeNonProd",
+    ask: "Should we include a non-production Vault environment?",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "vaultCrossSellReason",
+    ask: "What is the main reason to attach Vault here?",
+    subtext: "This helps position Vault as the machine-identity and secrets side of the story.",
+    type: "single",
+    options: [
+      { label: "Secrets sprawl across apps and infrastructure", value: "secrets-sprawl" },
+      { label: "Machine identities and certificates need governance", value: "machine-identity" },
+      { label: "Privileged or operator access needs tighter control", value: "privileged-access" },
+      { label: "Zero trust needs to extend beyond workforce identity", value: "zero-trust-expansion" },
+    ],
+  },
+];
+
+export const VERIFY_QUESTIONS: Question[] = [
+  {
+    key: "verifyAction",
+    ask: "What would you like to do?",
+    subtext: "Choose an option to get started with Verify quoting",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
+      { label: "📋 View Part Numbers", value: "parts", hint: "See all Verify SKUs" },
+      { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
+    ],
+  },
+  ...VERIFY_QUOTE_QUESTIONS,
+];
+
+export const MAAS360_QUESTIONS: Question[] = [
+  {
+    key: "maas360Action",
+    ask: "What would you like to do?",
+    subtext: "Choose whether to explore best practices or build a public-price estimate.",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "UEM discovery guide & seller FAQs" },
+      { label: "💰 Public Price Estimate", value: "quote", hint: "Estimate MaaS360 using public pricing" },
+    ],
+  },
+  {
+    key: "maas360Devices",
+    conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
+    ask: "How many managed client devices are in scope?",
+    subtext: "Use the number of devices you expect to actively manage with MaaS360.",
+    type: "number",
+    placeholder: "e.g. 2500",
+    unit: "devices",
+  },
+  {
+    key: "maas360SecureMail",
+    conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
+    ask: "Does the client need secure business email or containerized business apps/data on mobile devices?",
+    subtext: "This is the main step-up from core UEM into Deluxe territory.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "maas360AdvancedApps",
+    conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
+    ask: "Do they need secure browser access, content management, app security, or protected enterprise app access?",
+    subtext: "These requirements usually move the recommendation into Premier.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "maas360ThreatDefense",
+    conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
+    ask: "Is advanced mobile threat protection or stronger endpoint security a clear requirement?",
+    subtext: "This is the strongest signal for Enterprise and/or the threat defense add-on motion.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "maas360RemoteSupport",
+    conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
+    ask: "Does IT need remote troubleshooting support for distributed users or field devices?",
+    subtext: "Use this to decide whether TeamViewer Remote Support should be attached.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "maas360Concierge",
+    conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
+    ask: "Should we include the one-time concierge setup service?",
+    subtext: "Useful for new deployments that need IBM guidance for enrollment and policy setup.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes", hint: "$500 one-time" },
+    ],
+  },
+];
+
 // ─── NS1 CONNECT ─────────────────────────────────────────────────────────────
 
 export const NS1_QUESTIONS: Question[] = [
@@ -142,7 +435,6 @@ export const NS1_QUESTIONS: Question[] = [
       { label: "💰 Start Quoting", value: "quote", hint: "Begin the discovery questions" },
     ],
   },
-  // ── Context ───────────────────────────────────────────────────────────────
   {
     key: "currentDNS",
     ask: "Who is the client's current DNS provider?",
@@ -159,7 +451,6 @@ export const NS1_QUESTIONS: Question[] = [
     ],
     placeholder: "Describe their current DNS setup",
   },
-  // ── Core sizing — Q1 Queries ──────────────────────────────────────────────
   {
     key: "queryMQ",
     ask: "How many DNS queries does the client handle per month?",
@@ -177,7 +468,6 @@ export const NS1_QUESTIONS: Question[] = [
     placeholder: "Enter exact millions (e.g. 150)",
     unit: "million queries/month",
   },
-  // ── Core sizing — Q2 Records ──────────────────────────────────────────────
   {
     key: "recordCount",
     ask: "How many DNS records do they manage?",
@@ -193,8 +483,6 @@ export const NS1_QUESTIONS: Question[] = [
     placeholder: "Enter exact record count",
     unit: "records",
   },
-  // ── Core sizing — Q3 Filter Chains ────────────────────────────────────────
-  // Essentials: capped at included 1 chain (no add-ons). Standard: $40/mo per extra chain.
   {
     key: "filterChainCount",
     ask: "How many Filter Chains do they need?",
@@ -211,8 +499,6 @@ export const NS1_QUESTIONS: Question[] = [
     placeholder: "Enter number of filter chains",
     unit: "filter chains",
   },
-  // ── Core sizing — Q4 Monitors ─────────────────────────────────────────────
-  // Essentials: capped at 2 included monitors (no add-ons). Standard: $1.30/mo per extra monitor.
   {
     key: "monitors",
     ask: "How many Monitors do they need?",
@@ -229,9 +515,6 @@ export const NS1_QUESTIONS: Question[] = [
     placeholder: "Enter number of monitors",
     unit: "monitors",
   },
-  // ── Advanced Features — Premium only ─────────────────────────────────────
-  // These questions are only relevant for Premium (>1B queries). Standard includes spike protection
-  // and has no RUM, Dedicated DNS, DNS Insights, China DNS, or NXD Waiver options.
   {
     key: "ddos",
     ask: "Do they need DDoS overage protection or NXD Waiver?",
@@ -318,7 +601,6 @@ export const NS1_QUESTIONS: Question[] = [
       { label: "Yes",  value: "yes" },
     ],
   },
-  // ── Growth headroom ───────────────────────────────────────────────────────
   {
     key: "growthMQ",
     ask: "How much additional query headroom do you want to size for?",
@@ -335,7 +617,6 @@ export const NS1_QUESTIONS: Question[] = [
     placeholder: "Enter additional MQ (millions)",
     unit: "million queries/month",
   },
-  // ── Term ──────────────────────────────────────────────────────────────────
   {
     key: "term",
     ask: "What's the contract term?",
@@ -348,57 +629,6 @@ export const NS1_QUESTIONS: Question[] = [
 ];
 
 // ─── IBM HASHICORP VAULT ──────────────────────────────────────────────────────
-//
-// Sources: Kris Ditmore meeting transcript (July 13 2026) + Vault 2.0 P&P FAQ (official)
-//
-// Vault 2.0 — what it is (from official P&P FAQ)
-//   - April 2026 release of Vault Enterprise (what would have been Vault 1.22, renamed per IBM versioning)
-//   - Supports BOTH Client-based (Model B) AND Resource Unit (Model A/RU) pricing
-//   - Existing customers may upgrade to 2.0 and CONTINUE using Client entitlements (no forced migration)
-//   - Moving to RU requires: (1) upgrade to Vault 2.0, (2) a contracting event (change of metrics)
-//   - Mid-term switch: allowed via supersede, as long as customer meets requirements
-//   - CENSUS IS REQUIRED for RU model — no exception process available
-//
-// Model B (Clients/RVU) — classic, still most deals
-//   - A "client" = any unique app/service/user that AUTHENTICATES to Vault (via alias)
-//   - Priced on: # production clusters (Installs) + # unique clients (RVUs)
-//   - NOT relevant: secret count, access frequency, secret type
-//
-// Model A (Platform/RU) — consumption model, Vault 2.0 direction
-//   - RU = 1 entitlement unit covering everything Vault does
-//   - RU table (official):
-//       Static secrets:          unique secrets stored (monthly high-water mark)
-//       Dynamic/auto-rotated:    roles configured (monthly high-water mark)
-//       PKI:                     CEIL(certs/month × lifetime_hours ÷ 730)
-//       SSH:                     CEIL(creds/month × lifetime_hours ÷ 730)
-//       Transit/Transform:       data-protection API calls ÷ 150,000 per element
-//       KMIP/TOTP:               managed keys (monthly high-water mark)
-//   - Census must be enabled (automated monthly reporting to IBM)
-//   - Discounting at RU level — same discount applies across ALL use-case RUs
-//   - No overage charges — adjust entitlements on go-forward basis (FSL or Monthly License)
-//   - Production + non-production both consume RUs
-//   - DR secondary clusters: included free with production installs (inactive standby only)
-//   - Non-production installs do NOT get free DR — purchase additional non-prod installs if needed
-//   - Deduplication across primary clusters may reduce total RU count for larger orgs
-//   - Models CANNOT be mixed within same contract/installation/region
-//
-// Greenfield guidance (from P&P FAQ)
-//   1. Start small — limits sizing effort, reduces risk of wildly-off entitlement
-//   2. Identify 1-2 initial pain points for fastest ROI
-//   3. Identify relevant metrics, ask customer-friendly questions
-//      e.g. "how many secrets do you have under management?"
-//
-// Gap analysis
-// ─────────────────────────────────────────────────────────────────────────────
-// | Question          | Model B (Clients/RVU) | Model A (Platform/RU)     |
-// |-------------------|-----------------------|---------------------------|
-// | Cluster count     | Required (usually 1)  | Required (prod billed)    |
-// | Client count      | Required (often ≤5)   | Not used                  |
-// | Secret type       | Not used              | Required (see RU table)   |
-// | Secret count      | Not used              | Required (most have 10-15)|
-// | Access frequency  | Not used              | Required (Transit only)   |
-// | Census            | Not required          | REQUIRED — no exceptions  |
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const VAULT_QUESTIONS_COMMON: Question[] = [
   {
@@ -413,10 +643,6 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
     ],
   },
   {
-    // Model A (Platform/RU) = usage/consumption-based → aligns with what IBM calls "Vault 2.0 direction"
-    // Model B (Clients/RVU) = per-seat/client-based → classic Vault 1.0 model
-    // Both have full part numbers and a working engine. The "Vault 2.0" name is directional —
-    // Model A already implements the consumption methodology Kris described.
     key: "vaultModel",
     conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "Is this a new Vault deployment or an existing renewal?",
@@ -431,7 +657,6 @@ export const VAULT_QUESTIONS_COMMON: Question[] = [
     key: "installCount",
     conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "How many production Vault clusters will they run?",
-    // Kris Ditmore (July 13 2026): "typically a customer will have one production cluster"
     subtext: "Most customers run 1 production cluster. Count production clusters only — each = 1 Install. Non-production is quoted separately.",
     type: "single",
     allowOther: true,
@@ -465,8 +690,6 @@ export const VAULT_QUESTIONS_MODEL_A: Question[] = [
   {
     key: "staticSecretCount",
     ask: "How many secrets (passwords, API keys, config values) will they store in Vault?",
-    // Kris Ditmore (July 13 2026): ranges were "a little high" — scaled back ~50%.
-    // Many customers have just 10–15 secrets. Upper range dropped from 10,000+ to 2,000+.
     type: "single",
     allowOther: true,
     conditional: (a) => {
@@ -522,281 +745,464 @@ export const VAULT_QUESTIONS_MODEL_A: Question[] = [
   },
   {
     key: "pkiCertLifetime",
-    ask: "What is the typical certificate lifetime?",
-    subtext: "Shorter-lived certs = more renewals = higher usage.",
+    ask: "What's the average certificate lifetime?",
+    subtext: "Shorter lifetime = more concurrent certificate load.",
     type: "single",
     conditional: (a) => {
       const uc = a.useCases as string[] | undefined;
       return !!uc?.includes("pki");
     },
     options: [
-      { label: "1 day",     value: "24",   hint: "Very short-lived (mTLS, service mesh)" },
       { label: "30 days",   value: "720" },
-      { label: "90 days",   value: "2160", hint: "Common for public certs" },
+      { label: "90 days",   value: "2160" },
       { label: "1 year",    value: "8760" },
-      { label: "2+ years",  value: "17520" },
-    ],
-  },
-  {
-    key: "sshCredsPerMonth",
-    ask: "How many SSH credentials will Vault issue per month?",
-    subtext: "Count SSH certificates or OTPs issued/renewed. Uses the same formula as PKI — shorter lifetime = more RU.",
-    type: "single",
-    allowOther: true,
-    conditional: (a) => {
-      const uc = a.useCases as string[] | undefined;
-      return !!uc?.includes("ssh");
-    },
-    options: [
-      { label: "< 100/month",        value: "50" },
-      { label: "100 – 500/month",    value: "250" },
-      { label: "500 – 2,000/month",  value: "1000" },
-      { label: "2,000+/month",       value: "2000" },
-    ],
-    placeholder: "Enter SSH credentials per month",
-    unit: "creds/month",
-  },
-  {
-    key: "sshLifetime",
-    ask: "What is the typical SSH credential lifetime?",
-    subtext: "Shorter lifetimes mean more frequent issuance = higher RU usage.",
-    type: "single",
-    conditional: (a) => {
-      const uc = a.useCases as string[] | undefined;
-      return !!uc?.includes("ssh");
-    },
-    options: [
-      { label: "1 hour",    value: "1",    hint: "Very short-lived (just-in-time access)" },
-      { label: "8 hours",   value: "8",    hint: "One working shift" },
-      { label: "1 day",     value: "24" },
-      { label: "7 days",    value: "168" },
-      { label: "30 days",   value: "720" },
-    ],
-  },
-  {
-    key: "transitCallsPerMonth",
-    ask: "How many encrypt/decrypt or tokenization operations per month?",
-    subtext: "Every 150,000 operations = 1 resource unit.",
-    type: "single",
-    allowOther: true,
-    conditional: (a) => {
-      const uc = a.useCases as string[] | undefined;
-      return !!uc?.includes("transit");
-    },
-    options: [
-      { label: "< 150K/month",        value: "75000" },
-      { label: "150K – 1.5M/month",   value: "750000" },
-      { label: "1.5M – 15M/month",    value: "7500000" },
-      { label: "15M+/month",          value: "15000000" },
-    ],
-    placeholder: "Enter operations per month",
-    unit: "operations/month",
-  },
-  {
-    key: "kmseKeyCount",
-    ask: "How many encryption keys will Vault manage?",
-    type: "single",
-    allowOther: true,
-    conditional: (a) => {
-      const uc = a.useCases as string[] | undefined;
-      return !!uc?.includes("kmse");
-    },
-    options: [
-      { label: "< 100",       value: "50" },
-      { label: "100 – 500",   value: "250" },
-      { label: "500 – 2,000", value: "1000" },
-      { label: "2,000+",      value: "2000" },
-    ],
-    placeholder: "Enter key count",
-    unit: "keys",
-  },
-  {
-    key: "includeNonProd",
-    ask: "Do they need a non-production (dev/test) environment?",
-    type: "single",
-    options: [
-      { label: "Yes", value: "yes" },
-      { label: "No",  value: "no" },
-    ],
-  },
-  {
-    key: "includeKMIP",
-    ask: "Do they need KMIP support (Key Management Interoperability Protocol)?",
-    subtext: "Required for legacy apps that use the KMIP standard for key management.",
-    type: "single",
-    options: [
-      { label: "Yes — switches to KMIP-included install", value: "yes", hint: "$360K/cluster vs $96K" },
-      { label: "No",  value: "no" },
     ],
   },
 ];
 
-// Vault 1.0 — client-based pricing (current licensing model)
-// Secret count is NOT a pricing input for Vault 1.0; do not ask for it here.
 export const VAULT_QUESTIONS_MODEL_B: Question[] = [
   {
     key: "edition",
-    ask: "Which Vault edition does the client need?",
+    ask: "Which Vault edition best fits the deployment?",
     type: "single",
+    conditional: (a) => String(a.vaultModel ?? "A") === "B",
     options: [
-      { label: "Essentials",  value: "1", hint: "$24,960/cluster/year — core secret management" },
-      { label: "Standard",    value: "2", hint: "$90,000/cluster/year — adds replication & namespaces" },
-      { label: "Premium",     value: "3", hint: "$99,960/cluster/year — required for DR & performance replication" },
+      { label: "Essentials", value: "1" },
+      { label: "Standard", value: "2", hint: "Most common" },
+      { label: "Premium", value: "3", hint: "DR / replication" },
     ],
   },
   {
     key: "clientCount",
-    ask: "How many apps, services, or users connect to Vault?",
-    // Most Vault 1.0 customers have ≤ 5 distinct clients; lower ranges are reflected
-    // in the first two options. Use allowOther for larger deployments.
-    subtext: "Each unique app, service, or user = 1 Client (RVU). Most customers have 5 or fewer clients.",
-    type: "single",
-    allowOther: true,
-    options: [
-      { label: "1 – 5",         value: "3",     hint: "Typical for most customers" },
-      { label: "6 – 25",        value: "15" },
-      { label: "26 – 100",      value: "50" },
-      { label: "101 – 500",     value: "250" },
-      { label: "500+",          value: "500" },
-    ],
-    placeholder: "Enter client count",
+    ask: "How many unique applications, services, or users will authenticate to Vault?",
+    subtext: "Count unique clients, not container or VM instances.",
+    type: "number",
+    conditional: (a) => String(a.vaultModel ?? "A") === "B",
+    placeholder: "e.g. 50",
     unit: "clients",
   },
   {
     key: "includeNonProd",
-    ask: "Do they need a non-production (dev/test) environment?",
+    ask: "Should we include a non-production Vault environment?",
     type: "single",
+    conditional: (a) => String(a.vaultModel ?? "A") === "B",
     options: [
+      { label: "No", value: "no" },
       { label: "Yes", value: "yes" },
-      { label: "No",  value: "no" },
     ],
-  },
-  {
-    key: "pkiAddon",
-    ask: "Do they need PKI certificate management as an add-on?",
-    subtext: "Requires Vault v1.21+ and an existing Install + Clients.",
-    type: "single",
-    allowOther: true,
-    options: [
-      { label: "No",            value: "0" },
-      { label: "Yes — < 100",   value: "50" },
-      { label: "Yes — 100–500", value: "250" },
-      { label: "Yes — 500+",    value: "500" },
-    ],
-    placeholder: "Enter PKI certificate count",
-    unit: "certificates",
-  },
-  {
-    key: "adpKeyMgmt",
-    ask: "Do they need ADP Key Management (KMIP for legacy apps)?",
-    type: "single",
-    allowOther: true,
-    options: [
-      { label: "No",                value: "0" },
-      { label: "Yes — 1 cluster",   value: "1" },
-      { label: "Yes — 2 clusters",  value: "2" },
-      { label: "Yes — 3+ clusters", value: "3" },
-    ],
-    placeholder: "Enter cluster count needing KMIP",
-    unit: "clusters",
-  },
-  {
-    key: "adpTransform",
-    ask: "Do they need ADP Transform (tokenisation / format-preserving encryption)?",
-    subtext: "Used for masking PII, credit card numbers, SSNs in transit. Charged per app/service using it.",
-    type: "single",
-    allowOther: true,
-    options: [
-      { label: "No",            value: "0" },
-      { label: "Yes — < 10",    value: "5" },
-      { label: "Yes — 10–50",   value: "25" },
-      { label: "Yes — 50+",     value: "50" },
-    ],
-    placeholder: "Enter number of Transform clients",
-    unit: "clients",
   },
 ];
 
-// ─── VAULT 2.0 — consumption-based (upcoming licensing model) ─────────────────
-//
-// Source: Kris Ditmore meeting transcript (July 13 2026)
-//
-// ⚠️  PRICING ENGINE NOT YET BUILDABLE — official spreadsheet not received.
-//     These questions capture the right inputs based on what Kris described.
-//
-//     BLOCKERS before this can produce real quotes:
-//       1. Get Vault 2.0 pricing spreadsheet from Kris Ditmore (he offered to send)
-//       2. Join #vault-pricing-deals Slack channel — Vault product managers are there
-//       3. Confirm exact pricing formula (secret count × access freq × type multiplier?)
-//       4. Obtain part numbers for Vault 2.0 SKUs
-//
-// What Kris confirmed Vault 2.0 is priced on:
-//   - Type of secrets (PKI certs vs API keys are charged differently)
-//   - Number of secrets stored
-//   - How often secrets are accessed / rotated
-//   - "There's a whole spreadsheet" — more nuance than just these three inputs
-//
-// Secret count IS a required input for Vault 2.0 (unlike Vault 1.0).
-// Client count is NOT used in Vault 2.0.
-// Kris: secret ranges should be small — many customers have only 10–15 secrets.
+// ─── IBM INSTANA ──────────────────────────────────────────────────────────────
 
-export const VAULT_QUESTIONS_VAULT2: Question[] = [
+export const INSTANA_QUESTIONS: Question[] = [
   {
-    key: "v2SecretTypes",
-    ask: "What types of secrets will they store in Vault?",
-    // Kris: "we charge different for PKI keys versus API calls"
-    subtext: "Select all that apply — Vault 2.0 charges differently by secret type.",
+    key: "instanaAction",
+    ask: "What would you like to do?",
+    subtext: "Choose an option to get started with Instana.",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
+      { label: "💰 Build an Estimate", value: "quote", hint: "Size the deal by MVS count and model" },
+    ],
+  },
+  {
+    key: "instanaMVS",
+    conditional: (a) => String(a.instanaAction ?? "quote") === "quote",
+    ask: "How many hosts (servers, VMs, nodes) will Instana monitor?",
+    subtext: "Each monitored host = 1 Managed Virtual Server (MVS). Kubernetes worker nodes each count as 1 MVS — containers do not add to the count.",
+    type: "number",
+    placeholder: "e.g. 250",
+    unit: "MVS (hosts)",
+  },
+  {
+    key: "instanaTier",
+    conditional: (a) => String(a.instanaAction ?? "quote") === "quote",
+    ask: "What level of observability does the client need?",
+    subtext: "Essentials is infrastructure-only. Standard adds full APM, distributed tracing, synthetic, and LLM/GenAI observability.",
+    type: "single",
+    options: [
+      { label: "Standard (full-stack observability)", value: "Standard", hint: "Recommended — APM, traces, synthetic, LLM observability" },
+      { label: "Essentials (infrastructure monitoring only)", value: "Essentials", hint: "VMs, Kubernetes, cloud infra only" },
+    ],
+  },
+  {
+    key: "instanaModel",
+    conditional: (a) => String(a.instanaAction ?? "quote") === "quote",
+    ask: "How does the client prefer to purchase?",
+    type: "single",
+    options: [
+      { label: "SaaS (IBM-hosted)", value: "SaaS", hint: "From $21.20/MVS/month — flexible billing, add-ons available" },
+      { label: "Self-Hosted (customer-managed)", value: "SelfHosted", hint: "From $1,440/month — annual subscription, full data control" },
+      { label: "Pay Per Use", value: "PayPerUse", hint: "$0.03/MVS/hour — no commitment, cancel anytime, no add-ons" },
+    ],
+  },
+  {
+    key: "instanaLogsInContext",
+    conditional: (a) => String(a.instanaAction ?? "quote") === "quote" && String(a.instanaModel ?? "SaaS") === "SaaS",
+    ask: "Do they need Logs in Context (log ingestion and retention)?",
+    subtext: "SaaS add-on: ingest logs from any source with 30, 60, or 90-day retention. Starts at $0.351/GB.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "instanaLogGB",
+    conditional: (a) =>
+      String(a.instanaAction ?? "quote") === "quote" &&
+      String(a.instanaModel ?? "SaaS") === "SaaS" &&
+      String(a.instanaLogsInContext ?? "no") === "yes",
+    ask: "How many GB of logs per month will they ingest?",
+    type: "number",
+    placeholder: "e.g. 500",
+    unit: "GB/month",
+  },
+];
+
+// ─── IBM TURBONOMIC ───────────────────────────────────────────────────────────
+
+export const TURBONOMIC_QUESTIONS: Question[] = [
+  {
+    key: "turbonomicAction",
+    ask: "What would you like to do?",
+    subtext: "IBM Turbonomic SaaS: $23.50/MVS/month (D11Q7ZX) list price. I can build a scoping estimate or best-practices guide.",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
+      { label: "💰 Build an Estimate", value: "quote", hint: "Size by MVS count or annual cloud spend" },
+    ],
+  },
+  {
+    key: "turbonomicDeployment",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "What deployment model does the client need?",
+    type: "single",
+    options: [
+      { label: "SaaS — Commercial (IBM-hosted)", value: "SaaS", hint: "$18.80/MVS/month (D09ECZX) — IBM manages the platform" },
+      { label: "SaaS — Government / FedRAMP", value: "SaaSGov", hint: "$23.50/MVS/month (D11Q7ZX) — FedRAMP-authorized deployment" },
+      { label: "On-Premises (self-hosted)", value: "OnPrem", hint: "Contact-for-quote — air-gapped or sovereign environments" },
+      { label: "Parking Edition (cloud cost savings only)", value: "Parking", hint: "Contact-for-quote — auto-stop/start idle cloud workloads" },
+    ],
+  },
+  {
+    key: "turbonomicScopingModel",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote" && String(a.turbonomicDeployment ?? "SaaS") === "SaaS",
+    ask: "How would you like to size this deal?",
+    subtext: "Choose based on what the customer knows today.",
+    type: "single",
+    options: [
+      { label: "By MVS count (host / VM count)", value: "mvs", hint: "$23.50/MVS/month — use if you know the server/node count" },
+      { label: "By annual cloud spend (Essentials edition)", value: "essentials", hint: "$50,000/instance/year — 1 instance covers up to $2M annual cloud spend" },
+    ],
+  },
+  {
+    key: "turbonomicMVS",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      String(a.turbonomicDeployment ?? "SaaS") === "SaaS" &&
+      String(a.turbonomicScopingModel ?? "mvs") === "mvs",
+    ask: "How many hosts or VMs are in scope for optimization?",
+    subtext: "Use the same MVS count as your Instana scope if Instana is already in the deal. D11Q7ZX: $23.50/MVS/month list.",
+    type: "number",
+    placeholder: "e.g. 500",
+    unit: "MVS (hosts)",
+  },
+  {
+    key: "turbonomicCloudSpend",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      String(a.turbonomicDeployment ?? "SaaS") === "SaaS" &&
+      String(a.turbonomicScopingModel ?? "mvs") === "essentials",
+    ask: "What is the client's estimated annual public cloud spend?",
+    subtext: "Essentials edition: $50,000/instance/year. Each instance covers up to $2M in annual cloud spend.",
+    type: "number",
+    placeholder: "e.g. 4000000",
+    unit: "USD / year",
+  },
+  {
+    key: "turbonomicCloud",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "Does the client have public cloud resources to optimize?",
+    subtext: "AWS, Azure, and/or Google Cloud — Turbonomic natively connects to all three.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "turbonomicKubernetes",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "Does the client run Kubernetes or container workloads?",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes", value: "yes" },
+    ],
+  },
+  {
+    key: "turbonomicDriver",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "What is the primary driver for this conversation?",
+    type: "single",
+    options: [
+      { label: "Cloud cost reduction / FinOps", value: "cost" },
+      { label: "Application performance assurance", value: "performance" },
+      { label: "Both cost and performance", value: "both" },
+    ],
+  },
+  {
+    key: "turbonomicInstana",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "Does the client already have IBM Instana (or is it part of this deal)?",
+    subtext: "Turbonomic natively integrates with Instana for application-aware optimization — a key differentiator.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes — already owned", value: "yes" },
+    ],
+  },
+];
+
+// ─── IBM HASHICORP TERRAFORM ──────────────────────────────────────────────────
+
+export const TERRAFORM_QUESTIONS: Question[] = [
+  {
+    key: "terraformAction",
+    ask: "What would you like to do?",
+    subtext: "HCP Terraform paid-plan pricing is contact-for-quote. I can recommend the right plan and scope the deal.",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "IaC discovery guide & seller FAQs" },
+      { label: "📋 Recommend a Plan", value: "quote", hint: "Identify the right HCP Terraform edition" },
+    ],
+  },
+  {
+    key: "terraformDeployment",
+    conditional: (a) => String(a.terraformAction ?? "quote") === "quote",
+    ask: "Does the client need a cloud-hosted or self-hosted Terraform platform?",
+    type: "single",
+    options: [
+      { label: "HCP Terraform (IBM/HashiCorp-hosted SaaS)", value: "HCP", hint: "Most common — includes free tier" },
+      { label: "Terraform Enterprise (self-hosted)", value: "Enterprise", hint: "Air-gapped, regulated, or on-prem environments" },
+    ],
+  },
+  {
+    key: "terraformResources",
+    conditional: (a) => String(a.terraformAction ?? "quote") === "quote",
+    ask: "How many Terraform-managed cloud or infrastructure resources are in scope?",
+    subtext: "A managed resource is any cloud object that Terraform provisions and manages (VMs, buckets, databases, etc.). Free plan includes 500.",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "Under 500 (Free plan eligible)", value: "250", hint: "HCP Terraform Free covers this" },
+      { label: "500 – 5,000", value: "2500" },
+      { label: "5,000 – 25,000", value: "10000" },
+      { label: "25,000+", value: "50000" },
+    ],
+    placeholder: "Enter approximate resource count",
+    unit: "managed resources",
+  },
+  {
+    key: "terraformTeam",
+    conditional: (a) => String(a.terraformAction ?? "quote") === "quote",
+    ask: "How many engineers will use Terraform?",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "1 – 4 engineers", value: "3" },
+      { label: "5 – 9 engineers", value: "7" },
+      { label: "10 – 25 engineers", value: "15" },
+      { label: "25+ engineers", value: "30" },
+    ],
+    placeholder: "Enter team size",
+    unit: "engineers",
+  },
+  {
+    key: "terraformGovernance",
+    conditional: (a) => String(a.terraformAction ?? "quote") === "quote",
+    ask: "Does the client need policy-as-code (Sentinel / OPA) or audit logging?",
+    subtext: "Policy enforcement is Standard+. Audit logging requires Premium.",
+    type: "single",
+    options: [
+      { label: "No — basic provisioning only", value: "none" },
+      { label: "Yes — policy-as-code (Sentinel/OPA)", value: "governance" },
+      { label: "Yes — audit logging as well", value: "audit" },
+    ],
+  },
+  {
+    key: "terraformVault",
+    conditional: (a) => String(a.terraformAction ?? "quote") === "quote",
+    ask: "Is IBM HashiCorp Vault already in scope or owned by the client?",
+    subtext: "Terraform + Vault is IBM's flagship ILM+SLM story — they are typically sold together.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes — already owned", value: "yes" },
+    ],
+  },
+];
+
+// ─── IBM CONCERT ──────────────────────────────────────────────────────────────
+
+export const CONCERT_QUESTIONS: Question[] = [
+  {
+    key: "concertAction",
+    ask: "What would you like to do?",
+    subtext: "Concert pricing is contact-for-quote. I can recommend the right modules and build the seller positioning.",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
+      { label: "📋 Scope the Deal", value: "quote", hint: "Recommend Concert modules and positioning" },
+    ],
+  },
+  {
+    key: "concertPain",
+    conditional: (a) => String(a.concertAction ?? "quote") === "quote",
+    ask: "What is the client's biggest operational challenge?",
+    type: "single",
+    options: [
+      { label: "Alert fatigue — too many alerts, not enough context", value: "alertFatigue" },
+      { label: "Slow MTTR — takes too long to find and fix problems", value: "slowMTTR" },
+      { label: "Cloud cost and resource optimization", value: "costOptimization" },
+      { label: "Risk posture — vulnerabilities, compliance, change impact", value: "riskPosture" },
+      { label: "All of the above", value: "all" },
+    ],
+  },
+  {
+    key: "concertInstana",
+    conditional: (a) => String(a.concertAction ?? "quote") === "quote",
+    ask: "Does the client already have IBM Instana (or is it part of this deal)?",
+    subtext: "Instana is Concert's strongest data source — the Instana→Concert telemetry feed is a key differentiator.",
+    type: "single",
+    options: [
+      { label: "No — they use other monitoring tools", value: "no" },
+      { label: "Yes — already owned or in this deal", value: "yes" },
+    ],
+  },
+  {
+    key: "concertAutomation",
+    conditional: (a) => String(a.concertAction ?? "quote") === "quote",
+    ask: "Do they need automated remediation workflows (ITSM integration, AI-driven actions)?",
+    type: "single",
+    options: [
+      { label: "No — dashboards and insights are sufficient", value: "no" },
+      { label: "Yes — they want to automate remediation actions", value: "yes" },
+    ],
+  },
+  {
+    key: "concertApplications",
+    conditional: (a) => String(a.concertAction ?? "quote") === "quote",
+    ask: "How many applications or services are in scope?",
+    subtext: "Used to estimate Concert Protect RU consumption (3 RU per app, vulnerability management use case).",
+    type: "single",
+    allowOther: true,
+    options: [
+      { label: "Under 20", value: "10" },
+      { label: "20 – 100", value: "50" },
+      { label: "100 – 500", value: "250" },
+      { label: "500+", value: "750" },
+    ],
+    placeholder: "Enter application count",
+    unit: "applications",
+  },
+  {
+    key: "concertMVS",
+    conditional: (a) => String(a.concertAction ?? "quote") === "quote",
+    ask: "How many hosts or VMs will Concert optimize?",
+    subtext: "Used to estimate Concert Optimize RU consumption (1 RU per 5 MVS). Enter 0 if not using resource optimization.",
+    type: "number",
+    placeholder: "e.g. 500",
+    unit: "MVS (hosts)",
+  },
+];
+
+// ─── IBM WEBMETHODS ───────────────────────────────────────────────────────────
+
+export const WEBMETHODS_QUESTIONS: Question[] = [
+  {
+    key: "webMethodsAction",
+    ask: "What would you like to do?",
+    subtext: "webMethods pricing is contact-for-quote. I can scope the deal and build the seller positioning.",
+    type: "single",
+    options: [
+      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
+      { label: "📋 Scope the Deal", value: "quote", hint: "Identify capabilities and positioning" },
+    ],
+  },
+  {
+    key: "webMethodsNeeds",
+    conditional: (a) => String(a.webMethodsAction ?? "quote") === "quote",
+    ask: "What integration capabilities does the client need?",
+    subtext: "Select all that apply.",
     type: "multi",
     options: [
-      { label: "Static secrets (passwords, API keys, config values)", value: "static",  hint: "Key/value secrets engine" },
-      { label: "Dynamic credentials (auto-rotating DB, cloud creds)", value: "dynamic", hint: "Database, AWS, Azure engines" },
-      { label: "PKI certificates",                                     value: "pki",     hint: "Certificate lifecycle — priced separately from API keys" },
-      { label: "SSH credentials",                                      value: "ssh",     hint: "SSH secrets engine" },
-      { label: "Encryption keys (KMIP / Transit)",                     value: "kmse",    hint: "Key management / tokenisation" },
+      { label: "Application integration (SaaS, cloud, on-prem)", value: "appIntegration", hint: "1 RVU = 1,000 txn/month" },
+      { label: "API management and governance", value: "apiManagement", hint: "1 RVU = 10,000 API txn/month" },
+      { label: "B2B / EDI partner integration", value: "b2b" },
+      { label: "Event-driven / streaming integration", value: "eventDriven" },
     ],
   },
   {
-    key: "v2SecretCount",
-    ask: "How many secrets will they store in Vault?",
-    // Secret count is a core pricing input for Vault 2.0 — NOT used in Vault 1.0.
-    // Kris: "there are many customers that just have 10, 15 secrets" — keep ranges small.
-    subtext: "Count all unique secrets across all types. Most customers have fewer than you'd expect.",
-    type: "single",
-    allowOther: true,
-    options: [
-      { label: "< 25",          value: "12",   hint: "Common — many customers have 10–15" },
-      { label: "25 – 100",      value: "50" },
-      { label: "100 – 500",     value: "250" },
-      { label: "500 – 2,000",   value: "1000" },
-      { label: "2,000+",        value: "2000" },
-    ],
-    placeholder: "Enter total secret count",
-    unit: "secrets",
+    key: "webMethodsIntTxn",
+    conditional: (a) => {
+      const needs = Array.isArray(a.webMethodsNeeds) ? a.webMethodsNeeds as string[] : [];
+      return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("appIntegration");
+    },
+    ask: "How many integration transactions does the client run per month?",
+    subtext: "SaaS estimate: 1 RVU = 1,000 integration transactions/month × $11.54/RVU/year.",
+    type: "number",
+    placeholder: "e.g. 100000",
+    unit: "transactions / month",
   },
   {
-    key: "v2AccessFrequency",
-    ask: "How often will secrets be accessed or rotated?",
-    // Kris: "how many times are you going to rotate the secret" is a key Vault 2.0 input.
-    // Kris: "we charge different for...how often they're accessed"
-    subtext: "Estimate average secret reads/writes per day across all applications.",
-    type: "single",
-    allowOther: true,
-    options: [
-      { label: "Low — < 1,000 operations/day",        value: "500" },
-      { label: "Medium — 1,000 – 10,000/day",         value: "5000" },
-      { label: "High — 10,000 – 100,000/day",         value: "50000" },
-      { label: "Very high — 100,000+/day",             value: "100000" },
-    ],
-    placeholder: "Enter estimated operations per day",
-    unit: "operations/day",
+    key: "webMethodsApiTxn",
+    conditional: (a) => {
+      const needs = Array.isArray(a.webMethodsNeeds) ? a.webMethodsNeeds as string[] : [];
+      return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("apiManagement");
+    },
+    ask: "How many API transactions does the client handle per month?",
+    subtext: "SaaS estimate: 1 RVU = 10,000 API transactions/month × $11.54/RVU/year.",
+    type: "number",
+    placeholder: "e.g. 500000",
+    unit: "API transactions / month",
   },
   {
-    key: "v2IncludeNonProd",
-    ask: "Do they need a non-production (dev/test) environment?",
+    key: "webMethodsDeployment",
+    conditional: (a) => String(a.webMethodsAction ?? "quote") === "quote",
+    ask: "Does the client prefer a cloud-hosted iPaaS or an on-premises / hybrid deployment?",
     type: "single",
     options: [
-      { label: "Yes", value: "yes" },
-      { label: "No",  value: "no" },
+      { label: "SaaS (IBM-hosted iPaaS)", value: "saas" },
+      { label: "On-Premises or Hybrid", value: "onPrem" },
+      { label: "Not sure yet", value: "unknown" },
+    ],
+  },
+  {
+    key: "webMethodsIndustry",
+    conditional: (a) => String(a.webMethodsAction ?? "quote") === "quote",
+    ask: "What industry vertical is this customer in?",
+    subtext: "Industry context helps position B2B/EDI strength and compliance requirements.",
+    type: "single",
+    options: [
+      { label: "Financial services / banking", value: "financial" },
+      { label: "Healthcare / life sciences", value: "healthcare" },
+      { label: "Manufacturing / supply chain", value: "manufacturing" },
+      { label: "Retail / consumer", value: "retail" },
+      { label: "Other", value: "other" },
+    ],
+  },
+  {
+    key: "webMethodsVerify",
+    conditional: (a) => String(a.webMethodsAction ?? "quote") === "quote",
+    ask: "Is IBM Security Verify already in scope or owned by the client?",
+    subtext: "webMethods + Verify is the 'governed integration fabric' cross-play — APIs managed by webMethods need Verify's identity governance.",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes — already owned or in this deal", value: "yes" },
     ],
   },
 ];

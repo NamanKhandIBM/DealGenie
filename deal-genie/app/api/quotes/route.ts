@@ -3,6 +3,7 @@ import {
   saveQuote,
   listQuotes,
   deleteQuote,
+  deleteQuoteGroup,
   buildQuoteLabel,
   extractSummary,
   type SavedQuote,
@@ -24,6 +25,67 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const { quotes } = body;
+
+    if (Array.isArray(quotes)) {
+      if (quotes.length === 0) {
+        return NextResponse.json({ error: "At least one quote is required" }, { status: 400 });
+      }
+
+      const existing = await listQuotes();
+      const seenNames = new Set<string>();
+      const preparedQuotes: SavedQuote[] = [];
+
+      for (const item of quotes) {
+        const { id, product, answers, chatSnapshot, name, linkedQuoteGroupId, linkedQuoteRole, linkedToQuoteId } = item ?? {};
+
+        if (!id || !product || !answers) {
+          return NextResponse.json({ error: "Missing id, product, or answers" }, { status: 400 });
+        }
+
+        const trimmedName = typeof name === "string" ? name.trim() : "";
+        if (!trimmedName) {
+          return NextResponse.json({ error: "A quote name is required" }, { status: 400 });
+        }
+
+        const normalizedName = trimmedName.toLowerCase();
+        const duplicateExisting = existing.find(
+          (q) => q.name && q.name.trim().toLowerCase() === normalizedName
+        );
+        if (duplicateExisting || seenNames.has(normalizedName)) {
+          return NextResponse.json(
+            { error: `A quote named "${trimmedName}" already exists. Please choose a different name.` },
+            { status: 409 }
+          );
+        }
+        seenNames.add(normalizedName);
+
+        const lastAssistantMsg = [...(chatSnapshot ?? [])]
+          .reverse()
+          .find((m: { role: string }) => m.role === "assistant")?.content;
+
+        const summary = extractSummary(product, answers, lastAssistantMsg);
+        const label = buildQuoteLabel(product, summary);
+
+        preparedQuotes.push({
+          id,
+          savedAt: Date.now(),
+          name: trimmedName,
+          label,
+          product,
+          answers,
+          summary,
+          chatSnapshot: chatSnapshot ?? [],
+          linkedQuoteGroupId,
+          linkedQuoteRole,
+          linkedToQuoteId,
+        });
+      }
+
+      const savedQuotes = await Promise.all(preparedQuotes.map((quote) => saveQuote(quote)));
+      return NextResponse.json({ quotes: savedQuotes });
+    }
+
     const { id, product, answers, chatSnapshot, name } = body;
 
     if (!id || !product || !answers) {
@@ -35,7 +97,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "A quote name is required" }, { status: 400 });
     }
 
-    // Uniqueness check — scan existing quotes for same name (case-insensitive)
     const existing = await listQuotes();
     const duplicate = existing.find(
       (q) => q.name && q.name.trim().toLowerCase() === trimmedName.toLowerCase()
@@ -74,10 +135,16 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE /api/quotes?id=...&rev=... — delete a quote
+// DELETE /api/quotes?id=...&rev=... or /api/quotes?groupId=... — delete a quote or linked quote group
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    const groupId = searchParams.get("groupId");
+    if (groupId) {
+      await deleteQuoteGroup(groupId);
+      return NextResponse.json({ ok: true });
+    }
+
     const id = searchParams.get("id");
     const rev = searchParams.get("rev");
     if (!id || !rev) {

@@ -184,7 +184,7 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
 
     const ruPart = VAULT_PARTS_MODEL_A.find((p) => p.part === "D15FKZX")!;
     const ruAnnual = ruPart.listPrice * ruMonthly * 12;
-    const { recDiscount, netPerRU } = getVaultRUDiscount(ruMonthly);
+    const { recDiscount } = getVaultRUDiscount(ruMonthly);
     lines.push({
       part: ruPart.part,
       description: ruPart.description,

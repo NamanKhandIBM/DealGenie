@@ -226,7 +226,7 @@ function BestPracticesTab({ result }: { result: NS1SizingResult }) {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{practice.category}</h3>
           <div className="bg-gray-50 p-3 rounded mb-3">
             <p className="text-sm font-medium text-gray-700">Key Question:</p>
-            <p className="text-sm text-gray-900 italic">"{practice.question}"</p>
+            <p className="text-sm text-gray-900 italic">&ldquo;{practice.question}&rdquo;</p>
           </div>
           <p className="text-sm text-gray-600 mb-3">{practice.why}</p>
           <ul className="space-y-1">
