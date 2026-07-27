@@ -197,9 +197,9 @@ export function computeWebMethodsScope(inputs: WebMethodsInputs): WebMethodsScop
     }
   } else {
     flags.push(
-      "On-Premises / CP4I add-on: parts D16NRZX (VPC Subscription) and D16NSZX (VPC License + S&S) confirmed. " +
-      "Pricing = same as CP4I VPC subscription rate (confirmed IBM CP4I webMethods Add-on Pricing Guide, May 2026). " +
-      "Current CP4I VPC list price is NOT in Seismic — verify via Passport Advantage or IBM pricing desk before quoting."
+      "On-Prem/CP4I: D16NRZX (VPC Subscription) and D16NSZX (VPC License + S&S) confirmed (CP4I webMethods Add-on Pricing Guide, May 5, 2026). " +
+      "Price = same as base CP4I VPC rate (CP4I base: D2689LL $1,240/VPC/month subscription, D20ZBLL $37,100/VPC perpetual). " +
+      "Confirm the exact webMethods add-on VPC rate via Passport Advantage or IBM pricing desk — the deck states 'same as CP4I' without giving an absolute figure."
     );
   }
 

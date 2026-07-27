@@ -35,7 +35,7 @@ describe("cross-sell conversation flows", () => {
     expect(state.product).toBe("Vault");
     expect(state.phase).toBe("discovery");
     expect(state.answers.crossSellSource).toBe("Verify");
-    expect(lastActiveQuestionKey).toBe("vaultModel");
+    expect(lastActiveQuestionKey).toBe("installCount");
     expect(lastReply).toContain("Guided cross-sell mini-flow: IBM HashiCorp Vault");
   });
 
@@ -102,8 +102,7 @@ describe("cross-sell conversation flows", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Vault",
       "quote",
-      "A",
-      "2",
+      "2",        // installCount (vaultModel removed)
       "dynamic,ssh",
       "100",
       "yes",
@@ -130,15 +129,15 @@ describe("cross-sell conversation flows", () => {
       "1",
       "12-month",
       "cross-sell",
-      "A",
-      "2",
+      // Vault cross-sell: vaultModel removed — new order: installCount → useCases → ...
+      "2",            // installCount
       "static,dynamic,pki",
-      "250",
-      "100",
-      "250",
-      "2160",
-      "yes",
-      "machine-identity",
+      "250",          // staticSecretCount
+      "100",          // dynamicRoles
+      "250",          // pkiCertsPerMonth
+      "2160",         // pkiCertLifetime
+      "yes",          // includeNonProd
+      "machine-identity", // vaultCrossSellReason
     ]);
 
     expect(state.product).toBe("Vault");
@@ -152,12 +151,12 @@ describe("cross-sell conversation flows", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Vault",
       "quote",
-      "A",
-      "1",
+      "1",        // installCount (vaultModel removed)
       "dynamic,pki",
       "100",
       "250",
       "2160",
+      "no",       // includeNonProd
       "cross-sell",
       "4000",
       "yes",

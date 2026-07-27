@@ -13,6 +13,7 @@ import {
   INSTANA_ADDONS,
   INSTANA_PPU_PRICE_PER_MVS_HOUR,
   INSTANA_SAAS_PRICE_PER_MVS_MONTH,
+  INSTANA_SAAS_STANDARD_PER_MVS_MONTH,
   INSTANA_SELFHOSTED_BASE_MONTH,
   type InstanaPurchaseModel,
   type InstanaTier,
@@ -92,15 +93,17 @@ export function computeInstanaQuote(inputs: InstanaInputs): InstanaQuoteResult {
   }
 
   if (inputs.model === "SaaS") {
-    const baseMonthly = INSTANA_SAAS_PRICE_PER_MVS_MONTH * mvs;
+    // Use tier-specific rate: Essentials $21.20 (D0N78ZX) or Standard $79.50 (D0N79ZX)
+    const saasRate = tier === "Standard" ? INSTANA_SAAS_STANDARD_PER_MVS_MONTH : INSTANA_SAAS_PRICE_PER_MVS_MONTH;
+    const baseMonthly = saasRate * mvs;
     lines.push({
       label: `Instana ${tier} — SaaS`,
       quantity: mvs,
-      unitPrice: INSTANA_SAAS_PRICE_PER_MVS_MONTH,
+      unitPrice: saasRate,
       unit: "MVS/month",
       monthlyList: baseMonthly,
       annualList: baseMonthly * 12,
-      notes: `IBM-hosted. ${mvs} MVS × $${INSTANA_SAAS_PRICE_PER_MVS_MONTH}/MVS/month (public list, ${tier} tier starting price). Unlimited users.`,
+      notes: `IBM-hosted. ${mvs} MVS × $${saasRate}/MVS/month (public list, ${tier} tier). Unlimited users.`,
     });
 
     if (inputs.addManagedPoPs && (inputs.estimatedPoPrexecutions ?? 0) > 0) {
@@ -174,9 +177,9 @@ export function computeInstanaQuote(inputs: InstanaInputs): InstanaQuoteResult {
   }
 
   flags.push(
-    "Discount approval thresholds for IBM Instana are not published as a static authorization matrix in Seismic " +
-    "(confirmed: the 'Part Numbers & Pricing – IBM Instana Observability' deck has no approval-threshold table). " +
-    "Discount authority is managed in IBM Software CPQ — confirm approval requirements with your IBM pricing desk."
+    "Instana discount guidance (Part Numbers & Pricing deck, Apr 7, 2026): " +
+    "a range of 0–30% is considered appropriate based on quantity. " +
+    "No tiered self-approval matrix exists — reach out to IBM Pricing or Product Management for deal-specific discount approvals."
   );
 
   return {

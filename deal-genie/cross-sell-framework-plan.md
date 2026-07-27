@@ -16,7 +16,7 @@ Add a reusable cross-sell framework to DealGenie that can recommend adjacent pro
   5. Include separate recommendation strengths for in-discovery hints and post-result recommendations.
   6. Keep release-1 scope explicitly limited to recommendation and estimate support, not MaaS360 CPQ part-number output.
 - **Relevant Context** — [`Product`](deal-genie/lib/types.ts:3), [`detectProduct()`](deal-genie/lib/conversation.ts:56), [`PRODUCTS`](deal-genie/app/page.tsx:26), cross-sell research from the public framework page showing [`Verify → MaaS360`](https://sales-play-framework--maryamshah2348.replit.app/) and [`MaaS360 → Verify`](https://sales-play-framework--maryamshah2348.replit.app/) as strong motions.
-- **Status** — [ ] pending
+- **Status** — [x] complete
 
 ### 2. Add MaaS360 public-package knowledge and estimate inputs for release 1
 - **Intent** — Ground the first MaaS360 flow in public evidence so sellers can get a credible recommendation and directional estimate without implying internal quote fidelity.
@@ -29,7 +29,7 @@ Add a reusable cross-sell framework to DealGenie that can recommend adjacent pro
   5. Add simple seller-facing zero-trust value messaging for the Verify + MaaS360 motion, including the business problem, why the pairing matters, and how to explain the combined story without overclaiming ROI precision.
   6. Make the data intentionally public-price-only and mark internal SKU quoting as a later phase.
 - **Relevant Context** — Public pricing page [`IBM MaaS360 pricing`](https://www.ibm.com/products/maas360#pricing), self-service product configuration findings from the Essentials buy-now flow: base monthly price, annualized base price, overage price, Concierge setup service, Mobile Threat Defense Advanced, and TeamViewer Remote Support.
-- **Status** — [ ] pending
+- **Status** — [x] complete
 
 ### 3. Introduce in-flow cross-sell hints during discovery
 - **Intent** — Help sellers uncover the adjacent need while they are still in the conversation, without derailing the active product quote flow, and bias the experience toward the highest-conviction Verify-first motion.
@@ -42,7 +42,7 @@ Add a reusable cross-sell framework to DealGenie that can recommend adjacent pro
   5. Ensure the hint can be dismissed or deferred so sellers can finish the original quote first.
   6. Keep hint logic driven by the new cross-sell metadata rather than hard-coded per-screen copy.
 - **Relevant Context** — [`processUserMessage()`](deal-genie/lib/conversation.ts:176), question flow in [`VERIFY_QUESTIONS`](deal-genie/lib/questions.ts:26), current single-product state model in [`ConversationState`](deal-genie/lib/types.ts:20), cross-sell discovery prompt from the research page about device posture awareness in identity policy.
-- **Status** — [ ] pending
+- **Status** — [x] complete
 
 ### 4. Add a stronger post-result cross-sell recommendation and mini-flow
 - **Intent** — Present the strongest cross-sell recommendation after the original quote result, when the seller has context, pricing, and momentum, then collect only the minimum extra information needed for the adjacent product estimate.
@@ -55,7 +55,7 @@ Add a reusable cross-sell framework to DealGenie that can recommend adjacent pro
   5. Make the experience symmetrical enough that MaaS360 → Verify can later use the same framework, even if Verify-first is the first polished motion.
   6. Clearly label release-1 MaaS360 output as an estimate based on public pricing, not CPQ-ready part numbers.
 - **Relevant Context** — Current result phase handling in [`processUserMessage()`](deal-genie/lib/conversation.ts:328), current result rendering patterns in [`computeVerifyResult()`](deal-genie/lib/conversation.ts:366), comparison/add-on interaction patterns in [`ScenarioCompare`](deal-genie/components/ScenarioCompare.tsx:39), researched recommendation that Verify + MaaS360 forms a zero-trust foundation.
-- **Status** — [ ] pending
+- **Status** — [x] complete
 
 ### 5. Save accepted cross-sell outcomes as linked quote records
 - **Intent** — Preserve the current quote-history model while making it possible to trace that two quotes belong to the same cross-sell motion.
@@ -67,7 +67,7 @@ Add a reusable cross-sell framework to DealGenie that can recommend adjacent pro
   4. Preserve backwards compatibility for existing saved quotes that have no linkage fields.
   5. Plan for future history UI affordances that can display linked quotes together without requiring them for release 1.
 - **Relevant Context** — [`SavedQuote`](deal-genie/lib/quote-history.ts:23), save endpoint in [`POST`](deal-genie/app/api/quotes/route.ts:24), current label generation in [`buildQuoteLabel()`](deal-genie/lib/quote-history.ts:157).
-- **Status** — [ ] pending
+- **Status** — [x] complete
 
 ### 6. Prepare release 2 for internal MaaS360 SKU quoting on the same framework
 - **Intent** — Ensure the release-1 framework does not dead-end once internal MaaS360 SKU and CPQ logic become available.
@@ -79,4 +79,4 @@ Add a reusable cross-sell framework to DealGenie that can recommend adjacent pro
   4. Identify where the result formatter and quote summary logic will need MaaS360-specific extensions later.
   5. Avoid overbuilding release 1: no generalized bundle engine unless the first implementation proves the need.
 - **Relevant Context** — Existing deterministic compute routing in [`computeResult()`](deal-genie/lib/conversation.ts:355), current product summary extraction in [`extractSummary()`](deal-genie/lib/quote-history.ts:170), IBM public pricing sources versus missing internal SKU data.
-- **Status** — [ ] pending
+- **Status** — [x] complete

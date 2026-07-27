@@ -20,11 +20,9 @@
  *   Z0MK2ZX  Advanced Support (12mo)      $382.00/RU
  *   Z0MK3ZX  Advanced Support (sub)       $31.80/RU
  *
- *  ⚠ CONFLICT NOTE: A separate "IBM Concert SaaS" (PID 5900BD6) exists with a
- *  consumption-based SaaS rate of $1,059.60 per 1,000 RU/annum (~$1.06/RU/yr).
- *  This is a DIFFERENT product and pricing model from 5900BBE. Do NOT confuse the
- *  two. When quoting standard Concert, use 5900BBE parts above. Confirm with IBM
- *  which PID applies to a given deal before CPQ entry.
+ *  Concert SaaS (PID 5900BD6) — GA July 7, 2026 ("IBM Concert SaaS Parts & Pricing Deck", Jul 17, 2026):
+ *   Billing: 1,000 RU/annum at $1,059.60 (~$1.06/RU/yr) — consumption SaaS model
+ *   SEPARATE product from 5900BBE. Rule: SaaS deal → 5900BD6. On-prem/self-hosted → 5900BBE.
  *
  *  License types (5900BBE):
  *   Subscription license (D0MK3ZX): $212/RU/year
@@ -126,11 +124,17 @@ export const CONCERT_PARTS = {
   advSupportSub:   { part: "Z0MK3ZX", description: "IBM Concert Advanced Support (subscription)", pricePerRU: 31.80, unit: "per RU" },
 } as const;
 
-// ⚠ Concert SaaS (PID 5900BD6) is a SEPARATE product at ~$1.06/RU/yr (consumption-based).
-// Do not mix with 5900BBE parts above. Confirm PID with IBM before CPQ entry.
+// Concert SaaS (PID 5900BD6) — GA July 7, 2026. Confirmed pricing:
+export const CONCERT_SAAS_PRICE_PER_1000_RU_YEAR = 1059.60;  // $1,059.60 per 1,000 RU/annum
+export const CONCERT_SAAS_PRICE_PER_RU_YEAR = 1059.60 / 1000; // ~$1.06/RU/yr
+export const CONCERT_SAAS_PID = "5900BD6";
+export const CONCERT_ONPREM_PID = "5900BBE";
+
+// Rule confirmed: SaaS deployment → 5900BD6. On-prem/self-hosted deployment → 5900BBE.
 export const CONCERT_SAAS_PID_NOTE =
-  "IBM Concert SaaS (PID 5900BD6) is a separate offering from Concert on-premises (PID 5900BBE). " +
-  "SaaS rate: ~$1.06/RU/yr ($1,059.60/1,000 RU/annum). Confirm which PID applies before entering into CPQ.";
+  "Concert SaaS (PID 5900BD6, GA Jul 7, 2026): $1,059.60/1,000 RU/annum (~$1.06/RU/yr). " +
+  "Concert On-Prem (PID 5900BBE, GA Jun 12, 2026): $212/RU/year (subscription). " +
+  "Rule: SaaS deal → 5900BD6. On-prem/self-hosted → 5900BBE.";
 
 // RU mapping constants (all confirmed — Concert Standard RU Model Ratio Table)
 export const CONCERT_RU_PER_APP_VULN          = 3;          // Protect: 3 RU per managed app

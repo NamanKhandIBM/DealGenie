@@ -25,7 +25,7 @@ import type { Product } from "../types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function assertFinitePositive(n: number): number {
+function assertFinitePositive(n: number, _label?: string): number {
   expect(isFinite(n)).toBe(true);
   expect(n).toBeGreaterThan(0);
   // Nothing in these three products should cost more than $50M list
@@ -478,46 +478,43 @@ describe("computeScenarioPrice — Verify", () => {
   });
 });
 
-describe("computeScenarioPrice — Vault Model B", () => {
+describe("computeScenarioPrice — Vault 2.0 (Model A)", () => {
   const base: Record<string, string | number | boolean | string[]> = {
-    vaultModel: "B",
-    edition: "Standard",
-    clientCount: 500,
+    staticSecretCount: 500,
     installCount: 1,
     includeNonProd: "no",
+    includeKMIP: "no",
   };
 
-  test("SIM-CVB01: No overrides — positive price", () => {
+  test("SIM-CVB01: No overrides — positive price (Vault 2.0)", () => {
     assertFinitePositive(computeScenarioPrice("Vault", base, {}), "SIM-CVB01");
   });
 
-  test("SIM-CVB02: Edition override Essentials < Standard < Premium", () => {
-    const ess = computeScenarioPrice("Vault", base, { edition: "Essentials" });
-    const std = computeScenarioPrice("Vault", base, { edition: "Standard" });
-    const pre = computeScenarioPrice("Vault", base, { edition: "Premium" });
-    expect(std).toBeGreaterThan(ess);
-    expect(pre).toBeGreaterThan(std);
+  test("SIM-CVB02: More secrets = higher price (Vault 2.0)", () => {
+    const low = computeScenarioPrice("Vault", base, { staticSecretCount: 100 });
+    const high = computeScenarioPrice("Vault", base, { staticSecretCount: 2000 });
+    expect(high).toBeGreaterThan(low);
   });
 
-  test("SIM-CVB03: clientCount override scales linearly", () => {
-    const c100 = computeScenarioPrice("Vault", base, { clientCount: 100 });
-    const c1000 = computeScenarioPrice("Vault", base, { clientCount: 1000 });
-    expect(c1000).toBeGreaterThan(c100);
+  test("SIM-CVB03: Dynamic roles add cost on top of secrets (Vault 2.0)", () => {
+    const noRoles = computeScenarioPrice("Vault", base, { dynamicRoles: 0 });
+    const withRoles = computeScenarioPrice("Vault", base, { dynamicRoles: 100 });
+    expect(withRoles).toBeGreaterThan(noRoles);
   });
 
-  test("SIM-CVB04: nonProd yes/no adds $12,480", () => {
+  test("SIM-CVB04: nonProd yes/no adds $48,000 (Vault 2.0)", () => {
     const no = computeScenarioPrice("Vault", base, { includeNonProd: "no" });
     const yes = computeScenarioPrice("Vault", base, { includeNonProd: "yes" });
-    expect(yes - no).toBeCloseTo(12480, -2);
+    expect(yes - no).toBeCloseTo(48000, -2);
   });
 
-  test("SIM-CVB05: Numeric edition codes (1/2/3) translate correctly", () => {
-    const coded = computeScenarioPrice("Vault", { ...base, edition: "2" }, {});
-    const named = computeScenarioPrice("Vault", { ...base, edition: "Standard" }, {});
-    expect(coded).toBeCloseTo(named, -2);
+  test("SIM-CVB05: KMIP adds $264,000 per cluster (Vault 2.0)", () => {
+    const noKMIP = computeScenarioPrice("Vault", base, { includeKMIP: "no" });
+    const withKMIP = computeScenarioPrice("Vault", base, { includeKMIP: "yes" });
+    expect(withKMIP - noKMIP).toBeCloseTo(264000, -2);
   });
 
-  test("SIM-CVB06: installCount override scales install cost", () => {
+  test("SIM-CVB06: installCount override scales install cost (Vault 2.0)", () => {
     const one = computeScenarioPrice("Vault", base, { installCount: 1 });
     const two = computeScenarioPrice("Vault", base, { installCount: 2 });
     expect(two).toBeGreaterThan(one);
@@ -659,30 +656,30 @@ describe("buildFanOut — Verify", () => {
   });
 });
 
-describe("buildFanOut — Vault Model B", () => {
-  const base = { vaultModel: "B", edition: "Standard", clientCount: 500, installCount: 1 };
+describe("buildFanOut — Vault 2.0 (Model A) extra", () => {
+  const base = { staticSecretCount: 500, installCount: 1, includeNonProd: "no", includeKMIP: "no" };
 
-  test("SIM-BFV01: Fork on edition — sorted scenarios", () => {
+  test("SIM-BFV01: Fork on staticSecretCount — sorted scenarios (Vault 2.0)", () => {
     runCompare("Vault", base);
   });
 
-  test("SIM-BFV02: Fork on clientCount — sorted high→low", () => {
-    const result = buildFanOut("Vault", base, ["clientCount"]);
+  test("SIM-BFV02: Fork on dynamicRoles — sorted high→low (Vault 2.0)", () => {
+    const result = buildFanOut("Vault", base, ["dynamicRoles"]);
     expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
   });
 
-  test("SIM-BFV03: Fork on installCount — more clusters = higher top scenario", () => {
+  test("SIM-BFV03: Fork on installCount — more clusters = higher top scenario (Vault 2.0)", () => {
     const result = buildFanOut("Vault", base, ["installCount"]);
     expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
   });
 
-  test("SIM-BFV04: insightText mentions edition or cluster", () => {
-    const result = buildFanOut("Vault", base, ["edition"]);
-    expect(result.insightText.toLowerCase()).toMatch(/edition|cluster|install/);
+  test("SIM-BFV04: insightText mentions RU or cluster (Vault 2.0)", () => {
+    const result = buildFanOut("Vault", base, ["staticSecretCount"]);
+    expect(result.insightText.toLowerCase()).toMatch(/ru|cluster|vault|secret/);
   });
 
-  test("SIM-BFV05: Fork on pkiAddon — scenarios sorted", () => {
-    const result = buildFanOut("Vault", base, ["pkiAddon"]);
+  test("SIM-BFV05: Fork on pkiCertsPerMonth — scenarios sorted (Vault 2.0)", () => {
+    const result = buildFanOut("Vault", base, ["pkiCertsPerMonth"]);
     expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
   });
 });
@@ -837,9 +834,9 @@ describe("Edge cases and regression guards", () => {
     }
   });
 
-  test("SIM-EDGE13: Vault B — PKI 500 certs costs more than 50 certs", () => {
-    const fifty = computeScenarioPrice("Vault", { vaultModel: "B", edition: "Standard", clientCount: 500, installCount: 1, pkiAddon: 50 }, {});
-    const fiveHundred = computeScenarioPrice("Vault", { vaultModel: "B", edition: "Standard", clientCount: 500, installCount: 1, pkiAddon: 500 }, {});
+  test("SIM-EDGE13: Vault 2.0 — 500 PKI certs/mo costs more than 50 certs/mo", () => {
+    const fifty = computeScenarioPrice("Vault", { staticSecretCount: 100, installCount: 1, pkiCertsPerMonth: 50 }, {});
+    const fiveHundred = computeScenarioPrice("Vault", { staticSecretCount: 100, installCount: 1, pkiCertsPerMonth: 500 }, {});
     expect(fiveHundred).toBeGreaterThan(fifty);
   });
 
@@ -854,5 +851,281 @@ describe("Edge cases and regression guards", () => {
     const one = computeVerifyQuote({ capabilities: ["SSO"], population: 5000, avgLoginsPerYear: 48, term: "12-month", regions: 1 });
     const five = computeVerifyQuote({ capabilities: ["SSO"], population: 5000, avgLoginsPerYear: 48, term: "12-month", regions: 5 });
     expect(five.totalAnnualList).toBeCloseTo(one.totalAnnualList * 5, -2);
+  });
+});
+
+// ─── All 9 Products — compare-engine coverage ────────────────────────────────
+
+describe("computeScenarioPrice — MaaS360", () => {
+  const base: Record<string, string | number | boolean | string[]> = {
+    maas360Devices: 1000,
+    maas360SecureMail: "no",
+    maas360AdvancedApps: "no",
+    maas360ThreatDefense: "no",
+    maas360RemoteSupport: "no",
+  };
+
+  test("CE-M01: 1,000 devices Essentials — positive price", () => {
+    assertFinitePositive(computeScenarioPrice("MaaS360", base, {}));
+  });
+
+  test("CE-M02: Enterprise plan > Essentials plan (same device count)", () => {
+    const ess = computeScenarioPrice("MaaS360", base, { maas360Plan: "Essentials" });
+    const ent = computeScenarioPrice("MaaS360", base, { maas360Plan: "Enterprise" });
+    expect(ent).toBeGreaterThan(ess);
+  });
+
+  test("CE-M03: More devices = higher price (linear)", () => {
+    const d1k = computeScenarioPrice("MaaS360", base, { maas360Devices: 1000 });
+    const d10k = computeScenarioPrice("MaaS360", base, { maas360Devices: 10000 });
+    expect(d10k).toBeGreaterThan(d1k);
+    expect(d10k / d1k).toBeCloseTo(10, 0);
+  });
+
+  test("CE-M04: buildFanOut on maas360Plan — scenarios sorted high→low", () => {
+    const result = buildFanOut("MaaS360", base, ["maas360Plan"]);
+    expect(result.scenarios.length).toBeGreaterThan(1);
+    expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
+  });
+
+  test("CE-M05: buildFanOut on maas360Devices — insightText present", () => {
+    const result = buildFanOut("MaaS360", base, ["maas360Devices"]);
+    expect(result.insightText.length).toBeGreaterThan(10);
+  });
+});
+
+describe("computeScenarioPrice — Instana", () => {
+  const base: Record<string, string | number | boolean | string[]> = {
+    instanaMVS: 250,
+    instanaTier: "Standard",
+    instanaModel: "SaaS",
+    instanaLogsInContext: "no",
+  };
+
+  test("CE-I01: 250 MVS Standard SaaS — positive price", () => {
+    assertFinitePositive(computeScenarioPrice("Instana", base, {}));
+  });
+
+  test("CE-I02: Standard tier > Essentials tier (same MVS)", () => {
+    const ess = computeScenarioPrice("Instana", base, { instanaTier: "Essentials" });
+    const std = computeScenarioPrice("Instana", base, { instanaTier: "Standard" });
+    expect(std).toBeGreaterThan(ess);
+  });
+
+  test("CE-I03: More MVS = higher price (monotonicity)", () => {
+    const low = computeScenarioPrice("Instana", base, { instanaMVS: 100 });
+    const high = computeScenarioPrice("Instana", base, { instanaMVS: 1000 });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  test("CE-I04: buildFanOut on instanaTier — tier insight text", () => {
+    const result = buildFanOut("Instana", base, ["instanaTier"]);
+    expect(result.insightText.toLowerCase()).toMatch(/standard|essentials|tier|depth/);
+  });
+
+  test("CE-I05: buildFanOut on instanaMVS — scenarios sorted", () => {
+    const result = buildFanOut("Instana", base, ["instanaMVS"]);
+    expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
+  });
+});
+
+describe("computeScenarioPrice — Turbonomic", () => {
+  const base: Record<string, string | number | boolean | string[]> = {
+    turbonomicDeployment: "SaaS",
+    turbonomicMVS: 500,
+    turbonomicCloud: "yes",
+    turbonomicKubernetes: "no",
+  };
+
+  test("CE-T01: 500 MVS commercial SaaS — positive price", () => {
+    assertFinitePositive(computeScenarioPrice("Turbonomic", base, {}));
+  });
+
+  test("CE-T02: Government rate > commercial rate (same MVS)", () => {
+    const com = computeScenarioPrice("Turbonomic", base, { turbonomicDeployment: "SaaS" });
+    const gov = computeScenarioPrice("Turbonomic", base, { turbonomicDeployment: "SaaSGov" });
+    expect(gov).toBeGreaterThan(com);
+  });
+
+  test("CE-T03: More MVS = higher price (monotonicity)", () => {
+    const low = computeScenarioPrice("Turbonomic", base, { turbonomicMVS: 100 });
+    const high = computeScenarioPrice("Turbonomic", base, { turbonomicMVS: 2500 });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  test("CE-T04: buildFanOut on turbonomicMVS — scenarios sorted", () => {
+    const result = buildFanOut("Turbonomic", base, ["turbonomicMVS"]);
+    expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
+  });
+
+  test("CE-T05: buildFanOut on turbonomicDeployment — gov insight text", () => {
+    const result = buildFanOut("Turbonomic", base, ["turbonomicDeployment"]);
+    expect(result.insightText.toLowerCase()).toMatch(/government|gov|commercial|fedramp/);
+  });
+});
+
+describe("computeScenarioPrice — Terraform", () => {
+  const base: Record<string, string | number | boolean | string[]> = {
+    terraformDeployment: "HCP",
+    terraformResources: 5000,
+    terraformTeam: 10,
+    terraformGovernance: "governance",
+    terraformVault: "no",
+  };
+
+  test("CE-TF01: 5,000 RUM Standard — positive price", () => {
+    assertFinitePositive(computeScenarioPrice("Terraform", base, {}));
+  });
+
+  test("CE-TF02: Premium edition > Standard edition (same RUM)", () => {
+    const std = computeScenarioPrice("Terraform", base, { terraformEdition: "Standard" });
+    const pre = computeScenarioPrice("Terraform", base, { terraformEdition: "Premium" });
+    expect(pre).toBeGreaterThan(std);
+  });
+
+  test("CE-TF03: More RUM = higher price", () => {
+    const low = computeScenarioPrice("Terraform", base, { terraformResources: 1000 });
+    const high = computeScenarioPrice("Terraform", base, { terraformResources: 25000 });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  test("CE-TF04: buildFanOut on terraformResources — scenarios sorted", () => {
+    const result = buildFanOut("Terraform", base, ["terraformResources"]);
+    expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
+  });
+
+  test("CE-TF05: buildFanOut on terraformEdition — edition insight text", () => {
+    const result = buildFanOut("Terraform", base, ["terraformEdition"]);
+    expect(result.insightText.toLowerCase()).toMatch(/standard|premium|edition|governance/);
+  });
+});
+
+describe("computeScenarioPrice — Concert", () => {
+  const base: Record<string, string | number | boolean | string[]> = {
+    concertDeployment: "onprem",
+    concertPain: "alertFatigue",
+    concertInstana: "no",
+    concertAutomation: "no",
+    concertResilience: "no",
+    concertApplications: 50,
+    concertMVS: 100,
+    concertWorkflows: 0,
+    concertObserveTier: "essentials",
+  };
+
+  test("CE-C01: On-prem alert fatigue — positive price", () => {
+    assertFinitePositive(computeScenarioPrice("Concert", base, {}));
+  });
+
+  test("CE-C02: SaaS deployment cheaper than on-prem (per RU)", () => {
+    const onprem = computeScenarioPrice("Concert", base, { concertDeployment: "onprem" });
+    const saas = computeScenarioPrice("Concert", base, { concertDeployment: "saas" });
+    expect(onprem).toBeGreaterThan(saas);
+  });
+
+  test("CE-C03: Full suite (all modules) > alert fatigue only", () => {
+    const focused = computeScenarioPrice("Concert", base, { concertPain: "alertFatigue" });
+    const full = computeScenarioPrice("Concert", base, { concertPain: "all" });
+    expect(full).toBeGreaterThanOrEqual(focused);
+  });
+
+  test("CE-C04: More applications = higher price (Protect/Resilience scale)", () => {
+    const low = computeScenarioPrice("Concert", { ...base, concertPain: "all" }, { concertApplications: 10 });
+    const high = computeScenarioPrice("Concert", { ...base, concertPain: "all" }, { concertApplications: 250 });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  test("CE-C05: buildFanOut on concertDeployment — deployment insight text", () => {
+    const result = buildFanOut("Concert", base, ["concertDeployment"]);
+    expect(result.insightText.toLowerCase()).toMatch(/saas|on.prem|deployment|ibm/);
+  });
+
+  test("CE-C06: buildFanOut on concertPain — scenarios sorted", () => {
+    const result = buildFanOut("Concert", base, ["concertPain"]);
+    expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
+  });
+});
+
+describe("computeScenarioPrice — webMethods", () => {
+  const base: Record<string, string | number | boolean | string[]> = {
+    webMethodsNeeds: ["appIntegration"],
+    webMethodsDeployment: "saas",
+    webMethodsIndustry: "other",
+    webMethodsIntTxn: 100000,
+    webMethodsApiTxn: 0,
+    webMethodsMftTxn: 0,
+  };
+
+  test("CE-W01: 100K integration txn/mo SaaS — positive price", () => {
+    assertFinitePositive(computeScenarioPrice("webMethods", base, {}));
+  });
+
+  test("CE-W02: More integration transactions = higher price", () => {
+    const low = computeScenarioPrice("webMethods", base, { webMethodsIntTxn: 10000 });
+    const high = computeScenarioPrice("webMethods", base, { webMethodsIntTxn: 1000000 });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  test("CE-W03: Adding API transactions adds cost on top of integration", () => {
+    const noApi = computeScenarioPrice("webMethods", base, { webMethodsApiTxn: 0 });
+    const withApi = computeScenarioPrice("webMethods", { ...base, webMethodsNeeds: ["appIntegration", "apiManagement"] }, { webMethodsApiTxn: 500000 });
+    expect(withApi).toBeGreaterThanOrEqual(noApi);
+  });
+
+  test("CE-W04: buildFanOut on webMethodsIntTxn — scenarios sorted", () => {
+    const result = buildFanOut("webMethods", base, ["webMethodsIntTxn"]);
+    expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
+  });
+
+  test("CE-W05: buildFanOut on webMethodsIntTxn — integration insight text", () => {
+    const result = buildFanOut("webMethods", base, ["webMethodsIntTxn"]);
+    expect(result.insightText.toLowerCase()).toMatch(/integration|txn|transaction|volume/);
+  });
+});
+
+describe("getForkVariables — all 9 products have at least 2 fork variables", () => {
+  const emptyBase: Record<string, string | number | boolean | string[]> = {};
+  const products: Array<{ product: Product; base: Record<string, string | number | boolean | string[]> }> = [
+    { product: "Verify",      base: emptyBase },
+    { product: "Vault",       base: emptyBase },
+    { product: "NS1",         base: emptyBase },
+    { product: "MaaS360",     base: emptyBase },
+    { product: "Instana",     base: emptyBase },
+    { product: "Turbonomic",  base: emptyBase },
+    { product: "Terraform",   base: emptyBase },
+    { product: "Concert",     base: emptyBase },
+    { product: "webMethods",  base: emptyBase },
+  ];
+
+  for (const { product, base } of products) {
+    test(`CE-FV-${product}: at least 2 fork variables with options`, () => {
+      const forks = getForkVariables(product, base);
+      expect(forks.length).toBeGreaterThanOrEqual(2);
+      for (const fv of forks) {
+        expect(fv.options.length).toBeGreaterThanOrEqual(2);
+        expect(fv.key.length).toBeGreaterThan(0);
+        expect(fv.label.length).toBeGreaterThan(0);
+      }
+    });
+  }
+});
+
+describe("getAddonDefinitions — Vault 2.0 returns Model A add-ons only", () => {
+  test("CE-AD01: Vault addons are Model A (no B-model parts)", () => {
+    const addons = getAddonDefinitions("Vault", {});
+    const parts = addons.map((a) => a.partNumber);
+    // Model A parts
+    expect(parts).toContain("D155GZX"); // non-prod
+    expect(parts).toContain("D155LZX"); // KMIP
+    // Model B parts must NOT be present
+    expect(parts).not.toContain("D1018ZX");
+    expect(parts).not.toContain("D1406ZX");
+    expect(parts).not.toContain("D1013ZX");
+  });
+
+  test("CE-AD02: MaaS360/Instana/Turbonomic/Terraform/Concert/webMethods return empty addon list", () => {
+    for (const p of ["MaaS360", "Instana", "Turbonomic", "Terraform", "Concert", "webMethods"] as Product[]) {
+      expect(getAddonDefinitions(p, {}).length).toBe(0);
+    }
   });
 });

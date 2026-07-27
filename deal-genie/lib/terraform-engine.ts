@@ -106,7 +106,11 @@ export function computeTerraformRecommendation(inputs: TerraformInputs): Terrafo
     if (netFromTable !== null) {
       flags.push(`Graduated discount applied: net annual = $${annual.toLocaleString()} for ${rum.toLocaleString()} RUM (${recommendedEdition}). Source: IBM HashiCorp Product Pricing Guidance.`);
     } else {
-      flags.push(`Below 10,000 RUM — no confirmed tier net price. Linear estimate at $${perRum.toFixed(2)}/RUM/year. Confirm with IBM.`);
+      flags.push(
+        `Sub-10,000 RUM: IBM guided selling minimum is 10,000 RUM for new customers (Pricing Guidance, May 2026). ` +
+        `CPQ can still quote at the flat list rate (${perRum.toFixed(2)}/RUM/year) with no volume discount — ` +
+        `there are no CPQ discount tiers below 10K. Estimated list: ${Math.round(rum * perRum).toLocaleString()}/yr.`
+      );
     }
     flags.push("Engage IBM for formal CPQ quote — standard IBM discounting applies on top of these list/net prices.");
   }

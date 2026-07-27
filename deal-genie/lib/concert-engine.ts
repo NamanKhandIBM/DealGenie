@@ -1,11 +1,12 @@
 /**
  * Concert estimation engine.
  *
- * Confirmed pricing (IBM Concert platform Parts & Pricing Deck, Jun 17, 2026):
- *   PID: 5900BBE — billing metric: Resource Unit (RU)
- *   Subscription: $212/RU/year
- *   Monthly:      $265/RU/month
- *   Term + support: $6,360/RU
+ * TWO PRODUCTS — different PIDs, different prices:
+ *   PID 5900BD6 — Concert SaaS (GA Jul 7, 2026):   ~$1.06/RU/year ($1,059.60/1,000 RU/annum)
+ *   PID 5900BBE — Concert On-Prem (GA Jun 12, 2026): $212/RU/year (subscription, D0MK3ZX)
+ *                                                     $265/RU/month (monthly, D0MK5ZX)
+ *
+ * Rule: customer wants IBM to host → 5900BD6. Customer self-hosts → 5900BBE.
  *
  * Confirmed RU mappings (Concert Standard RU Model – Ratio Table):
  *   Protect     — Vulnerability management: 3 RU per managed application
@@ -23,6 +24,9 @@ import {
   CONCERT_QUICK_REFERENCE,
   CONCERT_PRICE_PER_RU_SUBSCRIPTION,
   CONCERT_PRICE_PER_RU_MONTHLY,
+  CONCERT_SAAS_PRICE_PER_RU_YEAR,
+  CONCERT_SAAS_PID,
+  CONCERT_ONPREM_PID,
   CONCERT_RU_PER_APP_VULN,
   CONCERT_RU_PER_APP_RESILIENCE,
   CONCERT_RU_PER_WORKFLOW,
@@ -33,6 +37,7 @@ import {
 
 export interface ConcertInputs {
   primaryPain: "alertFatigue" | "slowMTTR" | "costOptimization" | "riskPosture" | "all";
+  deployment?: "saas" | "onprem";          // "saas" → PID 5900BD6, "onprem" → PID 5900BBE
   hasInstana?: boolean;
   thirdPartyMonitoring?: boolean;
   needsWorkflowAutomation?: boolean;
@@ -71,10 +76,22 @@ export interface ConcertRecommendationResult {
 export function computeConcertRecommendation(inputs: ConcertInputs): ConcertRecommendationResult {
   const flags: string[] = [];
   const lines: ConcertLineItem[] = [];
+
+  // Determine which product and price to use based on deployment model
+  const isSaaS = (inputs.deployment ?? "onprem") === "saas";
+  const pid = isSaaS ? CONCERT_SAAS_PID : CONCERT_ONPREM_PID;
   const licenseType = inputs.licenseType ?? "subscription";
-  const pricePerRU = licenseType === "monthly"
-    ? CONCERT_PRICE_PER_RU_MONTHLY * 12   // annualise monthly rate
-    : CONCERT_PRICE_PER_RU_SUBSCRIPTION;
+  const pricePerRU = isSaaS
+    ? CONCERT_SAAS_PRICE_PER_RU_YEAR                          // ~$1.06/RU/yr — PID 5900BD6
+    : licenseType === "monthly"
+      ? CONCERT_PRICE_PER_RU_MONTHLY * 12                     // $265/RU/mo annualised
+      : CONCERT_PRICE_PER_RU_SUBSCRIPTION;                    // $212/RU/yr — D0MK3ZX
+
+  if (isSaaS) {
+    flags.push(`Concert SaaS (PID ${pid}, GA Jul 7, 2026): $1,059.60/1,000 RU/annum (~$1.06/RU/yr). IBM hosts the platform.`);
+  } else {
+    flags.push(`Concert On-Prem (PID ${pid}, GA Jun 12, 2026): $212/RU/year subscription (D0MK3ZX). Customer self-hosts.`);
+  }
 
   // ── Module selection ───────────────────────────────────────────────────────
   const recommended = new Set<string>();
@@ -164,16 +181,20 @@ export function computeConcertRecommendation(inputs: ConcertInputs): ConcertReco
   const totalAnnualList = lines.reduce((s, l) => s + l.annualList, 0);
 
   if (totalRU > 0) {
-    flags.push(`Subscription rate: $${CONCERT_PRICE_PER_RU_SUBSCRIPTION}/RU/year. Monthly rate: $${CONCERT_PRICE_PER_RU_MONTHLY}/RU/month. PID: 5900BBE.`);
+    if (isSaaS) {
+      flags.push(`Concert SaaS estimate: ${totalRU.toLocaleString()} RU × $${CONCERT_SAAS_PRICE_PER_RU_YEAR.toFixed(4)}/RU/yr = $${Math.round(totalRU * CONCERT_SAAS_PRICE_PER_RU_YEAR).toLocaleString()}/yr list (PID 5900BD6).`);
+    } else {
+      flags.push(`Concert On-Prem estimate: ${totalRU.toLocaleString()} RU × $${CONCERT_PRICE_PER_RU_SUBSCRIPTION}/RU/yr = $${Math.round(totalRU * CONCERT_PRICE_PER_RU_SUBSCRIPTION).toLocaleString()}/yr list (PID 5900BBE, D0MK3ZX).`);
+    }
   } else {
-    flags.push("Provide application count, workflow count, and/or MVS count to generate a dollar estimate. Concert pricing: $212/RU/year (subscription).");
+    flags.push("Provide application count, workflow count, and/or MVS count to generate a dollar estimate.");
   }
   flags.push("⚠ 'Operate' has no RU mapping in IBM's Concert model — do not quote RUs for this label. If a customer asks about incident response / MTTR, that maps to Concert Observe + Workflows.");
   flags.push(
-    "Discount approval thresholds for IBM Concert are not published as a tiered seller/manager/IBM authorization matrix in Seismic. " +
-    "The Q1 2026 Concert Sales Enablement deck contains fixed play-level pre-approved discounts " +
-    "(e.g., 87% on Concert Enterprise RU Subscription, 44% on Expert Labs engagement parts) — these are play-specific, not a general approval matrix. " +
-    "For deal-specific discount authority, confirm with IBM Software CPQ or your IBM pricing desk."
+    "Concert discount guidance (Q1 2026 Sales Enablement deck): no standing self-approval matrix. " +
+    "Pricing Play 6.023 'New to Concert' sets pre-approved rates by deal size " +
+    "(XSmall 87%, Small 88%, Medium 89%, Large 90%) — but this is a named time-boxed play. " +
+    "Geo approval required for all pricing. Engage your geo for discount authority."
   );
 
   // ── Module descriptions ────────────────────────────────────────────────────

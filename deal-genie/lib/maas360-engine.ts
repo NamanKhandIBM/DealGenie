@@ -130,7 +130,9 @@ export function computeMaaS360Estimate(input: MaaS360EstimateInput): MaaS360Esti
     lines,
     flags: [
       "Public-price estimate only — confirm final commercial terms with IBM pricing and CPQ.",
-      "MaaS360 release-1 output does not include internal SKU or part-number fidelity.",
+      "⚠ CPQ part numbers for MaaS360 plans are not published in Seismic (confirmed Apr 2024 decks are deprecated). " +
+      "Use this estimate for sizing and pricing discussions only. " +
+      "To get the actual SKUs, contact your IBM MaaS360 sales specialist or open IBM Passport Advantage.",
     ],
   };
 }
