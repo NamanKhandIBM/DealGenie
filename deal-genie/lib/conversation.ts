@@ -283,7 +283,18 @@ export function processUserMessage(
     s.product = product;
     s.phase = "discovery";
     s.discoveryStep = 0;
-    s.answers = {};
+    // Seed action defaults so all conditional guards resolve to "quote" immediately
+    s.answers = {
+      verifyAction: "quote",
+      ns1Action: "quote",
+      vaultAction: "quote",
+      maas360Action: "quote",
+      instanaAction: "quote",
+      turbonomicAction: "quote",
+      terraformAction: "quote",
+      concertAction: "quote",
+      webMethodsAction: "quote",
+    };
 
     // Pre-fill any entities the LLM already extracted from the opening message
     applyEntities(s, entities);
@@ -315,96 +326,6 @@ export function processUserMessage(
 
     if (currentQ) {
       storeAnswer(s, currentQ, msg);
-    }
-
-    // Handle NS1 action selection
-    if (s.product === "NS1" && currentQ?.key === "ns1Action") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatNS1BestPractices(), activeQuestion: null };
-      }
-      if (action === "parts") {
-        s.phase = "result";
-        return { state: s, reply: formatNS1PartNumbers(), activeQuestion: null };
-      }
-      // If "quote", continue with normal flow
-    }
-
-    // Handle Vault action selection
-    if (s.product === "Vault" && currentQ?.key === "vaultAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatVaultBestPractices(), activeQuestion: null };
-      }
-      if (action === "parts") {
-        s.phase = "result";
-        return { state: s, reply: formatVaultPartNumbers(), activeQuestion: null };
-      }
-      // If "quote", continue with normal flow
-    }
-
-    // Handle Verify action selection
-    if (s.product === "Verify" && currentQ?.key === "verifyAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatVerifyBestPractices(), activeQuestion: null };
-      }
-      if (action === "parts") {
-        s.phase = "result";
-        return { state: s, reply: formatVerifyPartNumbers(), activeQuestion: null };
-      }
-      // If "quote", continue with normal flow
-    }
-
-    if (s.product === "MaaS360" && currentQ?.key === "maas360Action") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: "__BEST_PRACTICES_INIT__", activeQuestion: null };
-      }
-    }
-
-    if (s.product === "Instana" && currentQ?.key === "instanaAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatInstanaBestPractices(), activeQuestion: null };
-      }
-    }
-
-    if (s.product === "Turbonomic" && currentQ?.key === "turbonomicAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatTurbonomicBestPractices(), activeQuestion: null };
-      }
-    }
-
-    if (s.product === "Terraform" && currentQ?.key === "terraformAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatTerraformBestPractices(), activeQuestion: null };
-      }
-    }
-
-    if (s.product === "Concert" && currentQ?.key === "concertAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatConcertBestPractices(), activeQuestion: null };
-      }
-    }
-
-    if (s.product === "webMethods" && currentQ?.key === "webMethodsAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatWebMethodsBestPractices(), activeQuestion: null };
-      }
     }
 
     // Inline Q&A: if the message looks like a question (not an option answer) and a product
@@ -671,7 +592,7 @@ export function processUserMessage(
 
         s.product = "MaaS360";
         s.phase = "discovery";
-        s.discoveryStep = 1;
+        s.discoveryStep = 0;
         s.answers = {
           maas360Action: "quote",
           crossSellSource: "Verify",
@@ -679,7 +600,7 @@ export function processUserMessage(
         return {
           state: s,
           reply: "**Guided cross-sell mini-flow: IBM MaaS360**\n\nBased on the Verify quote, I'll recommend the best-fit MaaS360 package for the client and attach any obvious endpoint add-ons so you don't leave endpoint trust revenue on the table.",
-          activeQuestion: { question: MAAS360_QUESTIONS[1] },
+          activeQuestion: { question: MAAS360_QUESTIONS[0] },
         };
       }
     }

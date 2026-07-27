@@ -309,31 +309,10 @@ export const VAULT_CROSS_SELL_QUESTIONS: Question[] = [
 ];
 
 export const VERIFY_QUESTIONS: Question[] = [
-  {
-    key: "verifyAction",
-    ask: "What would you like to do?",
-    subtext: "Choose an option to get started with Verify quoting",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "📋 View Part Numbers", value: "parts", hint: "See all Verify SKUs" },
-      { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
-    ],
-  },
   ...VERIFY_QUOTE_QUESTIONS,
 ];
 
 export const MAAS360_QUESTIONS: Question[] = [
-  {
-    key: "maas360Action",
-    ask: "What would you like to do?",
-    subtext: "Choose whether to explore best practices or build a public-price estimate.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "UEM discovery guide & seller FAQs" },
-      { label: "💰 Public Price Estimate", value: "quote", hint: "Estimate MaaS360 using public pricing" },
-    ],
-  },
   {
     key: "maas360Devices",
     conditional: (a) => String(a.maas360Action ?? "quote") === "quote",
@@ -403,18 +382,6 @@ export const MAAS360_QUESTIONS: Question[] = [
 // ─── NS1 CONNECT ─────────────────────────────────────────────────────────────
 
 export const NS1_QUESTIONS: Question[] = [
-  // ── Action selector ───────────────────────────────────────────────────────
-  {
-    key: "ns1Action",
-    ask: "What would you like to do?",
-    subtext: "View the guide first, or jump straight into quoting?",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "📋 View Part Numbers Reference", value: "parts", hint: "See all NS1 part numbers" },
-      { label: "💰 Start Quoting", value: "quote", hint: "Begin the discovery questions" },
-    ],
-  },
   {
     key: "currentDNS",
     ask: "Who is the client's current DNS provider?",
@@ -612,17 +579,6 @@ export const NS1_QUESTIONS: Question[] = [
 
 export const VAULT_QUESTIONS_COMMON: Question[] = [
   {
-    key: "vaultAction",
-    ask: "What would you like to do?",
-    subtext: "IBM HashiCorp Vault 2.0 — consumption-based secrets management. Priced on what Vault does, not how many apps connect.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "📋 View Part Numbers", value: "parts", hint: "See all Vault SKUs" },
-      { label: "💰 Start Quoting", value: "quote", hint: "Begin the quoting process" },
-    ],
-  },
-  {
     key: "installCount",
     conditional: (a) => String(a.vaultAction ?? "quote") === "quote",
     ask: "How many production Vault clusters will they run?",
@@ -749,16 +705,6 @@ export const VAULT_QUESTIONS_MODEL_B: Question[] = [];
 
 export const INSTANA_QUESTIONS: Question[] = [
   {
-    key: "instanaAction",
-    ask: "What would you like to do?",
-    subtext: "Choose an option to get started with Instana.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "💰 Build an Estimate", value: "quote", hint: "Size the deal by MVS count and model" },
-    ],
-  },
-  {
     key: "instanaMVS",
     conditional: (a) => String(a.instanaAction ?? "quote") === "quote",
     ask: "How many hosts (servers, VMs, nodes) will Instana monitor?",
@@ -816,16 +762,6 @@ export const INSTANA_QUESTIONS: Question[] = [
 // ─── IBM TURBONOMIC ───────────────────────────────────────────────────────────
 
 export const TURBONOMIC_QUESTIONS: Question[] = [
-  {
-    key: "turbonomicAction",
-    ask: "What would you like to do?",
-    subtext: "IBM Turbonomic SaaS: $23.50/MVS/month (D11Q7ZX) list price. I can build a scoping estimate or best-practices guide.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "💰 Build an Estimate", value: "quote", hint: "Size by MVS count or annual cloud spend" },
-    ],
-  },
   {
     key: "turbonomicDeployment",
     conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
@@ -922,16 +858,6 @@ export const TURBONOMIC_QUESTIONS: Question[] = [
 
 export const TERRAFORM_QUESTIONS: Question[] = [
   {
-    key: "terraformAction",
-    ask: "What would you like to do?",
-    subtext: "HCP Terraform paid-plan pricing is contact-for-quote. I can recommend the right plan and scope the deal.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "IaC discovery guide & seller FAQs" },
-      { label: "📋 Recommend a Plan", value: "quote", hint: "Identify the right HCP Terraform edition" },
-    ],
-  },
-  {
     key: "terraformDeployment",
     conditional: (a) => String(a.terraformAction ?? "quote") === "quote",
     ask: "Does the client need to run Terraform inside their own data centre, or can IBM/HashiCorp host it?",
@@ -1000,16 +926,6 @@ export const TERRAFORM_QUESTIONS: Question[] = [
 // ─── IBM CONCERT ──────────────────────────────────────────────────────────────
 
 export const CONCERT_QUESTIONS: Question[] = [
-  {
-    key: "concertAction",
-    ask: "What would you like to do?",
-    subtext: "Concert pricing is contact-for-quote. I can recommend the right modules and build the seller positioning.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "📋 Scope the Deal", value: "quote", hint: "Recommend Concert modules and positioning" },
-    ],
-  },
   {
     key: "concertDeployment",
     conditional: (a) => String(a.concertAction ?? "quote") === "quote",
@@ -1118,16 +1034,6 @@ export const CONCERT_QUESTIONS: Question[] = [
 // ─── IBM WEBMETHODS ───────────────────────────────────────────────────────────
 
 export const WEBMETHODS_QUESTIONS: Question[] = [
-  {
-    key: "webMethodsAction",
-    ask: "What would you like to do?",
-    subtext: "webMethods pricing is contact-for-quote. I can scope the deal and build the seller positioning.",
-    type: "single",
-    options: [
-      { label: "📚 Best Practices", value: "bestpractices", hint: "Discovery guide & seller FAQs" },
-      { label: "📋 Scope the Deal", value: "quote", hint: "Identify capabilities and positioning" },
-    ],
-  },
   {
     key: "webMethodsNeeds",
     conditional: (a) => String(a.webMethodsAction ?? "quote") === "quote",

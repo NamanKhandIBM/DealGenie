@@ -20,7 +20,6 @@ describe("cross-sell conversation flows", () => {
   test("Verify seller with adaptive + lifecycle launches Vault mini-flow", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Verify",
-      "quote",
       "SSO,MFA,Adaptive,Lifecycle",
       "12000",
       "12",
@@ -42,7 +41,6 @@ describe("cross-sell conversation flows", () => {
   test("Verify seller with a very light motion remains in discovery until the regions question", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Verify",
-      "quote",
       "SSO",
       "1500",
       "12",
@@ -60,7 +58,6 @@ describe("cross-sell conversation flows", () => {
   test("Verify seller with an adaptive-only motion still finishes the quote before cross-sell is available", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Verify",
-      "quote",
       "SSO,MFA,Adaptive",
       "1500",
       "12",
@@ -80,7 +77,6 @@ describe("cross-sell conversation flows", () => {
   test("Verify seller with an adaptive-only completed result launches MaaS360 after requesting cross-sell from result state", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Verify",
-      "quote",
       "SSO,MFA,Adaptive",
       "1500",
       "12",
@@ -119,7 +115,6 @@ describe("cross-sell conversation flows", () => {
   test("Verify to Vault full seller flow reaches Vault result with Verify context", () => {
     const { state, lastReply, lastActiveQuestionKey } = runConversation([
       "Verify",
-      "quote",
       "SSO,MFA,Adaptive,Lifecycle",
       "18000",
       "12",
