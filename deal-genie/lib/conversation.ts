@@ -118,7 +118,7 @@ function getProductOpening(product: Product): string {
     case "NS1":
       return "**NS1 Connect** — Let's size this deal. I'll ask a few questions and generate a full quote with part numbers, quantities, and pricing.\n\nLet's go through the sizing questions:";
     case "Vault":
-      return "**IBM HashiCorp Vault** — Self-managed (PID 5900BJF), 12-month minimum. There are two pricing models — let me ask the first question to determine which applies:";
+      return "**IBM HashiCorp Vault 2.0** — Consumption-based secrets management (PID 5900BJF). Priced on what Vault does — secrets stored, credentials rotated, certificates issued. Let's size it:";
     case "MaaS360":
       return "**IBM MaaS360** — I'll help you build a public-price estimate and uncover whether it should be paired with identity for a stronger zero-trust story.\n\nLet's start:";
     case "Instana":
@@ -138,15 +138,11 @@ function getProductOpening(product: Product): string {
 
 function getVaultQuestions(state: ConversationState): Question[] {
   const source = String(state.answers.crossSellSource ?? "");
-  if (source === "Verify") {
+  if (source === "Verify" || source === "Terraform") {
     return VAULT_CROSS_SELL_QUESTIONS;
   }
-
-  // Model A = usage/consumption-based (aligns with Vault 2.0 direction)
-  // Model B = client/seat-based (classic Vault 1.0)
-  const model = String(state.answers.vaultModel ?? "");
-  const specific = model === "A" ? VAULT_QUESTIONS_MODEL_A : VAULT_QUESTIONS_MODEL_B;
-  return [...VAULT_QUESTIONS_COMMON, ...specific];
+  // Vault 2.0 only — always use the RU/consumption model (Model A)
+  return [...VAULT_QUESTIONS_COMMON, ...VAULT_QUESTIONS_MODEL_A];
 }
 
 function getQuestions(state: ConversationState): Question[] {
@@ -429,11 +425,6 @@ export function processUserMessage(
     // Also apply any additional entities the LLM extracted from this message
     applyEntities(s, entities);
 
-    // After model selection for Vault, rebuild question list
-    if (s.product === "Vault" && currentQ?.key === "vaultModel") {
-      // Re-derive questions with the now-known model
-    }
-
     s.discoveryStep = nextApplicableStep(
       getQuestions(s),
       s.discoveryStep + 1,
@@ -478,7 +469,83 @@ export function processUserMessage(
         activeQuestion: firstQ ? { question: firstQ } : null,
       };
     }
-    if (/^cross-sell$/i.test(msg)) {
+    // Support targeted cross-sell: "cross-sell Vault", "cross-sell Turbonomic", etc.
+    // Also matches bare "cross-sell" (single-target products keep working unchanged).
+    const crossSellMatch = msg.match(/^cross-sell(?:\s+(.+))?$/i);
+    if (crossSellMatch) {
+      const crossSellTarget = crossSellMatch[1]?.trim().toLowerCase() ?? "";
+
+      // Terraform has two attach targets — route based on the specific target requested
+      if (s.product === "Terraform") {
+        const toTurbonomic = crossSellTarget === "turbonomic";
+        if (toTurbonomic) {
+          s.product = "Turbonomic";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "Terraform" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Terraform scoping, I'll size the Turbonomic attach. Every VM and node Terraform provisions is a target for continuous right-sizing — no more over-provisioned infrastructure silently burning cloud budget.",
+            activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+          };
+        }
+        // Default / "vault" target
+        s.product = "Vault";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = { crossSellSource: "Terraform" };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Terraform scoping, I'll size the Vault attach so the client can eliminate secrets sprawl and secure every credential their infrastructure automation generates — IBM's ILM + SLM story.",
+          activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      // Instana has two attach targets — Turbonomic (default) or Concert
+      if (s.product === "Instana") {
+        const toConcert = crossSellTarget === "concert";
+        if (toConcert) {
+          s.product = "Concert";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "Instana", concertInstana: "yes" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Concert**\n\nBased on the Instana quote, I'll scope the Concert attach. Concert Observe *requires Instana agents* as its telemetry source — this is an architectural dependency, not just a cross-sell.",
+            activeQuestion: { question: CONCERT_QUESTIONS[1] },
+          };
+        }
+        // Default / "turbonomic" target
+        s.product = "Turbonomic";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = { crossSellSource: "Instana", turbonomicInstana: "yes" };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Instana quote, I'll scope the Turbonomic attach so the client can close the loop — automatically acting on the observability data Instana captures, with full application-aware resource optimization.",
+          activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+        };
+      }
+
+      // Turbonomic has two attach targets — Instana (default) or Concert
+      if (s.product === "Turbonomic") {
+        const toConcert = crossSellTarget === "concert";
+        if (toConcert) {
+          s.product = "Concert";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "Turbonomic" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Concert**\n\nBased on the Turbonomic scoping, I'll size the Concert attach. Concert Optimize is *powered by IBM Turbonomic* — the same optimization engine, surfaced through Concert's AI-driven cross-domain operational intelligence layer.",
+            activeQuestion: { question: CONCERT_QUESTIONS[1] },
+          };
+        }
+        // Default / "instana" target — fall through to existing handler below
+      }
+    }
+
+    if (/^cross-sell(?:\s|$)/i.test(msg)) {
       if (s.product === "MaaS360") {
         s.product = "Verify";
         s.phase = "discovery";
@@ -818,53 +885,31 @@ ${nextStepMessage}
 
 function computeVaultResult(state: ConversationState): string {
   const a = state.answers;
-
-  const modelCode = String(a.vaultModel ?? "A");
   const installCount = parseNumber(String(a.installCount ?? "1")) || 1;
 
-  if (modelCode === "A") {
-    const useCases = (a.useCases as string[]) ?? [];
-    const useCaseInputs: VaultUseCaseInputs = {};
-    if (useCases.includes("static"))  useCaseInputs.staticSecretCount  = parseNumber(String(a.staticSecretCount ?? "100")) || 100;
-    if (useCases.includes("dynamic")) useCaseInputs.dynamicRoles        = parseNumber(String(a.dynamicRoles ?? "10")) || 10;
-    if (useCases.includes("pki")) {
-      useCaseInputs.pkiCertsPerMonth    = parseNumber(String(a.pkiCertsPerMonth ?? "100")) || 100;
-      useCaseInputs.pkiCertLifetimeHours = parseNumber(String(a.pkiCertLifetime ?? "2160")) || 2160;
-    }
-    if (useCases.includes("ssh")) {
-      useCaseInputs.sshCredsPerMonth  = parseNumber(String(a.sshCredsPerMonth ?? "100")) || 100;
-      useCaseInputs.sshLifetimeHours  = parseNumber(String(a.sshLifetime ?? "24")) || 24;
-    }
-    if (useCases.includes("transit")) useCaseInputs.transitCallsPerMonth = parseNumber(String(a.transitCallsPerMonth ?? "150000")) || 150000;
-    if (useCases.includes("kmse"))    useCaseInputs.kmseKeyCount         = parseNumber(String(a.kmseKeyCount ?? "100")) || 100;
-
-    const result = computeVaultQuote({
-      model: "A-Platform",
-      installCount,
-      useCaseInputs,
-      includeNonProd: parseYesNo(String(a.includeNonProd ?? "no")),
-      includeKMIP: parseYesNo(String(a.includeKMIP ?? "no")),
-    });
-    return formatVaultResult(result, "A — Platform / Usage-based", a);
+  const useCases = (a.useCases as string[]) ?? [];
+  const useCaseInputs: VaultUseCaseInputs = {};
+  if (useCases.includes("static"))  useCaseInputs.staticSecretCount   = parseNumber(String(a.staticSecretCount ?? "100")) || 100;
+  if (useCases.includes("dynamic")) useCaseInputs.dynamicRoles         = parseNumber(String(a.dynamicRoles ?? "10")) || 10;
+  if (useCases.includes("pki")) {
+    useCaseInputs.pkiCertsPerMonth     = parseNumber(String(a.pkiCertsPerMonth ?? "100")) || 100;
+    useCaseInputs.pkiCertLifetimeHours = parseNumber(String(a.pkiCertLifetime ?? "2160")) || 2160;
   }
-
-  const editionMap: Record<string, VaultEdition> = { "1": "Essentials", "2": "Standard", "3": "Premium" };
-  const edition = editionMap[String(a.edition ?? "2")] ?? "Standard";
-  const clientCount = parseNumber(String(a.clientCount ?? "1")) || 1;
-
-  const adpTransformClients = parseNumber(String(a.adpTransform ?? "0"));
+  if (useCases.includes("ssh")) {
+    useCaseInputs.sshCredsPerMonth = parseNumber(String(a.sshCredsPerMonth ?? "100")) || 100;
+    useCaseInputs.sshLifetimeHours = parseNumber(String(a.sshLifetime ?? "24")) || 24;
+  }
+  if (useCases.includes("transit")) useCaseInputs.transitCallsPerMonth = parseNumber(String(a.transitCallsPerMonth ?? "150000")) || 150000;
+  if (useCases.includes("kmse"))    useCaseInputs.kmseKeyCount          = parseNumber(String(a.kmseKeyCount ?? "100")) || 100;
 
   const result = computeVaultQuote({
-    model: "B-Clients",
-    edition,
+    model: "A-Platform",
     installCount,
-    clientCount,
+    useCaseInputs,
     includeNonProd: parseYesNo(String(a.includeNonProd ?? "no")),
-    pkiCerts: parseNumber(String(a.pkiAddon ?? "0")),
-    adpKeyMgmt: parseNumber(String(a.adpKeyMgmt ?? "0")),
-    adpTransformClients: adpTransformClients > 0 ? adpTransformClients : undefined,
+    includeKMIP: parseYesNo(String(a.includeKMIP ?? "no")),
   });
-  return formatVaultResult(result, `B — Clients / RVU (${edition})`, a);
+  return formatVaultResult(result, "Vault 2.0 — Consumption / RU-based", a);
 }
 
 function formatVaultResult(
@@ -1268,20 +1313,23 @@ Kubernetes auth in Vault uses **service account UID** as the alias by default, m
 For current quoting (Model B), ask: "How many distinct Kubernetes service accounts authenticate to Vault?" — that's your client count, not the pod count.`;
     }
 
-    if (/model a|model b|which model|platform.*ru|clients.*rvu|difference.*model/i.test(msg)) {
-      return `**Model A vs Model B — which to use?**
+    if (/model a|model b|which model|platform.*ru|clients.*rvu|difference.*model|vault.*1\.0|vault.*2\.0|what.*model/i.test(msg)) {
+      return `**IBM HashiCorp Vault 2.0 — consumption-based pricing**
 
-| | Model A (Platform/RU) | Model B (Clients/RVU) |
-|---|---|---|
-| **Best for** | New/expanding, cloud-native, variable workloads | Stable renewals, known app count |
-| **Priced on** | What Vault *does* (secrets, certs, keys, API calls) | Who *connects* (unique apps/services/users) |
-| **Predictability** | Variable (scales with usage) | Predictable (flat per client) |
+DealGenie quotes Vault 2.0 only. Pricing is based on **what Vault does**, not how many apps connect:
 
-**Decision question:** *"Do you know how many apps/services will connect to Vault, and is that number stable?"*
-- Yes, stable number → Model B
-- No, or growing fast → Model A
+| Use case | How it's measured |
+|---|---|
+| Static secrets (API keys, passwords) | 1 secret stored = 1 RU |
+| Dynamic credential roles | 1 role configured = 1 RU |
+| PKI certificates | CEIL(certs/month × lifetime_hours ÷ 730) RU |
+| SSH ephemeral credentials | Same formula as PKI |
+| Encrypt/Decrypt API calls | 150,000 calls = 1 RU |
+| KMIP encryption keys | 1 key managed = 1 RU |
 
-⚠️ Cannot be changed without a new contract — get this right upfront.`;
+**Two required parts:** Install (D15FQZX, $96K/cluster/yr) + RU (D15FKZX, $48/RU/month).
+
+**Census is mandatory** — automated monthly utilisation reporting to IBM. Must be enabled at or before contract signing. Customer must be on Vault 2.0 (April 2026 release).`;
     }
 
     if (/namespace|duplication|child namespace/i.test(msg)) {
@@ -1332,18 +1380,17 @@ Only needed for legacy apps that use the KMIP protocol for external key manageme
 Common mistake: quoting Premium without buying ≥2 installs — the edition is useless without a DR target cluster.`;
     }
 
-    if (/what.*vault.?2|vault.?2.*what|vault 2\.0/i.test(msg)) {
+    if (/what.*vault.?2|vault.?2.*what/i.test(msg)) {
       return `**What is Vault 2.0?**
 
-Vault 2.0 is the **April 2026 release** of Vault Enterprise — it would have been Vault 1.22, but IBM aligned to its software versioning policy.
+Vault 2.0 is the **April 2026 release** of Vault Enterprise (previously would have been Vault 1.22 — IBM aligned versioning).
 
-Key facts:
-- Supports **both** Model B (Clients/RVU) and Model A (Resource Units/RU) pricing
-- Existing customers can upgrade to 2.0 and **keep their Client-based entitlements** — no forced migration
-- Moving to RU requires: (1) upgrade to Vault 2.0, (2) a **contracting event** (change of pricing metrics)
-- Mid-term switch to RU model is possible via a **supersede**, provided customer meets requirements
-
-For quoting: Model A = RU model, Model B = Client model. Both have working part numbers in this tool.`;
+Key facts for quoting:
+- **DealGenie quotes Vault 2.0 only** — consumption/RU-based pricing
+- Requires Census reporting enabled (automated monthly utilisation data to IBM)
+- Requires customer to be on or willing to upgrade to Vault 2.0
+- Two parts per cluster: Install (D15FQZX, $96K/yr) + Resource Units (D15FKZX, $48/RU/month)
+- If a customer is on an older perpetual Vault and refusing to upgrade — contact IBM, that is outside this tool's scope`;
     }
 
     if (/census|license.*report|utilization.*report|automated.*report/i.test(msg)) {
@@ -1360,15 +1407,18 @@ Census is Vault's **automated monthly reporting** feature — it sends license u
 **If a customer refuses to enable Census, they cannot use the RU model.** Stay on Model B (Clients).`;
     }
 
-    if (/mix.*model|model.*mix|same.*contract.*model|combine.*model|both.*model/i.test(msg)) {
-      return `**Can Model A and Model B be used together?**
+    if (/mix.*model|model.*mix|1\.0.*2\.0|2\.0.*1\.0|old.*model|previous.*model|client.*model|rvu.*model/i.test(msg)) {
+      return `**Vault 1.0 (Client/RVU) vs Vault 2.0 (Consumption/RU)**
 
-**No.** The Client-based model (B) and the Resource Unit model (A) **cannot be mixed** within the same contract, installation, or region.
+DealGenie quotes Vault 2.0 only. Here's the difference:
 
-A customer must choose one model per contract. If they want to switch:
-- Allowed mid-term via a **supersede** (not a new contract)
-- Customer must meet requirements: Vault 2.0 upgrade + willingness to enable Census
-- Once on RU, the Client entitlements are replaced — they cannot run both simultaneously`;
+| | Vault 1.0 (retired path) | Vault 2.0 (this tool) |
+|---|---|---|
+| **Priced on** | Who *connects* (unique clients) | What Vault *does* (secrets, certs, keys) |
+| **Problem** | Kubernetes = hundreds of clients = huge bill | Kubernetes = many short-lived certs = low RU cost |
+| **Requires** | Nothing | Vault 2.0 + Census enabled |
+
+If a customer is mid-contract on the old 1.0 model and wants to move to 2.0: allowed via a **supersede** mid-term. Contact IBM — it requires a contracting event.`;
     }
 
     if (/non.?prod|non.?production|dev.*env|test.*env|staging/i.test(msg)) {
@@ -1871,8 +1921,11 @@ function computeConcertResult(state: ConversationState): string {
   const estimatedWorkflows = parseNumber(String(a.concertWorkflows ?? 0));
   const observeTier = (String(a.concertObserveTier ?? "essentials")) as "essentials" | "standard";
 
+  const deployment = (String(a.concertDeployment ?? "onprem")) as "saas" | "onprem";
+
   const inputs: ConcertInputs = {
     primaryPain: pain,
+    deployment,
     hasInstana,
     needsWorkflowAutomation: needsAutomation,
     needsCostOptimization: pain === "costOptimization" || pain === "all",
@@ -1908,7 +1961,7 @@ function computeConcertResult(state: ConversationState): string {
       <td>Total</td>
       <td>${result.totalRU.toLocaleString()} RU</td>
       <td>$${result.totalAnnualList.toLocaleString()}</td>
-      <td>$${result.pricePerRU}/RU/year · PID 5900BBE</td>
+      <td>$${result.pricePerRU.toFixed(deployment === "saas" ? 4 : 0)}/RU/year · PID ${deployment === "saas" ? "5900BD6" : "5900BBE"}</td>
     </tr>
   </tbody>
 </table>` : "";
