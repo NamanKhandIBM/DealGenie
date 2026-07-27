@@ -7,10 +7,15 @@
  *   Monthly:      $265/RU/month
  *   Term + support: $6,360/RU
  *
- * Confirmed RU mappings:
- *   Vulnerability management (Protect module): 3 RU per managed application
- *   Resource optimization (Optimize module):   1 RU per 5 MVS = 0.2 RU/MVS
- *   Other modules: RU mapping varies — this engine estimates and flags for IBM confirmation.
+ * Confirmed RU mappings (Concert Standard RU Model – Ratio Table):
+ *   Protect     — Vulnerability management: 3 RU per managed application
+ *   Resilience  — Posture assessment:       5 RU per app
+ *   Workflows   — Deployed workflows:       5 RU per deployed workflow in production
+ *   Observe ESS — App Perf Mgmt Essentials: 1 RU per 7 MVS
+ *   Observe STD — App Perf Mgmt Standard:   1 RU per 2 MVS
+ *   Optimize    — Resource optimization:    1 RU per 5 MVS
+ *
+ * NOTE: "Operate" is NOT a category in IBM's Concert RU model — no RU mapping exists.
  */
 import {
   CONCERT_MODULES,
@@ -19,6 +24,10 @@ import {
   CONCERT_PRICE_PER_RU_SUBSCRIPTION,
   CONCERT_PRICE_PER_RU_MONTHLY,
   CONCERT_RU_PER_APP_VULN,
+  CONCERT_RU_PER_APP_RESILIENCE,
+  CONCERT_RU_PER_WORKFLOW,
+  CONCERT_RU_PER_MVS_OBSERVE_ESS,
+  CONCERT_RU_PER_MVS_OBSERVE_STD,
   CONCERT_RU_PER_MVS_OPTIM,
 } from "./concert-data";
 
@@ -29,8 +38,11 @@ export interface ConcertInputs {
   needsWorkflowAutomation?: boolean;
   needsCostOptimization?: boolean;
   needsSecurityRisk?: boolean;
-  estimatedApplications?: number;     // for Protect RU calculation (3 RU/app)
-  estimatedMVS?: number;              // for Optimize RU calculation (1 RU/5 MVS)
+  needsResilience?: boolean;
+  estimatedApplications?: number;     // for Protect (3 RU/app) and Resilience (5 RU/app)
+  estimatedWorkflows?: number;        // for Workflows (5 RU/workflow)
+  estimatedMVS?: number;              // for Optimize (1 RU/5 MVS) and Observe (1 RU/7 or 2 MVS)
+  observeTier?: "essentials" | "standard"; // default: essentials (1 RU/7 MVS)
   licenseType?: "subscription" | "monthly";  // default: subscription
 }
 
@@ -67,23 +79,24 @@ export function computeConcertRecommendation(inputs: ConcertInputs): ConcertReco
   // ── Module selection ───────────────────────────────────────────────────────
   const recommended = new Set<string>();
   recommended.add("observe");
-  recommended.add("operate");
+  // NOTE: "operate" removed — it has no RU mapping in IBM's Concert model.
 
-  const needsProtect = inputs.needsSecurityRisk || inputs.primaryPain === "riskPosture" || inputs.primaryPain === "all";
-  const needsOptimize = inputs.needsCostOptimization || inputs.primaryPain === "costOptimization" || inputs.primaryPain === "all";
-  const needsWorkflows = inputs.needsWorkflowAutomation || inputs.primaryPain === "all";
-  const needsResilience = inputs.primaryPain === "all";
-  const needsSlowMTTR = inputs.primaryPain === "slowMTTR" || inputs.primaryPain === "all";
+  const needsProtect    = inputs.needsSecurityRisk || inputs.primaryPain === "riskPosture" || inputs.primaryPain === "all";
+  const needsOptimize   = inputs.needsCostOptimization || inputs.primaryPain === "costOptimization" || inputs.primaryPain === "all";
+  const needsWorkflows  = inputs.needsWorkflowAutomation || inputs.primaryPain === "all";
+  const needsResilience = inputs.needsResilience || inputs.primaryPain === "all";
+  const needsSlowMTTR   = inputs.primaryPain === "slowMTTR" || inputs.primaryPain === "all";
 
-  if (needsOptimize)  recommended.add("optimize");
-  if (needsProtect)   recommended.add("protect");
-  if (needsWorkflows) { recommended.add("workflows"); recommended.add("resilience"); }
+  if (needsOptimize)   recommended.add("optimize");
+  if (needsProtect)    recommended.add("protect");
+  if (needsWorkflows || needsSlowMTTR) recommended.add("workflows");
   if (needsResilience) recommended.add("resilience");
-  if (needsSlowMTTR)  { recommended.add("operate"); recommended.add("workflows"); }
 
-  // ── RU estimation for confirmed modules ───────────────────────────────────
-  const apps = inputs.estimatedApplications ?? 0;
-  const mvs  = inputs.estimatedMVS ?? 0;
+  // ── RU estimation — all five confirmed mappings ───────────────────────────
+  const apps      = inputs.estimatedApplications ?? 0;
+  const mvs       = inputs.estimatedMVS ?? 0;
+  const workflows = inputs.estimatedWorkflows ?? 0;
+  const observeTier = inputs.observeTier ?? "essentials";
 
   if (needsProtect && apps > 0) {
     const ru = Math.ceil(apps * CONCERT_RU_PER_APP_VULN);
@@ -92,6 +105,39 @@ export function computeConcertRecommendation(inputs: ConcertInputs): ConcertReco
       ruCount: ru,
       annualList: Math.round(ru * pricePerRU * 100) / 100,
       notes: `3 RU × ${apps} apps = ${ru} RU at $${pricePerRU}/RU/year`,
+    });
+  }
+
+  if (needsResilience && apps > 0) {
+    const ru = Math.ceil(apps * CONCERT_RU_PER_APP_RESILIENCE);
+    lines.push({
+      module: "Concert Resilience — Posture Assessment",
+      ruCount: ru,
+      annualList: Math.round(ru * pricePerRU * 100) / 100,
+      notes: `5 RU × ${apps} apps = ${ru} RU at $${pricePerRU}/RU/year`,
+    });
+  }
+
+  if ((needsWorkflows || needsSlowMTTR) && workflows > 0) {
+    const ru = Math.ceil(workflows * CONCERT_RU_PER_WORKFLOW);
+    lines.push({
+      module: "Concert Workflows — Deployed Workflow Automation",
+      ruCount: ru,
+      annualList: Math.round(ru * pricePerRU * 100) / 100,
+      notes: `5 RU × ${workflows} workflows = ${ru} RU at $${pricePerRU}/RU/year`,
+    });
+  }
+
+  if (mvs > 0) {
+    // Observe is always recommended; tier determines RU/MVS ratio
+    const ruPerMVS = observeTier === "standard" ? CONCERT_RU_PER_MVS_OBSERVE_STD : CONCERT_RU_PER_MVS_OBSERVE_ESS;
+    const tierLabel = observeTier === "standard" ? "Standard APM (1 RU/2 MVS)" : "Essentials APM (1 RU/7 MVS)";
+    const ru = Math.ceil(mvs * ruPerMVS);
+    lines.push({
+      module: `Concert Observe — ${tierLabel}`,
+      ruCount: ru,
+      annualList: Math.round(ru * pricePerRU * 100) / 100,
+      notes: `${tierLabel} × ${mvs} MVS = ${ru} RU at $${pricePerRU}/RU/year`,
     });
   }
 
@@ -105,28 +151,13 @@ export function computeConcertRecommendation(inputs: ConcertInputs): ConcertReco
     });
   }
 
-  // Observe + Operate + other modules: RU mapping not confirmed — flag for IBM
-  const unconfirmedModules = Array.from(recommended).filter((m) =>
-    !(needsProtect && m === "protect" && apps > 0) &&
-    !(needsOptimize && m === "optimize" && mvs > 0)
-  );
-  if (unconfirmedModules.length > 0) {
-    flags.push(`Modules ${unconfirmedModules.join(", ")}: RU consumption varies by scope. Confirmed RU mappings: Protect = 3 RU/app, Optimize = 1 RU/5 MVS. Engage IBM to confirm RU count for other modules.`);
-  }
-
-  if (lines.length === 0 && (apps > 0 || mvs > 0)) {
-    // Provide a rough budgetary estimate based on whatever data we have
-    let roughRU = 0;
-    if (apps > 0) roughRU += Math.ceil(apps * CONCERT_RU_PER_APP_VULN);
-    if (mvs > 0)  roughRU += Math.ceil(mvs * CONCERT_RU_PER_MVS_OPTIM);
-    if (roughRU > 0) {
-      lines.push({
-        module: "Concert (estimated — confirm RU mapping with IBM)",
-        ruCount: roughRU,
-        annualList: Math.round(roughRU * pricePerRU * 100) / 100,
-        notes: `Rough estimate: ${apps > 0 ? `${apps} apps × 3 RU/app` : ""}${apps > 0 && mvs > 0 ? " + " : ""}${mvs > 0 ? `${mvs} MVS × 0.2 RU/MVS` : ""}`,
-      });
-    }
+  // Flag if we have modules selected but no quantity inputs to size them
+  const missingInputs: string[] = [];
+  if ((needsProtect || needsResilience) && apps === 0) missingInputs.push("application count (for Protect/Resilience)");
+  if ((needsWorkflows || needsSlowMTTR) && workflows === 0) missingInputs.push("workflow count (for Workflows)");
+  if (mvs === 0) missingInputs.push("MVS count (for Observe/Optimize)");
+  if (missingInputs.length > 0) {
+    flags.push(`Provide ${missingInputs.join(" and ")} for a complete RU estimate.`);
   }
 
   const totalRU = lines.reduce((s, l) => s + l.ruCount, 0);
@@ -135,8 +166,15 @@ export function computeConcertRecommendation(inputs: ConcertInputs): ConcertReco
   if (totalRU > 0) {
     flags.push(`Subscription rate: $${CONCERT_PRICE_PER_RU_SUBSCRIPTION}/RU/year. Monthly rate: $${CONCERT_PRICE_PER_RU_MONTHLY}/RU/month. PID: 5900BBE.`);
   } else {
-    flags.push("Provide application count and/or MVS count to generate a dollar estimate. Concert pricing: $212/RU/year (subscription).");
+    flags.push("Provide application count, workflow count, and/or MVS count to generate a dollar estimate. Concert pricing: $212/RU/year (subscription).");
   }
+  flags.push("⚠ 'Operate' has no RU mapping in IBM's Concert model — do not quote RUs for this label. If a customer asks about incident response / MTTR, that maps to Concert Observe + Workflows.");
+  flags.push(
+    "Discount approval thresholds for IBM Concert are not published as a tiered seller/manager/IBM authorization matrix in Seismic. " +
+    "The Q1 2026 Concert Sales Enablement deck contains fixed play-level pre-approved discounts " +
+    "(e.g., 87% on Concert Enterprise RU Subscription, 44% on Expert Labs engagement parts) — these are play-specific, not a general approval matrix. " +
+    "For deal-specific discount authority, confirm with IBM Software CPQ or your IBM pricing desk."
+  );
 
   // ── Module descriptions ────────────────────────────────────────────────────
   const moduleDescriptions = CONCERT_MODULES

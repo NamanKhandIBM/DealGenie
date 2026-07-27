@@ -218,11 +218,72 @@ export const CROSS_SELL_PLAYS: CrossSellPlay[] = [
       "**Cross-sell recommendation: IBM webMethods Integration**\n\nYou already positioned Verify for identity governance. webMethods is a strong adjacent motion when the same client also needs a modern hybrid integration platform — one that Verify's identity and API security policies can govern end-to-end.",
     valuePoints: VERIFY_WEBMETHODS_VALUE_POINTS,
   },
+  // Terraform ↔ Turbonomic (Play 06)
+  {
+    id: "terraform-to-turbonomic",
+    source: "Terraform",
+    target: "Turbonomic",
+    title: "Infrastructure Automation to AI-Driven Resource Optimization",
+    shortReason: "Terraform provisions cloud infrastructure; Turbonomic ensures that infrastructure is right-sized and cost-optimized in real time.",
+    businessProblem: "Teams that automate provisioning with Terraform often over-provision resources for safety margins — Turbonomic closes that gap by continuously right-sizing based on actual demand.",
+    inFlowMessage:
+      "This could also become a **Terraform + Turbonomic** motion if the client wants to ensure the infrastructure Terraform provisions is continuously right-sized and cost-optimized — not just initially sized.",
+    resultMessage:
+      "**Cross-sell recommendation: IBM Turbonomic**\n\nYou already framed the infrastructure automation story with Terraform. Turbonomic is a natural adjacent motion — it monitors the resources Terraform provisions and autonomously right-sizes them based on real demand, turning provisioning automation into continuous cost optimization.",
+    valuePoints: [
+      "Terraform automates provisioning; Turbonomic prevents the over-provisioning that automation often creates — together they deliver 'provision right and keep it right.'",
+      "Turbonomic's AI-driven actions operate on the same resource scope Terraform manages: VMs, cloud instances, Kubernetes nodes — all tracked by the same MVS metric.",
+      "IBM's combined ILM+ARM story: Infrastructure Lifecycle Management (Terraform) and Application Resource Management (Turbonomic) for a complete automation and optimization platform.",
+    ],
+  },
+
+  // Turbonomic → Apptio (Play 04)
+  {
+    id: "turbonomic-to-apptio",
+    source: "Turbonomic",
+    target: "Turbonomic", // Apptio is not a Product type — note in resultMessage
+    title: "Resource Optimization to FinOps and IT Financial Visibility",
+    shortReason: "Turbonomic optimizes infrastructure spend in real time; Apptio Cloudability provides the FinOps governance and showback/chargeback layer for accountability.",
+    businessProblem: "Organizations optimizing cloud resources with Turbonomic often lack the financial governance, showback, and cost allocation visibility that connects IT action to business value.",
+    inFlowMessage:
+      "This could also become a **Turbonomic + Apptio** motion if the client needs FinOps governance and cost allocation reporting alongside resource optimization actions.",
+    resultMessage:
+      "**Cross-sell recommendation: IBM Apptio Cloudability (FinOps)**\n\nYou already positioned Turbonomic for resource optimization. Apptio Cloudability is the strongest adjacent FinOps motion — it provides the cost allocation, showback/chargeback, and budget governance that makes Turbonomic's optimization actions visible and accountable to business stakeholders.\n\n**Note:** Apptio is a separate IBM product line — engage an IBM Apptio specialist for pricing and positioning.",
+    valuePoints: [
+      "Turbonomic takes the optimization actions; Apptio provides the financial reporting that shows leadership what those actions saved — closing the loop between engineering efficiency and business value.",
+      "Together they form IBM's FinOps platform: Turbonomic for autonomous resource rightsizing, Apptio for cost allocation, forecast accuracy, and cloud financial governance.",
+      "Customers with Turbonomic often lack the showback/chargeback mechanism to demonstrate ROI to finance — Apptio provides exactly that visibility layer.",
+    ],
+  },
+
+  // Concert → Apptio (Play 09)
+  {
+    id: "concert-to-apptio",
+    source: "Concert",
+    target: "Concert", // Apptio is not a Product type — note in resultMessage
+    title: "Operational Intelligence to IT Financial Governance",
+    shortReason: "Concert surfaces operational risk and optimization signals; Apptio translates those signals into financial accountability and budget governance.",
+    businessProblem: "Organizations with strong operational intelligence still lack the financial governance layer that connects infrastructure optimization decisions to business cost accountability.",
+    inFlowMessage:
+      "This could also become a **Concert + Apptio** motion if the client needs to connect Concert's operational optimization signals to IT financial governance, showback, and FinOps accountability.",
+    resultMessage:
+      "**Cross-sell recommendation: IBM Apptio Cloudability (FinOps)**\n\nYou already positioned Concert for operational intelligence and optimization. Apptio is the strongest adjacent FinOps motion — it takes Concert's optimization signals and translates them into cost allocation, budget governance, and showback/chargeback reporting that business stakeholders understand.\n\n**Note:** Apptio is a separate IBM product line — engage an IBM Apptio specialist for pricing and positioning.",
+    valuePoints: [
+      "Concert identifies what to optimize operationally; Apptio governs the financial impact of those optimizations — together they deliver the full FinOps story: technical action plus financial accountability.",
+      "Concert's cost optimization signals (Concert Optimize module) are most valuable when they connect to Apptio's financial reporting and chargeback mechanisms.",
+      "Customers buying Concert for operational intelligence are often simultaneously evaluating FinOps tools — Apptio prevents a competitor from landing that adjacent conversation.",
+    ],
+  },
 ];
 
 export function getCrossSellPlay(source: Product | null): CrossSellPlay | null {
   if (!source) return null;
   return CROSS_SELL_PLAYS.find((play) => play.source === source) ?? null;
+}
+
+export function getCrossSellPlays(source: Product | null): CrossSellPlay[] {
+  if (!source) return [];
+  return CROSS_SELL_PLAYS.filter((play) => play.source === source);
 }
 
 export function shouldShowCrossSellHint(

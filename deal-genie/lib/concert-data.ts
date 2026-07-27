@@ -5,18 +5,44 @@
  * operational layer across complex environments.
  *
  * CONFIRMED PRICING (IBM Concert platform Parts & Pricing Deck, Jun 17, 2026):
- *  PID: 5900BBE
+ *  PID: 5900BBE  (on-premises software license — this is the standard seller offering)
  *  Billing metric: Resource Unit (RU)
+ *  Single platform part — one Concert RU covers all modules. CPQ line items use RU count only.
  *
- *  License types:
- *   Subscription license:      $212/RU
- *   Monthly license:           $265/RU
- *   Term license + support:  $6,360/RU
+ *  Part numbers (all confirmed Jun 17, 2026 deck):
+ *   D0MK3ZX  Subscription License         $212.00/RU/year
+ *   D0MK5ZX  Monthly License              $265.00/RU/month
+ *   D0MK4ZX  License + S&S (Term)         $6,360.00/RU
+ *   E0MK2ZX  Annual S&S Renewal           $1,270.00/RU
+ *   D0MK6ZX  S&S Reinstatement            $3,820.00/RU
+ *   X0MK2ZX  Extended Support (12mo)      $254.00/RU
+ *   X0MK3ZX  Extended Support (sub)       $42.40/RU
+ *   Z0MK2ZX  Advanced Support (12mo)      $382.00/RU
+ *   Z0MK3ZX  Advanced Support (sub)       $31.80/RU
  *
- *  RU mapping by use case (CRITICAL — not flat per-app or per-node):
- *   Vulnerability management:   3 RU per managed application
- *   Resource optimization:      1 RU per 5 Managed Virtual Servers (MVS)
- *   Other use cases:            RU consumption varies — confirmed with IBM
+ *  ⚠ CONFLICT NOTE: A separate "IBM Concert SaaS" (PID 5900BD6) exists with a
+ *  consumption-based SaaS rate of $1,059.60 per 1,000 RU/annum (~$1.06/RU/yr).
+ *  This is a DIFFERENT product and pricing model from 5900BBE. Do NOT confuse the
+ *  two. When quoting standard Concert, use 5900BBE parts above. Confirm with IBM
+ *  which PID applies to a given deal before CPQ entry.
+ *
+ *  License types (5900BBE):
+ *   Subscription license (D0MK3ZX): $212/RU/year
+ *   Monthly license      (D0MK5ZX): $265/RU/month
+ *   Term + support       (D0MK4ZX): $6,360/RU
+ *
+ *  RU mapping by use case (CONFIRMED — "Concert Standard RU Model – Ratio Table"):
+ *   Protect  — Vulnerability management:   3 RU per managed application
+ *   Resilience — Posture assessment:       5 RU per app leveraging posture assessment
+ *   Workflows — Deployed workflows:        5 RU per deployed workflow in production
+ *   Observe (Essentials) — App Perf Mgmt: 1 RU per 7 Managed Virtual Servers (MVS)
+ *   Observe (Standard)  — App Perf Mgmt:  1 RU per 2 Managed Virtual Servers (MVS)
+ *   Optimize — Resource optimization:      1 RU per 5 Managed Virtual Servers (MVS)
+ *
+ *  IBM's model defines five use-case buckets: Protect, Resilience, Workflows, Observe, Optimize.
+ *  NOTE: "Operate" does NOT appear in IBM's RU model table and has no RU mapping.
+ *        Do not quote or estimate RUs for "Operate" — there is no such category in IBM's
+ *        current Concert pricing. Raise with IBM directly if the customer references it.
  *
  *  No separate platform floor price — consumption is pure RU-based.
  *
@@ -40,11 +66,7 @@ export const CONCERT_MODULES: ConcertModule[] = [
     key: "observe",
     label: "Concert Observe",
     summary: "Full-stack observability — connects Instana agents' telemetry into a shared cross-domain context for faster detection and impact analysis. Requires Instana agents for observability data.",
-  },
-  {
-    key: "operate",
-    label: "Concert Operate",
-    summary: "AI-guided incident response — correlates signals, surfaces root causes, and guides teams from alert to resolution.",
+    ruMapping: "1 RU per 7 MVS (Essentials App Perf Mgmt) or 1 RU per 2 MVS (Standard App Perf Mgmt)",
   },
   {
     key: "optimize",
@@ -62,11 +84,13 @@ export const CONCERT_MODULES: ConcertModule[] = [
     key: "resilience",
     label: "Concert Resilience",
     summary: "Business continuity and cascade failure prevention — assesses operational health and stability by evaluating availability, configuration, compliance, and runtime signals. Generates resilience scores.",
+    ruMapping: "5 RU per app leveraging posture assessment",
   },
   {
     key: "workflows",
     label: "Concert Workflows",
     summary: "AI-generated workflow automation — orchestrates remediation across security, ops, and ITSM tools with governance and audit trails.",
+    ruMapping: "5 RU per deployed workflow in production",
   },
 ];
 
@@ -81,15 +105,40 @@ export const CONCERT_MODULES: ConcertModule[] = [
 export const CONCERT_SIDEKICK_NOTE =
   "IBM Sidekick integration: Instana + Turbonomic + Concert share a unified 3-product sidebar. Sellers can position 'one-account, three lenses' — observability (Instana), optimization (Turbonomic), operational intelligence (Concert) — with zero context-switching between tools.";
 
-// ─── Pricing constants (confirmed IBM CPQ, Jun 17, 2026) ─────────────────────
+// ─── Pricing constants + part numbers (confirmed IBM Concert Parts & Pricing Deck, Jun 17, 2026) ─
 
-export const CONCERT_PRICE_PER_RU_SUBSCRIPTION = 212;    // $/RU — annual subscription
-export const CONCERT_PRICE_PER_RU_MONTHLY      = 265;    // $/RU — monthly license
-export const CONCERT_PRICE_PER_RU_TERM         = 6360;   // $/RU — term license + support
+export const CONCERT_PRICE_PER_RU_SUBSCRIPTION = 212;    // $/RU — annual subscription  (D0MK3ZX)
+export const CONCERT_PRICE_PER_RU_MONTHLY      = 265;    // $/RU — monthly license       (D0MK5ZX)
+export const CONCERT_PRICE_PER_RU_TERM         = 6360;   // $/RU — term license + S&S    (D0MK4ZX)
+export const CONCERT_PRICE_PER_RU_SS_RENEWAL   = 1270;   // $/RU — annual S&S renewal    (E0MK2ZX)
+export const CONCERT_PRICE_PER_RU_SS_REINSTATE = 3820;   // $/RU — S&S reinstatement     (D0MK6ZX)
 
-// RU mapping constants
-export const CONCERT_RU_PER_APP_VULN    = 3;   // vulnerability management: 3 RU per app
-export const CONCERT_RU_PER_MVS_OPTIM  = 0.2; // optimization: 1 RU per 5 MVS = 0.2 RU/MVS
+// Part numbers (PID 5900BBE — on-premises standard offering)
+export const CONCERT_PARTS = {
+  subscription:    { part: "D0MK3ZX", description: "IBM Concert Subscription License",          pricePerRU: 212,   unit: "per RU per year" },
+  monthly:         { part: "D0MK5ZX", description: "IBM Concert Monthly License",               pricePerRU: 265,   unit: "per RU per month" },
+  term:            { part: "D0MK4ZX", description: "IBM Concert License + S&S (Term)",          pricePerRU: 6360,  unit: "per RU" },
+  ssRenewal:       { part: "E0MK2ZX", description: "IBM Concert Annual S&S Renewal",            pricePerRU: 1270,  unit: "per RU per year" },
+  ssReinstate:     { part: "D0MK6ZX", description: "IBM Concert S&S Reinstatement",             pricePerRU: 3820,  unit: "per RU" },
+  extSupport12mo:  { part: "X0MK2ZX", description: "IBM Concert Extended Support (12mo)",       pricePerRU: 254,   unit: "per RU" },
+  extSupportSub:   { part: "X0MK3ZX", description: "IBM Concert Extended Support (subscription)", pricePerRU: 42.40, unit: "per RU" },
+  advSupport12mo:  { part: "Z0MK2ZX", description: "IBM Concert Advanced Support (12mo)",       pricePerRU: 382,   unit: "per RU" },
+  advSupportSub:   { part: "Z0MK3ZX", description: "IBM Concert Advanced Support (subscription)", pricePerRU: 31.80, unit: "per RU" },
+} as const;
+
+// ⚠ Concert SaaS (PID 5900BD6) is a SEPARATE product at ~$1.06/RU/yr (consumption-based).
+// Do not mix with 5900BBE parts above. Confirm PID with IBM before CPQ entry.
+export const CONCERT_SAAS_PID_NOTE =
+  "IBM Concert SaaS (PID 5900BD6) is a separate offering from Concert on-premises (PID 5900BBE). " +
+  "SaaS rate: ~$1.06/RU/yr ($1,059.60/1,000 RU/annum). Confirm which PID applies before entering into CPQ.";
+
+// RU mapping constants (all confirmed — Concert Standard RU Model Ratio Table)
+export const CONCERT_RU_PER_APP_VULN          = 3;          // Protect: 3 RU per managed app
+export const CONCERT_RU_PER_APP_RESILIENCE    = 5;          // Resilience: 5 RU per app in posture assessment
+export const CONCERT_RU_PER_WORKFLOW          = 5;          // Workflows: 5 RU per deployed workflow in production
+export const CONCERT_RU_PER_MVS_OBSERVE_ESS   = 1 / 7;     // Observe Essentials: 1 RU per 7 MVS
+export const CONCERT_RU_PER_MVS_OBSERVE_STD   = 1 / 2;     // Observe Standard: 1 RU per 2 MVS
+export const CONCERT_RU_PER_MVS_OPTIM         = 1 / 5;     // Optimize: 1 RU per 5 MVS
 
 // ─── Seller value story: Concert + Instana cross-sell ────────────────────────
 export const CONCERT_INSTANA_VALUE_POINTS = [
@@ -103,8 +152,8 @@ export const CONCERT_INSTANA_VALUE_POINTS = [
 // ─── Best practices snippets ─────────────────────────────────────────────────
 export const CONCERT_BEST_PRACTICES = [
   {
-    title: "Size by RU consumption — two confirmed mappings",
-    body: "Concert is billed per Resource Unit (RU) at $212/RU/year (subscription). Two confirmed RU mappings: vulnerability management = 3 RU per app; optimization = 1 RU per 5 MVS. Use these to build budgetary estimates. Other modules: confirm RU mapping with IBM.",
+    title: "Size by RU consumption — five confirmed mappings",
+    body: "Concert is billed per Resource Unit (RU) at $212/RU/year (subscription). All five IBM use-case buckets now have confirmed RU mappings: Protect = 3 RU/app; Resilience = 5 RU/app; Workflows = 5 RU/workflow; Observe Essentials = 1 RU/7 MVS; Observe Standard = 1 RU/2 MVS; Optimize = 1 RU/5 MVS. There is no 'Operate' category in IBM's RU model.",
   },
   {
     title: "Lead with the alert-fatigue problem",
@@ -130,13 +179,16 @@ export const CONCERT_BEST_PRACTICES = [
 
 export const CONCERT_QUICK_REFERENCE = [
   { term: "RU", definition: "Resource Unit — Concert's billing unit. Subscription: $212/RU/year (PID 5900BBE)." },
-  { term: "Vulnerability use case", definition: "3 RU per managed application. E.g. 50 apps = 150 RU = $31,800/year list." },
-  { term: "Optimization use case", definition: "1 RU per 5 MVS. E.g. 500 MVS = 100 RU = $21,200/year list." },
-  { term: "Concert Observe", definition: "Cross-domain observability. Requires Instana agents as the data source." },
-  { term: "Concert Optimize", definition: "Resource right-sizing. Powered by Turbonomic — requires Turbonomic target configuration." },
+  { term: "Protect (Vulnerability)", definition: "3 RU per managed application. E.g. 50 apps = 150 RU = $31,800/year." },
+  { term: "Resilience (Posture)", definition: "5 RU per app leveraging posture assessment. E.g. 20 apps = 100 RU = $21,200/year." },
+  { term: "Workflows", definition: "5 RU per deployed workflow in production. E.g. 10 workflows = 50 RU = $10,600/year." },
+  { term: "Observe (Essentials APM)", definition: "1 RU per 7 MVS. E.g. 700 MVS = 100 RU = $21,200/year." },
+  { term: "Observe (Standard APM)", definition: "1 RU per 2 MVS. E.g. 200 MVS = 100 RU = $21,200/year." },
+  { term: "Optimize", definition: "1 RU per 5 MVS. Powered by Turbonomic — requires Turbonomic target configuration." },
+  { term: "Operate (⚠ no RU mapping)", definition: "'Operate' does not appear in IBM's Concert RU model. Do not quote RUs for this category — confirm with IBM if a customer references it." },
+  { term: "Concert Observe", definition: "Cross-domain observability. Requires Instana agents as the data source. Two sub-tiers: Essentials (1 RU/7 MVS) and Standard (1 RU/2 MVS)." },
   { term: "Concert Protect", definition: "CVE analysis and risk enrichment. Integrates with Instana container data." },
   { term: "Concert Resilience", definition: "Resilience scoring — evaluates availability, compliance, configuration, and runtime health." },
-  { term: "Concert Operate", definition: "AI-guided incident response and root-cause analysis." },
   { term: "Sidekick", definition: "Unified 3-product sidebar in Instana, Turbonomic, and Concert UIs — cross-product insights without switching tools." },
   { term: "Agentic IT Ops", definition: "Concert's AI layer autonomously surfaces insights and orchestrates actions — not just dashboards." },
 ];

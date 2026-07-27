@@ -3,18 +3,12 @@
  *
  * Confirmed IBM pricing (IBM HashiCorp Product Pricing Guidance, Jun 18, 2026):
  *   PID: 5900BJ7
- *   D100DZX  Standard  $51,600/year at 10,000 RUM
- *   D11GDZX  Premium   $108,000/year at 10,000 RUM
- *   Both use graduated tiers — per-RUM rate decreases at higher volumes.
- *   Simple per-RUM rates (derived from 10K reference):
- *     Standard: $5.16/RUM/year
- *     Premium:  $10.80/RUM/year
+ *   D100DZX  Standard  $5.16/RUM/year list — graduated discounts, net at 10K RUM: $46,064
+ *   D11GDZX  Premium  $10.80/RUM/year list — graduated discounts, net at 10K RUM: $89,220
+ *   Full discount table in terraform-data.ts (TERRAFORM_RUM_TIERS).
  *
  *   Free: up to 500 RUM, no IBM part number.
  *   Terraform Enterprise (self-hosted): contact IBM for pricing.
- *
- * NOTE: Pricing is linear from the 10K reference until full graduated tier table
- * is confirmed. Flag estimates as budgetary references.
  */
 import {
   TERRAFORM_HCP_PLANS,
@@ -22,6 +16,7 @@ import {
   TERRAFORM_BEST_PRACTICES,
   TERRAFORM_QUICK_REFERENCE,
   TERRAFORM_PER_RUM_ANNUAL,
+  terraformNetPrice,
   type TerraformEdition,
   type TerraformDeployment,
 } from "./terraform-data";
@@ -86,22 +81,34 @@ export function computeTerraformRecommendation(inputs: TerraformInputs): Terrafo
 
   // ── Build line items ───────────────────────────────────────────────────────
   if (deploymentActual === "HCP" && recommendedEdition !== "Free") {
-    const perRum = recommendedEdition === "Premium"
-      ? TERRAFORM_PER_RUM_ANNUAL.premium
-      : TERRAFORM_PER_RUM_ANNUAL.standard;
+    const editionKey = recommendedEdition === "Premium" ? "premium" : "standard";
     const part = recommendedEdition === "Premium" ? "D11GDZX" : "D100DZX";
-    const annual = Math.round(rum * perRum * 100) / 100;
+    const perRum = TERRAFORM_PER_RUM_ANNUAL[editionKey];
+    const netFromTable = terraformNetPrice(rum, editionKey);
+
+    // Use the confirmed tier net if available; otherwise fall back to list×volume with a flag
+    const annual = netFromTable !== null
+      ? netFromTable
+      : Math.round(rum * perRum * 100) / 100;
+
+    const tierNote = netFromTable !== null
+      ? `Net price from IBM graduated discount table. List: $${perRum.toFixed(2)}/RUM/year.`
+      : `Below 10,000 RUM — no confirmed tier net; using list rate $${perRum.toFixed(2)}/RUM/year × ${rum.toLocaleString()} RUM.`;
 
     lines.push({
       part,
       description: `HCP Terraform ${recommendedEdition} (IBM PID 5900BJ7)`,
       quantity: rum,
       annualList: annual,
-      notes: `$${perRum.toFixed(2)}/RUM/year list (derived from $${recommendedEdition === "Premium" ? "108,000" : "51,600"}/yr at 10K RUM reference). Graduated tiers apply — larger volumes may cost less per RUM.`,
+      notes: tierNote,
     });
 
-    flags.push(`Reference price: $${recommendedEdition === "Premium" ? "108,000" : "51,600"}/yr at 10,000 RUM. Graduated pricing — confirm actual tier with IBM for ${rum.toLocaleString()} RUM.`);
-    flags.push("List-price estimate — standard IBM discounting applies. Engage IBM for a formal CPQ quote.");
+    if (netFromTable !== null) {
+      flags.push(`Graduated discount applied: net annual = $${annual.toLocaleString()} for ${rum.toLocaleString()} RUM (${recommendedEdition}). Source: IBM HashiCorp Product Pricing Guidance.`);
+    } else {
+      flags.push(`Below 10,000 RUM — no confirmed tier net price. Linear estimate at $${perRum.toFixed(2)}/RUM/year. Confirm with IBM.`);
+    }
+    flags.push("Engage IBM for formal CPQ quote — standard IBM discounting applies on top of these list/net prices.");
   }
 
   // ── Rationale ─────────────────────────────────────────────────────────────
@@ -139,11 +146,14 @@ export function computeTerraformRecommendation(inputs: TerraformInputs): Terrafo
   }
 
   // ── Next step ──────────────────────────────────────────────────────────────
+  const netRef = terraformNetPrice(rum, recommendedEdition === "Premium" ? "premium" : "standard");
   const nextStep = deploymentActual === "Enterprise"
     ? "Engage IBM for a Terraform Enterprise self-hosted deployment discussion and custom pricing."
     : recommendedEdition === "Free"
       ? "Start with HCP Terraform Free (up to 500 RUM) — no purchase needed. Upgrade to Standard/Premium when scale grows."
-      : `Engage IBM for HCP Terraform ${recommendedEdition} (${plan.part}) pricing for ${rum.toLocaleString()} RUM. Reference: $${recommendedEdition === "Premium" ? "108,000" : "51,600"}/yr at 10K RUM.`;
+      : netRef !== null
+        ? `HCP Terraform ${recommendedEdition} (${plan.part}) for ${rum.toLocaleString()} RUM — net $${netRef.toLocaleString()} per IBM graduated discount table. Engage IBM for CPQ.`
+        : `HCP Terraform ${recommendedEdition} (${plan.part}) for ${rum.toLocaleString()} RUM — below confirmed tier range; engage IBM for pricing.`;
 
   // ── Totals ─────────────────────────────────────────────────────────────────
   const totalAnnualList = lines.reduce((s, l) => s + l.annualList, 0);

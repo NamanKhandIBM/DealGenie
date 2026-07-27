@@ -11,9 +11,24 @@
  *   D11GDZX  Terraform Premium   — enterprise governance, audit, compliance
  *
  *   Both priced by RUM (Resource Under Management) volume with graduated tiers.
- *   Reference list prices at 10,000 RUM:
- *     Standard (D100DZX):  $51,600/year
- *     Premium  (D11GDZX): $108,000/year
+ *   List price = $5.16/RUM/year (Standard) or $10.80/RUM/year (Premium) — flat rate,
+ *   with a graduated DISCOUNT schedule applied on top (see TERRAFORM_RUM_TIERS).
+ *
+ *   Graduated discount table (source: IBM HashiCorp Product Pricing Guidance):
+ *     Standard (D100DZX):
+ *       10,000 RUM → 11% off → $46,064 net
+ *       25,000 RUM → 19% off → $104,834 net
+ *       50,000 RUM → 26% off → $190,051 net
+ *      100,000 RUM → 34% off → $340,469 net
+ *      250,000 RUM → 42% off → $751,892 net
+ *      500,000 RUM → 48% off → $1,332,181 net
+ *     Premium (D11GDZX):
+ *       10,000 RUM → 17% off → $89,220 net
+ *       25,000 RUM → 26% off → $199,954 net
+ *       50,000 RUM → 34% off → $357,945 net
+ *      100,000 RUM → 40% off → $642,666 net
+ *      250,000 RUM → 48% off → $1,398,445 net
+ *      500,000 RUM → 54% off → $2,493,828 net
  *
  *   RUM = 1 managed resource (any Terraform-managed cloud/infra object)
  *   Free tier: up to 500 RUM, no IBM part number needed.
@@ -101,28 +116,93 @@ export const TERRAFORM_HCP_PLANS: TerraformPlan[] = [
   },
 ];
 
-// ─── Pricing tiers (graduated — lower per-RUM rate at higher volumes) ─────────
+// ─── Pricing tiers (graduated discount on flat per-RUM list rate) ─────────────
 // Reference: IBM HashiCorp Product Pricing Guidance, Jun 18, 2026
-// These are list prices; standard IBM discounting applies.
+// List rate: Standard $5.16/RUM/year, Premium $10.80/RUM/year.
+// Discount schedule below yields the confirmed NET annual price at each tier.
 
 export interface TerraformRUMTier {
   minRUM: number;
   maxRUM: number | null;
-  standardAnnual: number;   // D100DZX annual list at this tier
-  premiumAnnual: number;    // D11GDZX annual list at this tier
+  discountPct: number;  // % discount applied to list
+  standardNet: number;  // D100DZX net annual price at this tier
+  premiumNet: number;   // D11GDZX net annual price at this tier
 }
 
-/** Known reference point — graduated tier structure with 10K RUM as anchor.
- *  Linear interpolation used for other volumes until full tier table confirmed. */
-export const TERRAFORM_RUM_REFERENCE_ANNUAL = {
-  standard: { rums: 10000, annualList: 51600 },   // D100DZX
-  premium:  { rums: 10000, annualList: 108000 },  // D11GDZX
+/** Full graduated discount table (source: IBM HashiCorp Product Pricing Guidance).
+ *  Linear interpolation between tier break-points is used for intermediate volumes. */
+export const TERRAFORM_RUM_TIERS: TerraformRUMTier[] = [
+  { minRUM:      1, maxRUM:   9999, discountPct:  0, standardNet: 0,         premiumNet: 0         }, // placeholder — no confirmed net below 10K
+  { minRUM:  10000, maxRUM:  24999, discountPct: 11, standardNet:  46064,    premiumNet:  89220    },
+  { minRUM:  25000, maxRUM:  49999, discountPct: 19, standardNet: 104834,    premiumNet: 199954    },
+  { minRUM:  50000, maxRUM:  99999, discountPct: 26, standardNet: 190051,    premiumNet: 357945    },
+  { minRUM: 100000, maxRUM: 249999, discountPct: 34, standardNet: 340469,    premiumNet: 642666    },
+  { minRUM: 250000, maxRUM: 499999, discountPct: 42, standardNet: 751892,    premiumNet: 1398445   },
+  { minRUM: 500000, maxRUM: null,   discountPct: 48, standardNet: 1332181,   premiumNet: 2493828   },
+];
+
+// Flat list rates (before tier discounts)
+export const TERRAFORM_PER_RUM_ANNUAL = {
+  standard: 5.16,   // $5.16/RUM/year list — D100DZX
+  premium:  10.80,  // $10.80/RUM/year list — D11GDZX
 };
 
-// Simple per-RUM rate derived from 10K reference (used for estimates at other volumes)
-export const TERRAFORM_PER_RUM_ANNUAL = {
-  standard: 51600 / 10000,  // $5.16/RUM/year list
-  premium:  108000 / 10000, // $10.80/RUM/year list
+/** Look up the confirmed net price for a given RUM count.
+ *  Returns the net for the matching tier, or null if below 10K (no confirmed data). */
+export function terraformNetPrice(rum: number, edition: "standard" | "premium"): number | null {
+  const tier = [...TERRAFORM_RUM_TIERS].reverse().find((t) => rum >= t.minRUM);
+  if (!tier || tier.minRUM < 10000) return null; // below confirmed range
+  // Interpolate linearly between this tier's break-point and the next
+  const tierIdx = TERRAFORM_RUM_TIERS.indexOf(tier);
+  const nextTier = TERRAFORM_RUM_TIERS[tierIdx + 1];
+  const baseNet = edition === "premium" ? tier.premiumNet : tier.standardNet;
+  if (!nextTier || nextTier.minRUM === undefined) return baseNet; // top tier
+  const nextNet = edition === "premium" ? nextTier.premiumNet : nextTier.standardNet;
+  const fraction = (rum - tier.minRUM) / (nextTier.minRUM - tier.minRUM);
+  return Math.round(baseNet + fraction * (nextNet - baseNet));
+}
+
+// ─── SCS Discount Authorization Matrix ───────────────────────────────────────
+// Source: "HashiCorp SCS Update – 14 June 2026" — NEW IBM Lifecycle Automation
+//         SaaS Committed Spend (SCS) Discount Approval Matrix.
+// Supersedes the Jul 2025 "HashiCorp Tactical SCS Quoting in PA Guide."
+// Scoped to HashiCorp Tactical SCS committed-spend deals (the standard vehicle
+// for Terraform and Vault commercial sales).
+//
+//   ≤10%  discount → no approval needed (seller can proceed)
+//   10–40% discount → Sales Theater VP approval required
+//   >40%  discount → Deal Management / CRO approval
+//                    (Jack Huber; backup: Freddy Vaquero)
+
+export interface TerraformDiscountTier {
+  maxPct: number;
+  label: string;
+  approver: string;
+}
+
+export const TERRAFORM_SCS_DISCOUNT_MATRIX: TerraformDiscountTier[] = [
+  { maxPct: 10,  label: "No approval required",           approver: "Seller self-approve" },
+  { maxPct: 40,  label: "Sales Theater VP approval",      approver: "Sales Theater VP" },
+  { maxPct: 100, label: "Deal Management / CRO approval", approver: "Jack Huber (backup: Freddy Vaquero)" },
+];
+
+/** Returns the approval tier for a given additional discount percentage (on top of IBM tier pricing).
+ *  @param additionalDiscountPct — the % additional discount being requested (0–100) */
+export function getTerraformDiscountApproval(additionalDiscountPct: number): TerraformDiscountTier {
+  return TERRAFORM_SCS_DISCOUNT_MATRIX.find((t) => additionalDiscountPct <= t.maxPct)
+    ?? TERRAFORM_SCS_DISCOUNT_MATRIX[TERRAFORM_SCS_DISCOUNT_MATRIX.length - 1];
+}
+
+/** Pre-formatted one-liner for result cards and flags */
+export const TERRAFORM_DISCOUNT_AUTHORIZATION_NOTE =
+  "Discount authorization (HashiCorp SCS Update, 14 Jun 2026 — supersedes Jul 2025 guide): " +
+  "≤10% → no approval · 10–40% → Sales Theater VP · >40% → Deal Management/CRO " +
+  "(Jack Huber; backup: Freddy Vaquero). Scoped to HashiCorp Tactical SCS committed-spend deals.";
+
+// Backward-compat alias
+export const TERRAFORM_RUM_REFERENCE_ANNUAL = {
+  standard: { rums: 10000, annualList: 46064 },   // D100DZX — net at 10K
+  premium:  { rums: 10000, annualList: 89220 },   // D11GDZX — net at 10K
 };
 
 export const TERRAFORM_ENTERPRISE_SUMMARY = `
@@ -143,7 +223,7 @@ export const TERRAFORM_VAULT_VALUE_POINTS = [
 export const TERRAFORM_BEST_PRACTICES = [
   {
     title: "Use HCP Free as the trial hook, sell Standard/Premium by RUM volume",
-    body: "HCP Terraform Free covers up to 500 RUM at no cost. IBM's paid parts (D100DZX Standard, D11GDZX Premium) are priced per RUM/year — reference price at 10K RUM: Standard $51,600/yr, Premium $108,000/yr. Graduated tiers mean larger customers pay less per RUM.",
+    body: "HCP Terraform Free covers up to 500 RUM at no cost. IBM's paid parts (D100DZX Standard, D11GDZX Premium) are priced at $5.16/$10.80 per RUM/year (list) with a graduated discount schedule: at 10K RUM Standard nets $46,064 (11% off list), Premium $89,220 (17% off). Discounts deepen at higher volumes — 48%/54% at 500K RUM.",
   },
   {
     title: "Terraform + Vault is the flagship IBM ILM/SLM story",
@@ -166,8 +246,10 @@ export const TERRAFORM_BEST_PRACTICES = [
 export const TERRAFORM_QUICK_REFERENCE = [
   { term: "HCP Terraform", definition: "HashiCorp Cloud Platform Terraform — IBM-hosted SaaS Terraform (PID 5900BJ7)." },
   { term: "RUM", definition: "Resource Under Management — the billing unit. 1 RUM = 1 Terraform-managed resource (VM, bucket, DB, etc.)." },
-  { term: "D100DZX", definition: "Terraform Standard SaaS — $51,600/year at 10K RUM list. Advanced governance and team management." },
-  { term: "D11GDZX", definition: "Terraform Premium SaaS — $108,000/year at 10K RUM list. Audit logging, compliance, enterprise SLAs." },
+  { term: "D100DZX", definition: "Terraform Standard SaaS — $5.16/RUM/year list with graduated discounts. Net at 10K RUM: $46,064 (11% off). 500K RUM: $1,332,181 (48% off)." },
+  { term: "D11GDZX", definition: "Terraform Premium SaaS — $10.80/RUM/year list with graduated discounts. Net at 10K RUM: $89,220 (17% off). 500K RUM: $2,493,828 (54% off)." },
+  { term: "Graduated discount", definition: "Both Terraform tiers use a volume-discount schedule — the same flat per-RUM rate applies at all volumes, but a larger % discount is layered on top as RUM count grows." },
+  { term: "SCS discount approval", definition: "HashiCorp Tactical SCS (Jun 2026): ≤10% no approval · 10–40% Sales Theater VP · >40% Deal Mgmt/CRO (Jack Huber; backup Freddy Vaquero)." },
   { term: "ILM", definition: "Infrastructure Lifecycle Management — IBM's term for the Terraform-centered provisioning story." },
   { term: "SLM", definition: "Security Lifecycle Management — IBM's term for the Vault-centered secrets/identity story." },
   { term: "Terraform Enterprise", definition: "Self-hosted Terraform for air-gapped or on-prem environments — contact IBM for pricing." },

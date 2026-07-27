@@ -1,31 +1,115 @@
 /**
  * IBM Instana Observability — data module
  *
- * Pricing sourced from ibm.com/products/instana/pricing (July 2026 public list).
+ * Pricing sourced from:
+ *  - ibm.com/products/instana/pricing (July 2026 public list) — SaaS Essentials + PayPerUse
+ *  - "Part Numbers & Pricing - IBM Instana Observability - IBM Sellers & Partners" (Apr 7, 2026)
+ *    — SaaS Standard tier, SaaS part numbers, SelfHosted parts and per-MVS pricing
+ *
  * Metric: Managed Virtual Server (MVS) = one monitored host.
+ * MVS counting rules: 1 physical server = 1 MVS · 1 VM = 1 MVS · 1 K8s worker node = 1 MVS
+ * Minimum order: 10 MVS per part number.
  *
- * Three purchase models:
- *  PayPerUse  — $0.03 USD/MVS/hour — no commitment, cancel anytime — no add-ons
- *  SaaS       — $21.20 USD/MVS/month starting (Essentials or Standard tier) — add-ons available
- *  SelfHosted — $1,440 USD/month starting — annual subscription — self-managed
+ * SaaS tiers:
+ *  Essentials (D0N78ZX) — infrastructure monitoring only          — $21.20/MVS/month
+ *  Standard   (D0N79ZX) — full-stack APM, traces, synthetic, LLM — $79.50/MVS/month
  *
- * Tiers within SaaS:
- *  Essentials — infrastructure monitoring only
- *  Standard   — full-stack observability (APM, traces, synthetic, LLM observability, etc.)
+ * Self-Hosted (on-premises) tiers — billing metric is MVS/month (NOT VPC/socket):
+ *  Essentials Self-Hosted (D29RRLL) — $32.10/MVS/month (incl. S&S)
+ *  Standard   Self-Hosted (D29RTLL) — $120.00/MVS/month (incl. S&S)
+ *  Essentials for Linux on IBM Z (D29RSLL) — $32.10/MVS/month
+ *  Standard   for Linux on IBM Z (D29RULL) — $120.00/MVS/month
+ *
+ * PayPerUse — $0.03/MVS/hour — no commitment, no add-ons.
  *
  * Add-ons (SaaS only):
- *  Managed PoPs  — synthetic test execution from managed PoPs — starts $0.00031/execution
- *  Logs in context — log ingestion with 30/60/90 day retention — starts $0.351/GB
+ *  Managed PoPs  — synthetic test execution — $0.00031/execution
+ *  Logs in context — log ingestion — $0.351/GB
  */
 
 // ─── Pricing constants ────────────────────────────────────────────────────────
 
 /** PayPerUse: USD per MVS per hour */
 export const INSTANA_PPU_PRICE_PER_MVS_HOUR = 0.03;
-/** SaaS starting price: USD per MVS per month (Essentials tier) */
-export const INSTANA_SAAS_PRICE_PER_MVS_MONTH = 21.20;
-/** SelfHosted starting price: USD per month (minimum commitment) */
-export const INSTANA_SELFHOSTED_BASE_MONTH = 1440;
+
+/** SaaS Essentials: USD per MVS per month */
+export const INSTANA_SAAS_ESSENTIALS_PER_MVS_MONTH = 21.20;
+/** SaaS Standard: USD per MVS per month (confirmed Apr 7, 2026 parts deck) */
+export const INSTANA_SAAS_STANDARD_PER_MVS_MONTH = 79.50;
+/** SaaS starting price alias — Essentials is the entry point */
+export const INSTANA_SAAS_PRICE_PER_MVS_MONTH = INSTANA_SAAS_ESSENTIALS_PER_MVS_MONTH;
+
+/** Self-Hosted Essentials: USD per MVS per month (incl. S&S) */
+export const INSTANA_SELFHOSTED_ESSENTIALS_PER_MVS_MONTH = 32.10;
+/** Self-Hosted Standard: USD per MVS per month (incl. S&S) */
+export const INSTANA_SELFHOSTED_STANDARD_PER_MVS_MONTH = 120.00;
+/** Self-Hosted starting price alias — Essentials at minimum 10 MVS = $321/mo */
+export const INSTANA_SELFHOSTED_BASE_MONTH = INSTANA_SELFHOSTED_ESSENTIALS_PER_MVS_MONTH * 10;
+
+/** Minimum MVS order quantity per part number */
+export const INSTANA_MIN_MVS = 10;
+
+// ─── Part numbers (confirmed Apr 7, 2026 parts deck) ─────────────────────────
+
+export interface InstanaPart {
+  part: string;
+  description: string;
+  model: "SaaS" | "SelfHosted";
+  tier: "Essentials" | "Standard";
+  pricePerMVSMonth: number;
+  notes: string;
+}
+
+export const INSTANA_PARTS: InstanaPart[] = [
+  {
+    part: "D0N78ZX",
+    description: "IBM Instana Observability Essentials — SaaS",
+    model: "SaaS",
+    tier: "Essentials",
+    pricePerMVSMonth: 21.20,
+    notes: "Infrastructure monitoring only. Min 10 MVS. IBM-hosted.",
+  },
+  {
+    part: "D0N79ZX",
+    description: "IBM Instana Observability Standard — SaaS",
+    model: "SaaS",
+    tier: "Standard",
+    pricePerMVSMonth: 79.50,
+    notes: "Full-stack APM, distributed tracing, synthetic, LLM observability. Min 10 MVS. IBM-hosted.",
+  },
+  {
+    part: "D29RRLL",
+    description: "IBM Instana Observability Essentials — Self-Hosted MVS Subscription (incl. S&S)",
+    model: "SelfHosted",
+    tier: "Essentials",
+    pricePerMVSMonth: 32.10,
+    notes: "On-premises/self-managed. Infrastructure monitoring only. Billing metric: MVS/month.",
+  },
+  {
+    part: "D29RTLL",
+    description: "IBM Instana Observability Standard — Self-Hosted MVS Subscription (incl. S&S)",
+    model: "SelfHosted",
+    tier: "Standard",
+    pricePerMVSMonth: 120.00,
+    notes: "On-premises/self-managed. Full-stack APM. Billing metric: MVS/month (incl. S&S).",
+  },
+  {
+    part: "D29RSLL",
+    description: "IBM Instana Observability Essentials — Self-Hosted for Linux on IBM Z",
+    model: "SelfHosted",
+    tier: "Essentials",
+    pricePerMVSMonth: 32.10,
+    notes: "Linux on IBM Z variant. Same price as standard self-hosted Essentials.",
+  },
+  {
+    part: "D29RULL",
+    description: "IBM Instana Observability Standard — Self-Hosted for Linux on IBM Z",
+    model: "SelfHosted",
+    tier: "Standard",
+    pricePerMVSMonth: 120.00,
+    notes: "Linux on IBM Z variant. Same price as standard self-hosted Standard.",
+  },
+];
 
 export type InstanaPurchaseModel = "PayPerUse" | "SaaS" | "SelfHosted";
 export type InstanaTier = "Essentials" | "Standard";
@@ -60,32 +144,32 @@ export const INSTANA_PLANS: InstanaPlan[] = [
   {
     model: "SaaS",
     label: "SaaS (Hosted by IBM)",
-    baseMonthly: INSTANA_SAAS_PRICE_PER_MVS_MONTH,
-    unit: "$21.20/MVS/month starting",
+    baseMonthly: INSTANA_SAAS_ESSENTIALS_PER_MVS_MONTH,
+    unit: "$21.20/MVS/month (Essentials) · $79.50/MVS/month (Standard)",
     commitment: "Flexible billing; annual or term options",
-    summary: "IBM-hosted SaaS. Best for scaling teams. Essentials (infra only) or Standard (full-stack).",
+    summary: "IBM-hosted SaaS. Essentials (infra only, D0N78ZX) or Standard (full-stack APM, D0N79ZX). Minimum 10 MVS per part.",
     includes: [
-      "Essentials or Standard tier per MVS",
+      "Essentials (D0N78ZX): $21.20/MVS/month — infrastructure monitoring only",
+      "Standard (D0N79ZX): $79.50/MVS/month — APM, traces, synthetic, LLM observability",
       "Unlimited users",
       "No scale limits on hosts",
-      "Flexible billing options",
       "Add-ons: Managed PoPs, Logs in context, Data ingestion",
     ],
     addOnsAvailable: true,
   },
   {
     model: "SelfHosted",
-    label: "Self-Hosted",
+    label: "Self-Hosted (On-Premises)",
     baseMonthly: INSTANA_SELFHOSTED_BASE_MONTH,
-    unit: "$1,440/month starting",
-    commitment: "Annual subscription",
-    summary: "Customer-run deployment. Full feature parity with SaaS. Full data control.",
+    unit: "$32.10/MVS/month (Essentials) · $120.00/MVS/month (Standard)",
+    commitment: "Annual subscription; billing per MVS/month",
+    summary: "Customer-managed deployment. Billing metric: MVS/month (NOT VPC). Essentials (D29RRLL) or Standard (D29RTLL). S&S included in price.",
     includes: [
-      "Essentials or Standard feature parity",
-      "Monthly updates",
+      "Essentials (D29RRLL): $32.10/MVS/month — infrastructure monitoring, incl. S&S",
+      "Standard (D29RTLL): $120.00/MVS/month — full-stack APM, incl. S&S",
+      "Linux on IBM Z variants: D29RSLL (Essentials) / D29RULL (Standard) — same prices",
       "Full control over data and deployment",
-      "Logs in context included",
-      "Annual subscription required",
+      "Monthly updates; annual subscription required",
     ],
     addOnsAvailable: false,
   },
@@ -159,10 +243,12 @@ export const INSTANA_BEST_PRACTICES = [
 ];
 
 export const INSTANA_QUICK_REFERENCE = [
-  { term: "MVS", definition: "Managed Virtual Server — the billing unit. 1 monitored host = 1 MVS." },
-  { term: "Essentials tier", definition: "Infrastructure monitoring only (no APM/traces)." },
-  { term: "Standard tier", definition: "Full-stack observability including APM, traces, synthetic, and LLM." },
+  { term: "MVS", definition: "Managed Virtual Server — the billing unit. 1 VM or physical host or K8s worker node = 1 MVS. Min order: 10 MVS." },
+  { term: "Essentials tier", definition: "Infrastructure monitoring only (no APM/traces). SaaS: $21.20/MVS/mo (D0N78ZX). Self-Hosted: $32.10/MVS/mo (D29RRLL)." },
+  { term: "Standard tier", definition: "Full-stack APM, distributed tracing, synthetic, LLM observability. SaaS: $79.50/MVS/mo (D0N79ZX). Self-Hosted: $120.00/MVS/mo (D29RTLL)." },
   { term: "PayPerUse", definition: "$0.03/MVS/hour — no commitment, no add-ons." },
-  { term: "SaaS", definition: "From $21.20/MVS/month — IBM-hosted, flexible billing, add-ons available." },
-  { term: "Self-Hosted", definition: "From $1,440/month — annual subscription, customer-managed." },
+  { term: "SaaS", definition: "Essentials $21.20/MVS/mo (D0N78ZX) · Standard $79.50/MVS/mo (D0N79ZX). IBM-hosted, add-ons available." },
+  { term: "Self-Hosted", definition: "Essentials $32.10/MVS/mo (D29RRLL) · Standard $120.00/MVS/mo (D29RTLL). Customer-managed, S&S included. Billing: MVS/month (not VPC)." },
+  { term: "D0N78ZX / D0N79ZX", definition: "SaaS Essentials / Standard part numbers. Min 10 MVS each." },
+  { term: "D29RRLL / D29RTLL", definition: "Self-Hosted Essentials / Standard part numbers. MVS/month billing, S&S included." },
 ];

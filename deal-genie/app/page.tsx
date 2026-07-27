@@ -332,40 +332,52 @@ export default function ChatPage() {
 
     if (state.product === "Turbonomic") {
       return {
-        label: "Attach Instana for richer optimization",
-        description: "Turbonomic's AI actions become application-aware when Instana feeds real-time APM data into the optimization engine.",
-        productName: "IBM Instana Observability",
-        headline: "Instana observability attach recommended",
-        detail: "Likely attach: Instana Standard so Turbonomic can make application-aware resource decisions.",
-        rationale: "Without observability, Turbonomic optimizes at the infrastructure layer only. Instana enables SLO-aware actions.",
-        evidence: ["Native Instana→Turbonomic APM data feed", "Application-aware vs. infrastructure-only optimization"],
-        sellerPrompt: "Ask: 'Is Turbonomic currently using APM data, or just infrastructure metrics?'",
+        label: "Attach Instana or explore Apptio FinOps",
+        description: "Turbonomic's AI actions become application-aware when Instana feeds real-time APM data. Apptio adds financial governance and showback.",
+        productName: "IBM Instana · IBM Apptio",
+        headline: "Instana (application-aware optimization) or Apptio (FinOps governance) recommended",
+        detail: "Primary attach: Instana Standard for application-aware resource decisions. Adjacent motion: Apptio Cloudability for cost allocation, showback, and FinOps accountability.",
+        rationale: "Without observability, Turbonomic optimizes at the infrastructure layer only. Without Apptio, optimization actions lack financial visibility to stakeholders.",
+        evidence: [
+          "Instana: native APM data feed → SLO-aware resource actions",
+          "Apptio: showback/chargeback that makes Turbonomic savings visible to finance",
+          "Type 'cross-sell' to explore the Instana guided flow",
+        ],
+        sellerPrompt: "Ask: 'Is Turbonomic using APM data today? And who sees the cost savings in your finance reports?'",
       };
     }
 
     if (state.product === "Terraform") {
       return {
-        label: "Attach Vault — complete the ILM+SLM story",
-        description: "Terraform provisions infrastructure; Vault secures the secrets and credentials that provisioned resources need.",
-        productName: "IBM HashiCorp Vault",
-        headline: "Vault secrets management attach recommended",
-        detail: "IBM's flagship ILM+SLM motion: Terraform (provision) + Vault (secure). Eliminates static credentials in state files.",
-        rationale: "Terraform customers almost always have secrets sprawl. Vault dynamic secrets solve the exact problem Terraform creates.",
-        evidence: ["No static credentials in Terraform state files", "Dynamic secrets for every provisioned resource"],
-        sellerPrompt: "Ask: 'Where are your Terraform service account credentials and API keys stored today?'",
+        label: "Attach Vault (ILM+SLM) or Turbonomic (ILM+ARM)",
+        description: "Terraform provisions infrastructure; Vault secures it. Turbonomic right-sizes it continuously after provisioning.",
+        productName: "IBM HashiCorp Vault · IBM Turbonomic",
+        headline: "Vault (secrets security) and/or Turbonomic (resource optimization) recommended",
+        detail: "Primary attach: Vault eliminates static credentials in Terraform state files — IBM's flagship ILM+SLM story. Adjacent attach: Turbonomic keeps the provisioned infrastructure right-sized and cost-optimized continuously.",
+        rationale: "Terraform creates the resources and the secrets sprawl. Vault fixes the secrets. Turbonomic fixes the over-provisioning.",
+        evidence: [
+          "Vault: dynamic secrets from Terraform provisioning runs — no static credentials",
+          "Turbonomic: continuous rightsizing of every VM/node Terraform creates",
+          "Type 'cross-sell' to explore the Vault guided flow",
+        ],
+        sellerPrompt: "Ask: 'Where are your Terraform service credentials stored today? And how do you ensure provisioned resources stay right-sized over time?'",
       };
     }
 
     if (state.product === "Concert") {
       return {
-        label: "Attach Instana for richer telemetry",
-        description: "Concert's AI-driven intelligence is amplified by Instana's high-fidelity, real-time full-stack telemetry.",
-        productName: "IBM Instana Observability",
-        headline: "Instana telemetry attach recommended",
-        detail: "Instana feeds Concert's cross-domain context engine with the richest possible signal data, improving AI prioritization accuracy.",
-        rationale: "Concert is most powerful with high-quality observability data. Instana is the premium source.",
-        evidence: ["Richer telemetry → better AI context in Concert", "Single-vendor observability + ITOps stack"],
-        sellerPrompt: "Ask: 'What monitoring tool feeds Concert today? Is it Instana or a third-party tool?'",
+        label: "Attach Instana or explore Apptio FinOps",
+        description: "Concert's AI intelligence is amplified by Instana telemetry. Apptio connects Concert's optimization signals to financial governance.",
+        productName: "IBM Instana · IBM Apptio",
+        headline: "Instana (richer telemetry) or Apptio (FinOps governance) recommended",
+        detail: "Primary attach: Instana feeds Concert's cross-domain context engine with high-fidelity real-time signals. Adjacent motion: Apptio Cloudability translates Concert Optimize savings into financial accountability.",
+        rationale: "Concert is most powerful with high-quality observability data. And Concert Optimize ROI is only visible to leadership when it connects to financial reporting.",
+        evidence: [
+          "Instana: high-fidelity telemetry → better AI context and prioritization in Concert",
+          "Apptio: cost allocation and showback that makes Concert Optimize actions visible to finance",
+          "Type 'cross-sell' to explore the Instana guided flow",
+        ],
+        sellerPrompt: "Ask: 'What monitoring data feeds Concert today? And how does your team demonstrate FinOps ROI to leadership?'",
       };
     }
 
@@ -773,6 +785,39 @@ export default function ChatPage() {
             </p>
           </div>
 
+          {/* Active product pill */}
+          {state.product && (
+            <div
+              className="ml-3 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.14)",
+                color: "rgba(203,213,225,0.9)",
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{
+                  background:
+                    state.product === "Verify" || state.product === "MaaS360" ? "#a855f7" :
+                    state.product === "Terraform" || state.product === "Vault" ? "#3b82f6" :
+                    state.product === "Instana" || state.product === "Concert" || state.product === "NS1" ? "#14b8a6" :
+                    state.product === "Turbonomic" ? "#22c55e" :
+                    state.product === "webMethods" ? "#f97316" : "#0f62fe",
+                }}
+              />
+              {state.product === "Verify" ? "Security Verify" :
+               state.product === "MaaS360" ? "MaaS360" :
+               state.product === "NS1" ? "NS1 Connect" :
+               state.product === "Vault" ? "HashiCorp Vault" :
+               state.product === "Terraform" ? "HashiCorp Terraform" :
+               state.product === "Instana" ? "Instana" :
+               state.product === "Turbonomic" ? "Turbonomic" :
+               state.product === "Concert" ? "Concert" :
+               state.product === "webMethods" ? "webMethods" : state.product}
+            </div>
+          )}
+
           {/* Powered by badge */}
           <div
             className="ml-4 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px]"
@@ -845,10 +890,10 @@ export default function ChatPage() {
                     key={p.value}
                     onClick={() => send(p.value)}
                     disabled={loading}
-                    className="product-card"
+                    className={`product-card ${p.value.toLowerCase()}`}
                   >
                     <div className="flex items-center gap-3">
-                      <span style={{ color: "#0f62fe" }}>{p.icon}</span>
+                      <span style={{ color: "currentColor", opacity: 0.7 }}>{p.icon}</span>
                       <div>
                         <p className="text-sm font-semibold" style={{ color: "#e8eaed" }}>{p.label}</p>
                         <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.6)" }}>{p.desc}</p>

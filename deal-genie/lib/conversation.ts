@@ -53,6 +53,7 @@ import {
 import {
   TERRAFORM_BEST_PRACTICES,
   TERRAFORM_QUICK_REFERENCE,
+  TERRAFORM_DISCOUNT_AUTHORIZATION_NOTE,
 } from "./terraform-data";
 import {
   CONCERT_BEST_PRACTICES,
@@ -1778,6 +1779,27 @@ function computeTerraformResult(state: ConversationState): string {
   const featureRows = result.keyFeatures.map((f) => `<li>${f}</li>`).join("");
   const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
 
+  // Pricing table — only render when we have line items (paid editions only)
+  const pricingTable = result.lines.length > 0 ? `
+<div class="result-section-label">💲 PRICING (IBM CONFIRMED RATES)</div>
+<table class="result-table">
+  <thead><tr><th>Part</th><th>Description</th><th>RUM</th><th>Annual (Net/List)</th><th>Notes</th></tr></thead>
+  <tbody>
+    ${result.lines.map((l) => `<tr>
+      <td><code>${l.part}</code></td>
+      <td>${l.description}</td>
+      <td>${l.quantity.toLocaleString()}</td>
+      <td>$${l.annualList.toLocaleString()}</td>
+      <td>${l.notes}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:rgba(59,130,246,0.08);">
+      <td colspan="3">Total Annual</td>
+      <td>$${result.totalAnnualList.toLocaleString()}</td>
+      <td>PID 5900BJ7 · IBM graduated discount applied</td>
+    </tr>
+  </tbody>
+</table>` : "";
+
   return `<div class="result-card">
 
 <div class="result-header">
@@ -1791,6 +1813,21 @@ function computeTerraformResult(state: ConversationState): string {
 
 <div class="result-section-label">📋 RECOMMENDED EDITION: ${result.editionLabel}</div>
 <ul class="result-list">${rationaleRows}</ul>
+
+${pricingTable}
+
+${result.lines.length > 0 ? `<div class="result-section-label">💼 DISCOUNT AUTHORIZATION (SCS)</div>
+<div class="bp-body" style="font-size:12px;line-height:1.6;">
+  <table class="result-table" style="margin-top:4px;">
+    <thead><tr><th>Additional Discount</th><th>Approval Required</th><th>Approver</th></tr></thead>
+    <tbody>
+      <tr><td>≤ 10%</td><td>No approval needed</td><td>Seller self-approve</td></tr>
+      <tr><td>10% – 40%</td><td>Sales Theater VP approval</td><td>Sales Theater VP</td></tr>
+      <tr><td>&gt; 40%</td><td>Deal Management / CRO</td><td>Jack Huber (backup: Freddy Vaquero)</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:6px;color:rgba(147,180,253,0.6);font-size:11px;">Source: HashiCorp SCS Update – 14 Jun 2026 · Scoped to HashiCorp Tactical SCS committed-spend deals · Supersedes Jul 2025 guide.</div>
+</div>` : ""}
 
 <div class="result-section-label">✅ KEY FEATURES</div>
 <ul class="result-list">${featureRows}</ul>
@@ -1828,8 +1865,11 @@ function computeConcertResult(state: ConversationState): string {
   const pain = (String(a.concertPain ?? "alertFatigue")) as ConcertInputs["primaryPain"];
   const hasInstana = parseYesNo(String(a.concertInstana ?? "no"));
   const needsAutomation = parseYesNo(String(a.concertAutomation ?? "no"));
+  const needsResilience = parseYesNo(String(a.concertResilience ?? "no"));
   const apps = parseNumber(String(a.concertApplications ?? 0));
   const concertMVS = parseNumber(String(a.concertMVS ?? 0));
+  const estimatedWorkflows = parseNumber(String(a.concertWorkflows ?? 0));
+  const observeTier = (String(a.concertObserveTier ?? "essentials")) as "essentials" | "standard";
 
   const inputs: ConcertInputs = {
     primaryPain: pain,
@@ -1837,8 +1877,11 @@ function computeConcertResult(state: ConversationState): string {
     needsWorkflowAutomation: needsAutomation,
     needsCostOptimization: pain === "costOptimization" || pain === "all",
     needsSecurityRisk: pain === "riskPosture" || pain === "all",
+    needsResilience,
     estimatedApplications: apps > 0 ? apps : undefined,
     estimatedMVS: concertMVS > 0 ? concertMVS : undefined,
+    estimatedWorkflows: estimatedWorkflows > 0 ? estimatedWorkflows : undefined,
+    observeTier,
   };
 
   const result = computeConcertRecommendation(inputs);
@@ -1848,6 +1891,27 @@ function computeConcertResult(state: ConversationState): string {
     .join("");
   const positioningRows = result.sellerPositioning.map((p) => `<li>${p}</li>`).join("");
   const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  // Pricing table — only render when we have line items
+  const pricingTable = result.lines.length > 0 ? `
+<div class="result-section-label">💲 RU ESTIMATE (LIST PRICE)</div>
+<table class="result-table">
+  <thead><tr><th>Module</th><th>RU</th><th>Annual List</th><th>Notes</th></tr></thead>
+  <tbody>
+    ${result.lines.map((l) => `<tr>
+      <td>${l.module}</td>
+      <td>${l.ruCount.toLocaleString()}</td>
+      <td>$${l.annualList.toLocaleString()}</td>
+      <td>${l.notes}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:rgba(20,184,166,0.08);">
+      <td>Total</td>
+      <td>${result.totalRU.toLocaleString()} RU</td>
+      <td>$${result.totalAnnualList.toLocaleString()}</td>
+      <td>$${result.pricePerRU}/RU/year · PID 5900BBE</td>
+    </tr>
+  </tbody>
+</table>` : "";
 
   const concertCrossSource = String(a.crossSellSource ?? "");
   const concertCrossContext = concertCrossSource === "Instana"
@@ -1863,6 +1927,8 @@ function computeConcertResult(state: ConversationState): string {
 
 <div class="result-section-label">📋 RECOMMENDED MODULES</div>
 <table class="result-table"><tbody>${moduleRows}</tbody></table>
+
+${pricingTable}
 
 ${result.instanaNote ? `<div class="result-section-label">🔗 INSTANA NOTE</div><div class="bp-body">${result.instanaNote}</div>` : ""}
 
@@ -1906,16 +1972,20 @@ function computeWebMethodsResult(state: ConversationState): string {
   const intTxn = parseNumber(String(a.webMethodsIntTxn ?? 0));
   const apiTxn = parseNumber(String(a.webMethodsApiTxn ?? 0));
 
+  const mftTxn = parseNumber(String(a.webMethodsMftTxn ?? 0));
+
   const inputs: WebMethodsInputs = {
     needsAppIntegration: needs.includes("appIntegration"),
     needsAPIManagement: needs.includes("apiManagement"),
     needsB2B: needs.includes("b2b"),
+    needsMFT: needs.includes("mft"),
     needsEventDriven: needs.includes("eventDriven"),
     preferSaaS: deploymentRaw === "saas",
     industryVertical: industry,
     verifyAlreadyOwned: verifyOwned,
     estimatedIntegrations: intTxn > 0 ? intTxn : undefined,
     estimatedAPITransactions: apiTxn > 0 ? apiTxn : undefined,
+    estimatedMFTTransactions: mftTxn > 0 ? mftTxn : undefined,
   };
 
   const result = computeWebMethodsScope(inputs);
@@ -1926,6 +1996,27 @@ function computeWebMethodsResult(state: ConversationState): string {
   const positioningRows = result.sellerPositioning.map((p) => `<li>${p}</li>`).join("");
   const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
 
+  // Pricing table — only render when we have line items beyond base
+  const pricingTable = result.lines.length > 0 ? `
+<div class="result-section-label">💲 USAGE ESTIMATE (LIST PRICE)</div>
+<table class="result-table">
+  <thead><tr><th>Capability</th><th>RVU</th><th>Annual List</th><th>Notes</th></tr></thead>
+  <tbody>
+    ${result.lines.map((l) => `<tr>
+      <td>${l.capability}</td>
+      <td>${l.rvuCount.toLocaleString()}</td>
+      <td>$${l.annualList.toLocaleString()}</td>
+      <td>${l.notes}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:rgba(249,115,22,0.08);">
+      <td>Total</td>
+      <td>${result.totalRVU.toLocaleString()} RVU</td>
+      <td>$${result.totalAnnualList.toLocaleString()}</td>
+      <td>IBM SaaS Calculator Oct 2024 rates · standard discounting applies</td>
+    </tr>
+  </tbody>
+</table>` : "";
+
   return `<div class="result-card">
 
 <div class="result-header">
@@ -1935,6 +2026,8 @@ function computeWebMethodsResult(state: ConversationState): string {
 
 <div class="result-section-label">📋 RECOMMENDED CAPABILITIES</div>
 <table class="result-table"><tbody>${capRows}</tbody></table>
+
+${pricingTable}
 
 <div class="result-section-label">🏗️ DEPLOYMENT</div>
 <div class="bp-body">${result.deploymentRecommendation}</div>

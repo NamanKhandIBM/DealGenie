@@ -173,6 +173,12 @@ export function computeInstanaQuote(inputs: InstanaInputs): InstanaQuoteResult {
     flags.push("Essentials tier: infrastructure monitoring only. Upgrade to Standard for full APM, distributed tracing, synthetic, and LLM observability.");
   }
 
+  flags.push(
+    "Discount approval thresholds for IBM Instana are not published as a static authorization matrix in Seismic " +
+    "(confirmed: the 'Part Numbers & Pricing – IBM Instana Observability' deck has no approval-threshold table). " +
+    "Discount authority is managed in IBM Software CPQ — confirm approval requirements with your IBM pricing desk."
+  );
+
   return {
     model: inputs.model,
     tier,

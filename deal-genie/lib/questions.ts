@@ -1093,10 +1093,21 @@ export const CONCERT_QUESTIONS: Question[] = [
     ],
   },
   {
+    key: "concertResilience",
+    conditional: (a) => String(a.concertAction ?? "quote") === "quote",
+    ask: "Does the client need application resilience posture assessment?",
+    subtext: "Concert Resilience evaluates app resilience posture (5 RU per app).",
+    type: "single",
+    options: [
+      { label: "No", value: "no" },
+      { label: "Yes — resilience posture assessment in scope", value: "yes" },
+    ],
+  },
+  {
     key: "concertApplications",
     conditional: (a) => String(a.concertAction ?? "quote") === "quote",
     ask: "How many applications or services are in scope?",
-    subtext: "Used to estimate Concert Protect RU consumption (3 RU per app, vulnerability management use case).",
+    subtext: "Used to size Concert Protect (3 RU/app) and Concert Resilience (5 RU/app) if selected.",
     type: "single",
     allowOther: true,
     options: [
@@ -1109,13 +1120,35 @@ export const CONCERT_QUESTIONS: Question[] = [
     unit: "applications",
   },
   {
+    key: "concertWorkflows",
+    conditional: (a) =>
+      String(a.concertAction ?? "quote") === "quote" && String(a.concertAutomation ?? "no") === "yes",
+    ask: "How many automated remediation workflows will be deployed in production?",
+    subtext: "Concert Workflows: 5 RU per deployed workflow in production.",
+    type: "number",
+    placeholder: "e.g. 10",
+    unit: "workflows",
+  },
+  {
     key: "concertMVS",
     conditional: (a) => String(a.concertAction ?? "quote") === "quote",
-    ask: "How many hosts or VMs will Concert optimize?",
-    subtext: "Used to estimate Concert Optimize RU consumption (1 RU per 5 MVS). Enter 0 if not using resource optimization.",
+    ask: "How many hosts or VMs will Concert monitor and optimize?",
+    subtext: "Used to size Concert Observe (1 RU/7 MVS Essentials or 1 RU/2 MVS Standard) and Concert Optimize (1 RU/5 MVS).",
     type: "number",
     placeholder: "e.g. 500",
-    unit: "MVS (hosts)",
+    unit: "MVS (hosts / VMs)",
+  },
+  {
+    key: "concertObserveTier",
+    conditional: (a) =>
+      String(a.concertAction ?? "quote") === "quote" && parseFloat(String(a.concertMVS ?? 0)) > 0,
+    ask: "Which Concert Observe APM tier does the client need?",
+    subtext: "Essentials is lighter-weight; Standard provides deeper application performance management.",
+    type: "single",
+    options: [
+      { label: "Essentials APM — lighter visibility (1 RU per 7 MVS)", value: "essentials" },
+      { label: "Standard APM — full app performance management (1 RU per 2 MVS)", value: "standard" },
+    ],
   },
 ];
 
@@ -1139,10 +1172,11 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
     subtext: "Select all that apply.",
     type: "multi",
     options: [
-      { label: "Application integration (SaaS, cloud, on-prem)", value: "appIntegration", hint: "1 RVU = 1,000 txn/month" },
-      { label: "API management and governance", value: "apiManagement", hint: "1 RVU = 10,000 API txn/month" },
-      { label: "B2B / EDI partner integration", value: "b2b" },
-      { label: "Event-driven / streaming integration", value: "eventDriven" },
+      { label: "Application integration (SaaS, cloud, on-prem)", value: "appIntegration", hint: "$92/1K txn/year" },
+      { label: "API management and governance", value: "apiManagement", hint: "$100/10K API txn/year" },
+      { label: "B2B / EDI partner integration", value: "b2b", hint: "$75/1K txn/year" },
+      { label: "Managed File Transfer (MFT)", value: "mft", hint: "$85/1K file txn/year" },
+      { label: "Event-driven / streaming integration", value: "eventDriven", hint: "May be IBM Event Automation" },
     ],
   },
   {
@@ -1152,7 +1186,7 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
       return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("appIntegration");
     },
     ask: "How many integration transactions does the client run per month?",
-    subtext: "SaaS estimate: 1 RVU = 1,000 integration transactions/month × $11.54/RVU/year.",
+    subtext: "Confirmed rate: $92 per 1,000 transactions/year (IBM SaaS Calculator Oct 2024), with volume discount factor.",
     type: "number",
     placeholder: "e.g. 100000",
     unit: "transactions / month",
@@ -1164,10 +1198,22 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
       return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("apiManagement");
     },
     ask: "How many API transactions does the client handle per month?",
-    subtext: "SaaS estimate: 1 RVU = 10,000 API transactions/month × $11.54/RVU/year.",
+    subtext: "Confirmed rate: $100 per 10,000 API transactions/year (IBM SaaS Calculator Oct 2024), with volume discount factor.",
     type: "number",
     placeholder: "e.g. 500000",
     unit: "API transactions / month",
+  },
+  {
+    key: "webMethodsMftTxn",
+    conditional: (a) => {
+      const needs = Array.isArray(a.webMethodsNeeds) ? a.webMethodsNeeds as string[] : [];
+      return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("mft");
+    },
+    ask: "How many file transfer transactions does the client perform per month?",
+    subtext: "Confirmed rate: $85 per 1,000 file-transfer transactions/year (IBM SaaS Calculator Oct 2024), with volume discount factor.",
+    type: "number",
+    placeholder: "e.g. 50000",
+    unit: "file transfer transactions / month",
   },
   {
     key: "webMethodsDeployment",
