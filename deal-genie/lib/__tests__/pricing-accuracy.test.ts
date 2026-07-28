@@ -71,9 +71,25 @@ describe("Pricing accuracy — Turbonomic", () => {
     expect(gov.totalAnnualList / com.totalAnnualList).toBeCloseTo(23.50 / 18.80, 2);
   });
 
-  test("PA-T04: Essentials 1 instance (covers $2M cloud spend) = $50,000/yr", () => {
-    const r = computeTurbonomicScope({ deployment: "SaaS", estimatedMVS: 0, scopingModel: "essentials", annualCloudSpend: 1_500_000 });
-    expect(r.totalAnnualList).toBeCloseTo(50000, 0);
+  test("PA-T04: Monitored Costs — $2M cloud spend = 20 units × $3,000/yr = $60,000/yr", () => {
+    // 1 unit = $100K cloud spend. $2M / $100K = 20 units. Tier 1–25: $3,000/unit/yr. 20 × $3,000 = $60,000
+    const r = computeTurbonomicScope({ deployment: "SaaS", estimatedMVS: 0, scopingModel: "monitoredCosts", annualCloudSpend: 2_000_000 });
+    expect(r.scopingModel).toBe("monitoredCosts");
+    expect(r.totalAnnualList).toBeCloseTo(60000, 0);
+  });
+
+  test("PA-T05: Monitored Costs — $10M cloud spend = 100 units × $1,908/yr = $190,800/yr", () => {
+    // $10M / $100K = 100 units. Tier 76–100: $1,908/unit/yr. 100 × $1,908 = $190,800
+    const r = computeTurbonomicScope({ deployment: "SaaS", estimatedMVS: 0, scopingModel: "monitoredCosts", annualCloudSpend: 10_000_000 });
+    expect(r.scopingModel).toBe("monitoredCosts");
+    expect(r.totalAnnualList).toBeCloseTo(190800, 0);
+  });
+
+  test("PA-T06: Monitored Costs — below minimum ($1.5M) returns cfq", () => {
+    // $1.5M = 15 units, below the 16-unit minimum
+    const r = computeTurbonomicScope({ deployment: "SaaS", estimatedMVS: 0, scopingModel: "monitoredCosts", annualCloudSpend: 1_500_000 });
+    expect(r.scopingModel).toBe("cfq");
+    expect(r.totalAnnualList).toBe(0);
   });
 });
 

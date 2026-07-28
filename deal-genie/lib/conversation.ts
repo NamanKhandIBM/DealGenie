@@ -1622,7 +1622,7 @@ function computeTurbonomicResult(state: ConversationState): string {
   const deployment = (String(a.turbonomicDeployment ?? "SaaS")) as "SaaS" | "SaaSGov" | "OnPrem" | "Parking";
   const mvs = parseNumber(String(a.turbonomicMVS ?? 0));
   const cloudSpend = parseNumber(String(a.turbonomicCloudSpend ?? 0));
-  const scopingModel = (String(a.turbonomicScopingModel ?? "mvs")) as "mvs" | "essentials";
+  const scopingModel = (String(a.turbonomicScopingModel ?? "mvs")) as "mvs" | "monitoredCosts";
   const hasCloud = parseYesNo(String(a.turbonomicCloud ?? "yes"));
   const hasK8s = parseYesNo(String(a.turbonomicKubernetes ?? "no"));
   const driver = (String(a.turbonomicDriver ?? "both")) as "cost" | "performance" | "both";

@@ -768,21 +768,21 @@ export const TURBONOMIC_QUESTIONS: Question[] = [
     ask: "Where does the client need the Turbonomic platform to run?",
     type: "single",
     options: [
-      { label: "IBM hosts it — standard commercial cloud", value: "SaaS", hint: "$18.80/host/month — IBM manages the platform, fastest to deploy" },
-      { label: "IBM hosts it — US Federal / FedRAMP environment", value: "SaaSGov", hint: "$23.50/host/month — required for US government agencies" },
+      { label: "IBM hosts it — standard commercial cloud", value: "SaaS", hint: "$18.80/MVS/month — IBM manages the platform, fastest to deploy" },
+      { label: "IBM hosts it — US Federal / FedRAMP environment", value: "SaaSGov", hint: "$23.50/MVS/month — required for US government agencies" },
       { label: "Customer hosts it in their own data centre", value: "OnPrem", hint: "Contact-for-quote — air-gapped or sovereign requirements" },
-      { label: "Cloud cost savings only — auto-stop idle workloads", value: "Parking", hint: "Contact-for-quote — no per-host fee, priced on cloud spend saved" },
+      { label: "Cloud cost savings only — auto-stop idle workloads", value: "Parking", hint: "$6.26/MVS pay-as-you-go — entry-level FinOps, cloud only" },
     ],
   },
   {
     key: "turbonomicScopingModel",
     conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote" && String(a.turbonomicDeployment ?? "SaaS") === "SaaS",
     ask: "What does the client know better — their server count or their annual cloud bill?",
-    subtext: "Either way works. Pick whichever the customer can answer easily.",
+    subtext: "Either way works. Pick whichever the customer can answer easily. Minimum $1.6M cloud spend required for the Monitored Costs path.",
     type: "single",
     options: [
-      { label: "They know how many servers / VMs they have", value: "mvs", hint: "$23.50/host/month — enter the host count in the next question" },
-      { label: "They know their annual AWS / Azure / GCP spend", value: "essentials", hint: "$50,000/year per $2M of cloud spend covered — enter the dollar amount next" },
+      { label: "They know how many servers / VMs they have", value: "mvs", hint: "$18.80/MVS/month (commercial) or $23.50/MVS/month (gov) — enter the host count next" },
+      { label: "They know their annual AWS / Azure / GCP spend", value: "monitoredCosts", hint: "Tiered pricing per $100K cloud spend — min $1.6M/yr. Enter the dollar amount next." },
     ],
   },
   {
@@ -792,7 +792,7 @@ export const TURBONOMIC_QUESTIONS: Question[] = [
       String(a.turbonomicDeployment ?? "SaaS") === "SaaS" &&
       String(a.turbonomicScopingModel ?? "mvs") === "mvs",
     ask: "How many hosts or VMs are in scope for optimization?",
-    subtext: "Use the same MVS count as your Instana scope if Instana is already in the deal. D11Q7ZX: $23.50/MVS/month list.",
+    subtext: "Use the same MVS count as your Instana scope if Instana is already in the deal. Count: 1 VM = 1 MVS, 1 K8s worker node = 1 MVS.",
     type: "number",
     placeholder: "e.g. 500",
     unit: "MVS (hosts)",
@@ -802,9 +802,9 @@ export const TURBONOMIC_QUESTIONS: Question[] = [
     conditional: (a) =>
       String(a.turbonomicAction ?? "quote") === "quote" &&
       String(a.turbonomicDeployment ?? "SaaS") === "SaaS" &&
-      String(a.turbonomicScopingModel ?? "mvs") === "essentials",
+      String(a.turbonomicScopingModel ?? "mvs") === "monitoredCosts",
     ask: "What is the client's estimated annual public cloud spend?",
-    subtext: "Essentials edition: $50,000/instance/year. Each instance covers up to $2M in annual cloud spend.",
+    subtext: "Monitored Costs (D0I0GZX): tiered pricing per $100K cloud spend. Minimum $1,600,000 annual spend (16 units). Rate ranges from $3,000/unit/yr (small) to $850.80/unit/yr (large).",
     type: "number",
     placeholder: "e.g. 4000000",
     unit: "USD / year",
