@@ -12,8 +12,9 @@ import {
   type VaultQuickReference
 } from "./vault-parts";
 
-export type VaultModel = "A-Platform" | "B-Clients";
+export type VaultModel = "A-Platform";
 
+/** @deprecated Model B (Clients/RVU) is retired — Vault 2.0 uses RU-based pricing only */
 export type VaultEdition = "Essentials" | "Standard" | "Premium";
 
 // ─── Plain use-case inputs — what a seller collects from the client ───────────
@@ -184,7 +185,7 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
 
     const ruPart = VAULT_PARTS_MODEL_A.find((p) => p.part === "D15FKZX")!;
     const ruAnnual = ruPart.listPrice * ruMonthly * 12;
-    const { recDiscount, netPerRU } = getVaultRUDiscount(ruMonthly);
+    const { recDiscount } = getVaultRUDiscount(ruMonthly);
     lines.push({
       part: ruPart.part,
       description: ruPart.description,
@@ -345,7 +346,7 @@ export function computeVaultQuote(inputs: VaultInputs): VaultQuoteResult {
   }
 
   return {
-    model: "B-Clients",
+    model: "A-Platform" as VaultModel,
     lines,
     totalAnnualList,
     ballparkNet,

@@ -40,7 +40,6 @@ import {
   NS1_BEST_PRACTICES,
   NS1_TUTORIAL_STEPS,
   NS1_QUICK_REFERENCE,
-  type NS1Part
 } from "./ns1-parts";
 
 /** Look up the catalog entry for a part number. Returns undefined if not found. */

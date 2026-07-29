@@ -25,7 +25,7 @@ import type { Product } from "../types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function assertFinitePositive(n: number, label: string): number {
+function assertFinitePositive(n: number, _label?: string): number {
   expect(isFinite(n)).toBe(true);
   expect(n).toBeGreaterThan(0);
   // Nothing in these three products should cost more than $50M list
@@ -45,7 +45,7 @@ function runCompare(product: Product, answers: Record<string, unknown>) {
   expect(result.scenarios.length).toBeGreaterThanOrEqual(1);
 
   for (const s of result.scenarios) {
-    assertFinitePositive(s.annualList, `${product} scenario ${s.name}`);
+    assertFinitePositive(s.annualList);
     // monthlyList = annualList/12 — allow rounding differences up to $1
     expect(Math.abs(s.monthlyList - s.annualList / 12)).toBeLessThan(1);
   }
@@ -70,7 +70,7 @@ function npAddon(part: "D22PGLL" | "D21CWLL") {
 describe("Verify — quoting engine", () => {
   test("SIM-V01: SSO only, 1,000 users, 12mo", () => {
     const r = computeVerifyQuote({ capabilities: ["SSO"], population: 1000, avgLoginsPerYear: 48, term: "12-month", regions: 1 });
-    assertFinitePositive(r.totalAnnualList, "SIM-V01");
+    assertFinitePositive(r.totalAnnualList);
     expect(r.totalAnnualList).toBeGreaterThan(1000);
   });
 
@@ -478,46 +478,43 @@ describe("computeScenarioPrice — Verify", () => {
   });
 });
 
-describe("computeScenarioPrice — Vault Model B", () => {
+describe("computeScenarioPrice — Vault 2.0 (Model A)", () => {
   const base: Record<string, string | number | boolean | string[]> = {
-    vaultModel: "B",
-    edition: "Standard",
-    clientCount: 500,
+    staticSecretCount: 500,
     installCount: 1,
     includeNonProd: "no",
+    includeKMIP: "no",
   };
 
-  test("SIM-CVB01: No overrides — positive price", () => {
+  test("SIM-CVB01: No overrides — positive price (Vault 2.0)", () => {
     assertFinitePositive(computeScenarioPrice("Vault", base, {}), "SIM-CVB01");
   });
 
-  test("SIM-CVB02: Edition override Essentials < Standard < Premium", () => {
-    const ess = computeScenarioPrice("Vault", base, { edition: "Essentials" });
-    const std = computeScenarioPrice("Vault", base, { edition: "Standard" });
-    const pre = computeScenarioPrice("Vault", base, { edition: "Premium" });
-    expect(std).toBeGreaterThan(ess);
-    expect(pre).toBeGreaterThan(std);
+  test("SIM-CVB02: More secrets = higher price (Vault 2.0)", () => {
+    const low = computeScenarioPrice("Vault", base, { staticSecretCount: 100 });
+    const high = computeScenarioPrice("Vault", base, { staticSecretCount: 2000 });
+    expect(high).toBeGreaterThan(low);
   });
 
-  test("SIM-CVB03: clientCount override scales linearly", () => {
-    const c100 = computeScenarioPrice("Vault", base, { clientCount: 100 });
-    const c1000 = computeScenarioPrice("Vault", base, { clientCount: 1000 });
-    expect(c1000).toBeGreaterThan(c100);
+  test("SIM-CVB03: Dynamic roles add cost on top of secrets (Vault 2.0)", () => {
+    const noRoles = computeScenarioPrice("Vault", base, { dynamicRoles: 0 });
+    const withRoles = computeScenarioPrice("Vault", base, { dynamicRoles: 100 });
+    expect(withRoles).toBeGreaterThan(noRoles);
   });
 
-  test("SIM-CVB04: nonProd yes/no adds $12,480", () => {
+  test("SIM-CVB04: nonProd yes/no adds $48,000 (Vault 2.0)", () => {
     const no = computeScenarioPrice("Vault", base, { includeNonProd: "no" });
     const yes = computeScenarioPrice("Vault", base, { includeNonProd: "yes" });
-    expect(yes - no).toBeCloseTo(12480, -2);
+    expect(yes - no).toBeCloseTo(48000, -2);
   });
 
-  test("SIM-CVB05: Numeric edition codes (1/2/3) translate correctly", () => {
-    const coded = computeScenarioPrice("Vault", { ...base, edition: "2" }, {});
-    const named = computeScenarioPrice("Vault", { ...base, edition: "Standard" }, {});
-    expect(coded).toBeCloseTo(named, -2);
+  test("SIM-CVB05: KMIP adds $264,000 per cluster (Vault 2.0)", () => {
+    const noKMIP = computeScenarioPrice("Vault", base, { includeKMIP: "no" });
+    const withKMIP = computeScenarioPrice("Vault", base, { includeKMIP: "yes" });
+    expect(withKMIP - noKMIP).toBeCloseTo(264000, -2);
   });
 
-  test("SIM-CVB06: installCount override scales install cost", () => {
+  test("SIM-CVB06: installCount override scales install cost (Vault 2.0)", () => {
     const one = computeScenarioPrice("Vault", base, { installCount: 1 });
     const two = computeScenarioPrice("Vault", base, { installCount: 2 });
     expect(two).toBeGreaterThan(one);
@@ -659,30 +656,30 @@ describe("buildFanOut — Verify", () => {
   });
 });
 
-describe("buildFanOut — Vault Model B", () => {
-  const base = { vaultModel: "B", edition: "Standard", clientCount: 500, installCount: 1 };
+describe("buildFanOut — Vault 2.0 (Model A) extra", () => {
+  const base = { staticSecretCount: 500, installCount: 1, includeNonProd: "no", includeKMIP: "no" };
 
-  test("SIM-BFV01: Fork on edition — sorted scenarios", () => {
+  test("SIM-BFV01: Fork on staticSecretCount — sorted scenarios (Vault 2.0)", () => {
     runCompare("Vault", base);
   });
 
-  test("SIM-BFV02: Fork on clientCount — sorted high→low", () => {
-    const result = buildFanOut("Vault", base, ["clientCount"]);
+  test("SIM-BFV02: Fork on dynamicRoles — sorted high→low (Vault 2.0)", () => {
+    const result = buildFanOut("Vault", base, ["dynamicRoles"]);
     expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
   });
 
-  test("SIM-BFV03: Fork on installCount — more clusters = higher top scenario", () => {
+  test("SIM-BFV03: Fork on installCount — more clusters = higher top scenario (Vault 2.0)", () => {
     const result = buildFanOut("Vault", base, ["installCount"]);
     expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
   });
 
-  test("SIM-BFV04: insightText mentions edition or cluster", () => {
-    const result = buildFanOut("Vault", base, ["edition"]);
-    expect(result.insightText.toLowerCase()).toMatch(/edition|cluster|install/);
+  test("SIM-BFV04: insightText mentions RU or cluster (Vault 2.0)", () => {
+    const result = buildFanOut("Vault", base, ["staticSecretCount"]);
+    expect(result.insightText.toLowerCase()).toMatch(/ru|cluster|vault|secret/);
   });
 
-  test("SIM-BFV05: Fork on pkiAddon — scenarios sorted", () => {
-    const result = buildFanOut("Vault", base, ["pkiAddon"]);
+  test("SIM-BFV05: Fork on pkiCertsPerMonth — scenarios sorted (Vault 2.0)", () => {
+    const result = buildFanOut("Vault", base, ["pkiCertsPerMonth"]);
     expect(result.scenarios[0].annualList).toBeGreaterThanOrEqual(result.scenarios[result.scenarios.length - 1].annualList);
   });
 });
@@ -837,9 +834,9 @@ describe("Edge cases and regression guards", () => {
     }
   });
 
-  test("SIM-EDGE13: Vault B — PKI 500 certs costs more than 50 certs", () => {
-    const fifty = computeScenarioPrice("Vault", { vaultModel: "B", edition: "Standard", clientCount: 500, installCount: 1, pkiAddon: 50 }, {});
-    const fiveHundred = computeScenarioPrice("Vault", { vaultModel: "B", edition: "Standard", clientCount: 500, installCount: 1, pkiAddon: 500 }, {});
+  test("SIM-EDGE13: Vault 2.0 — 500 PKI certs/mo costs more than 50 certs/mo", () => {
+    const fifty = computeScenarioPrice("Vault", { staticSecretCount: 100, installCount: 1, pkiCertsPerMonth: 50 }, {});
+    const fiveHundred = computeScenarioPrice("Vault", { staticSecretCount: 100, installCount: 1, pkiCertsPerMonth: 500 }, {});
     expect(fiveHundred).toBeGreaterThan(fifty);
   });
 
@@ -856,3 +853,4 @@ describe("Edge cases and regression guards", () => {
     expect(five.totalAnnualList).toBeCloseTo(one.totalAnnualList * 5, -2);
   });
 });
+

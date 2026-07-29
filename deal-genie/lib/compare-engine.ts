@@ -98,15 +98,7 @@ export function getAddonDefinitions(
     ];
   }
   if (product === "Vault") {
-    const model = String(answers.vaultModel ?? "B");
-    if (model === "B") {
-      return [
-        { key: "includeNonProd", label: "Non-production cluster",         partNumber: "D1018ZX", annualDelta: 12480,   deltaNote: "$12,480 / yr",                               yesValue: "yes", noValue: "no" },
-        { key: "pkiAddon",       label: "PKI cert management (50 certs)", partNumber: "D1406ZX", annualDelta: 8004,    deltaNote: "$5,004 install + $60/cert × 50",             yesValue: 50,    noValue: 0    },
-        { key: "adpKeyMgmt",     label: "ADP Key Mgmt / KMIP (1 cluster)",partNumber: "D1013ZX", annualDelta: 249600,  deltaNote: "$249,600 / cluster",                         yesValue: 1,     noValue: 0    },
-      ];
-    }
-    // Model A
+    // Model B (legacy Clients/RVU) is deprecated in Vault 2.0 — all new quotes use Model A.
     return [
       { key: "includeNonProd", label: "Non-production cluster",           partNumber: "D155GZX", annualDelta: 48000,   deltaNote: "$48,000 / yr",                               yesValue: "yes", noValue: "no" },
       { key: "includeKMIP",    label: "KMIP support",                     partNumber: "D155LZX", annualDelta: 264000,  deltaNote: "Upgrades install from $96K → $360K / cluster",yesValue: "yes", noValue: "no" },
@@ -222,77 +214,7 @@ export function getForkVariables(
   }
 
   if (product === "Vault") {
-    const model = String(answers.vaultModel ?? "B");
-    if (model === "B") {
-      return [
-        // ── Core levers ───────────────────────────────────────────────────
-        {
-          key: "edition",
-          label: "Vault edition",
-          impact: "Sets the install fee: Essentials $24,960 · Standard $90,000 · Premium $99,960 / cluster/yr",
-          options: [
-            { label: "Essentials", value: "Essentials" },
-            { label: "Standard",   value: "Standard" },
-            { label: "Premium",    value: "Premium" },
-          ],
-        },
-        {
-          key: "clientCount",
-          label: "Client (app/service) count",
-          impact: "Each connecting app or service = 1 client RVU at $1,296/yr",
-          options: [
-            { label: "50 clients",     value: 50 },
-            { label: "250 clients",    value: 250 },
-            { label: "1,000 clients",  value: 1000 },
-            { label: "5,000 clients",  value: 5000 },
-            { label: "10,000 clients", value: 10000 },
-          ],
-        },
-        {
-          key: "installCount",
-          label: "Number of clusters",
-          impact: "Each production cluster = one install fee (Essentials $24,960 · Standard $90K · Premium $99,960)",
-          options: [
-            { label: "1 cluster",  value: 1 },
-            { label: "2 clusters", value: 2 },
-            { label: "3 clusters", value: 3 },
-          ],
-        },
-        // ── Add-ons ───────────────────────────────────────────────────────
-        {
-          key: "includeNonProd",
-          label: "Add-on: Non-production environment",
-          impact: "$12,480/yr (D1018ZX) — compare with vs without a dev/test cluster",
-          options: [
-            { label: "Without non-prod", value: "no" },
-            { label: "With non-prod",    value: "yes" },
-          ],
-        },
-        {
-          key: "pkiAddon",
-          label: "Add-on: PKI certificate management",
-          impact: "$5,004 install + $60/cert/yr (D1406ZX + D1405ZX) — compare cert volumes",
-          options: [
-            { label: "No PKI",             value: 0 },
-            { label: "PKI — 50 certs",     value: 50 },
-            { label: "PKI — 250 certs",    value: 250 },
-            { label: "PKI — 500 certs",    value: 500 },
-          ],
-        },
-        {
-          key: "adpKeyMgmt",
-          label: "Add-on: ADP Key Management / KMIP (D1013ZX)",
-          impact: "$249,600 / cluster needing KMIP — compare 0 vs 1 vs 2 clusters",
-          options: [
-            { label: "No KMIP",            value: 0 },
-            { label: "KMIP — 1 cluster",   value: 1 },
-            { label: "KMIP — 2 clusters",  value: 2 },
-            { label: "KMIP — 3 clusters",  value: 3 },
-          ],
-        },
-      ];
-    }
-    // Model A — use business inputs, not raw RU numbers (sellers can't reason about RU counts)
+    // Model B (legacy Clients/RVU) is deprecated — all new quotes use Model A (Vault 2.0).
     return [
       {
         key: "staticSecretCount",
@@ -509,23 +431,8 @@ export function computeScenarioPrice(
   }
 
   if (product === "Vault") {
-    const model = String(a.vaultModel ?? "B");
+    // Model B (legacy) deprecated — route all Vault through Model A.
     const installs = Number(a.installCount ?? 1);
-    if (model === "B") {
-      // edition is stored as "1"/"2"/"3" from the questions, OR as the full name
-      // when set by a fan-out override (which uses "Essentials"/"Standard"/"Premium").
-      // Translate numeric codes to names first; full names pass through unchanged.
-      const EDITION_CODES: Record<string, string> = { "1": "Essentials", "2": "Standard", "3": "Premium" };
-      const editionRaw = String(a.edition ?? "2");
-      const editionName = EDITION_CODES[editionRaw] ?? editionRaw;
-      const edition = (["Essentials", "Standard", "Premium"].includes(editionName) ? editionName : "Standard") as "Essentials" | "Standard" | "Premium";
-      const clients = Number(a.clientCount ?? 100);
-      const includeNonProd = String(a.includeNonProd ?? "no") === "yes";
-      const pkiCerts = Number(a.pkiAddon ?? 0);
-      const adpKeyMgmt = Number(a.adpKeyMgmt ?? 0);
-      const result = computeVaultQuote({ model: "B-Clients", edition, installCount: installs, clientCount: clients, includeNonProd, pkiCerts, adpKeyMgmt });
-      return result.totalAnnualList;
-    }
     const includeNonProd = String(a.includeNonProd ?? "no") === "yes";
     const includeKMIP = String(a.includeKMIP ?? "no") === "yes";
     // Build use-case inputs from business-level keys so compare scenarios show

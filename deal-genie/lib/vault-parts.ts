@@ -4,93 +4,56 @@ export interface VaultPartNumber {
   partNumber: string;
   description: string;
   unit: string;
-  category: 'Model A - Platform/RU' | 'Model B - Clients/RVU' | 'Add-ons';
+  category: 'Vault 2.0 - Consumption/RU' | 'Add-ons';
   notes?: string;
 }
 
 export const VAULT_ALL_PARTS: VaultPartNumber[] = [
-  // Model A - Platform/RU
+  // Vault 2.0 — Consumption/RU-based (the only quoting model)
   {
     partNumber: 'D15FQZX',
-    description: 'Vault Platform Standard Install',
+    description: 'Vault 2.0 Standard Install',
     unit: 'per Install/year',
-    category: 'Model A - Platform/RU',
-    notes: 'Required, min 1 (the cluster/server)'
+    category: 'Vault 2.0 - Consumption/RU',
+    notes: 'Required, min 1 per production cluster'
   },
   {
     partNumber: 'D15FKZX',
-    description: 'Vault Platform Standard Resource Unit',
+    description: 'Vault 2.0 Resource Unit (RU)',
     unit: 'per RU/month',
-    category: 'Model A - Platform/RU',
-    notes: 'Required add-on - usage-based pricing'
+    category: 'Vault 2.0 - Consumption/RU',
+    notes: 'Consumption unit — priced on secrets stored, certs issued, credentials rotated'
   },
   {
     partNumber: 'D155GZX',
-    description: 'Vault Platform Standard Non-Production Install',
+    description: 'Vault 2.0 Non-Production Install',
     unit: 'per Install/year',
-    category: 'Model A - Platform/RU',
-    notes: 'Recommended for dev/test environments'
+    category: 'Vault 2.0 - Consumption/RU',
+    notes: 'Dev/test environment'
   },
   {
     partNumber: 'D155LZX',
-    description: 'Vault Platform Standard incl. KMIP Install',
+    description: 'Vault 2.0 Standard incl. KMIP Install',
     unit: 'per Install/year',
-    category: 'Model A - Platform/RU',
-    notes: 'Replaces production install when KMIP needed'
+    category: 'Vault 2.0 - Consumption/RU',
+    notes: 'Replaces standard install when KMIP key management is needed'
   },
   {
     partNumber: 'D1556ZX',
-    description: 'Vault Platform Custom Plugin Install',
+    description: 'Vault 2.0 Custom Plugin Install',
     unit: 'per Plugin/year',
-    category: 'Model A - Platform/RU',
+    category: 'Vault 2.0 - Consumption/RU',
     notes: 'Per custom plugin required'
   },
   {
     partNumber: 'D15FNZX',
-    description: 'Vault Platform Standard RU Monthly License',
+    description: 'Vault 2.0 RU Monthly License',
     unit: 'per RU/month',
-    category: 'Model A - Platform/RU',
-    notes: 'Short-term, max 3 months/calendar year'
+    category: 'Vault 2.0 - Consumption/RU',
+    notes: 'Short-term only, max 3 months/calendar year'
   },
-  
-  // Model B - Clients/RVU
-  {
-    partNumber: 'D1015ZX',
-    description: 'Vault Self-Managed Essentials Install',
-    unit: 'per Install/year',
-    category: 'Model B - Clients/RVU',
-    notes: 'Good - Basic features'
-  },
-  {
-    partNumber: 'D101FZX',
-    description: 'Vault Self-Managed Standard Install',
-    unit: 'per Install/year',
-    category: 'Model B - Clients/RVU',
-    notes: 'Better - Most common choice'
-  },
-  {
-    partNumber: 'D101AZX',
-    description: 'Vault Self-Managed Premium Install',
-    unit: 'per Install/year',
-    category: 'Model B - Clients/RVU',
-    notes: 'Best - Buy ≥2 for DR/performance replication'
-  },
-  {
-    partNumber: 'D1017ZX',
-    description: 'Vault Self-Managed Client',
-    unit: 'per RVU (Client)/year',
-    category: 'Model B - Clients/RVU',
-    notes: 'Required add-on - unique apps/services/users'
-  },
-  {
-    partNumber: 'D1018ZX',
-    description: 'Vault Self-Managed Non-Production',
-    unit: 'per Install/year',
-    category: 'Model B - Clients/RVU',
-    notes: 'Non-production environment'
-  },
-  
-  // Add-ons (work with both models)
+
+  // Add-ons
   {
     partNumber: 'D1406ZX',
     description: 'Vault PKI Certificate Add-On Install',
@@ -130,14 +93,15 @@ export interface VaultBestPractice {
 
 export const VAULT_BEST_PRACTICES: VaultBestPractice[] = [
   {
-    category: 'Model Selection',
-    question: 'Which pricing model fits the client\'s use case?',
-    rationale: 'Model A (Platform/RU) is usage-based and scales with workload. Model B (Clients/RVU) is predictable and scales with number of applications/services. The models CANNOT be mixed for the same customer.',
+    category: 'Vault 2.0 — Consumption-Based Pricing',
+    question: 'How does Vault 2.0 pricing work?',
+    rationale: 'Vault 2.0 charges based on what Vault does — secrets stored, credentials rotated, certificates issued, API calls made — not how many apps connect. This makes it far more predictable for Kubernetes and cloud-native environments where the number of clients can explode.',
     tips: [
-      'Model A: Best for dynamic workloads, cloud-native, or when usage varies significantly',
-      'Model B: Best for predictable workloads, traditional infrastructure, or when client count is stable',
-      'Ask: "Do you know how many applications/services will use Vault?" (Model B) vs "Do you expect variable usage patterns?" (Model A)',
-      'CRITICAL: Once chosen, the model cannot be changed without a new contract'
+      'Requires Vault 2.0 (April 2026 release) and Census reporting enabled',
+      'Census = automated monthly license utilisation reporting to IBM — required for this model',
+      'Two parts: Install (D15FQZX, $96K/cluster/yr) + Resource Units (D15FKZX, $48/RU/month)',
+      'Right-size at renewal using actual Census data from the Vault API or Sigma reports',
+      'Ask: "Is the client on Vault 2.0 or willing to upgrade before signing?" — if no, contact IBM'
     ]
   },
   {
@@ -318,20 +282,20 @@ export interface VaultQuickReference {
 
 export const VAULT_QUICK_REFERENCE: VaultQuickReference[] = [
   {
-    topic: 'Model A vs Model B',
-    content: 'Model A (Platform/RU): Usage-based, scales with workload, best for variable usage. Model B (Clients/RVU): Predictable pricing, scales with app count, best for stable workloads. CANNOT MIX MODELS.'
+    topic: 'Vault 2.0 Pricing Model',
+    content: 'Consumption-based: priced on what Vault does. Install (D15FQZX, $96K/cluster/yr) + Resource Units (D15FKZX, $48/RU/month). Requires Vault 2.0 + Census reporting enabled.'
   },
   {
-    topic: 'RU Calculation (Model A)',
+    topic: 'RU Calculation',
     content: '1 static secret = 1 RU | 1 dynamic role = 1 RU | PKI: CEIL(certs/mo × lifetime_hrs ÷ 730) | Transit: 150K calls = 1 RU | 1 KMIP key = 1 RU'
   },
   {
-    topic: 'Client Counting (Model B)',
-    content: 'Count unique apps/services, not instances. Include all environments. Microservices: each unique service = 1 client. Users: each unique user = 1 client if using Vault for auth.'
+    topic: 'Census Requirement',
+    content: 'Census is mandatory for Vault 2.0 — sends monthly licence utilisation to IBM automatically. Must be enabled at or before contract signing. No exceptions.'
   },
   {
     topic: 'Common Add-ons',
-    content: 'Non-prod: D155GZX (A) or D1018ZX (B) | PKI: D1406ZX install + D1405ZX per cert | KMIP: D155LZX (A) or D1013ZX (B) | Transform: D1014ZX | Custom plugins: D1556ZX'
+    content: 'Non-prod: D155GZX | PKI: D1406ZX install + D1405ZX per cert | KMIP (with KMIP Install): D155LZX | Custom plugins: D1556ZX'
   }
 ];
 
