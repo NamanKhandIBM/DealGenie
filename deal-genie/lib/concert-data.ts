@@ -20,7 +20,10 @@
  *   Z0MK2ZX  Advanced Support (12mo)      $382.00/RU
  *   Z0MK3ZX  Advanced Support (sub)       $31.80/RU
  *
- *  Concert SaaS (PID 5900BD6) — GA July 7, 2026 ("IBM Concert SaaS Parts & Pricing Deck", Jul 17, 2026):
+ *  Concert SaaS (PID 5900BD6) — GA July 7, 2026 ("IBM Concert SaaS Parts & Pricing Deck", 1H 2026):
+ *   D0M8HZX  IBM Concert Standard 1000 RU per Annum       $1,059.60/1,000 RU/annum
+ *   D0M8IZX  IBM Concert Standard 1000 RU Overage         $1,330.00/1,000 RU
+ *   E0M8JZX  IBM Concert Standard 1000 RU Adv Support     $159.00/1,000 RU/annum
  *   Billing: 1,000 RU/annum at $1,059.60 (~$1.06/RU/yr) — consumption SaaS model
  *   SEPARATE product from 5900BBE. Rule: SaaS deal → 5900BD6. On-prem/self-hosted → 5900BBE.
  *
@@ -124,16 +127,26 @@ export const CONCERT_PARTS = {
   advSupportSub:   { part: "Z0MK3ZX", description: "IBM Concert Advanced Support (subscription)", pricePerRU: 31.80, unit: "per RU" },
 } as const;
 
-// Concert SaaS (PID 5900BD6) — GA July 7, 2026. Confirmed pricing:
-export const CONCERT_SAAS_PRICE_PER_1000_RU_YEAR = 1059.60;  // $1,059.60 per 1,000 RU/annum
+// Concert SaaS (PID 5900BD6) — GA July 7, 2026. Confirmed pricing (IBM Concert SaaS Parts & Pricing Deck, 1H 2026):
+export const CONCERT_SAAS_PRICE_PER_1000_RU_YEAR = 1059.60;  // $1,059.60 per 1,000 RU/annum (D0M8HZX)
 export const CONCERT_SAAS_PRICE_PER_RU_YEAR = 1059.60 / 1000; // ~$1.06/RU/yr
+export const CONCERT_SAAS_OVERAGE_PER_1000_RU = 1330.00;     // $1,330.00 per 1,000 RU overage (D0M8IZX)
+export const CONCERT_SAAS_ADV_SUPPORT_PER_1000_RU = 159.00;  // $159.00 per 1,000 RU advanced support (E0M8JZX)
 export const CONCERT_SAAS_PID = "5900BD6";
 export const CONCERT_ONPREM_PID = "5900BBE";
 
-// Rule confirmed: SaaS deployment → 5900BD6. On-prem/self-hosted deployment → 5900BBE.
+// SaaS part numbers (confirmed IBM Concert SaaS Parts & Pricing Deck, 1H 2026):
+export const CONCERT_SAAS_PARTS = {
+  subscription: { part: "D0M8HZX", description: "IBM Concert Standard 1000 Resource Units per Annum",                  pricePerK: 1059.60, unit: "per 1,000 RU/annum" },
+  overage:      { part: "D0M8IZX", description: "IBM Concert Standard 1000 Resource Units Overage",                     pricePerK: 1330.00, unit: "per 1,000 RU" },
+  advSupport:   { part: "E0M8JZX", description: "IBM Concert Standard 1000 Resource Units Advanced Support per Annum",  pricePerK: 159.00,  unit: "per 1,000 RU/annum" },
+} as const;
+
+// Rule confirmed: SaaS deployment → 5900BD6. On-prem/self-hosted → 5900BBE.
 export const CONCERT_SAAS_PID_NOTE =
-  "Concert SaaS (PID 5900BD6, GA Jul 7, 2026): $1,059.60/1,000 RU/annum (~$1.06/RU/yr). " +
-  "Concert On-Prem (PID 5900BBE, GA Jun 12, 2026): $212/RU/year (subscription). " +
+  "Concert SaaS (PID 5900BD6, GA Jul 7, 2026): D0M8HZX $1,059.60/1,000 RU/annum. " +
+  "Overage: D0M8IZX $1,330/1,000 RU. Advanced Support: E0M8JZX $159/1,000 RU/annum. " +
+  "Concert On-Prem (PID 5900BBE, GA Jun 12, 2026): $212/RU/year (subscription, D0MK3ZX). " +
   "Rule: SaaS deal → 5900BD6. On-prem/self-hosted → 5900BBE.";
 
 // RU mapping constants (all confirmed — Concert Standard RU Model Ratio Table)
@@ -157,7 +170,7 @@ export const CONCERT_INSTANA_VALUE_POINTS = [
 export const CONCERT_BEST_PRACTICES = [
   {
     title: "Size by RU consumption — five confirmed mappings",
-    body: "Concert is billed per Resource Unit (RU) at $212/RU/year (subscription). All five IBM use-case buckets now have confirmed RU mappings: Protect = 3 RU/app; Resilience = 5 RU/app; Workflows = 5 RU/workflow; Observe Essentials = 1 RU/7 MVS; Observe Standard = 1 RU/2 MVS; Optimize = 1 RU/5 MVS. There is no 'Operate' category in IBM's RU model.",
+    body: "Concert On-Prem is billed per Resource Unit (RU) at $212/RU/year (subscription, D0MK3ZX, PID 5900BBE). Concert SaaS is $1,059.60/1,000 RU/annum (D0M8HZX, PID 5900BD6). All five IBM use-case buckets have confirmed RU mappings: Protect = 3 RU/app; Resilience = 5 RU/app; Workflows = 5 RU/workflow; Observe Essentials = 1 RU/7 MVS; Observe Standard = 1 RU/2 MVS; Optimize = 1 RU/5 MVS. There is no 'Operate' category in IBM's RU model.",
   },
   {
     title: "Lead with the alert-fatigue problem",
@@ -182,12 +195,16 @@ export const CONCERT_BEST_PRACTICES = [
 ];
 
 export const CONCERT_QUICK_REFERENCE = [
-  { term: "RU", definition: "Resource Unit — Concert's billing unit. Subscription: $212/RU/year (PID 5900BBE)." },
-  { term: "Protect (Vulnerability)", definition: "3 RU per managed application. E.g. 50 apps = 150 RU = $31,800/year." },
-  { term: "Resilience (Posture)", definition: "5 RU per app leveraging posture assessment. E.g. 20 apps = 100 RU = $21,200/year." },
-  { term: "Workflows", definition: "5 RU per deployed workflow in production. E.g. 10 workflows = 50 RU = $10,600/year." },
-  { term: "Observe (Essentials APM)", definition: "1 RU per 7 MVS. E.g. 700 MVS = 100 RU = $21,200/year." },
-  { term: "Observe (Standard APM)", definition: "1 RU per 2 MVS. E.g. 200 MVS = 100 RU = $21,200/year." },
+  { term: "RU (On-Prem)", definition: "Resource Unit — On-Prem billing unit. Subscription: $212/RU/year (D0MK3ZX, PID 5900BBE). Monthly: $265/RU/mo (D0MK5ZX)." },
+  { term: "RU (SaaS)", definition: "SaaS billing unit — $1,059.60/1,000 RU/annum (D0M8HZX, PID 5900BD6). Overage: $1,330/1,000 RU (D0M8IZX). Adv Support: $159/1,000 RU/annum (E0M8JZX)." },
+  { term: "D0M8HZX", definition: "Concert SaaS subscription — $1,059.60 per 1,000 RU/annum (PID 5900BD6)." },
+  { term: "D0M8IZX", definition: "Concert SaaS overage — $1,330.00 per 1,000 RU." },
+  { term: "E0M8JZX", definition: "Concert SaaS Advanced Support — $159.00 per 1,000 RU/annum." },
+  { term: "Protect (Vulnerability)", definition: "3 RU per managed application. E.g. 50 apps = 150 RU = $31,800/year (on-prem) or $158.94/year (SaaS)." },
+  { term: "Resilience (Posture)", definition: "5 RU per app leveraging posture assessment. E.g. 20 apps = 100 RU = $21,200/year (on-prem)." },
+  { term: "Workflows", definition: "5 RU per deployed workflow in production. E.g. 10 workflows = 50 RU = $10,600/year (on-prem)." },
+  { term: "Observe (Essentials APM)", definition: "1 RU per 7 MVS. E.g. 700 MVS = 100 RU = $21,200/year (on-prem)." },
+  { term: "Observe (Standard APM)", definition: "1 RU per 2 MVS. E.g. 200 MVS = 100 RU = $21,200/year (on-prem)." },
   { term: "Optimize", definition: "1 RU per 5 MVS. Powered by Turbonomic — requires Turbonomic target configuration." },
   { term: "Operate (⚠ no RU mapping)", definition: "'Operate' does not appear in IBM's Concert RU model. Do not quote RUs for this category — confirm with IBM if a customer references it." },
   { term: "Concert Observe", definition: "Cross-domain observability. Requires Instana agents as the data source. Two sub-tiers: Essentials (1 RU/7 MVS) and Standard (1 RU/2 MVS)." },

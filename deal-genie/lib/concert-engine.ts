@@ -88,9 +88,9 @@ export function computeConcertRecommendation(inputs: ConcertInputs): ConcertReco
       : CONCERT_PRICE_PER_RU_SUBSCRIPTION;                    // $212/RU/yr — D0MK3ZX
 
   if (isSaaS) {
-    flags.push(`Concert SaaS (PID ${pid}, GA Jul 7, 2026): $1,059.60/1,000 RU/annum (~$1.06/RU/yr). IBM hosts the platform.`);
+    flags.push(`Concert SaaS (PID ${pid}, GA Jul 7, 2026): D0M8HZX $1,059.60/1,000 RU/annum (~$1.06/RU/yr). Overage: D0M8IZX $1,330/1,000 RU. Adv Support: E0M8JZX $159/1,000 RU/annum. IBM hosts the platform.`);
   } else {
-    flags.push(`Concert On-Prem (PID ${pid}, GA Jun 12, 2026): $212/RU/year subscription (D0MK3ZX). Customer self-hosts.`);
+    flags.push(`Concert On-Prem (PID ${pid}, GA Jun 12, 2026): D0MK3ZX $212/RU/year subscription. Customer self-hosts.`);
   }
 
   // ── Module selection ───────────────────────────────────────────────────────

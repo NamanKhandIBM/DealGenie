@@ -188,7 +188,7 @@ export function computeWebMethodsScope(inputs: WebMethodsInputs): WebMethodsScop
     }
 
     if (lines.length <= 1) {
-      flags.push("Only base subscription estimated. Provide monthly transaction volume for full usage estimate. Base: 60 RU/month ($8,310/yr list). Usage: 4 RU/100K txn (tier 1), or use per-product rates from IBM SaaS Calculator.");
+      flags.push("Only base subscription estimated. Provide monthly transaction volume for full usage estimate. Base: 60 RU/month ($28,858/yr list at $40.08/RU/yr). Usage: 4 RU/100K txn (tier 1), or use per-product rates from IBM SaaS Calculator.");
     } else {
       flags.push(`SaaS estimate uses confirmed per-product rates (IBM SaaS Calculator Oct 2024) + base model (IBM Docs Jul 2026). List price ~$${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/year. Standard IBM discounting applies.`);
     }

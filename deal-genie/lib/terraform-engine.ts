@@ -21,6 +21,8 @@ import {
   type TerraformDeployment,
 } from "./terraform-data";
 
+export { terraformNetPrice };
+
 export interface TerraformInputs {
   deployment: TerraformDeployment;
   estimatedManagedResources: number;   // RUM count

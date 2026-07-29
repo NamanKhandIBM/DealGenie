@@ -43,7 +43,8 @@
 *   When a webMethods customer asks about event-driven workloads, route to IBM Event Automation
 *   as a separate line item (different PID, different billing metric, different sales motion).
 *
-*  SaaS reference list price: ~$11.54/RU/year (confirmed from Seismic Dec 2025 guide)
+*  SaaS reference list price: $40.08/RU/year (confirmed IWHI SaaS Sizing Calculator, 2nd July 2026)
+*  Software (on-prem) reference list price: $40.00/RU/year (confirmed IWHI Software Sizing Calculator, 2nd July 2026)
 *  On-Premises / Cloud Pak for Integration (CP4I) webMethods Add-on:
 *   Billing metric: VPC (Virtual Processor Core)
 *   CP4I base list prices (confirmed "Cloud Pak for Integration - Sizing, Packaging and Pricing Guide", Jun 22, 2026):
@@ -114,10 +115,13 @@ export const WEBMETHODS_CAPABILITIES: WebMethodsCapability[] = [
   },
 ];
 
-// ─── Pricing constants (SaaS, confirmed IBM Docs Jul 2026 + Seismic Dec 2025) ─
+// ─── Pricing constants (confirmed IWHI Sizing Calculators, 2nd July 2026) ──────
 
-/** SaaS reference list price per RU per year (Seismic Dec 2025) */
-export const WEBMETHODS_PRICE_PER_RU_YEAR = 11.54;
+/** SaaS reference list price per RU per year (IWHI SaaS Sizing Calculator, 2nd Jul 2026) */
+export const WEBMETHODS_PRICE_PER_RU_YEAR = 40.08;
+
+/** Software (on-prem) reference list price per RU per year (IWHI Software Sizing Calculator, 2nd Jul 2026) */
+export const WEBMETHODS_PRICE_PER_RU_YEAR_SOFTWARE = 40.00;
 
 /** SaaS base charge per integration capability instance per month (IBM Docs Jul 2026) */
 export const WEBMETHODS_BASE_RU_PER_MONTH = 60;
@@ -176,6 +180,10 @@ export const WEBMETHODS_API_TRANSACTIONS_PER_RVU = 10000;
 
 /** Also export as WEBMETHODS_PRICE_PER_RVU_YEAR for backward compat */
 export const WEBMETHODS_PRICE_PER_RVU_YEAR = WEBMETHODS_PRICE_PER_RU_YEAR;
+
+// Note: the per-product annual rates below (from IBM SaaS Calculator Oct 2024) may also need
+// updating when IBM publishes a new calculator with updated per-capability rates.
+// The price-per-RU was updated from $11.54 to $40.08 (IWHI SaaS Sizing Calculator, 2nd Jul 2026).
 
 // ─── IBM Event Automation (separate product — NOT webMethods RU) ──────────────
 // Source: "IBM Event Automation Sizing, Parts & Pricing" (Feb 10, 2026)
@@ -253,7 +261,7 @@ export const WEBMETHODS_VERIFY_VALUE_POINTS = [
 export const WEBMETHODS_BEST_PRACTICES = [
   {
     title: "Size SaaS by RU — base + usage model, with confirmed per-product rates",
-    body: "webMethods SaaS charges 60 RU/month base per enabled integration instance, plus 4 RU per 100K transactions (first 1M/yr) then 1 RU/100K over 1M. List price ~$11.54/RU/year. For per-product sizing, use the IBM SaaS Calculator rates: Integration $92/1K txn/yr, API Mgmt $100/10K API txn/yr, B2B $75/1K txn/yr, B2B Integration $92/1K txn/yr, MFT $85/1K file txn/yr. All have volume discount factors (1.00→0.03). On-prem is VPC-based — contact IBM.",
+    body: "webMethods SaaS charges 60 RU/month base per enabled integration instance, plus 4 RU per 100K transactions (first 1M/yr) then 1 RU/100K over 1M. List price $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026). For per-product sizing, use the IBM SaaS Calculator rates: Integration $92/1K txn/yr, API Mgmt $100/10K API txn/yr, B2B $75/1K txn/yr, B2B Integration $92/1K txn/yr, MFT $85/1K file txn/yr. All have volume discount factors (1.00→0.03). On-prem is VPC-based — contact IBM.",
   },
   {
     title: "B2B/EDI is a strong differentiator",
@@ -274,7 +282,7 @@ export const WEBMETHODS_BEST_PRACTICES = [
 ];
 
 export const WEBMETHODS_QUICK_REFERENCE = [
-  { term: "RU", definition: "Resource Unit — SaaS billing unit. ~$11.54/RU/year. Base: 60 RU/month/instance. Usage: 4 RU/100K txn (tier 1), 1 RU/100K (tier 2 over 1M/yr)." },
+  { term: "RU", definition: "Resource Unit — SaaS billing unit. $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026). Base: 60 RU/month/instance. Usage: 4 RU/100K txn (tier 1), 1 RU/100K (tier 2 over 1M/yr)." },
   { term: "Integration rate", definition: "$92 per 1,000 transactions/year (IBM SaaS Calculator, Oct 2024). Volume discount factor 1.00→0.03." },
   { term: "API Management rate", definition: "$100 per 10,000 API transactions/year (IBM SaaS Calculator, Oct 2024)." },
   { term: "B2B rate", definition: "$75 per 1,000 transactions/year (IBM SaaS Calculator, Oct 2024)." },
@@ -284,7 +292,7 @@ export const WEBMETHODS_QUICK_REFERENCE = [
   { term: "Volume discount factor", definition: "All webMethods SaaS products share a factor table: 1.00 at ≤25 units, 0.70 at 26–100, 0.50 at 101–500, 0.30 at 501–2500, 0.10 at 2501–25000, 0.03 at 25001+." },
   { term: "Flow Pilot", definition: "AI assistant inside webMethods for authoring, documenting, and testing integration flows." },
   { term: "B2B/EDI", definition: "Business-to-business and Electronic Data Interchange — webMethods' heritage strength." },
-  { term: "VPC (CP4I)", definition: "Virtual Processor Core — on-prem/CP4I billing unit. CP4I subscription: $1,240/VPC/month (D2689LL). Perpetual: $37,100/VPC (D20ZBLL). webMethods add-on parts: D16NRZX/D16NSZX — price contact IBM." },
+  { term: "VPC (CP4I)", definition: "Virtual Processor Core — on-prem/CP4I billing unit. CP4I subscription: $1,240/VPC/month (D2689LL). Perpetual: $37,100/VPC (D20ZBLL). webMethods add-on parts: D16NRZX/D16NSZX — price contact IBM. Software RU: $40.00/RU/year (IWHI Software Sizing Calculator, 2nd Jul 2026)." },
   { term: "Hybrid integration", definition: "Single platform spanning on-prem, IBM Cloud, and any public cloud." },
   { term: "webMethods 12.1", definition: "Current GA release — improved security, runtime, and developer experience." },
   { term: "CP4I", definition: "Cloud Pak for Integration — IBM's on-prem integration platform. webMethods on-prem add-on (D16NRZX/D16NSZX) is separate from base CP4I entitlement." },

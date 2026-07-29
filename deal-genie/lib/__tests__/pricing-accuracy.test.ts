@@ -12,7 +12,7 @@
  *   Concert:     IBM Concert GA Jul 7, 2026 (SaaS), Jun 12, 2026 (On-Prem)
  *   Vault 2.0:   IBM Vault Platform Parts deck (D15FQZX $96K/cluster, D15FKZX $48/RU/mo)
  *   MaaS360:     IBM MaaS360 public list (Apr 2024 Seismic, still current)
- *   webMethods:  IBM SaaS Calculator Oct 2024
+ *   webMethods:  IWHI SaaS Sizing Calculator 2nd July 2026 ($40.08/RU/yr)
  *   NS1:         IBM NS1 marketplace prices (confirmed)
  *   Verify:      IBM Security Verify public pricing
  */
@@ -229,8 +229,8 @@ describe("Pricing accuracy — MaaS360", () => {
 // ─── webMethods ───────────────────────────────────────────────────────────────
 
 describe("Pricing accuracy — webMethods SaaS", () => {
-  test("PA-W01: Base subscription only (0 txn) = 720 RU × $11.54/RU/yr", () => {
-    // 60 RU/mo × 12 = 720 RU. $11.54/RU/yr. ~$8,309/yr
+  test("PA-W01: Base subscription only (0 txn) = 720 RU × $40.08/RU/yr", () => {
+    // 60 RU/mo × 12 = 720 RU. $40.08/RU/yr (IWHI SaaS Sizing Calculator, 2nd Jul 2026). ~$28,858/yr
     const r = computeWebMethodsScope({ needsAppIntegration: false, preferSaaS: true });
     const baseLine = r.lines.find(l => l.capability.includes("Base"));
     expect(baseLine).toBeDefined();
