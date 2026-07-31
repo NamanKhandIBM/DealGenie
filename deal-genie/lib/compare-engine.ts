@@ -110,6 +110,7 @@ export function getAddonDefinitions(
   }
   if (product === "Vault") {
     // Vault 2.0 (Model A — Platform model) add-ons only
+    // Model B (legacy Clients/RVU) is deprecated in Vault 2.0 — all new quotes use Model A.
     return [
       { key: "includeNonProd", label: "Non-production cluster",           partNumber: "D155GZX", annualDelta: 48000,   deltaNote: "$48,000 / yr",                               yesValue: "yes", noValue: "no" },
       { key: "includeKMIP",    label: "KMIP support",                     partNumber: "D155LZX", annualDelta: 264000,  deltaNote: "Upgrades install from $96K → $360K / cluster",yesValue: "yes", noValue: "no" },
@@ -229,6 +230,7 @@ export function getForkVariables(
 
   if (product === "Vault") {
     // Vault 2.0 — Model A (Platform model) only
+    // Model B (legacy Clients/RVU) is deprecated — all new quotes use Model A (Vault 2.0).
     return [
       {
         key: "staticSecretCount",
@@ -639,6 +641,7 @@ export function computeScenarioPrice(
 
   if (product === "Vault") {
     // Vault 2.0 — always Model A (Platform model)
+    // Model B (legacy) deprecated — route all Vault through Model A.
     const installs = Number(a.installCount ?? 1);
     const includeNonProd = String(a.includeNonProd ?? "no") === "yes";
     const includeKMIP = String(a.includeKMIP ?? "no") === "yes";

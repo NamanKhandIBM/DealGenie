@@ -13,6 +13,7 @@
  *   Vault 2.0:   IBM Vault Platform Parts deck (D15FQZX $96K/cluster, D15FKZX $48/RU/mo)
  *   MaaS360:     IBM MaaS360 public list (Apr 2024 Seismic, still current)
  *   webMethods:  IWHI SaaS Sizing Calculator 2nd July 2026 ($40.08/RU/yr)
+ *   Vault 2.0:   IBM Vault Platform Parts deck (D15FQZX $96K/cluster, D15FKZX $48/RU/mo)
  *   NS1:         IBM NS1 marketplace prices (confirmed)
  *   Verify:      IBM Security Verify public pricing
  */
@@ -161,6 +162,10 @@ describe("Pricing accuracy — Concert", () => {
   });
 });
 
+import { computeVaultQuote } from "../vault-engine";
+import { computeNS1Quote } from "../ns1-engine";
+import { computeVerifyQuote } from "../verify-engine";
+
 // ─── Vault 2.0 ───────────────────────────────────────────────────────────────
 
 describe("Pricing accuracy — Vault 2.0 (Model A)", () => {
@@ -262,6 +267,7 @@ describe("Pricing accuracy — NS1", () => {
   });
 
   test("PA-N02: Premium tier at ≥ 1000 MQ — is correctly flagged as Premium", () => {
+  test("PA-N02: Premium tier at ≥ 1000 MQ — correctly flagged as Premium", () => {
     const pre = computeNS1Quote({ queryVolumeMQ: 1000, filterChains: 0, monitors: 0, recordCount: 0 });
     expect(pre.tier).toBe("Premium");
   });
@@ -273,6 +279,10 @@ describe("Pricing accuracy — NS1", () => {
     expect(yes.totalAnnualList).toBe(no.totalAnnualList);
     // Premium DDoS (D0GN5ZX) does add cost though
     const preDdos = computeNS1Quote({ queryVolumeMQ: 2000, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
+    const no  = computeNS1Quote({ queryVolumeMQ: 100, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: false });
+    const yes = computeNS1Quote({ queryVolumeMQ: 100, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
+    expect(yes.totalAnnualList).toBe(no.totalAnnualList);
+    const preDdos   = computeNS1Quote({ queryVolumeMQ: 2000, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
     const preNoDdos = computeNS1Quote({ queryVolumeMQ: 2000, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: false });
     expect(preDdos.totalAnnualList).toBeGreaterThan(preNoDdos.totalAnnualList);
   });
