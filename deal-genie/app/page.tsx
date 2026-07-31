@@ -36,7 +36,7 @@ const WELCOME_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
   content:
-    "👋 Welcome to **Deal Genie**.\n\nI turn client requirements into **part numbers + quantities** ready to paste into CPQ.\n\nWhich product would you like to quote today?",
+    "👋 Welcome to **Quote Genie**.\n\nI turn client requirements into **part numbers + quantities** ready to paste into CPQ.\n\nWhich product would you like to quote today?",
   timestamp: Date.now(),
 };
 
@@ -897,10 +897,10 @@ export default function ChatPage() {
       <div className="flex flex-col h-screen relative" style={{ zIndex: 1 }}>
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <header className="header-glass px-6 py-3.5 flex items-center gap-3 flex-shrink-0" style={{ height: "56px" }}>
-          {/* Deal Genie logo */}
+          {/* Quote Genie logo */}
           <Image
             src="/dealgenie-icon.png"
-            alt="Deal Genie"
+            alt="Quote Genie"
             width={50}
             height={50}
             className="rounded-xl flex-shrink-0"
@@ -909,7 +909,7 @@ export default function ChatPage() {
 
           <div className="flex flex-col">
             <h1 className="font-semibold text-base leading-tight" style={{ color: "#e8eaed" }}>
-              Deal Genie
+              Quote Genie
             </h1>
             <p className="text-[11px] leading-none mt-0.5" style={{ color: "rgba(147,180,253,0.7)" }}>
               Requirements → Part Numbers → CPQ
@@ -1196,78 +1196,7 @@ export default function ChatPage() {
                       Compare Scenarios
                     </button>
                     {crossSellButtons.length > 0 && (
-                      <div className="flex flex-col gap-2 mt-1">
-                        {crossSellButtons.map((card) => (
-                          <div
-                            key={card.productName}
-                            className="w-full rounded-xl p-3"
-                            style={{
-                              background: card.primary ? "rgba(245,158,11,0.08)" : "rgba(99,102,241,0.06)",
-                              border: `1px solid ${card.primary ? "rgba(245,158,11,0.22)" : "rgba(99,102,241,0.2)"}`,
-                            }}
-                          >
-                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                              <div className="min-w-0">
-                                <p className="text-[11px] uppercase tracking-[0.14em]" style={{ color: card.primary ? "rgba(251,191,36,0.72)" : "rgba(167,139,250,0.7)" }}>
-                                  {card.primary ? "Attach recommendation" : "Adjacent motion"}
-                                </p>
-                                <p className="text-sm font-semibold mt-1" style={{ color: card.primary ? "#fef3c7" : "#ede9fe" }}>
-                                  {card.productName}: {card.headline}
-                                </p>
-                                {card.instantQuote && (
-                                  <div
-                                    className="mt-2 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-3"
-                                    style={{ background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.08)" }}
-                                  >
-                                    <span className="text-base font-bold" style={{ color: "#fff" }}>
-                                      ${Math.round(card.instantQuote.monthly).toLocaleString()}<span className="text-xs font-normal opacity-60">/mo</span>
-                                    </span>
-                                    <span className="text-xs opacity-50">·</span>
-                                    <span className="text-sm font-semibold opacity-80" style={{ color: "#fff" }}>
-                                      ${Math.round(card.instantQuote.annual).toLocaleString()}<span className="text-xs font-normal opacity-60">/yr list</span>
-                                    </span>
-                                    <span className="text-[10px] ml-1 opacity-50">{card.instantQuote.keyLine}</span>
-                                  </div>
-                                )}
-                                <p className="text-xs mt-1.5" style={{ color: card.primary ? "rgba(254,243,199,0.82)" : "rgba(237,233,254,0.75)" }}>
-                                  {card.detail}
-                                </p>
-                                <p className="text-xs mt-1" style={{ color: card.primary ? "rgba(254,243,199,0.64)" : "rgba(237,233,254,0.55)" }}>
-                                  {card.rationale}
-                                </p>
-                                <p className="text-[11px] mt-2" style={{ color: card.primary ? "rgba(251,191,36,0.78)" : "rgba(167,139,250,0.78)" }}>
-                                  Seller angle: {card.sellerPrompt}
-                                </p>
-                                {card.evidence.length > 0 && (
-                                  <ul className="mt-2 space-y-1">
-                                    {card.evidence.map((item) => (
-                                      <li key={item} className="text-[11px] leading-relaxed" style={{ color: card.primary ? "rgba(254,243,199,0.64)" : "rgba(237,233,254,0.5)" }}>
-                                        • {item}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </div>
-                              <button
-                                onClick={() => launchCrossSell(card.crossSellCommand)}
-                                disabled={loading}
-                                className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-lg transition-all sm:ml-4 flex-shrink-0"
-                                title={card.description}
-                                style={{
-                                  background: card.primary ? "rgba(245,158,11,0.12)" : "rgba(99,102,241,0.1)",
-                                  border: `1px solid ${card.primary ? "rgba(245,158,11,0.3)" : "rgba(99,102,241,0.25)"}`,
-                                  color: card.primary ? "#fbbf24" : "#a78bfa",
-                                }}
-                              >
-                                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                  <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                                {card.label}
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <CrossSellPanel cards={crossSellButtons} loading={loading} onAttach={launchCrossSell} />
                     )}
                     <button
                       onClick={startBestPractices}
@@ -1613,6 +1542,176 @@ function formatUserAnswer(value: string, question?: Question | null): string {
   return labels.length > 0 ? labels.join(", ") : value;
 }
 
+
+// ─── CrossSellPanel — prominent visual attachment cards ──────────────────────
+type CrossSellCard = {
+  label: string;
+  description: string;
+  productName: string;
+  headline: string;
+  detail: string;
+  rationale: string;
+  evidence: string[];
+  sellerPrompt: string;
+  crossSellCommand: string;
+  instantQuote: { monthly: number; annual: number; keyLine: string } | null;
+  primary: boolean;
+};
+
+function CrossSellPanel({
+  cards,
+  loading,
+  onAttach,
+}: {
+  cards: CrossSellCard[];
+  loading: boolean;
+  onAttach: (cmd: string) => void;
+}) {
+  if (cards.length === 0) return null;
+
+  // Product colour palette
+  const productColor: Record<string, { accent: string; bg: string; border: string; text: string; muted: string; badge: string }> = {
+    "IBM Turbonomic":         { accent: "#22c55e", bg: "rgba(34,197,94,0.07)",  border: "rgba(34,197,94,0.22)",  text: "#bbf7d0", muted: "rgba(187,247,208,0.65)", badge: "rgba(34,197,94,0.15)" },
+    "IBM Instana":            { accent: "#14b8a6", bg: "rgba(20,184,166,0.07)", border: "rgba(20,184,166,0.22)", text: "#99f6e4", muted: "rgba(153,246,228,0.65)", badge: "rgba(20,184,166,0.15)" },
+    "IBM Concert":            { accent: "#818cf8", bg: "rgba(99,102,241,0.07)", border: "rgba(99,102,241,0.22)", text: "#c7d2fe", muted: "rgba(199,210,254,0.65)", badge: "rgba(99,102,241,0.15)" },
+    "IBM HashiCorp Vault":    { accent: "#3b82f6", bg: "rgba(59,130,246,0.07)", border: "rgba(59,130,246,0.22)", text: "#bfdbfe", muted: "rgba(191,219,254,0.65)", badge: "rgba(59,130,246,0.15)" },
+    "IBM HashiCorp Terraform": { accent: "#60a5fa", bg: "rgba(96,165,250,0.07)", border: "rgba(96,165,250,0.22)", text: "#bfdbfe", muted: "rgba(191,219,254,0.65)", badge: "rgba(96,165,250,0.15)" },
+    "IBM Security Verify":    { accent: "#a855f7", bg: "rgba(168,85,247,0.07)", border: "rgba(168,85,247,0.22)", text: "#e9d5ff", muted: "rgba(233,213,255,0.65)", badge: "rgba(168,85,247,0.15)" },
+    "IBM MaaS360":            { accent: "#f472b6", bg: "rgba(244,114,182,0.07)", border: "rgba(244,114,182,0.22)", text: "#fbcfe8", muted: "rgba(251,207,232,0.65)", badge: "rgba(244,114,182,0.15)" },
+    "IBM Instana Observability": { accent: "#14b8a6", bg: "rgba(20,184,166,0.07)", border: "rgba(20,184,166,0.22)", text: "#99f6e4", muted: "rgba(153,246,228,0.65)", badge: "rgba(20,184,166,0.15)" },
+    "IBM webMethods Integration": { accent: "#fb923c", bg: "rgba(251,146,60,0.07)", border: "rgba(251,146,60,0.22)", text: "#fed7aa", muted: "rgba(254,215,170,0.65)", badge: "rgba(251,146,60,0.15)" },
+  };
+
+  const defaultColor = { accent: "#fbbf24", bg: "rgba(251,191,36,0.07)", border: "rgba(251,191,36,0.22)", text: "#fef3c7", muted: "rgba(254,243,199,0.65)", badge: "rgba(251,191,36,0.15)" };
+
+  return (
+    <div className="flex flex-col gap-0 mt-2">
+      {/* Section header */}
+      <div className="flex items-center gap-2 mb-2 px-1">
+        <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="rgba(251,191,36,0.8)" strokeWidth="1.5">
+          <path d="M8 1l2 4 5 .7-3.6 3.5.85 4.95L8 12l-4.25 2.15.85-4.95L1 5.7 6 5z" strokeLinejoin="round"/>
+        </svg>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.13em]" style={{ color: "rgba(251,191,36,0.8)" }}>
+          Cross-sell opportunities ({cards.length})
+        </span>
+      </div>
+
+      {cards.map((card, idx) => {
+        const c = productColor[card.productName] ?? defaultColor;
+        const isPrimary = card.primary;
+
+        return (
+          <div
+            key={card.productName + idx}
+            className="w-full rounded-2xl overflow-hidden mb-3"
+            style={{ border: `1px solid ${c.border}`, background: c.bg }}
+          >
+            {/* Card top bar */}
+            <div
+              className="flex items-center justify-between px-4 py-2.5"
+              style={{ borderBottom: `1px solid ${c.border}`, background: `rgba(0,0,0,0.18)` }}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[10px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full"
+                  style={{ background: c.badge, color: c.accent }}
+                >
+                  {isPrimary ? "Primary attach" : "Adjacent motion"}
+                </span>
+                <span className="text-sm font-semibold" style={{ color: c.text }}>
+                  {card.productName}
+                </span>
+              </div>
+              {card.instantQuote && (
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-base font-bold" style={{ color: "#fff" }}>
+                    ${Math.round(card.instantQuote.monthly).toLocaleString()}
+                    <span className="text-[11px] font-normal opacity-55">/mo</span>
+                  </span>
+                  <span className="text-xs opacity-40">·</span>
+                  <span className="text-sm font-semibold" style={{ color: c.text }}>
+                    ${Math.round(card.instantQuote.annual).toLocaleString()}
+                    <span className="text-[11px] font-normal opacity-55">/yr list</span>
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Card body */}
+            <div className="px-4 pt-3 pb-4">
+              {/* Headline */}
+              <p className="text-sm font-semibold leading-snug mb-1" style={{ color: c.text }}>
+                {card.headline}
+              </p>
+
+              {/* Why it fits */}
+              <p className="text-xs leading-relaxed mb-2.5" style={{ color: c.muted }}>
+                {card.detail}
+              </p>
+
+              {/* Value points */}
+              {card.evidence.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: c.accent }}>
+                    Why it fits
+                  </p>
+                  <ul className="space-y-1.5">
+                    {card.evidence.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-xs leading-relaxed" style={{ color: c.muted }}>
+                        <span className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: c.badge, color: c.accent }}>
+                          {i + 1}
+                        </span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Seller question */}
+              <div
+                className="rounded-lg px-3 py-2 mb-3"
+                style={{ background: "rgba(0,0,0,0.2)", border: `1px solid ${c.border}` }}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] mb-0.5" style={{ color: c.accent }}>
+                  Seller question
+                </p>
+                <p className="text-xs leading-relaxed italic" style={{ color: c.muted }}>
+                  {card.sellerPrompt}
+                </p>
+              </div>
+
+              {/* Rationale (smaller, below) */}
+              <p className="text-[11px] leading-relaxed mb-3" style={{ color: `${c.muted.replace("0.65", "0.5")}` }}>
+                {card.rationale}
+              </p>
+
+              {/* Attach button — full width, prominent */}
+              <button
+                onClick={() => onAttach(card.crossSellCommand)}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  background: c.badge,
+                  border: `1px solid ${c.border}`,
+                  color: c.accent,
+                  opacity: loading ? 0.5 : 1,
+                }}
+              >
+                <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                {card.label}
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+
 function MessageBubble({ message }: { message: Message }) {
   const isUser = message.role === "user";
 
@@ -1621,7 +1720,7 @@ function MessageBubble({ message }: { message: Message }) {
       {/* Assistant avatar */}
       {!isUser && (
         <div className="w-10 h-10 flex-shrink-0 mb-0.5 rounded-full overflow-hidden" style={{ minWidth: "40px" }}>
-          <Image src="/dealgenie-icon.png" alt="Deal Genie" width={40} height={40} className="w-full h-full" style={{ objectFit: "cover" }} />
+          <Image src="/dealgenie-icon.png" alt="Quote Genie" width={40} height={40} className="w-full h-full" style={{ objectFit: "cover" }} />
         </div>
       )}
 

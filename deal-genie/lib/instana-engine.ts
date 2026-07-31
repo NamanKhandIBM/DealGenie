@@ -14,7 +14,8 @@ import {
   INSTANA_PPU_PRICE_PER_MVS_HOUR,
   INSTANA_SAAS_PRICE_PER_MVS_MONTH,
   INSTANA_SAAS_STANDARD_PER_MVS_MONTH,
-  INSTANA_SELFHOSTED_BASE_MONTH,
+  INSTANA_SELFHOSTED_ESSENTIALS_PER_MVS_MONTH,
+  INSTANA_SELFHOSTED_STANDARD_PER_MVS_MONTH,
   type InstanaPurchaseModel,
   type InstanaTier,
   INSTANA_BEST_PRACTICES,
@@ -138,15 +139,19 @@ export function computeInstanaQuote(inputs: InstanaInputs): InstanaQuoteResult {
   }
 
   if (inputs.model === "SelfHosted") {
-    const baseMonthly = INSTANA_SELFHOSTED_BASE_MONTH;
+    const ratePerMVS = tier === "Standard"
+      ? INSTANA_SELFHOSTED_STANDARD_PER_MVS_MONTH
+      : INSTANA_SELFHOSTED_ESSENTIALS_PER_MVS_MONTH;
+    const partNum = tier === "Standard" ? "D29RTLL" : "D29RRLL";
+    const monthly = Math.round(mvs * ratePerMVS * 100) / 100;
     lines.push({
-      label: `Instana ${tier} — Self-Hosted`,
-      quantity: 1,
-      unitPrice: baseMonthly,
-      unit: "per month (starting)",
-      monthlyList: baseMonthly,
-      annualList: baseMonthly * 12,
-      notes: `Customer-managed deployment. Annual subscription required. Starting at $${baseMonthly.toLocaleString()}/month. Contact IBM for exact pricing at ${mvs} MVS scale.`,
+      label: `Instana ${tier} — Self-Hosted (${partNum})`,
+      quantity: mvs,
+      unitPrice: ratePerMVS,
+      unit: "MVS/month (incl. S&S)",
+      monthlyList: monthly,
+      annualList: Math.round(monthly * 12 * 100) / 100,
+      notes: `Customer-managed deployment. ${mvs} MVS × $${ratePerMVS}/MVS/month (incl. S&S). Annual subscription required. Part: ${partNum}.`,
     });
     if (inputs.addLogsInContext && (inputs.estimatedLogGB ?? 0) > 0) {
       const addon = INSTANA_ADDONS.find((a) => a.key === "logsInContext")!;

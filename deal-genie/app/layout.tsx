@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Deal Genie",
+  title: "Quote Genie",
   description: "Turn client requirements into CPQ-ready part numbers and quantities.",
 };
 

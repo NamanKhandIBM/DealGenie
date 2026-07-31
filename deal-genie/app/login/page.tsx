@@ -125,7 +125,7 @@ export default function LoginPage() {
           <div className="flex flex-col items-center gap-3 mb-8">
             <Image
               src="/dealgenie-icon.png"
-              alt="Deal Genie"
+              alt="Quote Genie"
               width={48}
               height={48}
               className="w-12 h-12 rounded-xl"
@@ -133,7 +133,7 @@ export default function LoginPage() {
             />
             <div className="text-center">
               <h1 className="font-bold text-lg" style={{ color: "#e8eaed" }}>
-                Deal Genie
+                Quote Genie
               </h1>
               <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.55)" }}>
                 Internal tool — authorised users only

@@ -811,7 +811,7 @@ function buildSystemPrompt(product: Product, liveContext?: string): string {
     : "";
   const crossSellSection = buildCrossSellPrompt(product);
 
-  return `You are an AI Subject Matter Expert (AI SME) for ${productName}, built into IBM's DealGenie quoting assistant.
+  return `You are an AI Subject Matter Expert (AI SME) for ${productName}, built into IBM's QuoteGenie quoting assistant.
 You help IBM sellers and business partners deeply understand this product so they can run better discovery conversations with customers — and build accurate quotes.
 
 Your role:

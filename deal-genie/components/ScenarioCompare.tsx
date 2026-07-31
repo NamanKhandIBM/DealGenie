@@ -419,7 +419,7 @@ function VariablePicker({
         {crumbs.length === 0 ? "What would you like to explore?" : "What would you like to explore next?"}
       </p>
       <p className="text-xs mb-4" style={{ color: "rgba(147,180,253,0.5)" }}>
-        Pick a core lever. DealGenie computes a price for every option — highest to lowest.
+        Pick a core lever. QuoteGenie computes a price for every option — highest to lowest.
         {crumbs.length > 0 && " All locked choices above stay fixed."}
       </p>
 

@@ -21,7 +21,6 @@ import {
 } from "./questions";
 import {
   buildCrossSellHint,
-  buildCrossSellResultMessage,
   recommendMaaS360ToVerifyAttach,
   recommendVaultToVerifyAttach,
   recommendVerifyCrossSellAttach,
@@ -359,10 +358,10 @@ export function processUserMessage(
       const result = computeResult(s);
       s.phase = "result";
       const resultWithCrossSell = maybeAppendCrossSellHint(s, result);
-      const crossSellMessage = s.answers.crossSellSource ? null : buildCrossSellResultMessage(s.product);
+      // Cross-sell is handled by the visual card panel in the UI — do not append as text here
       return {
         state: s,
-        reply: crossSellMessage ? `${resultWithCrossSell}\n\n${crossSellMessage}` : resultWithCrossSell,
+        reply: resultWithCrossSell,
         activeQuestion: null,
       };
     }
@@ -1237,7 +1236,7 @@ For current quoting (Model B), ask: "How many distinct Kubernetes service accoun
     if (/model a|model b|which model|platform.*ru|clients.*rvu|difference.*model|vault.*1\.0|vault.*2\.0|what.*model/i.test(msg)) {
       return `**IBM HashiCorp Vault 2.0 — consumption-based pricing**
 
-DealGenie quotes Vault 2.0 only. Pricing is based on **what Vault does**, not how many apps connect:
+QuoteGenie quotes Vault 2.0 only. Pricing is based on **what Vault does**, not how many apps connect:
 
 | Use case | How it's measured |
 |---|---|
@@ -1307,7 +1306,7 @@ Common mistake: quoting Premium without buying ≥2 installs — the edition is 
 Vault 2.0 is the **April 2026 release** of Vault Enterprise (previously would have been Vault 1.22 — IBM aligned versioning).
 
 Key facts for quoting:
-- **DealGenie quotes Vault 2.0 only** — consumption/RU-based pricing
+- **QuoteGenie quotes Vault 2.0 only** — consumption/RU-based pricing
 - Requires Census reporting enabled (automated monthly utilisation data to IBM)
 - Requires customer to be on or willing to upgrade to Vault 2.0
 - Two parts per cluster: Install (D15FQZX, $96K/yr) + Resource Units (D15FKZX, $48/RU/month)
@@ -1331,7 +1330,7 @@ Census is Vault's **automated monthly reporting** feature — it sends license u
     if (/mix.*model|model.*mix|1\.0.*2\.0|2\.0.*1\.0|old.*model|previous.*model|client.*model|rvu.*model/i.test(msg)) {
       return `**Vault 1.0 (Client/RVU) vs Vault 2.0 (Consumption/RU)**
 
-DealGenie quotes Vault 2.0 only. Here's the difference:
+QuoteGenie quotes Vault 2.0 only. Here's the difference:
 
 | | Vault 1.0 (retired path) | Vault 2.0 (this tool) |
 |---|---|---|
