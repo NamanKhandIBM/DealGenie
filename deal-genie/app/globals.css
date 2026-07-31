@@ -308,6 +308,72 @@ body {
   color: #5eead4;
 }
 
+/* ── Product-specific badge colors (from IBM Sales Play Framework palette) ── */
+.result-badge.verify,
+.result-badge.maas360 {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.35);
+  color: #a855f7;
+}
+.result-badge.terraform,
+.result-badge.vault {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #3b82f6;
+}
+.result-badge.instana,
+.result-badge.concert {
+  background: rgba(20, 184, 166, 0.12);
+  border-color: rgba(20, 184, 166, 0.35);
+  color: #14b8a6;
+}
+.result-badge.turbonomic {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #22c55e;
+}
+.result-badge.webmethods {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.35);
+  color: #f97316;
+}
+
+/* ── Product-card hover colors ────────────────────────────────────────────── */
+.product-card.verify:hover:not(:disabled),
+.product-card.maas360:hover:not(:disabled) {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.45);
+  color: #c084fc;
+  box-shadow: 0 6px 24px rgba(168, 85, 247, 0.2);
+}
+.product-card.terraform:hover:not(:disabled),
+.product-card.vault:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.45);
+  color: #93b4fd;
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.2);
+}
+.product-card.instana:hover:not(:disabled),
+.product-card.concert:hover:not(:disabled),
+.product-card.ns1:hover:not(:disabled) {
+  background: rgba(20, 184, 166, 0.12);
+  border-color: rgba(20, 184, 166, 0.45);
+  color: #5eead4;
+  box-shadow: 0 6px 24px rgba(20, 184, 166, 0.2);
+}
+.product-card.turbonomic:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #86efac;
+  box-shadow: 0 6px 24px rgba(34, 197, 94, 0.2);
+}
+.product-card.webmethods:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.45);
+  color: #fdba74;
+  box-shadow: 0 6px 24px rgba(249, 115, 22, 0.2);
+}
+
 .result-inputs {
   font-size: 12.5px;
   color: rgba(147, 180, 253, 0.75);

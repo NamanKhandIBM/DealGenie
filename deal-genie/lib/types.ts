@@ -1,6 +1,15 @@
 // Shared types for the conversational quoting assistant.
 
-export type Product = "Verify" | "NS1" | "Vault";
+export type Product =
+  | "Verify"
+  | "NS1"
+  | "Vault"
+  | "MaaS360"
+  | "Instana"
+  | "Turbonomic"
+  | "Terraform"
+  | "Concert"
+  | "webMethods";
 
 export type ConversationPhase =
   | "welcome"
@@ -27,6 +36,7 @@ export interface ConversationState {
   messages: Message[];
   // When true, AI SME speaks directly to the client (customer-facing language)
   clientMode?: boolean;
+  crossSellAccepted?: boolean;
 }
 
 export const initialState: ConversationState = {

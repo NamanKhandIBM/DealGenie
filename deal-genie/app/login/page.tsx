@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -122,9 +123,11 @@ export default function LoginPage() {
         >
           {/* Logo + title */}
           <div className="flex flex-col items-center gap-3 mb-8">
-            <img
+            <Image
               src="/dealgenie-icon.png"
               alt="Deal Genie"
+              width={48}
+              height={48}
               className="w-12 h-12 rounded-xl"
               style={{ objectFit: "contain" }}
             />

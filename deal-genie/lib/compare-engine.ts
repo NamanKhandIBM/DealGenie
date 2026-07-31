@@ -14,8 +14,19 @@
 import { computeVerifyQuote } from "./verify-engine";
 import { computeVaultQuote } from "./vault-engine";
 import { computeNS1Quote } from "./ns1-engine";
+import { computeInstanaQuote } from "./instana-engine";
+import { computeTurbonomicScope } from "./turbonomic-engine";
+import { computeTerraformRecommendation } from "./terraform-engine";
+import { computeConcertRecommendation } from "./concert-engine";
+import { computeWebMethodsScope } from "./webmethods-engine";
+import { computeMaaS360Estimate, recommendMaaS360Plan } from "./maas360-engine";
 import type { Product } from "./types";
 import type { VerifyCapability } from "./data";
+import type { InstanaPurchaseModel, InstanaTier } from "./instana-data";
+import type { TurbonomicDeployment } from "./turbonomic-data";
+import type { TerraformDeployment } from "./terraform-data";
+import type { ConcertInputs } from "./concert-engine";
+import type { WebMethodsInputs } from "./webmethods-engine";
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -86,7 +97,7 @@ export interface CompareResult {
  */
 export function getAddonDefinitions(
   product: Product,
-  answers: Record<string, string | number | boolean | string[]>
+  _answers: Record<string, string | number | boolean | string[]>
 ): AddonDefinition[] {
   if (product === "Verify") {
     return [
@@ -98,16 +109,20 @@ export function getAddonDefinitions(
     ];
   }
   if (product === "Vault") {
+    // Vault 2.0 (Model A — Platform model) add-ons only
     // Model B (legacy Clients/RVU) is deprecated in Vault 2.0 — all new quotes use Model A.
     return [
       { key: "includeNonProd", label: "Non-production cluster",           partNumber: "D155GZX", annualDelta: 48000,   deltaNote: "$48,000 / yr",                               yesValue: "yes", noValue: "no" },
       { key: "includeKMIP",    label: "KMIP support",                     partNumber: "D155LZX", annualDelta: 264000,  deltaNote: "Upgrades install from $96K → $360K / cluster",yesValue: "yes", noValue: "no" },
     ];
   }
-  // NS1
-  return [
-    { key: "ddosProtection", label: "Spike / DDoS Protection",            partNumber: "D10ATZX", annualDelta: 0,       deltaNote: "Fixed add-on — see CPQ for price",           yesValue: "yes", noValue: "no" },
-  ];
+  if (product === "NS1") {
+    return [
+      { key: "ddosProtection", label: "Spike / DDoS Protection",          partNumber: "D10ATZX", annualDelta: 0,       deltaNote: "Fixed add-on — see CPQ for price",           yesValue: "yes", noValue: "no" },
+    ];
+  }
+  // No persistent add-on panel for the other 6 products
+  return [];
 }
 
 /**
@@ -132,7 +147,7 @@ export function computeBasePrice(
 
 export function getForkVariables(
   product: Product,
-  answers: Record<string, string | number | boolean | string[]>
+  _answers: Record<string, string | number | boolean | string[]>
 ): ForkVariable[] {
   if (product === "Verify") {
     return [
@@ -214,6 +229,7 @@ export function getForkVariables(
   }
 
   if (product === "Vault") {
+    // Vault 2.0 — Model A (Platform model) only
     // Model B (legacy Clients/RVU) is deprecated — all new quotes use Model A (Vault 2.0).
     return [
       {
@@ -243,7 +259,7 @@ export function getForkVariables(
       {
         key: "pkiCertsPerMonth",
         label: "SSL/TLS certificates issued per month",
-        impact: "certs/month x (lifetime / 730h) = RU. 500 certs at 90-day lifetime = ~1,461 RU/mo extra",
+        impact: "certs/month × (lifetime / 730h) = RU. 500 certs at 90-day lifetime = ~1,461 RU/mo extra",
         options: [
           { label: "None",               value: 0 },
           { label: "~50 certs/month",    value: 50 },
@@ -276,8 +292,201 @@ export function getForkVariables(
         label: "Add-on: KMIP support (D155LZX vs D15FQZX)",
         impact: "Switches install from $96K to $360K/cluster — major cost uplift",
         options: [
-          { label: "Standard install ($96K/cluster)",      value: "no" },
+          { label: "Standard install ($96K/cluster)",       value: "no" },
           { label: "KMIP-included install ($360K/cluster)", value: "yes" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "MaaS360") {
+    return [
+      {
+        key: "maas360Devices",
+        label: "Device count",
+        impact: "All MaaS360 plans charge per device — linear scale, plan rate stays fixed",
+        options: [
+          { label: "500 devices",    value: 500 },
+          { label: "1,000 devices",  value: 1000 },
+          { label: "5,000 devices",  value: 5000 },
+          { label: "10,000 devices", value: 10000 },
+          { label: "25,000 devices", value: 25000 },
+        ],
+      },
+      {
+        key: "maas360Plan",
+        label: "Plan tier",
+        impact: "Essentials $4.24 → Enterprise $9.54/device/month — doubles the per-device rate",
+        options: [
+          { label: "Essentials ($4.24/device/mo)",  value: "Essentials" },
+          { label: "Deluxe ($5.30/device/mo)",      value: "Deluxe" },
+          { label: "Premier ($6.63/device/mo)",     value: "Premier" },
+          { label: "Enterprise ($9.54/device/mo)",  value: "Enterprise" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "Instana") {
+    return [
+      {
+        key: "instanaMVS",
+        label: "Host / VM count (MVS)",
+        impact: "Primary Instana cost driver — linear at $21.20 (Essentials) or $79.50 (Standard) per MVS/month",
+        options: [
+          { label: "25 hosts",     value: 25 },
+          { label: "100 hosts",    value: 100 },
+          { label: "250 hosts",    value: 250 },
+          { label: "500 hosts",    value: 500 },
+          { label: "1,000 hosts",  value: 1000 },
+          { label: "2,500 hosts",  value: 2500 },
+        ],
+      },
+      {
+        key: "instanaTier",
+        label: "Observability depth",
+        impact: "Essentials (infra-only) $21.20 vs Standard (full-stack APM) $79.50 per MVS/month — 3.75× uplift",
+        options: [
+          { label: "Essentials — infrastructure only ($21.20/MVS/mo)", value: "Essentials" },
+          { label: "Standard — full-stack APM ($79.50/MVS/mo)",        value: "Standard" },
+        ],
+      },
+      {
+        key: "instanaModel",
+        label: "Purchase model",
+        impact: "SaaS subscription (committed) vs Pay-Per-Use (no commitment, $0.03/MVS/hour)",
+        options: [
+          { label: "SaaS subscription (term commit)", value: "SaaS" },
+          { label: "Pay-Per-Use (no commit)",          value: "PayPerUse" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "Turbonomic") {
+    return [
+      {
+        key: "turbonomicMVS",
+        label: "Host / VM count (MVS)",
+        impact: "Primary Turbonomic cost driver — $18.80/MVS/month commercial SaaS (linear)",
+        options: [
+          { label: "100 VMs",    value: 100 },
+          { label: "250 VMs",    value: 250 },
+          { label: "500 VMs",    value: 500 },
+          { label: "1,000 VMs",  value: 1000 },
+          { label: "2,500 VMs",  value: 2500 },
+          { label: "5,000 VMs",  value: 5000 },
+        ],
+      },
+      {
+        key: "turbonomicDeployment",
+        label: "Deployment model",
+        impact: "Commercial SaaS $18.80 vs Government/FedRAMP $23.50 per MVS/month — 25% uplift",
+        options: [
+          { label: "Commercial SaaS ($18.80/MVS/mo)",    value: "SaaS" },
+          { label: "Government / FedRAMP ($23.50/MVS/mo)", value: "SaaSGov" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "Terraform") {
+    return [
+      {
+        key: "terraformResources",
+        label: "Managed resources (RUM)",
+        impact: "Primary Terraform cost driver — graduated volume discounts kick in above 10K RUM",
+        options: [
+          { label: "500 RUM (Free tier)",   value: 500 },
+          { label: "1,000 RUM",             value: 1000 },
+          { label: "5,000 RUM",             value: 5000 },
+          { label: "10,000 RUM",            value: 10000 },
+          { label: "25,000 RUM",            value: 25000 },
+          { label: "50,000 RUM",            value: 50000 },
+        ],
+      },
+      {
+        key: "terraformEdition",
+        label: "Edition",
+        impact: "Standard (D100DZX) $5.16/RUM/yr vs Premium (D11GDZX) $10.80/RUM/yr — 2× uplift for governance/audit",
+        options: [
+          { label: "Standard ($5.16/RUM/yr)",  value: "Standard" },
+          { label: "Premium ($10.80/RUM/yr)",  value: "Premium" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "Concert") {
+    return [
+      {
+        key: "concertApplications",
+        label: "Application count",
+        impact: "Protect (3 RU/app) and Resilience (5 RU/app) modules scale with app count",
+        options: [
+          { label: "10 apps",   value: 10 },
+          { label: "25 apps",   value: 25 },
+          { label: "50 apps",   value: 50 },
+          { label: "100 apps",  value: 100 },
+          { label: "250 apps",  value: 250 },
+        ],
+      },
+      {
+        key: "concertDeployment",
+        label: "Deployment model",
+        impact: "On-prem $212/RU/yr (D0MK3ZX) vs SaaS ~$1.06/RU/yr (5900BD6) — IBM-hosted is 200× cheaper per RU",
+        options: [
+          { label: "On-premises (self-hosted, $212/RU/yr)", value: "onprem" },
+          { label: "SaaS (IBM-hosted, ~$1.06/RU/yr)",       value: "saas" },
+        ],
+      },
+      {
+        key: "concertPain",
+        label: "Use-case scope",
+        impact: "More modules = more RUs — compare a focused vs comprehensive Concert footprint",
+        options: [
+          { label: "Alert fatigue / observability only",   value: "alertFatigue" },
+          { label: "Slow MTTR (resolve faster)",           value: "slowMTTR" },
+          { label: "Cost optimisation",                    value: "costOptimization" },
+          { label: "Risk / security posture",              value: "riskPosture" },
+          { label: "Full suite (all modules)",             value: "all" },
+        ],
+      },
+    ];
+  }
+
+  if (product === "webMethods") {
+    return [
+      {
+        key: "webMethodsIntTxn",
+        label: "Integration transactions / month",
+        impact: "App integration charges $92/1,000 txn/yr with a volume factor — largest cost lever",
+        options: [
+          { label: "No integrations",         value: 0 },
+          { label: "10,000 txn/mo",           value: 10000 },
+          { label: "100,000 txn/mo",          value: 100000 },
+          { label: "500,000 txn/mo",          value: 500000 },
+          { label: "1,000,000 txn/mo",        value: 1000000 },
+        ],
+      },
+      {
+        key: "webMethodsApiTxn",
+        label: "API management transactions / month",
+        impact: "API charges $100/10K txn/yr — adds on top of integration costs",
+        options: [
+          { label: "No API management",       value: 0 },
+          { label: "100,000 API calls/mo",    value: 100000 },
+          { label: "500,000 API calls/mo",    value: 500000 },
+          { label: "1,000,000 API calls/mo",  value: 1000000 },
+        ],
+      },
+      {
+        key: "webMethodsDeployment",
+        label: "Deployment preference",
+        impact: "SaaS (IBM-hosted) vs On-Premises — on-prem uses CP4I VPC licensing at different rates",
+        options: [
+          { label: "SaaS (IBM-hosted)",  value: "saas" },
+          { label: "On-premises",        value: "onprem" },
         ],
       },
     ];
@@ -431,6 +640,7 @@ export function computeScenarioPrice(
   }
 
   if (product === "Vault") {
+    // Vault 2.0 — always Model A (Platform model)
     // Model B (legacy) deprecated — route all Vault through Model A.
     const installs = Number(a.installCount ?? 1);
     const includeNonProd = String(a.includeNonProd ?? "no") === "yes";
@@ -447,6 +657,122 @@ export function computeScenarioPrice(
       pkiCertLifetimeHours: certCount > 0 ? Number(a.pkiCertLifetime ?? 2160) : undefined,
     };
     const result = computeVaultQuote({ model: "A-Platform", installCount: installs, useCaseInputs, includeNonProd, includeKMIP });
+    return result.totalAnnualList;
+  }
+
+  if (product === "MaaS360") {
+    const devices = Math.max(1, Number(a.maas360Devices ?? 1000));
+    // maas360Plan override (from fork) OR derive from question-flow answers
+    let planKey = String(a.maas360Plan ?? "");
+    if (!planKey || !["Essentials", "Deluxe", "Premier", "Enterprise"].includes(planKey)) {
+      // Derive from the recommendation engine using the boolean answers
+      const rec = recommendMaaS360Plan({
+        secureMail:   String(a.maas360SecureMail ?? "no") === "yes",
+        advancedApps: String(a.maas360AdvancedApps ?? "no") === "yes",
+        threatDefense: String(a.maas360ThreatDefense ?? "no") === "yes",
+        remoteSupport: String(a.maas360RemoteSupport ?? "no") === "yes",
+      });
+      planKey = rec.planKey;
+    }
+    const result = computeMaaS360Estimate({ devices, planKey, addOnKeys: [], includeConcierge: false });
+    return result.annualList;
+  }
+
+  if (product === "Instana") {
+    const mvs = Math.max(1, Number(a.instanaMVS ?? 100));
+    const tier = (String(a.instanaTier ?? "Standard")) as InstanaTier;
+    const model = (String(a.instanaModel ?? "SaaS")) as InstanaPurchaseModel;
+    const addLogs = String(a.instanaLogsInContext ?? "no") === "yes";
+    const logGB = Number(a.instanaLogGB ?? 0);
+    const result = computeInstanaQuote({
+      model,
+      tier,
+      mvsCount: mvs,
+      addLogsInContext: addLogs,
+      estimatedLogGB: logGB > 0 ? logGB : undefined,
+    });
+    return result.totalAnnualList;
+  }
+
+  if (product === "Turbonomic") {
+    const mvs = Math.max(1, Number(a.turbonomicMVS ?? 250));
+    const deployment = (String(a.turbonomicDeployment ?? "SaaS")) as TurbonomicDeployment;
+    const isGov = deployment === "SaaSGov";
+    const result = computeTurbonomicScope({
+      deployment: isGov ? "SaaS" : deployment,
+      estimatedMVS: mvs,
+      isGovernment: isGov,
+      scopingModel: "mvs",
+      includesPublicCloud: String(a.turbonomicCloud ?? "yes") === "yes",
+      includesKubernetes: String(a.turbonomicKubernetes ?? "no") === "yes",
+    });
+    return result.totalAnnualList;
+  }
+
+  if (product === "Terraform") {
+    const resources = Math.max(1, Number(a.terraformResources ?? 250));
+    const team = Math.max(1, Number(a.terraformTeam ?? 5));
+    const deployment = (String(a.terraformDeployment ?? "HCP")) as TerraformDeployment;
+    const governance = String(a.terraformGovernance ?? "none");
+    const vaultOwned = String(a.terraformVault ?? "no") === "yes";
+    // terraformEdition override (from fork) sets governance flags to force the edition
+    const editionOverride = String(a.terraformEdition ?? "");
+    const needsPremium = editionOverride === "Premium" || governance === "audit";
+    const needsGovernance = editionOverride === "Standard" || editionOverride === "Premium" || governance === "governance" || governance === "audit";
+    const result = computeTerraformRecommendation({
+      deployment,
+      estimatedManagedResources: resources,
+      teamSize: team,
+      needsGovernance,
+      needsAuditLog: needsPremium,
+      needsAirGap: deployment === "Enterprise",
+      vaultAlreadyOwned: vaultOwned,
+    });
+    return result.totalAnnualList;
+  }
+
+  if (product === "Concert") {
+    const pain = (String(a.concertPain ?? "alertFatigue")) as ConcertInputs["primaryPain"];
+    const apps = Number(a.concertApplications ?? 0);
+    const concertMVS = Number(a.concertMVS ?? 0);
+    const workflows = Number(a.concertWorkflows ?? 0);
+    const deployment = (String(a.concertDeployment ?? "onprem")) as "saas" | "onprem";
+    const observeTier = (String(a.concertObserveTier ?? "essentials")) as "essentials" | "standard";
+    const result = computeConcertRecommendation({
+      primaryPain: pain,
+      deployment,
+      hasInstana: String(a.concertInstana ?? "no") === "yes",
+      needsWorkflowAutomation: String(a.concertAutomation ?? "no") === "yes",
+      needsCostOptimization: pain === "costOptimization" || pain === "all",
+      needsSecurityRisk: pain === "riskPosture" || pain === "all",
+      needsResilience: String(a.concertResilience ?? "no") === "yes",
+      estimatedApplications: apps > 0 ? apps : undefined,
+      estimatedMVS: concertMVS > 0 ? concertMVS : undefined,
+      estimatedWorkflows: workflows > 0 ? workflows : undefined,
+      observeTier,
+    });
+    return result.totalAnnualList;
+  }
+
+  if (product === "webMethods") {
+    const needs = Array.isArray(a.webMethodsNeeds) ? (a.webMethodsNeeds as string[]) : [];
+    const deploymentRaw = String(a.webMethodsDeployment ?? "saas");
+    const industry = (String(a.webMethodsIndustry ?? "other")) as WebMethodsInputs["industryVertical"];
+    const intTxn = Number(a.webMethodsIntTxn ?? 0);
+    const apiTxn = Number(a.webMethodsApiTxn ?? 0);
+    const mftTxn = Number(a.webMethodsMftTxn ?? 0);
+    const result = computeWebMethodsScope({
+      needsAppIntegration: needs.includes("appIntegration") || intTxn > 0,
+      needsAPIManagement: needs.includes("apiManagement") || apiTxn > 0,
+      needsB2B: needs.includes("b2b"),
+      needsMFT: needs.includes("mft") || mftTxn > 0,
+      needsEventDriven: needs.includes("eventDriven"),
+      preferSaaS: deploymentRaw === "saas",
+      industryVertical: industry,
+      estimatedIntegrations: intTxn > 0 ? intTxn : undefined,
+      estimatedAPITransactions: apiTxn > 0 ? apiTxn : undefined,
+      estimatedMFTTransactions: mftTxn > 0 ? mftTxn : undefined,
+    });
     return result.totalAnnualList;
   }
 
@@ -623,6 +949,12 @@ export function buildFanOut(
     : sliderForkVar.label.toLowerCase().includes("secret") ? "secrets"
     : sliderForkVar.label.toLowerCase().includes("role") ? "roles"
     : sliderForkVar.label.toLowerCase().includes("cert") ? "certs/mo"
+    : sliderForkVar.label.toLowerCase().includes("device") ? "devices"
+    : sliderForkVar.label.toLowerCase().includes("host") || sliderForkVar.label.toLowerCase().includes("mvs") ? "hosts"
+    : sliderForkVar.label.toLowerCase().includes("vm") ? "VMs"
+    : sliderForkVar.label.toLowerCase().includes("rum") || sliderForkVar.label.toLowerCase().includes("resource") ? "RUM"
+    : sliderForkVar.label.toLowerCase().includes("app") ? "apps"
+    : sliderForkVar.label.toLowerCase().includes("txn") || sliderForkVar.label.toLowerCase().includes("transaction") ? "txn/mo"
     : ""
     : "";
   const sliderCurrentValue = typeof answers[sliderKey] === "number"
@@ -668,17 +1000,79 @@ function buildInsight(
       return `User population drives MAU, which determines the pricing tier. Watch for non-linear jumps at tier boundaries — a small increase in users can trigger a significant price step. The spread across these options is ${diffStr}/yr.`;
     }
   }
+
   if (product === "Vault") {
-    if (forkVars.some((v) => v.key === "edition")) {
-      return `Edition choice drives the per-cluster install fee (Essentials $24.9k → Premium $100k/cluster). The ${pctDiff}% spread of ${diffStr}/yr is dominated by install cost, with client RVUs as a secondary driver.`;
-    }
-    if (forkVars.some((v) => v.key === "clientCount")) {
-      return `Client count (RVU) scales linearly at $1,296/client/yr — the ${pctDiff}% spread of ${diffStr}/yr is driven entirely by the number of connecting apps and services.`;
-    }
     if (forkVars.some((v) => ["staticSecretCount", "dynamicRoles", "pkiCertsPerMonth"].includes(v.key))) {
-      return `Platform-model (Model A) converts your activity into monthly RUs at $48/RU ($576/yr). Secrets stored and dynamic roles each contribute 1 RU each; PKI certificates add RUs based on cert lifetime. The ${pctDiff}% spread of ${diffStr}/yr reflects how much Vault activity drives the consumption meter.`;
+      return `Vault 2.0 (Platform model) converts activity into monthly RUs at $48/RU/month ($576/yr). Secrets stored and dynamic roles each count as 1 RU; PKI certs add RUs based on cert lifetime. The ${pctDiff}% spread of ${diffStr}/yr reflects how much Vault activity drives the consumption meter.`;
+    }
+    if (forkVars.some((v) => v.key === "installCount")) {
+      return `Each production cluster adds a $96,000/yr install fee (D15FQZX) plus RU charges. The ${pctDiff}% spread of ${diffStr}/yr is dominated by cluster count — consider HA vs multi-cluster topology carefully.`;
+    }
+    if (forkVars.some((v) => v.key === "includeKMIP")) {
+      return `KMIP support switches the install SKU from D15FQZX ($96K/cluster) to D155LZX ($360K/cluster) — a $264K/cluster uplift. The ${pctDiff}% spread of ${diffStr}/yr is driven entirely by this one add-on.`;
     }
   }
+
+  if (product === "MaaS360") {
+    if (forkVars.some((v) => v.key === "maas360Plan")) {
+      return `MaaS360 plan tier is the biggest per-device driver — Essentials ($4.24) to Enterprise ($9.54) is a 2.25× uplift. The ${pctDiff}% spread of ${diffStr}/yr shows the cost of moving up-tier to secure email, advanced apps, or threat defense.`;
+    }
+    if (forkVars.some((v) => v.key === "maas360Devices")) {
+      return `MaaS360 pricing is linear per device — no volume tiers. The ${pctDiff}% spread of ${diffStr}/yr is directly proportional to device count at the selected plan rate.`;
+    }
+  }
+
+  if (product === "Instana") {
+    if (forkVars.some((v) => v.key === "instanaTier")) {
+      return `Observability depth is the key cost lever — Standard (full-stack APM at $79.50/MVS/mo) is 3.75× Essentials (infra-only at $21.20/MVS/mo). The ${pctDiff}% spread of ${diffStr}/yr is the cost of full application performance monitoring versus infrastructure metrics only.`;
+    }
+    if (forkVars.some((v) => v.key === "instanaMVS")) {
+      return `Instana charges per Managed Virtual Server (MVS) at a fixed rate — price is linear with host count. The ${pctDiff}% spread of ${diffStr}/yr shows the cost range across these fleet sizes. MVS count is the most accurate sizing input.`;
+    }
+    if (forkVars.some((v) => v.key === "instanaModel")) {
+      return `Pay-Per-Use ($0.03/MVS/hour, no commitment) vs SaaS subscription — at full-month utilisation (730h), PPU equates to $21.90/MVS/month, slightly above Essentials SaaS. The ${pctDiff}% spread of ${diffStr}/yr reflects the commitment vs flexibility trade-off.`;
+    }
+  }
+
+  if (product === "Turbonomic") {
+    if (forkVars.some((v) => v.key === "turbonomicMVS")) {
+      return `Turbonomic charges $18.80/MVS/month (commercial SaaS, D09ECZX) — linear with VM count. The ${pctDiff}% spread of ${diffStr}/yr is the cost range across these fleet sizes. Use MVS count for accurate scoping.`;
+    }
+    if (forkVars.some((v) => v.key === "turbonomicDeployment")) {
+      return `Government/FedRAMP (D11Q7ZX) is $23.50/MVS/month vs commercial SaaS $18.80 — a 25% uplift for compliance. The ${diffStr}/yr difference reflects this rate premium across the scoped fleet.`;
+    }
+  }
+
+  if (product === "Terraform") {
+    if (forkVars.some((v) => v.key === "terraformResources")) {
+      return `Terraform HCP charges per Managed Resource Unit (RUM) with volume discounts above 10K RUM. The ${pctDiff}% spread of ${diffStr}/yr reflects both the per-RUM rate and the graduated discount table — watch for the non-linear step at 10K.`;
+    }
+    if (forkVars.some((v) => v.key === "terraformEdition")) {
+      return `Standard (D100DZX, $5.16/RUM/yr) gives policy-as-code and team access controls; Premium (D11GDZX, $10.80/RUM/yr) adds audit logging and SSO. The ${pctDiff}% spread of ${diffStr}/yr is the cost of upgrading governance capabilities.`;
+    }
+  }
+
+  if (product === "Concert") {
+    if (forkVars.some((v) => v.key === "concertDeployment")) {
+      return `Concert On-Prem (D0MK3ZX, $212/RU/yr) vs Concert SaaS (5900BD6, ~$1.06/RU/yr) is a dramatic price difference — IBM hosts the SaaS platform and absorbs infrastructure costs. The ${diffStr}/yr spread of ${pctDiff}% is almost entirely deployment model.`;
+    }
+    if (forkVars.some((v) => v.key === "concertPain")) {
+      return `Concert is modular — each enabled module adds RUs at $212/RU/yr (on-prem) or ~$1.06/RU/yr (SaaS). The ${pctDiff}% spread of ${diffStr}/yr shows the incremental cost of expanding from a focused use case to the full agentic ITOps suite.`;
+    }
+    if (forkVars.some((v) => v.key === "concertApplications")) {
+      return `Concert Protect (3 RU/app) and Resilience (5 RU/app) scale with application count. The ${pctDiff}% spread of ${diffStr}/yr is driven by how many applications are in scope for security risk and resilience management.`;
+    }
+  }
+
+  if (product === "webMethods") {
+    if (forkVars.some((v) => v.key === "webMethodsIntTxn")) {
+      return `App integration is priced at $92/1,000 txn/year with a volume factor — the largest cost lever in webMethods. The ${pctDiff}% spread of ${diffStr}/yr reflects how transaction volume scales the bill.`;
+    }
+    if (forkVars.some((v) => v.key === "webMethodsDeployment")) {
+      return `SaaS (IBM-hosted) uses RU-based pricing with a $720 RU/yr base subscription; on-premises uses CP4I VPC licensing at different rates. The ${diffStr}/yr spread of ${pctDiff}% reflects the deployment model cost difference at these transaction volumes.`;
+    }
+  }
+
   if (product === "NS1") {
     return `NS1 pricing is tier-based on query volume — small increases near tier boundaries cause disproportionate price jumps. The ${pctDiff}% spread of ${diffStr}/yr across these options is driven by ${varLabel}.`;
   }

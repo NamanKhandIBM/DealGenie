@@ -33,20 +33,38 @@ function priceDiff(a?: number, b?: number) {
 
 const PRODUCT_ACCENT: Record<string, string> = {
   Verify: "#4d8ef8",
-  NS1:    "#10b981",
-  Vault:  "#a855f7",
+  MaaS360: "#f59e0b",
+  NS1: "#10b981",
+  Vault: "#a855f7",
+  Instana: "#ef4444",
+  Turbonomic: "#0ea5e9",
+  Terraform: "#7c3aed",
+  Concert: "#0d9488",
+  webMethods: "#d97706",
 };
 
 const PRODUCT_BG: Record<string, string> = {
   Verify: "rgba(77,142,248,0.08)",
-  NS1:    "rgba(16,185,129,0.08)",
-  Vault:  "rgba(168,85,247,0.08)",
+  MaaS360: "rgba(245,158,11,0.08)",
+  NS1: "rgba(16,185,129,0.08)",
+  Vault: "rgba(168,85,247,0.08)",
+  Instana: "rgba(239,68,68,0.08)",
+  Turbonomic: "rgba(14,165,233,0.08)",
+  Terraform: "rgba(124,58,237,0.08)",
+  Concert: "rgba(13,148,136,0.08)",
+  webMethods: "rgba(217,119,6,0.08)",
 };
 
 const PRODUCT_BORDER: Record<string, string> = {
   Verify: "rgba(77,142,248,0.25)",
-  NS1:    "rgba(16,185,129,0.25)",
-  Vault:  "rgba(168,85,247,0.25)",
+  MaaS360: "rgba(245,158,11,0.25)",
+  NS1: "rgba(16,185,129,0.25)",
+  Vault: "rgba(168,85,247,0.25)",
+  Instana: "rgba(239,68,68,0.25)",
+  Turbonomic: "rgba(14,165,233,0.25)",
+  Terraform: "rgba(124,58,237,0.25)",
+  Concert: "rgba(13,148,136,0.25)",
+  webMethods: "rgba(217,119,6,0.25)",
 };
 
 // ─── Parse a quote into structured display data ───────────────────────────────
@@ -163,6 +181,38 @@ function parseQuote(q: SavedQuote): QuoteDisplay {
     return { id: q.id, product: "NS1 Connect", price, priceLabel: price ? `${fmtPrice(price)}/mo` : "—", features, addOns, term: "monthly", rawLabel: q.label };
   }
 
+  if (q.product === "MaaS360") {
+    const devices = fmtNum(a.maas360Devices);
+    const plan = String(a.maas360Plan ?? "Essentials");
+    const addOnKeys = Array.isArray(a.maas360AddOns) ? a.maas360AddOns : [];
+    const concierge = String(a.maas360Concierge ?? "no") === "yes";
+    const crossSellSource = typeof a.crossSellSource === "string" ? a.crossSellSource : null;
+    const addOnNames: Record<string, string> = {
+      mtd: "Mobile Threat Defense Advanced",
+      teamviewer: "TeamViewer Remote Support",
+    };
+
+    if (devices) features.push({ label: "Managed devices", value: devices.toLocaleString(), isPricingDriver: true });
+    features.push({ label: "Plan", value: plan, isPricingDriver: true });
+    if (crossSellSource) {
+      features.push({ label: "Cross-sell source", value: crossSellSource, isPricingDriver: false });
+    }
+
+    addOnKeys.filter((key) => key !== "none").forEach((key) => addOns.push(addOnNames[key] ?? key));
+    if (concierge) addOns.push("Concierge setup");
+
+    return {
+      id: q.id,
+      product: "IBM MaaS360",
+      price,
+      priceLabel: price ? `${fmtPrice(price)}/yr` : "—",
+      features,
+      addOns,
+      term: "annualized public estimate",
+      rawLabel: q.label,
+    };
+  }
+
   return { id: q.id, product: q.product, price, priceLabel: fmtPrice(price) ?? "—", features, addOns, term: "—", rawLabel: q.label };
 }
 
@@ -208,9 +258,9 @@ export default function QuoteCompare({ quotes, onClose, onLoad }: Props) {
     const savingLabel = fmtPrice(Math.abs(diff.diff));
 
     if (drivers.length) {
-      return `${pricier.rawLabel.split("·")[0].trim()} costs ${savingLabel ?? "more"} more/yr than ${cheaper.rawLabel.split("·")[0].trim()} primarily due to ${drivers.join(" and ")}.`;
+      return `${pricier.rawLabel.split("·")[0].trim()} costs ${savingLabel ?? "more"} more per year than ${cheaper.rawLabel.split("·")[0].trim()} primarily due to ${drivers.join(" and ")}.`;
     }
-    return `${pricier.rawLabel.split("·")[0].trim()} costs ${diff.pct}% more (${savingLabel}/yr) than ${cheaper.rawLabel.split("·")[0].trim()}.`;
+    return `${pricier.rawLabel.split("·")[0].trim()} costs ${diff.pct}% more (${savingLabel} per year) than ${cheaper.rawLabel.split("·")[0].trim()}.`;
   }, [parsed]);
 
   return (
@@ -291,7 +341,7 @@ export default function QuoteCompare({ quotes, onClose, onLoad }: Props) {
                         {q.price ? fmtPrice(q.price) : "—"}
                       </span>
                       <span className="text-xs" style={{ color: "rgba(147,180,253,0.5)" }}>
-                        /{q.product === "NS1" ? "mo" : "yr"} list
+                        /{quotes[i].product === "NS1" ? "mo" : "yr"} list
                       </span>
                     </div>
                     {isPriciest && minPrice && q.price && (

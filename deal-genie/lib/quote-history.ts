@@ -31,6 +31,9 @@ export interface SavedQuote {
   answers: Record<string, string | number | boolean | string[]>;
   summary: QuoteSummary;
   chatSnapshot: Message[];
+  linkedQuoteGroupId?: string;
+  linkedQuoteRole?: "base" | "cross-sell";
+  linkedToQuoteId?: string;
   savedBy?: string;       // future: IBMid of the seller
 }
 
@@ -152,6 +155,17 @@ export async function deleteQuote(id: string, rev: string): Promise<void> {
   }
 }
 
+export async function deleteQuoteGroup(groupId: string): Promise<void> {
+  const quotes = await listQuotes();
+  const linkedQuotes = quotes.filter((quote) => quote.linkedQuoteGroupId === groupId);
+
+  await Promise.all(
+    linkedQuotes
+      .filter((quote) => quote._rev)
+      .map((quote) => deleteQuote(quote.id, quote._rev as string))
+  );
+}
+
 // ─── Auto-label generator ─────────────────────────────────────────────────────
 
 export function buildQuoteLabel(
@@ -193,6 +207,38 @@ export function extractSummary(
     const rus = answers.vaultRUs ?? answers.rus;
     if (model) keyMetrics.push(String(model));
     if (rus) keyMetrics.push(`${Number(rus).toLocaleString()} RU/mo`);
+  } else if (product === "MaaS360") {
+    const devices = answers.maas360Devices;
+    const plan = answers.maas360Plan;
+    if (devices) keyMetrics.push(`${Number(devices).toLocaleString()} devices`);
+    if (plan) keyMetrics.push(String(plan));
+  } else if (product === "Instana") {
+    const mvs = answers.instanaMVS;
+    const tier = answers.instanaTier;
+    const model = answers.instanaModel;
+    if (mvs) keyMetrics.push(`${Number(mvs).toLocaleString()} MVS`);
+    if (tier) keyMetrics.push(String(tier));
+    if (model) keyMetrics.push(String(model));
+  } else if (product === "Turbonomic") {
+    const mvs = answers.turbonomicMVS;
+    const deployment = answers.turbonomicDeployment;
+    if (mvs) keyMetrics.push(`~${Number(mvs).toLocaleString()} MVS`);
+    if (deployment) keyMetrics.push(String(deployment));
+  } else if (product === "Terraform") {
+    const resources = answers.terraformResources;
+    const deployment = answers.terraformDeployment;
+    if (resources) keyMetrics.push(`~${Number(resources).toLocaleString()} resources`);
+    if (deployment) keyMetrics.push(String(deployment));
+  } else if (product === "Concert") {
+    const pain = answers.concertPain;
+    const apps = answers.concertApplications;
+    if (apps) keyMetrics.push(`~${Number(apps).toLocaleString()} apps`);
+    if (pain) keyMetrics.push(String(pain).replace(/([A-Z])/g, " $1").trim());
+  } else if (product === "webMethods") {
+    const industry = answers.webMethodsIndustry;
+    const deployment = answers.webMethodsDeployment;
+    if (industry) keyMetrics.push(String(industry));
+    if (deployment) keyMetrics.push(String(deployment));
   }
 
   // Try to parse total from last assistant message (looks for $X,XXX or $X.XM)

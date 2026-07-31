@@ -6,18 +6,63 @@ import type { ExtractedEntities } from "./extractor";
 import type { Question } from "./questions";
 import {
   VERIFY_QUESTIONS,
+  VERIFY_CROSS_SELL_QUESTIONS,
+  VAULT_CROSS_SELL_QUESTIONS,
+  MAAS360_QUESTIONS,
   NS1_QUESTIONS,
   VAULT_QUESTIONS_COMMON,
   VAULT_QUESTIONS_MODEL_A,
   VAULT_QUESTIONS_MODEL_B,
+  INSTANA_QUESTIONS,
+  TURBONOMIC_QUESTIONS,
+  TERRAFORM_QUESTIONS,
+  CONCERT_QUESTIONS,
+  WEBMETHODS_QUESTIONS,
 } from "./questions";
+import {
+  buildCrossSellHint,
+  buildCrossSellResultMessage,
+  recommendMaaS360ToVerifyAttach,
+  recommendVaultToVerifyAttach,
+  recommendVerifyCrossSellAttach,
+  recommendVerifyToMaaS360Attach,
+  shouldShowCrossSellHint,
+} from "./cross-sell";
 import { computeVerifyQuote } from "./verify-engine";
 import { computeVaultQuote, type VaultEdition, type VaultUseCaseInputs } from "./vault-engine";
 import { computeNS1Quote } from "./ns1-engine";
+import { computeMaaS360Estimate, recommendMaaS360Plan } from "./maas360-engine";
+import { formatMaaS360PlanLabel } from "./maas360-data";
 import type { VerifyCapability } from "./data";
 import { NS1_BEST_PRACTICES, NS1_ALL_PARTS } from "./ns1-parts";
 import { VAULT_BEST_PRACTICES, VAULT_ALL_PARTS } from "./vault-parts";
 import { VERIFY_BEST_PRACTICES, VERIFY_ALL_PARTS } from "./verify-parts";
+import { computeInstanaQuote, type InstanaInputs } from "./instana-engine";
+import { computeTurbonomicScope, type TurbonomicInputs } from "./turbonomic-engine";
+import { computeTerraformRecommendation, type TerraformInputs } from "./terraform-engine";
+import { computeConcertRecommendation, type ConcertInputs } from "./concert-engine";
+import { computeWebMethodsScope, type WebMethodsInputs } from "./webmethods-engine";
+import {
+  INSTANA_BEST_PRACTICES,
+  INSTANA_QUICK_REFERENCE,
+} from "./instana-data";
+import {
+  TURBONOMIC_BEST_PRACTICES,
+  TURBONOMIC_QUICK_REFERENCE,
+} from "./turbonomic-data";
+import {
+  TERRAFORM_BEST_PRACTICES,
+  TERRAFORM_QUICK_REFERENCE,
+  TERRAFORM_DISCOUNT_AUTHORIZATION_NOTE,
+} from "./terraform-data";
+import {
+  CONCERT_BEST_PRACTICES,
+  CONCERT_QUICK_REFERENCE,
+} from "./concert-data";
+import {
+  WEBMETHODS_BEST_PRACTICES,
+  WEBMETHODS_QUICK_REFERENCE,
+} from "./webmethods-data";
 
 // ─── The active question to render in the UI ─────────────────────────────────
 // When non-null, the UI should show option buttons instead of a plain textarea.
@@ -56,7 +101,13 @@ function parseYesNo(s: string): boolean {
 function detectProduct(msg: string): Product | null {
   if (/verify|ibm security verify/i.test(msg) || msg.trim() === "1") return "Verify";
   if (/ns1|ns 1|connect/i.test(msg) || msg.trim() === "2") return "NS1";
-  if (/vault|hashicorp/i.test(msg) || msg.trim() === "3") return "Vault";
+  if (/vault|hashicorp vault/i.test(msg) || msg.trim() === "3") return "Vault";
+  if (/maas360|maa.?s360/i.test(msg) || msg.trim() === "4") return "MaaS360";
+  if (/instana/i.test(msg) || msg.trim() === "5") return "Instana";
+  if (/turbonomic/i.test(msg) || msg.trim() === "6") return "Turbonomic";
+  if (/terraform/i.test(msg) || msg.trim() === "7") return "Terraform";
+  if (/concert/i.test(msg) || msg.trim() === "8") return "Concert";
+  if (/webmethods|web methods|webmethod/i.test(msg) || msg.trim() === "9") return "webMethods";
   return null;
 }
 
@@ -67,26 +118,49 @@ function getProductOpening(product: Product): string {
     case "NS1":
       return "**NS1 Connect** — Let's size this deal. I'll ask a few questions and generate a full quote with part numbers, quantities, and pricing.\n\nLet's go through the sizing questions:";
     case "Vault":
-      return "**IBM HashiCorp Vault** — Self-managed (PID 5900BJF), 12-month minimum. There are two pricing models — let me ask the first question to determine which applies:";
+      return "**IBM HashiCorp Vault 2.0** — Consumption-based secrets management (PID 5900BJF). Priced on what Vault does — secrets stored, credentials rotated, certificates issued. Let's size it:";
+    case "MaaS360":
+      return "**IBM MaaS360** — I'll help you build a public-price estimate and uncover whether it should be paired with identity for a stronger zero-trust story.\n\nLet's start:";
+    case "Instana":
+      return "**IBM Instana Observability** — I'll size the deal by Managed Virtual Server (MVS) count using public list pricing.\n\nLet's start:";
+    case "Turbonomic":
+      return "**IBM Turbonomic** — Application Resource Management (ARM). Pricing is contact-for-quote; I'll build a scoping summary and seller positioning guide.\n\nLet's start:";
+    case "Terraform":
+      return "**IBM HashiCorp Terraform** — Infrastructure Lifecycle Management (ILM). I'll recommend the right HCP Terraform edition and scope the deal.\n\nLet's start:";
+    case "Concert":
+      return "**IBM Concert** — Agentic ITOps platform. Pricing is contact-for-quote; I'll recommend Concert modules and build the seller positioning.\n\nLet's start:";
+    case "webMethods":
+      return "**IBM webMethods Integration** — Hybrid iPaaS and integration platform. Pricing is contact-for-quote; I'll scope the deal and build the seller positioning.\n\nLet's start:";
   }
 }
 
 // ─── Question list helpers ───────────────────────────────────────────────────
 
 function getVaultQuestions(state: ConversationState): Question[] {
-  // Model A = usage/consumption-based (aligns with Vault 2.0 direction)
-  // Model B = client/seat-based (classic Vault 1.0)
-  const model = String(state.answers.vaultModel ?? "");
-  const specific = model === "A" ? VAULT_QUESTIONS_MODEL_A : VAULT_QUESTIONS_MODEL_B;
-  return [...VAULT_QUESTIONS_COMMON, ...specific];
+  const source = String(state.answers.crossSellSource ?? "");
+  if (source === "Verify" || source === "Terraform") {
+    return VAULT_CROSS_SELL_QUESTIONS;
+  }
+  // Vault 2.0 only — always use the RU/consumption model (Model A)
+  return [...VAULT_QUESTIONS_COMMON, ...VAULT_QUESTIONS_MODEL_A];
 }
 
 function getQuestions(state: ConversationState): Question[] {
+  if (state.product === "Verify" && state.answers.crossSellSource) {
+    return VERIFY_CROSS_SELL_QUESTIONS;
+  }
+
   switch (state.product) {
     case "Verify": return VERIFY_QUESTIONS;
-    case "NS1":    return NS1_QUESTIONS;
-    case "Vault":  return getVaultQuestions(state);
-    default:       return [];
+    case "MaaS360": return MAAS360_QUESTIONS;
+    case "NS1": return NS1_QUESTIONS;
+    case "Vault": return getVaultQuestions(state);
+    case "Instana": return INSTANA_QUESTIONS;
+    case "Turbonomic": return TURBONOMIC_QUESTIONS;
+    case "Terraform": return TERRAFORM_QUESTIONS;
+    case "Concert": return CONCERT_QUESTIONS;
+    case "webMethods": return WEBMETHODS_QUESTIONS;
+    default: return [];
   }
 }
 
@@ -171,6 +245,12 @@ function applyEntities(s: ConversationState, e: ExtractedEntities): void {
   if (e.monitors)         set("monitors",          e.monitors);
 }
 
+function maybeAppendCrossSellHint(state: ConversationState, reply: string): string {
+  if (!shouldShowCrossSellHint(state.product, state.answers)) return reply;
+  const hint = buildCrossSellHint(state.product);
+  return hint ? `${reply}\n\n${hint}` : reply;
+}
+
 // ─── MAIN PROCESSOR ──────────────────────────────────────────────────────────
 
 export function processUserMessage(
@@ -196,14 +276,25 @@ export function processUserMessage(
     if (!product) {
       return {
         state: s,
-        reply: "I can help with **IBM Security Verify**, **NS1 Connect**, or **IBM HashiCorp Vault**. Which one would you like to quote?",
+        reply: "I can help with **IBM Security Verify**, **IBM MaaS360**, **NS1 Connect**, or **IBM HashiCorp Vault**. Which one would you like to quote?",
         activeQuestion: null,
       };
     }
     s.product = product;
     s.phase = "discovery";
     s.discoveryStep = 0;
-    s.answers = {};
+    // Seed action defaults so all conditional guards resolve to "quote" immediately
+    s.answers = {
+      verifyAction: "quote",
+      ns1Action: "quote",
+      vaultAction: "quote",
+      maas360Action: "quote",
+      instanaAction: "quote",
+      turbonomicAction: "quote",
+      terraformAction: "quote",
+      concertAction: "quote",
+      webMethodsAction: "quote",
+    };
 
     // Pre-fill any entities the LLM already extracted from the opening message
     applyEntities(s, entities);
@@ -237,48 +328,6 @@ export function processUserMessage(
       storeAnswer(s, currentQ, msg);
     }
 
-    // Handle NS1 action selection
-    if (s.product === "NS1" && currentQ?.key === "ns1Action") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatNS1BestPractices(), activeQuestion: null };
-      }
-      if (action === "parts") {
-        s.phase = "result";
-        return { state: s, reply: formatNS1PartNumbers(), activeQuestion: null };
-      }
-      // If "quote", continue with normal flow
-    }
-
-    // Handle Vault action selection
-    if (s.product === "Vault" && currentQ?.key === "vaultAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatVaultBestPractices(), activeQuestion: null };
-      }
-      if (action === "parts") {
-        s.phase = "result";
-        return { state: s, reply: formatVaultPartNumbers(), activeQuestion: null };
-      }
-      // If "quote", continue with normal flow
-    }
-
-    // Handle Verify action selection
-    if (s.product === "Verify" && currentQ?.key === "verifyAction") {
-      const action = msg.trim();
-      if (action === "bestpractices") {
-        s.phase = "result";
-        return { state: s, reply: formatVerifyBestPractices(), activeQuestion: null };
-      }
-      if (action === "parts") {
-        s.phase = "result";
-        return { state: s, reply: formatVerifyPartNumbers(), activeQuestion: null };
-      }
-      // If "quote", continue with normal flow
-    }
-
     // Inline Q&A: if the message looks like a question (not an option answer) and a product
     // is already selected, try to answer it from static knowledge before storing as an answer.
     // This means sellers can type "what counts as a client?" mid-flow and get a real answer.
@@ -297,11 +346,6 @@ export function processUserMessage(
     // Also apply any additional entities the LLM extracted from this message
     applyEntities(s, entities);
 
-    // After model selection for Vault, rebuild question list
-    if (s.product === "Vault" && currentQ?.key === "vaultModel") {
-      // Re-derive questions with the now-known model
-    }
-
     s.discoveryStep = nextApplicableStep(
       getQuestions(s),
       s.discoveryStep + 1,
@@ -314,7 +358,13 @@ export function processUserMessage(
       s.phase = "computing";
       const result = computeResult(s);
       s.phase = "result";
-      return { state: s, reply: result, activeQuestion: null };
+      const resultWithCrossSell = maybeAppendCrossSellHint(s, result);
+      const crossSellMessage = s.answers.crossSellSource ? null : buildCrossSellResultMessage(s.product);
+      return {
+        state: s,
+        reply: crossSellMessage ? `${resultWithCrossSell}\n\n${crossSellMessage}` : resultWithCrossSell,
+        activeQuestion: null,
+      };
     }
 
     const nextQ = updatedQuestions[s.discoveryStep];
@@ -340,9 +390,223 @@ export function processUserMessage(
         activeQuestion: firstQ ? { question: firstQ } : null,
       };
     }
+    // Support targeted cross-sell: "cross-sell Vault", "cross-sell Turbonomic", etc.
+    // Also matches bare "cross-sell" (single-target products keep working unchanged).
+    const crossSellMatch = msg.match(/^cross-sell(?:\s+(.+))?$/i);
+    if (crossSellMatch) {
+      const crossSellTarget = crossSellMatch[1]?.trim().toLowerCase() ?? "";
+
+      // Terraform has two attach targets — route based on the specific target requested
+      if (s.product === "Terraform") {
+        const toTurbonomic = crossSellTarget === "turbonomic";
+        if (toTurbonomic) {
+          s.product = "Turbonomic";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "Terraform" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Terraform scoping, I'll size the Turbonomic attach. Every VM and node Terraform provisions is a target for continuous right-sizing — no more over-provisioned infrastructure silently burning cloud budget.",
+            activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+          };
+        }
+        // Default / "vault" target
+        s.product = "Vault";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = { crossSellSource: "Terraform" };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Terraform scoping, I'll size the Vault attach so the client can eliminate secrets sprawl and secure every credential their infrastructure automation generates — IBM's ILM + SLM story.",
+          activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      // Instana has two attach targets — Turbonomic (default) or Concert
+      if (s.product === "Instana") {
+        const toConcert = crossSellTarget === "concert";
+        if (toConcert) {
+          s.product = "Concert";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "Instana", concertInstana: "yes" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Concert**\n\nBased on the Instana quote, I'll scope the Concert attach. Concert Observe *requires Instana agents* as its telemetry source — this is an architectural dependency, not just a cross-sell.",
+            activeQuestion: { question: CONCERT_QUESTIONS[1] },
+          };
+        }
+        // Default / "turbonomic" target
+        s.product = "Turbonomic";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = { crossSellSource: "Instana", turbonomicInstana: "yes" };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Instana quote, I'll scope the Turbonomic attach so the client can close the loop — automatically acting on the observability data Instana captures, with full application-aware resource optimization.",
+          activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+        };
+      }
+
+      // Turbonomic has two attach targets — Instana (default) or Concert
+      if (s.product === "Turbonomic") {
+        const toConcert = crossSellTarget === "concert";
+        if (toConcert) {
+          s.product = "Concert";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "Turbonomic" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Concert**\n\nBased on the Turbonomic scoping, I'll size the Concert attach. Concert Optimize is *powered by IBM Turbonomic* — the same optimization engine, surfaced through Concert's AI-driven cross-domain operational intelligence layer.",
+            activeQuestion: { question: CONCERT_QUESTIONS[1] },
+          };
+        }
+        // Default / "instana" target — fall through to existing handler below
+      }
+    }
+
+    if (/^cross-sell(?:\s|$)/i.test(msg)) {
+      if (s.product === "MaaS360") {
+        s.product = "Verify";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "MaaS360",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Security Verify**\n\nBased on the MaaS360 quote, I'll recommend the best-fit Verify identity attach so the client can turn managed-device posture into stronger SSO, MFA, and adaptive access policy.",
+          activeQuestion: { question: VERIFY_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Vault") {
+        // Vault → Verify (original play)
+        s.product = "Verify";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Vault",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Security Verify**\n\nBased on the Vault quote, I'll recommend the best-fit Verify identity attach so the client can connect workforce identity with secrets, certificates, and machine-level trust.",
+          activeQuestion: { question: VERIFY_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Terraform") {
+        // Terraform → Vault (ILM + SLM)
+        s.product = "Vault";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Terraform",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Terraform scoping, I'll size the Vault attach so the client can eliminate secrets sprawl and secure every credential their infrastructure automation generates — IBM's ILM + SLM story.",
+          activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Instana") {
+        // Instana → Turbonomic (see it → act on it)
+        s.product = "Turbonomic";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Instana",
+          turbonomicInstana: "yes",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Instana quote, I'll scope the Turbonomic attach so the client can close the loop — automatically acting on the observability data Instana captures, with full application-aware resource optimization.",
+          activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+        };
+      }
+
+      if (s.product === "Concert") {
+        // Concert → route to Turbonomic if optimize pain, otherwise Instana
+        const concertPain = String(s.answers.concertPain ?? "alertFatigue");
+        if (concertPain === "costOptimization" || concertPain === "all") {
+          // Concert + Optimize module → Turbonomic (required for Concert Optimize)
+          s.product = "Turbonomic";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = {
+            crossSellSource: "Concert",
+          };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the Concert scoping, I'll size the Turbonomic attach. Concert Optimize is *powered by IBM Turbonomic* — configuring Turbonomic targets is a required setup step to enable the Optimize module. This is not just a cross-sell; it's an architectural dependency.",
+            activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
+          };
+        }
+        // Concert → Instana (observability enrichment — Concert Observe requires Instana agents)
+        s.product = "Instana";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "Concert",
+          instanaAction: "quote",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Instana Observability**\n\nBased on the Concert scoping, I'll size the Instana attach. Concert Observe *requires Instana agents* as its observability data source — Instana is not just complementary, it's the required telemetry feed for Concert's AI engine.",
+          activeQuestion: { question: INSTANA_QUESTIONS[1] },
+        };
+      }
+
+      if (s.product === "webMethods") {
+        // webMethods → Verify (identity-secured API fabric)
+        s.product = "Verify";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          crossSellSource: "webMethods",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Security Verify**\n\nBased on the webMethods scoping, I'll size the Verify attach so the client can secure every API endpoint and integration surface with modern OAuth 2.0/OIDC identity governance — no more static API keys.",
+          activeQuestion: { question: VERIFY_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      if (s.product === "Verify") {
+        const attachDecision = recommendVerifyCrossSellAttach(s.answers);
+        if (attachDecision.target === "Vault") {
+          s.product = "Vault";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = {
+            crossSellSource: "Verify",
+          };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Verify quote, I'll recommend the best-fit Vault attach so the client can extend workforce identity into secrets, certificates, privileged credentials, and machine-level trust.",
+            activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+          };
+        }
+
+        s.product = "MaaS360";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = {
+          maas360Action: "quote",
+          crossSellSource: "Verify",
+        };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM MaaS360**\n\nBased on the Verify quote, I'll recommend the best-fit MaaS360 package for the client and attach any obvious endpoint add-ons so you don't leave endpoint trust revenue on the table.",
+          activeQuestion: { question: MAAS360_QUESTIONS[0] },
+        };
+      }
+    }
     return {
       state: s,
-      reply: "Say **'restart'** to start a new quote, or tell me which product to quote next.",
+      reply: "Say **'restart'** to start a new quote, tell me which product to quote next, or type **cross-sell** to launch the adjacent product mini-flow.",
       activeQuestion: null,
     };
   }
@@ -355,8 +619,14 @@ export function processUserMessage(
 export function computeResult(state: ConversationState): string {
   switch (state.product) {
     case "Verify": return computeVerifyResult(state);
+    case "MaaS360": return computeMaaS360Result(state);
     case "Vault":  return computeVaultResult(state);
     case "NS1":    return computeNS1Result(state);
+    case "Instana": return computeInstanaResult(state);
+    case "Turbonomic": return computeTurbonomicResult(state);
+    case "Terraform": return computeTerraformResult(state);
+    case "Concert": return computeConcertResult(state);
+    case "webMethods": return computeWebMethodsResult(state);
     default: return "Unknown product.";
   }
 }
@@ -365,10 +635,19 @@ export function computeResult(state: ConversationState): string {
 
 function computeVerifyResult(state: ConversationState): string {
   const a = state.answers;
-  const caps = (a.capabilities as string[]) ?? ["SSO"];
-  const population = parseNumber(String(a.population ?? 500));
-  const avgLogins = Math.max(1, Math.min(12, parseNumber(String(a.avgLogins ?? 12))));
-  const managedUsers = parseNumber(String(a.managedUsers ?? 0));
+  const crossSellSource = String(a.crossSellSource ?? "");
+  const isCrossSell = crossSellSource === "MaaS360" || crossSellSource === "Vault" || crossSellSource === "webMethods";
+  const caps = isCrossSell
+    ? [
+        ...(parseYesNo(String(a.verifyNeedsSSO ?? "yes")) ? ["SSO"] : []),
+        ...(parseYesNo(String(a.verifyNeedsMFA ?? "yes")) ? ["MFA"] : []),
+        ...(parseYesNo(String(a.verifyNeedsAdaptive ?? "no")) ? ["Adaptive"] : []),
+        ...(parseYesNo(String(a.verifyNeedsLifecycle ?? "no")) ? ["Lifecycle"] : []),
+      ] as VerifyCapability[]
+    : ((a.capabilities as string[]) ?? ["SSO"] as string[]);
+  const population = parseNumber(String((isCrossSell ? a.verifyPopulation : a.population) ?? 500));
+  const avgLogins = Math.max(1, Math.min(12, parseNumber(String(a.avgLogins ?? (isCrossSell ? 12 : 12)))));
+  const managedUsers = parseNumber(String((isCrossSell ? a.verifyManagedUsers : a.managedUsers) ?? 0));
   const regions = Math.max(1, parseNumber(String(a.regions ?? "1")));
   const term = String(a.term ?? "12-month") as "12-month" | "3-year";
 
@@ -405,6 +684,26 @@ function computeVerifyResult(state: ConversationState): string {
   ).join("");
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
 
+  const verifyAttach = crossSellSource === "Vault"
+    ? recommendVaultToVerifyAttach(a)
+    : recommendVerifyToMaaS360Attach({
+        capabilities: caps,
+        population,
+      });
+  const verifyEvidence = verifyAttach.evidence
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+  const crossSellReason = String(a.verifyCrossSellReason ?? "");
+  const crossSellContext = isCrossSell
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Verify quote was launched from <strong>${crossSellSource === "Vault" ? "IBM HashiCorp Vault" : crossSellSource === "webMethods" ? "IBM webMethods Integration" : "IBM MaaS360"}</strong>${crossSellReason ? ` because the seller is trying to solve <strong>${crossSellReason}</strong>` : ""}. ${crossSellSource === "Vault" ? "Use this when the client has secrets, certificates, or privileged machine access in scope and now needs stronger workforce SSO, MFA, or lifecycle governance to complete the trust story." : crossSellSource === "webMethods" ? "Use this when the client is publishing APIs or integration endpoints via webMethods and needs modern OAuth 2.0/OIDC identity governance to secure them." : "Use this when managed devices, endpoint posture, or mobile risk should feed directly into SSO, MFA, and adaptive access decisions."}</div>`
+    : `<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+<div class="result-section-label">BEST ADJACENT ATTACH</div>
+<ul class="result-flags"><li><strong>Why this attach:</strong> ${verifyAttach.headline}</li><li>${verifyAttach.rationale}</li>${verifyEvidence}</ul>`;
+
+  const nextStepMessage = isCrossSell
+    ? `<div class="result-next">This cross-sell attach is complete. To avoid looping back into the same product again, the next guided attach will only suggest a different adjacent product after you finish a new base quote.</div>`
+    : "";
+
   return `<div class="result-card">
 
 <div class="result-header">
@@ -428,7 +727,77 @@ function computeVerifyResult(state: ConversationState): string {
 
 <ul class="result-flags">${flags}</ul>
 
-<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+${crossSellContext}
+${nextStepMessage}
+
+</div>`;
+}
+
+// ─── MAAS360 ─────────────────────────────────────────────────────────────────
+
+function computeMaaS360Result(state: ConversationState): string {
+  const a = state.answers;
+  const devices = parseNumber(String(a.maas360Devices ?? "1")) || 1;
+  const recommendation = recommendMaaS360Plan({
+    secureMail: parseYesNo(String(a.maas360SecureMail ?? "no")),
+    advancedApps: parseYesNo(String(a.maas360AdvancedApps ?? "no")),
+    threatDefense: parseYesNo(String(a.maas360ThreatDefense ?? "no")),
+    remoteSupport: parseYesNo(String(a.maas360RemoteSupport ?? "no")),
+  });
+  const includeConcierge = String(a.maas360Concierge ?? "no") === "yes";
+  const result = computeMaaS360Estimate({
+    devices,
+    planKey: recommendation.planKey,
+    addOnKeys: recommendation.addOnKeys,
+    includeConcierge,
+  });
+  const rows = result.lines.map((line) =>
+    `<tr><td>${line.label}</td><td>${line.quantity.toLocaleString()}</td><td>$${line.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${line.notes}</td></tr>`
+  ).join("");
+  const flags = result.flags.map((flag) => `<li>${flag}</li>`).join("");
+  const reasons = recommendation.reasons.map((reason) => `<li>${reason}</li>`).join("");
+  const maas360Attach = recommendMaaS360ToVerifyAttach(a);
+  const maas360Evidence = maas360Attach.evidence
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+  const crossSellSource = String(a.crossSellSource ?? "");
+  const crossSellContext = crossSellSource
+    ? `<div class="result-next"><strong>Why this attach:</strong> This MaaS360 quote was launched from <strong>${crossSellSource === "Verify" ? "IBM Security Verify" : crossSellSource}</strong> so the seller can turn identity requirements into device trust, endpoint control, and remediation coverage.</div>`
+    : `<div class="result-section-label">BEST ADJACENT ATTACH</div>
+<ul class="result-flags"><li><strong>Why this attach:</strong> ${maas360Attach.headline}</li><li>${maas360Attach.rationale}</li>${maas360Evidence}</ul>`;
+
+  const nextStepMessage = crossSellSource
+    ? `<div class="result-next">This cross-sell attach is complete. To avoid looping back into the same product again, the next guided attach will only suggest a different adjacent product after you finish a new base quote.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM MaaS360</span>
+  <span class="result-badge">MaaS360</span>
+</div>
+
+<div class="result-inputs">
+  ${devices.toLocaleString()} managed devices &nbsp;·&nbsp; recommended package: <strong>${formatMaaS360PlanLabel(recommendation.planKey)}</strong> &nbsp;·&nbsp; public pricing estimate
+</div>
+
+<div class="result-section-label">RECOMMENDED PACKAGE</div>
+<ul class="result-flags">${reasons}</ul>
+
+<div class="result-section-label">PUBLIC-PRICE ESTIMATE</div>
+<table class="result-table">
+  <thead><tr><th>Line</th><th>Qty</th><th>Annual List</th><th>Notes</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+
+<div class="result-price-row">
+  <div class="result-price">~$${result.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+  <div class="result-price-note">~$${result.monthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
+</div>
+
+<ul class="result-flags">${flags}</ul>
+${crossSellContext}
+${nextStepMessage}
 
 </div>`;
 }
@@ -437,60 +806,46 @@ function computeVerifyResult(state: ConversationState): string {
 
 function computeVaultResult(state: ConversationState): string {
   const a = state.answers;
-
-  const modelCode = String(a.vaultModel ?? "A");
   const installCount = parseNumber(String(a.installCount ?? "1")) || 1;
 
-  if (modelCode === "A") {
-    const useCases = (a.useCases as string[]) ?? [];
-    const useCaseInputs: VaultUseCaseInputs = {};
-    if (useCases.includes("static"))  useCaseInputs.staticSecretCount  = parseNumber(String(a.staticSecretCount ?? "100")) || 100;
-    if (useCases.includes("dynamic")) useCaseInputs.dynamicRoles        = parseNumber(String(a.dynamicRoles ?? "10")) || 10;
-    if (useCases.includes("pki")) {
-      useCaseInputs.pkiCertsPerMonth    = parseNumber(String(a.pkiCertsPerMonth ?? "100")) || 100;
-      useCaseInputs.pkiCertLifetimeHours = parseNumber(String(a.pkiCertLifetime ?? "2160")) || 2160;
-    }
-    if (useCases.includes("ssh")) {
-      useCaseInputs.sshCredsPerMonth  = parseNumber(String(a.sshCredsPerMonth ?? "100")) || 100;
-      useCaseInputs.sshLifetimeHours  = parseNumber(String(a.sshLifetime ?? "24")) || 24;
-    }
-    if (useCases.includes("transit")) useCaseInputs.transitCallsPerMonth = parseNumber(String(a.transitCallsPerMonth ?? "150000")) || 150000;
-    if (useCases.includes("kmse"))    useCaseInputs.kmseKeyCount         = parseNumber(String(a.kmseKeyCount ?? "100")) || 100;
-
-    const result = computeVaultQuote({
-      model: "A-Platform",
-      installCount,
-      useCaseInputs,
-      includeNonProd: parseYesNo(String(a.includeNonProd ?? "no")),
-      includeKMIP: parseYesNo(String(a.includeKMIP ?? "no")),
-    });
-    return formatVaultResult(result, "A — Platform / Usage-based");
+  const useCases = (a.useCases as string[]) ?? [];
+  const useCaseInputs: VaultUseCaseInputs = {};
+  if (useCases.includes("static"))  useCaseInputs.staticSecretCount   = parseNumber(String(a.staticSecretCount ?? "100")) || 100;
+  if (useCases.includes("dynamic")) useCaseInputs.dynamicRoles         = parseNumber(String(a.dynamicRoles ?? "10")) || 10;
+  if (useCases.includes("pki")) {
+    useCaseInputs.pkiCertsPerMonth     = parseNumber(String(a.pkiCertsPerMonth ?? "100")) || 100;
+    useCaseInputs.pkiCertLifetimeHours = parseNumber(String(a.pkiCertLifetime ?? "2160")) || 2160;
   }
-
-  const editionMap: Record<string, VaultEdition> = { "1": "Essentials", "2": "Standard", "3": "Premium" };
-  const edition = editionMap[String(a.edition ?? "2")] ?? "Standard";
-  const clientCount = parseNumber(String(a.clientCount ?? "1")) || 1;
-
-  const adpTransformClients = parseNumber(String(a.adpTransform ?? "0"));
+  if (useCases.includes("ssh")) {
+    useCaseInputs.sshCredsPerMonth = parseNumber(String(a.sshCredsPerMonth ?? "100")) || 100;
+    useCaseInputs.sshLifetimeHours = parseNumber(String(a.sshLifetime ?? "24")) || 24;
+  }
+  if (useCases.includes("transit")) useCaseInputs.transitCallsPerMonth = parseNumber(String(a.transitCallsPerMonth ?? "150000")) || 150000;
+  if (useCases.includes("kmse"))    useCaseInputs.kmseKeyCount          = parseNumber(String(a.kmseKeyCount ?? "100")) || 100;
 
   const result = computeVaultQuote({
-    model: "B-Clients",
-    edition,
+    model: "A-Platform",
     installCount,
-    clientCount,
+    useCaseInputs,
     includeNonProd: parseYesNo(String(a.includeNonProd ?? "no")),
-    pkiCerts: parseNumber(String(a.pkiAddon ?? "0")),
-    adpKeyMgmt: parseNumber(String(a.adpKeyMgmt ?? "0")),
-    adpTransformClients: adpTransformClients > 0 ? adpTransformClients : undefined,
+    includeKMIP: parseYesNo(String(a.includeKMIP ?? "no")),
   });
-  return formatVaultResult(result, `B — Clients / RVU (${edition})`);
+  return formatVaultResult(result, "Vault 2.0 — Consumption / RU-based", a);
 }
 
-function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLabel: string): string {
+function formatVaultResult(
+  result: ReturnType<typeof computeVaultQuote>,
+  modelLabel: string,
+  answers: ConversationState["answers"]
+): string {
   const rows = result.lines.map((l) =>
     `<tr><td><code>${l.part}</code></td><td>${l.description}</td><td>${l.quantity.toLocaleString()}</td><td>$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td><td>${l.rationale}</td></tr>`
   ).join("");
   const flags = result.flags.map((f) => `<li>${f}</li>`).join("");
+  const verifyAttach = recommendVaultToVerifyAttach(answers);
+  const verifyEvidence = verifyAttach.evidence.map((item) => `<li>${item}</li>`).join("");
+  const crossSellSource = String(answers.crossSellSource ?? "");
+  const crossSellReason = String(answers.vaultCrossSellReason ?? "");
 
   return `<div class="result-card">
 
@@ -513,7 +868,12 @@ function formatVaultResult(result: ReturnType<typeof computeVaultQuote>, modelLa
 
 <ul class="result-flags">${flags}</ul>
 
-<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+${(crossSellSource === "Verify" || crossSellSource === "Terraform")
+  ? `<div class="result-next"><strong>Why this attach:</strong> This Vault quote was launched from <strong>${crossSellSource === "Terraform" ? "IBM HashiCorp Terraform" : "IBM Security Verify"}</strong>${crossSellReason ? ` because the seller is trying to solve <strong>${crossSellReason}</strong>` : ""}. ${crossSellSource === "Terraform" ? "Use this when infrastructure automation is already in scope — Vault eliminates secrets sprawl by providing dynamic credentials to every Terraform provisioning run." : "Use this when workforce identity is already in play and the client now needs secrets governance, certificate lifecycle, or machine-identity controls to close the remaining trust gap."}</div>
+<div class="result-next">This cross-sell attach is complete. To avoid looping back into the same product again, the next guided attach will only suggest a different adjacent product after you finish a new base quote.</div>`
+  : `<div class="result-next">📋 Paste these parts into CPQ for exact pricing, discounting, and approval.</div>
+<div class="result-section-label">BEST ADJACENT ATTACH</div>
+<ul class="result-flags"><li><strong>Why this attach:</strong> ${verifyAttach.headline}</li><li>${verifyAttach.rationale}</li>${verifyEvidence}</ul>`}
 
 </div>`;
 }
@@ -874,20 +1234,23 @@ Kubernetes auth in Vault uses **service account UID** as the alias by default, m
 For current quoting (Model B), ask: "How many distinct Kubernetes service accounts authenticate to Vault?" — that's your client count, not the pod count.`;
     }
 
-    if (/model a|model b|which model|platform.*ru|clients.*rvu|difference.*model/i.test(msg)) {
-      return `**Model A vs Model B — which to use?**
+    if (/model a|model b|which model|platform.*ru|clients.*rvu|difference.*model|vault.*1\.0|vault.*2\.0|what.*model/i.test(msg)) {
+      return `**IBM HashiCorp Vault 2.0 — consumption-based pricing**
 
-| | Model A (Platform/RU) | Model B (Clients/RVU) |
-|---|---|---|
-| **Best for** | New/expanding, cloud-native, variable workloads | Stable renewals, known app count |
-| **Priced on** | What Vault *does* (secrets, certs, keys, API calls) | Who *connects* (unique apps/services/users) |
-| **Predictability** | Variable (scales with usage) | Predictable (flat per client) |
+DealGenie quotes Vault 2.0 only. Pricing is based on **what Vault does**, not how many apps connect:
 
-**Decision question:** *"Do you know how many apps/services will connect to Vault, and is that number stable?"*
-- Yes, stable number → Model B
-- No, or growing fast → Model A
+| Use case | How it's measured |
+|---|---|
+| Static secrets (API keys, passwords) | 1 secret stored = 1 RU |
+| Dynamic credential roles | 1 role configured = 1 RU |
+| PKI certificates | CEIL(certs/month × lifetime_hours ÷ 730) RU |
+| SSH ephemeral credentials | Same formula as PKI |
+| Encrypt/Decrypt API calls | 150,000 calls = 1 RU |
+| KMIP encryption keys | 1 key managed = 1 RU |
 
-⚠️ Cannot be changed without a new contract — get this right upfront.`;
+**Two required parts:** Install (D15FQZX, $96K/cluster/yr) + RU (D15FKZX, $48/RU/month).
+
+**Census is mandatory** — automated monthly utilisation reporting to IBM. Must be enabled at or before contract signing. Customer must be on Vault 2.0 (April 2026 release).`;
     }
 
     if (/namespace|duplication|child namespace/i.test(msg)) {
@@ -938,18 +1301,17 @@ Only needed for legacy apps that use the KMIP protocol for external key manageme
 Common mistake: quoting Premium without buying ≥2 installs — the edition is useless without a DR target cluster.`;
     }
 
-    if (/what.*vault.?2|vault.?2.*what|vault 2\.0/i.test(msg)) {
+    if (/what.*vault.?2|vault.?2.*what/i.test(msg)) {
       return `**What is Vault 2.0?**
 
-Vault 2.0 is the **April 2026 release** of Vault Enterprise — it would have been Vault 1.22, but IBM aligned to its software versioning policy.
+Vault 2.0 is the **April 2026 release** of Vault Enterprise (previously would have been Vault 1.22 — IBM aligned versioning).
 
-Key facts:
-- Supports **both** Model B (Clients/RVU) and Model A (Resource Units/RU) pricing
-- Existing customers can upgrade to 2.0 and **keep their Client-based entitlements** — no forced migration
-- Moving to RU requires: (1) upgrade to Vault 2.0, (2) a **contracting event** (change of pricing metrics)
-- Mid-term switch to RU model is possible via a **supersede**, provided customer meets requirements
-
-For quoting: Model A = RU model, Model B = Client model. Both have working part numbers in this tool.`;
+Key facts for quoting:
+- **DealGenie quotes Vault 2.0 only** — consumption/RU-based pricing
+- Requires Census reporting enabled (automated monthly utilisation data to IBM)
+- Requires customer to be on or willing to upgrade to Vault 2.0
+- Two parts per cluster: Install (D15FQZX, $96K/yr) + Resource Units (D15FKZX, $48/RU/month)
+- If a customer is on an older perpetual Vault and refusing to upgrade — contact IBM, that is outside this tool's scope`;
     }
 
     if (/census|license.*report|utilization.*report|automated.*report/i.test(msg)) {
@@ -966,15 +1328,18 @@ Census is Vault's **automated monthly reporting** feature — it sends license u
 **If a customer refuses to enable Census, they cannot use the RU model.** Stay on Model B (Clients).`;
     }
 
-    if (/mix.*model|model.*mix|same.*contract.*model|combine.*model|both.*model/i.test(msg)) {
-      return `**Can Model A and Model B be used together?**
+    if (/mix.*model|model.*mix|1\.0.*2\.0|2\.0.*1\.0|old.*model|previous.*model|client.*model|rvu.*model/i.test(msg)) {
+      return `**Vault 1.0 (Client/RVU) vs Vault 2.0 (Consumption/RU)**
 
-**No.** The Client-based model (B) and the Resource Unit model (A) **cannot be mixed** within the same contract, installation, or region.
+DealGenie quotes Vault 2.0 only. Here's the difference:
 
-A customer must choose one model per contract. If they want to switch:
-- Allowed mid-term via a **supersede** (not a new contract)
-- Customer must meet requirements: Vault 2.0 upgrade + willingness to enable Census
-- Once on RU, the Client entitlements are replaced — they cannot run both simultaneously`;
+| | Vault 1.0 (retired path) | Vault 2.0 (this tool) |
+|---|---|---|
+| **Priced on** | Who *connects* (unique clients) | What Vault *does* (secrets, certs, keys) |
+| **Problem** | Kubernetes = hundreds of clients = huge bill | Kubernetes = many short-lived certs = low RU cost |
+| **Requires** | Nothing | Vault 2.0 + Census enabled |
+
+If a customer is mid-contract on the old 1.0 model and wants to move to 2.0: allowed via a **supersede** mid-term. Contact IBM — it requires a contracting event.`;
     }
 
     if (/non.?prod|non.?production|dev.*env|test.*env|staging/i.test(msg)) {
@@ -1161,8 +1526,511 @@ DDoS Overage Protection (D0GN5ZX), NXD Waiver (D0GNMZX), and DNS Insights (D0GN6
 // ─── WELCOME ─────────────────────────────────────────────────────────────────
 
 export const WELCOME_REPLY =
-  "Which product would you like to quote?\n\n1. **IBM Security Verify**\n2. **NS1 Connect**\n3. **IBM HashiCorp Vault**\n\nPick one below or type the name.";
+  "Which product would you like to quote?\n\n**Security & Identity**\n1. **IBM Security Verify** — IAM, SSO, MFA, Lifecycle\n2. **IBM HashiCorp Vault** — Secrets, PKI, Machine Identity\n\n**Infrastructure & Integration**\n3. **NS1 Connect** — Intelligent DNS\n4. **IBM MaaS360** — Unified Endpoint Management\n5. **IBM HashiCorp Terraform** — Infrastructure as Code\n6. **IBM webMethods Integration** — Hybrid iPaaS\n\n**Observability & AIOps**\n7. **IBM Instana Observability** — Full-Stack APM\n8. **IBM Turbonomic** — Application Resource Management\n9. **IBM Concert** — Agentic ITOps\n\nPick one or type the product name.";
 
 export function getInitialActiveQuestion(): ActiveQuestion | null {
   return null; // product selection is handled by quick-pick buttons in the UI
+}
+
+// ─── INSTANA ──────────────────────────────────────────────────────────────────
+
+function computeInstanaResult(state: ConversationState): string {
+  const a = state.answers;
+  const mvs = parseNumber(String(a.instanaMVS ?? 50));
+  const tier = (String(a.instanaTier ?? "Standard")) as "Essentials" | "Standard";
+  const model = (String(a.instanaModel ?? "SaaS")) as "PayPerUse" | "SaaS" | "SelfHosted";
+  const addLogs = parseYesNo(String(a.instanaLogsInContext ?? "no"));
+  const logGB = parseNumber(String(a.instanaLogGB ?? 0));
+
+  const inputs: InstanaInputs = {
+    model,
+    tier,
+    mvsCount: mvs,
+    addLogsInContext: addLogs,
+    estimatedLogGB: logGB > 0 ? logGB : undefined,
+  };
+
+  const result = computeInstanaQuote(inputs);
+
+  const lineRows = result.lines.map((l) =>
+    `<tr>
+      <td>${l.label}</td>
+      <td class="text-right">${l.quantity.toLocaleString()}</td>
+      <td class="text-right">$${l.monthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo</td>
+      <td class="text-right">$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}/yr</td>
+      <td style="font-size:11px;color:#94a3b8;">${l.notes}</td>
+    </tr>`
+  ).join("");
+
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+  const instanaCrossSource = String(a.crossSellSource ?? "");
+  const instanaCrossContext = instanaCrossSource === "Concert"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Instana estimate was launched from <strong>IBM Concert</strong>. Concert Observe is architecturally built on Instana agents — Instana is a required data source, not just complementary. Concert Protect also auto-imports Kubernetes clusters, container images, and application components from Instana (no manual SBOM files). <strong>Sidekick:</strong> Instana users see Concert CVE/resilience data inline without switching tools. Combined positioning: "Instana captures the signals; Concert tells you what matters and orchestrates the response."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : instanaCrossSource === "Turbonomic"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Instana estimate was launched from <strong>IBM Turbonomic</strong>. Instana feeds Turbonomic's AI engine with real-time APM data, making resource decisions application-aware. <strong>Automated integration:</strong> when both products are under the same IBM account (min 200 MVS Instana Standard SaaS), setup is one-click from the Instana Optimizations tab. <strong>Sidekick:</strong> Turbonomic resource actions appear inline in Instana's UI. Combined positioning: "See it with Instana, act on it with Turbonomic."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM Instana Observability</span>
+  <span class="result-badge instana">Instana · ${result.tier}</span>
+</div>
+
+<div class="result-inputs">
+  ${mvs.toLocaleString()} MVS &nbsp;·&nbsp; ${result.model} &nbsp;·&nbsp; ${result.tier} tier
+</div>
+
+<div class="result-section-label">💰 ESTIMATE</div>
+<table class="result-table">
+  <thead><tr><th>Description</th><th class="text-right">Qty</th><th class="text-right">Monthly List</th><th class="text-right">Annual List</th><th>Notes</th></tr></thead>
+  <tbody>${lineRows}</tbody>
+</table>
+
+<div class="result-price-row">
+  <div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>
+  <div class="result-price">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+${instanaCrossContext}
+
+</div>`;
+}
+
+function formatInstanaBestPractices(): string {
+  const bpRows = INSTANA_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = INSTANA_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM Instana Observability</span><span class="result-badge instana">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── TURBONOMIC ───────────────────────────────────────────────────────────────
+
+function computeTurbonomicResult(state: ConversationState): string {
+  const a = state.answers;
+  const deployment = (String(a.turbonomicDeployment ?? "SaaS")) as "SaaS" | "SaaSGov" | "OnPrem" | "Parking";
+  const mvs = parseNumber(String(a.turbonomicMVS ?? 0));
+  const cloudSpend = parseNumber(String(a.turbonomicCloudSpend ?? 0));
+  const scopingModel = (String(a.turbonomicScopingModel ?? "mvs")) as "mvs" | "monitoredCosts";
+  const hasCloud = parseYesNo(String(a.turbonomicCloud ?? "yes"));
+  const hasK8s = parseYesNo(String(a.turbonomicKubernetes ?? "no"));
+  const driver = (String(a.turbonomicDriver ?? "both")) as "cost" | "performance" | "both";
+  const hasInstana = parseYesNo(String(a.turbonomicInstana ?? "no"));
+
+  const inputs: TurbonomicInputs = {
+    deployment,
+    estimatedMVS: mvs,
+    annualCloudSpend: cloudSpend > 0 ? cloudSpend : undefined,
+    scopingModel,
+    isGovernment: deployment === "SaaSGov",
+    includesPublicCloud: hasCloud,
+    includesKubernetes: hasK8s,
+    includesDatacenter: deployment === "OnPrem",
+    primaryDriver: driver,
+    instanaAlreadyOwned: hasInstana,
+    includeServices: true,
+  };
+
+  const result = computeTurbonomicScope(inputs);
+
+  const hasEstimate = result.lines.length > 0 && result.totalAnnualList > 0;
+  const lineRows = result.lines.map((l) =>
+    `<tr>
+      <td><code>${l.part}</code></td>
+      <td>${l.description}</td>
+      <td class="text-right">${l.quantity.toLocaleString()} ${l.unit}</td>
+      <td class="text-right">${l.monthlyList > 0 ? "$" + l.monthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 }) + "/mo" : "—"}</td>
+      <td class="text-right">$${l.annualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}/yr</td>
+      <td style="font-size:11px;color:#94a3b8;">${l.notes}</td>
+    </tr>`
+  ).join("");
+
+  const scopeRows = result.scopeItems.map((s) => `<li>${s}</li>`).join("");
+  const featureRows = result.keyFeatures.map((f) => `<li>${f}</li>`).join("");
+  const talkingRows = result.sellerTalkingPoints.map((t) => `<li>${t}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  const turboCrossSource = String(a.crossSellSource ?? "");
+  const turboCrossContext = turboCrossSource === "Instana"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>IBM Instana Observability</strong>. Turbonomic ingests Instana's real-time APM telemetry to make resource decisions application-aware — it will not right-size a resource that is actively causing a performance degradation. <strong>Automated integration (IBM confirmed):</strong> both under the same IBM account with 200+ MVS Instana Standard SaaS → one-click setup from Instana Optimizations tab. <strong>Sidekick:</strong> Instana performance metrics appear in Turbonomic's UI via the Sidekick sidebar. Combined positioning: "See it with Instana, act on it with Turbonomic."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : turboCrossSource === "Concert"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>IBM Concert</strong>. Concert Optimize is powered by Turbonomic — Turbonomic target configuration is a required step when deploying the Optimize module. The two products form IBM's AIOps optimization loop: Concert surfaces the recommendation, Turbonomic executes it. <strong>Sidekick:</strong> Concert users see Turbonomic optimization insights inline. Combined positioning: "Concert sees the opportunity; Turbonomic acts on it."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM Turbonomic</span>
+  <span class="result-badge turbonomic">ARM · ${result.deploymentLabel}</span>
+</div>
+
+${hasEstimate ? `
+<div class="result-section-label">💰 ESTIMATE</div>
+<table class="result-table">
+  <thead><tr><th>Part #</th><th>Description</th><th class="text-right">Qty</th><th class="text-right">Monthly List</th><th class="text-right">Annual List</th><th>Notes</th></tr></thead>
+  <tbody>${lineRows}</tbody>
+</table>
+<div class="result-price-row">
+  ${result.totalMonthlyList > 0 ? `<div class="result-price">$${result.totalMonthlyList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/mo list</span></div>` : ""}
+  <div class="result-price">$${result.totalAnnualList.toLocaleString(undefined, { maximumFractionDigits: 0 })}<span>/yr list</span></div>
+</div>
+` : ""}
+
+<div class="result-section-label">📋 SCOPE SUMMARY</div>
+<ul class="result-list">${scopeRows}</ul>
+
+<div class="result-section-label">✅ KEY FEATURES IN SCOPE</div>
+<ul class="result-list">${featureRows}</ul>
+
+${result.instanaNote ? `<div class="result-section-label">🔗 INSTANA INTEGRATION</div><div class="bp-body">${result.instanaNote}</div>` : ""}
+
+<div class="result-section-label">💬 SELLER TALKING POINTS</div>
+<ul class="result-list">${talkingRows}</ul>
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+${turboCrossContext}
+
+</div>`;
+}
+
+function formatTurbonomicBestPractices(): string {
+  const bpRows = TURBONOMIC_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = TURBONOMIC_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM Turbonomic</span><span class="result-badge turbonomic">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── TERRAFORM ────────────────────────────────────────────────────────────────
+
+function computeTerraformResult(state: ConversationState): string {
+  const a = state.answers;
+  const deployment = (String(a.terraformDeployment ?? "HCP")) as "HCP" | "Enterprise";
+  const resources = parseNumber(String(a.terraformResources ?? 250));
+  const team = parseNumber(String(a.terraformTeam ?? 5));
+  const governance = String(a.terraformGovernance ?? "none");
+  const vaultOwned = parseYesNo(String(a.terraformVault ?? "no"));
+
+  const inputs: TerraformInputs = {
+    deployment,
+    estimatedManagedResources: resources,
+    teamSize: team,
+    needsGovernance: governance === "governance" || governance === "audit",
+    needsAuditLog: governance === "audit",
+    needsAirGap: deployment === "Enterprise",
+    vaultAlreadyOwned: vaultOwned,
+  };
+
+  const result = computeTerraformRecommendation(inputs);
+
+  const rationaleRows = result.rationale.map((r) => `<li>${r}</li>`).join("");
+  const featureRows = result.keyFeatures.map((f) => `<li>${f}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  // Pricing table — only render when we have line items (paid editions only)
+  const pricingTable = result.lines.length > 0 ? `
+<div class="result-section-label">💲 PRICING (IBM CONFIRMED RATES)</div>
+<table class="result-table">
+  <thead><tr><th>Part</th><th>Description</th><th>RUM</th><th>Annual (Net/List)</th><th>Notes</th></tr></thead>
+  <tbody>
+    ${result.lines.map((l) => `<tr>
+      <td><code>${l.part}</code></td>
+      <td>${l.description}</td>
+      <td>${l.quantity.toLocaleString()}</td>
+      <td>$${l.annualList.toLocaleString()}</td>
+      <td>${l.notes}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:rgba(59,130,246,0.08);">
+      <td colspan="3">Total Annual</td>
+      <td>$${result.totalAnnualList.toLocaleString()}</td>
+      <td>PID 5900BJ7 · IBM graduated discount applied</td>
+    </tr>
+  </tbody>
+</table>` : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM HashiCorp Terraform</span>
+  <span class="result-badge terraform">Terraform · ${result.editionLabel}</span>
+</div>
+
+<div class="result-inputs">
+  ~${result.estimatedManagedResources.toLocaleString()} managed resources &nbsp;·&nbsp; ~${result.workspaceCount} workspaces &nbsp;·&nbsp; ${result.deployment}
+</div>
+
+<div class="result-section-label">📋 RECOMMENDED EDITION: ${result.editionLabel}</div>
+<ul class="result-list">${rationaleRows}</ul>
+
+${pricingTable}
+
+${result.lines.length > 0 ? `<div class="result-section-label">💼 DISCOUNT AUTHORIZATION (SCS)</div>
+<div class="bp-body" style="font-size:12px;line-height:1.6;">
+  <table class="result-table" style="margin-top:4px;">
+    <thead><tr><th>Additional Discount</th><th>Approval Required</th><th>Approver</th></tr></thead>
+    <tbody>
+      <tr><td>≤ 10%</td><td>No approval needed</td><td>Seller self-approve</td></tr>
+      <tr><td>10% – 40%</td><td>Sales Theater VP approval</td><td>Sales Theater VP</td></tr>
+      <tr><td>&gt; 40%</td><td>Deal Management / CRO</td><td>Jack Huber (backup: Freddy Vaquero)</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:6px;color:rgba(147,180,253,0.6);font-size:11px;">Source: HashiCorp SCS Update – 14 Jun 2026 · Scoped to HashiCorp Tactical SCS committed-spend deals · Supersedes Jul 2025 guide.</div>
+</div>` : ""}
+
+<div class="result-section-label">✅ KEY FEATURES</div>
+<ul class="result-list">${featureRows}</ul>
+
+${result.vaultNote ? `<div class="result-section-label">🔗 VAULT / SLM NOTE</div><div class="bp-body">${result.vaultNote}</div>` : ""}
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+</div>`;
+}
+
+function formatTerraformBestPractices(): string {
+  const bpRows = TERRAFORM_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = TERRAFORM_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM HashiCorp Terraform</span><span class="result-badge terraform">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── CONCERT ─────────────────────────────────────────────────────────────────
+
+function computeConcertResult(state: ConversationState): string {
+  const a = state.answers;
+  const pain = (String(a.concertPain ?? "alertFatigue")) as ConcertInputs["primaryPain"];
+  const hasInstana = parseYesNo(String(a.concertInstana ?? "no"));
+  const needsAutomation = parseYesNo(String(a.concertAutomation ?? "no"));
+  const needsResilience = parseYesNo(String(a.concertResilience ?? "no"));
+  const apps = parseNumber(String(a.concertApplications ?? 0));
+  const concertMVS = parseNumber(String(a.concertMVS ?? 0));
+  const estimatedWorkflows = parseNumber(String(a.concertWorkflows ?? 0));
+  const observeTier = (String(a.concertObserveTier ?? "essentials")) as "essentials" | "standard";
+
+  const deployment = (String(a.concertDeployment ?? "onprem")) as "saas" | "onprem";
+
+  const inputs: ConcertInputs = {
+    primaryPain: pain,
+    deployment,
+    hasInstana,
+    needsWorkflowAutomation: needsAutomation,
+    needsCostOptimization: pain === "costOptimization" || pain === "all",
+    needsSecurityRisk: pain === "riskPosture" || pain === "all",
+    needsResilience,
+    estimatedApplications: apps > 0 ? apps : undefined,
+    estimatedMVS: concertMVS > 0 ? concertMVS : undefined,
+    estimatedWorkflows: estimatedWorkflows > 0 ? estimatedWorkflows : undefined,
+    observeTier,
+  };
+
+  const result = computeConcertRecommendation(inputs);
+
+  const moduleRows = result.moduleDescriptions
+    .map((m) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${m.label}</td><td>${m.summary}</td></tr>`)
+    .join("");
+  const positioningRows = result.sellerPositioning.map((p) => `<li>${p}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  // Pricing table — only render when we have line items
+  const pricingTable = result.lines.length > 0 ? `
+<div class="result-section-label">💲 RU ESTIMATE (LIST PRICE)</div>
+<table class="result-table">
+  <thead><tr><th>Module</th><th>RU</th><th>Annual List</th><th>Notes</th></tr></thead>
+  <tbody>
+    ${result.lines.map((l) => `<tr>
+      <td>${l.module}</td>
+      <td>${l.ruCount.toLocaleString()}</td>
+      <td>$${l.annualList.toLocaleString()}</td>
+      <td>${l.notes}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:rgba(20,184,166,0.08);">
+      <td>Total</td>
+      <td>${result.totalRU.toLocaleString()} RU</td>
+      <td>$${result.totalAnnualList.toLocaleString()}</td>
+      <td>$${result.pricePerRU.toFixed(deployment === "saas" ? 4 : 0)}/RU/year · PID ${deployment === "saas" ? "5900BD6" : "5900BBE"}</td>
+    </tr>
+  </tbody>
+</table>` : "";
+
+  const concertCrossSource = String(a.crossSellSource ?? "");
+  const concertCrossContext = concertCrossSource === "Instana"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Concert scoping was launched from <strong>IBM Instana Observability</strong>. Concert Observe requires Instana agents as its data source. Concert Protect auto-imports Kubernetes clusters and container images from Instana — eliminating manual SBOM file creation. <strong>Sidekick:</strong> Concert users see Instana performance metrics inline. Combined positioning: "Instana captures the signals; Concert tells you what matters and orchestrates the response."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM Concert</span>
+  <span class="result-badge concert">Concert · Agentic ITOps</span>
+</div>
+
+<div class="result-section-label">📋 RECOMMENDED MODULES</div>
+<table class="result-table"><tbody>${moduleRows}</tbody></table>
+
+${pricingTable}
+
+${result.instanaNote ? `<div class="result-section-label">🔗 INSTANA NOTE</div><div class="bp-body">${result.instanaNote}</div>` : ""}
+
+<div class="result-section-label">💬 SELLER POSITIONING</div>
+<ul class="result-list">${positioningRows}</ul>
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+${concertCrossContext}
+
+</div>`;
+}
+
+function formatConcertBestPractices(): string {
+  const bpRows = CONCERT_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = CONCERT_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM Concert</span><span class="result-badge concert">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
+}
+
+// ─── WEBMETHODS ───────────────────────────────────────────────────────────────
+
+function computeWebMethodsResult(state: ConversationState): string {
+  const a = state.answers;
+  const needs = Array.isArray(a.webMethodsNeeds) ? (a.webMethodsNeeds as string[]) : [];
+  const deploymentRaw = String(a.webMethodsDeployment ?? "saas");
+  const industry = (String(a.webMethodsIndustry ?? "other")) as WebMethodsInputs["industryVertical"];
+  const verifyOwned = parseYesNo(String(a.webMethodsVerify ?? "no"));
+  const intTxn = parseNumber(String(a.webMethodsIntTxn ?? 0));
+  const apiTxn = parseNumber(String(a.webMethodsApiTxn ?? 0));
+
+  const mftTxn = parseNumber(String(a.webMethodsMftTxn ?? 0));
+
+  const inputs: WebMethodsInputs = {
+    needsAppIntegration: needs.includes("appIntegration"),
+    needsAPIManagement: needs.includes("apiManagement"),
+    needsB2B: needs.includes("b2b"),
+    needsMFT: needs.includes("mft"),
+    needsEventDriven: needs.includes("eventDriven"),
+    preferSaaS: deploymentRaw === "saas",
+    industryVertical: industry,
+    verifyAlreadyOwned: verifyOwned,
+    estimatedIntegrations: intTxn > 0 ? intTxn : undefined,
+    estimatedAPITransactions: apiTxn > 0 ? apiTxn : undefined,
+    estimatedMFTTransactions: mftTxn > 0 ? mftTxn : undefined,
+  };
+
+  const result = computeWebMethodsScope(inputs);
+
+  const capRows = result.capabilityDescriptions
+    .map((c) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${c.label}</td><td>${c.summary}</td></tr>`)
+    .join("");
+  const positioningRows = result.sellerPositioning.map((p) => `<li>${p}</li>`).join("");
+  const flagRows = result.flags.map((f) => `<li>${f}</li>`).join("");
+
+  // Pricing table — only render when we have line items beyond base
+  const pricingTable = result.lines.length > 0 ? `
+<div class="result-section-label">💲 USAGE ESTIMATE (LIST PRICE)</div>
+<table class="result-table">
+  <thead><tr><th>Capability</th><th>RVU</th><th>Annual List</th><th>Notes</th></tr></thead>
+  <tbody>
+    ${result.lines.map((l) => `<tr>
+      <td>${l.capability}</td>
+      <td>${l.rvuCount.toLocaleString()}</td>
+      <td>$${l.annualList.toLocaleString()}</td>
+      <td>${l.notes}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;background:rgba(249,115,22,0.08);">
+      <td>Total</td>
+      <td>${result.totalRVU.toLocaleString()} RVU</td>
+      <td>$${result.totalAnnualList.toLocaleString()}</td>
+      <td>IBM SaaS Calculator Oct 2024 rates · standard discounting applies</td>
+    </tr>
+  </tbody>
+</table>` : "";
+
+  return `<div class="result-card">
+
+<div class="result-header">
+  <span class="result-product">IBM webMethods Integration</span>
+  <span class="result-badge webmethods">webMethods · Hybrid iPaaS</span>
+</div>
+
+<div class="result-section-label">📋 RECOMMENDED CAPABILITIES</div>
+<table class="result-table"><tbody>${capRows}</tbody></table>
+
+${pricingTable}
+
+<div class="result-section-label">🏗️ DEPLOYMENT</div>
+<div class="bp-body">${result.deploymentRecommendation}</div>
+
+${result.verifyNote ? `<div class="result-section-label">🔗 VERIFY NOTE</div><div class="bp-body">${result.verifyNote}</div>` : ""}
+
+<div class="result-section-label">💬 SELLER POSITIONING</div>
+<ul class="result-list">${positioningRows}</ul>
+
+<div class="result-section-label">➡️ NEXT STEP</div>
+<div class="bp-body">${result.nextStep}</div>
+
+<ul class="result-flags">${flagRows}</ul>
+
+</div>`;
+}
+
+function formatWebMethodsBestPractices(): string {
+  const bpRows = WEBMETHODS_BEST_PRACTICES
+    .map((bp) => `<div class="bp-item"><div class="bp-title">${bp.title}</div><div class="bp-body">${bp.body}</div></div>`)
+    .join("");
+  const qrRows = WEBMETHODS_QUICK_REFERENCE
+    .map((qr) => `<tr><td style="font-weight:600;padding:3px 12px 3px 0;">${qr.term}</td><td>${qr.definition}</td></tr>`)
+    .join("");
+  return `<div class="result-card">
+<div class="result-header"><span class="result-product">IBM webMethods Integration</span><span class="result-badge webmethods">Best Practices</span></div>
+<div class="result-section-label">📚 DISCOVERY GUIDE</div>
+${bpRows}
+<div class="result-section-label">📖 QUICK REFERENCE</div>
+<table class="result-table"><tbody>${qrRows}</tbody></table>
+</div>`;
 }

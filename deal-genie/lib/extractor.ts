@@ -66,7 +66,10 @@ You output ONLY a valid JSON object — no explanation, no markdown, no preamble
 
 Extract any of these fields that are clearly stated or strongly implied:
 
-product: "Verify" | "NS1" | "Vault"  (IBM Security Verify = Verify, NS1 Connect = NS1, HashiCorp Vault = Vault)
+product: "Verify" | "NS1" | "Vault" | "MaaS360" | "Instana" | "Turbonomic" | "Terraform" | "Concert" | "webMethods"
+  (IBM Security Verify = Verify, IBM MaaS360 = MaaS360, NS1 Connect = NS1, HashiCorp Vault = Vault,
+   IBM Instana = Instana, IBM Turbonomic = Turbonomic, IBM HashiCorp Terraform = Terraform,
+   IBM Concert = Concert, IBM webMethods = webMethods)
 population: number  (total user count, e.g. "500 users" → 500)
 avgLogins: number  (active months per year, 1–12; how many distinct months per year a user logs in at least once — "every day / every week / every month" → 12, "most months" → 9, "half the year" → 6, "a few months" → 3, "once or twice a year" → 1)
 capabilities: array of "SSO" | "MFA" | "Adaptive" | "Lifecycle"
@@ -143,7 +146,7 @@ export async function extractEntities(userMessage: string): Promise<ExtractedEnt
 function sanitise(raw: Record<string, unknown>): ExtractedEntities {
   const out: ExtractedEntities = {};
 
-  const VALID_PRODUCTS = new Set(["Verify", "NS1", "Vault"]);
+  const VALID_PRODUCTS = new Set(["Verify", "NS1", "Vault", "MaaS360"]);
   const VALID_CAPS = new Set(["SSO", "MFA", "Adaptive", "Lifecycle"]);
   const VALID_USE_CASES = new Set(["static", "dynamic", "pki", "ssh", "transit", "kmse"]);
 

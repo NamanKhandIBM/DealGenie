@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { ConversationState, Message } from "@/lib/types";
 import { initialState } from "@/lib/types";
@@ -12,8 +13,24 @@ import QuoteHistoryDrawer from "@/components/QuoteHistoryDrawer";
 import QuoteCompare from "@/components/QuoteCompare";
 import ScenarioCompare from "@/components/ScenarioCompare";
 import { normaliseAnswersForQuote } from "@/lib/compare-engine";
+import {
+  recommendMaaS360ToVerifyAttach,
+  recommendVaultToVerifyAttach,
+  recommendVerifyCrossSellAttach,
+  recommendVerifyToMaaS360Attach,
+  recommendVerifyToVaultAttach,
+} from "@/lib/cross-sell";
 import type { SavedQuote } from "@/lib/quote-history";
-import { exportPartsCsv, exportQuoteCsv } from "@/lib/export-csv";
+import { exportQuoteCsv } from "@/lib/export-csv";
+import { formatMaaS360PlanLabel } from "@/lib/maas360-data";
+import { recommendMaaS360Plan, computeMaaS360Estimate } from "@/lib/maas360-engine";
+import { computeInstanaQuote } from "@/lib/instana-engine";
+import { computeTurbonomicScope } from "@/lib/turbonomic-engine";
+import { computeTerraformRecommendation } from "@/lib/terraform-engine";
+import { computeConcertRecommendation } from "@/lib/concert-engine";
+import { computeVaultQuote } from "@/lib/vault-engine";
+import { computeVerifyQuote } from "@/lib/verify-engine";
+import type { VerifyCapability } from "@/lib/data";
 
 const WELCOME_MESSAGE: Message = {
   id: "welcome",
@@ -24,10 +41,12 @@ const WELCOME_MESSAGE: Message = {
 };
 
 const PRODUCTS = [
+  // ── Security & Identity ──────────────────────────────────────────────────────
   {
     label: "IBM Security Verify",
     value: "Verify",
     desc: "SSO, MFA, Adaptive Access, Lifecycle & Analytics",
+    group: "Security & Identity",
     icon: (
       <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" strokeLinecap="round" strokeLinejoin="round"/>
@@ -35,9 +54,23 @@ const PRODUCTS = [
     ),
   },
   {
+    label: "IBM HashiCorp Vault",
+    value: "Vault",
+    desc: "Secrets management — Platform RU or Clients model",
+    group: "Security & Identity",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  // ── Infrastructure & Integration ──────────────────────────────────────────────
+  {
     label: "NS1 Connect",
     value: "NS1",
     desc: "Managed DNS, Traffic Steering, GSLB, Insights",
+    group: "Infrastructure & Integration",
     icon: (
       <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
         <circle cx="12" cy="12" r="10"/>
@@ -46,13 +79,76 @@ const PRODUCTS = [
     ),
   },
   {
-    label: "IBM HashiCorp Vault",
-    value: "Vault",
-    desc: "Secrets management — Platform RU or Clients model",
+    label: "IBM MaaS360",
+    value: "MaaS360",
+    desc: "Unified endpoint management and endpoint security",
+    group: "Infrastructure & Integration",
     icon: (
       <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0110 0v4" strokeLinecap="round"/>
+        <rect x="4" y="3" width="16" height="18" rx="2"/>
+        <path d="M9 7h6M9 12h6M9 17h6" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "IBM HashiCorp Terraform",
+    value: "Terraform",
+    desc: "Infrastructure as Code — HCP Terraform or Enterprise",
+    group: "Infrastructure & Integration",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+        <path d="M12 2v20M2 8.5l10 7 10-7" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "IBM webMethods Integration",
+    value: "webMethods",
+    desc: "Hybrid iPaaS — APIs, B2B/EDI, app & event integration",
+    group: "Infrastructure & Integration",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round"/>
+        <circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/>
+        <circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/>
+        <circle cx="9" cy="18" r="2" fill="currentColor" stroke="none"/>
+      </svg>
+    ),
+  },
+  // ── Observability & AIOps ──────────────────────────────────────────────────────
+  {
+    label: "IBM Instana Observability",
+    value: "Instana",
+    desc: "Full-stack APM, distributed tracing, LLM observability",
+    group: "Observability & AIOps",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "IBM Turbonomic",
+    value: "Turbonomic",
+    desc: "Application Resource Management — cloud & data center optimization",
+    group: "Observability & AIOps",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+        <path d="M8 12l2.5 2.5L16 9" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    label: "IBM Concert",
+    value: "Concert",
+    desc: "Agentic ITOps — AI-driven cross-domain operational intelligence",
+    group: "Observability & AIOps",
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" strokeLinecap="round"/>
       </svg>
     ),
   },
@@ -113,6 +209,324 @@ export default function ChatPage() {
   const [savingQuote, setSavingQuote] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [scenarioCompareOpen, setScenarioCompareOpen] = useState(false);
+  const crossSellSource = typeof state.answers.crossSellSource === "string" ? state.answers.crossSellSource : null;
+  const linkedSaveContext = useMemo(() => {
+    if (!state.product || !crossSellSource || state.phase !== "result") return null;
+
+    const baseStateSnapshot = history
+      .slice()
+      .reverse()
+      .find((entry) => entry.state.phase === "result" && entry.state.product === crossSellSource && !entry.state.answers.crossSellSource);
+
+    if (!baseStateSnapshot) return null;
+
+    const crossSellStartIndex = messages.findIndex((message) =>
+      message.content.includes("Guided cross-sell mini-flow: IBM MaaS360")
+    );
+
+    return {
+      baseProduct: crossSellSource,
+      crossSellProduct: state.product,
+      baseAnswers: baseStateSnapshot.state.answers,
+      crossSellAnswers: state.answers,
+      baseChatSnapshot:
+        crossSellStartIndex === -1 ? messages : messages.slice(0, crossSellStartIndex),
+      crossSellChatSnapshot: messages,
+    };
+  }, [crossSellSource, history, messages, state.answers, state.phase, state.product]);
+
+  // ── Compute an instant quote preview for a cross-sell target ────────────────
+  // Returns { monthly, annual, keyLine } for display in the attach card.
+  // Uses sensible defaults derived from the current answers so the estimate is
+  // as contextual as possible without running the full guided flow.
+  const computeInstantPreview = useCallback((
+    target: string,
+    answers: Record<string, string | number | boolean | string[]>
+  ): { monthly: number; annual: number; keyLine: string } | null => {
+    try {
+      if (target === "Turbonomic") {
+        // Seed MVS from Instana (if coming from Instana) or use 250 as a sensible default
+        const mvs = Math.max(1, Number(answers.instanaMVS ?? answers.turbonomicMVS ?? 250));
+        const r = computeTurbonomicScope({ deployment: "SaaS", estimatedMVS: mvs, scopingModel: "mvs", includesPublicCloud: true });
+        return { monthly: r.totalMonthlyList, annual: r.totalAnnualList, keyLine: `${mvs} VMs × $18.80/mo (D09ECZX)` };
+      }
+      if (target === "Instana") {
+        // Seed MVS from Turbonomic if available
+        const mvs = Math.max(1, Number(answers.turbonomicMVS ?? answers.instanaMVS ?? 250));
+        const r = computeInstanaQuote({ model: "SaaS", tier: "Standard", mvsCount: mvs });
+        return { monthly: r.totalMonthlyList, annual: r.totalAnnualList, keyLine: `${mvs} MVS × $79.50/mo Standard (D0N79ZX)` };
+      }
+      if (target === "Vault") {
+        // Sensible default: 100 secrets, 1 cluster
+        const secrets = Math.max(1, Number(answers.staticSecretCount ?? 100));
+        const r = computeVaultQuote({ model: "A-Platform", installCount: 1, useCaseInputs: { staticSecretCount: secrets } });
+        return { monthly: Math.round(r.totalAnnualList / 12), annual: r.totalAnnualList, keyLine: `$96K install + ${secrets} secrets @ $48/RU/mo (D15FKZX)` };
+      }
+      if (target === "Verify") {
+        const pop = Math.max(100, Number(answers.population ?? answers.verifyPopulation ?? 5000));
+        const caps = (Array.isArray(answers.capabilities) ? answers.capabilities : ["SSO", "MFA"]) as VerifyCapability[];
+        const r = computeVerifyQuote({ capabilities: caps, population: pop, avgLoginsPerYear: 12, term: "12-month", regions: 1 });
+        return { monthly: Math.round(r.totalAnnualList / 12), annual: r.totalAnnualList, keyLine: `${caps.join("+")} · ${pop.toLocaleString()} users` };
+      }
+      if (target === "MaaS360") {
+        const devices = Math.max(1, Number(answers.maas360Devices ?? 1000));
+        const rec = recommendMaaS360Plan({
+          secureMail: false, advancedApps: false, threatDefense: false, remoteSupport: false,
+        });
+        const r = computeMaaS360Estimate({ devices, planKey: rec.planKey, addOnKeys: [], includeConcierge: false });
+        return { monthly: Math.round(r.monthlyList), annual: r.annualList, keyLine: `${devices.toLocaleString()} devices × $4.24/mo (${rec.planKey})` };
+      }
+      if (target === "Concert") {
+        const mvs = Math.max(1, Number(answers.instanaMVS ?? answers.turbonomicMVS ?? answers.concertMVS ?? 100));
+        const r = computeConcertRecommendation({ primaryPain: "alertFatigue", deployment: "onprem", estimatedMVS: mvs, observeTier: "essentials" });
+        return { monthly: Math.round(r.totalAnnualList / 12), annual: r.totalAnnualList, keyLine: `${r.totalRU} RU × $212/RU/yr (D0MK3ZX)` };
+      }
+      if (target === "Terraform") {
+        const rum = Math.max(1, Number(answers.terraformResources ?? 1000));
+        const r = computeTerraformRecommendation({ deployment: "HCP", estimatedManagedResources: rum, teamSize: 5, needsGovernance: true });
+        return { monthly: Math.round(r.totalAnnualList / 12), annual: r.totalAnnualList, keyLine: `${rum.toLocaleString()} RUM · ${r.recommendedEdition} (${r.lines[0]?.part ?? "D100DZX"})` };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // ── Cross-sell attach cards (one per target product) ──────────────────────
+  const crossSellButtons = useMemo(() => {
+    if (state.phase !== "result" || resultSource !== "quote" || crossSellSource) return [];
+
+    type AttachCard = {
+      label: string;
+      description: string;
+      productName: string;
+      headline: string;
+      detail: string;
+      rationale: string;
+      evidence: string[];
+      sellerPrompt: string;
+      crossSellCommand: string; // the text to send() — e.g. "cross-sell Vault"
+      instantQuote: { monthly: number; annual: number; keyLine: string } | null;
+      primary: boolean;
+    };
+
+    const cards: AttachCard[] = [];
+
+    if (state.product === "Verify") {
+      const caps = Array.isArray(state.answers.capabilities) ? state.answers.capabilities : [];
+      const adaptiveSelected = caps.includes("Adaptive");
+      const maas360Recommendation = recommendMaaS360Plan({
+        secureMail: false, advancedApps: adaptiveSelected, threatDefense: adaptiveSelected, remoteSupport: adaptiveSelected,
+      });
+      const addOnLabels = maas360Recommendation.addOnKeys.map((k) =>
+        k === "mtdAdvanced" ? "Mobile Threat Defense Advanced" : k === "teamViewer" ? "TeamViewer Remote Support" : k
+      );
+      const maas360Attach = recommendVerifyToMaaS360Attach(state.answers);
+      const vaultAttach = recommendVerifyToVaultAttach(state.answers);
+      const attachDecision = recommendVerifyCrossSellAttach(state.answers);
+
+      if (attachDecision.target === "MaaS360") {
+        cards.push({
+          label: adaptiveSelected ? "Add device trust with MaaS360" : "Attach MaaS360",
+          description: "Launch a guided MaaS360 attach so the seller can extend Verify into device trust and endpoint controls.",
+          productName: "IBM MaaS360",
+          headline: `${formatMaaS360PlanLabel(maas360Recommendation.planKey)} package recommended`,
+          detail: addOnLabels.length > 0
+            ? `Likely attach: ${formatMaaS360PlanLabel(maas360Recommendation.planKey)} with ${addOnLabels.join(" + ")}.`
+            : `${formatMaaS360PlanLabel(maas360Recommendation.planKey)} for endpoint management and device trust.`,
+          rationale: maas360Attach.rationale,
+          evidence: maas360Attach.evidence,
+          sellerPrompt: maas360Attach.headline,
+          crossSellCommand: "cross-sell",
+          instantQuote: computeInstantPreview("MaaS360", state.answers),
+          primary: true,
+        });
+      } else {
+        cards.push({
+          label: "Attach Vault",
+          description: "Launch a guided Vault attach — secrets, certificates, and machine-identity governance alongside Verify.",
+          productName: "IBM HashiCorp Vault",
+          headline: "Vault secrets and machine-identity attach recommended",
+          detail: "Vault for secrets management, certificate lifecycle, and non-human identity governance.",
+          rationale: vaultAttach.rationale,
+          evidence: vaultAttach.evidence,
+          sellerPrompt: vaultAttach.headline,
+          crossSellCommand: "cross-sell",
+          instantQuote: computeInstantPreview("Vault", state.answers),
+          primary: true,
+        });
+      }
+      return cards;
+    }
+
+    if (state.product === "MaaS360") {
+      const threatDefense = String(state.answers.maas360ThreatDefense ?? "no") === "yes";
+      const advancedApps = String(state.answers.maas360AdvancedApps ?? "no") === "yes";
+      const secureMail = String(state.answers.maas360SecureMail ?? "no") === "yes";
+      const verifyAttach = ["SSO", "MFA", ...(threatDefense ? ["Adaptive"] : []), ...(advancedApps || secureMail ? ["Lifecycle"] : [])];
+      const attachInsight = recommendMaaS360ToVerifyAttach(state.answers);
+      cards.push({
+        label: threatDefense ? "Add Verify adaptive access" : "Attach Verify",
+        description: "Launch a guided Verify attach based on the MaaS360 quote.",
+        productName: "IBM Security Verify",
+        headline: `${verifyAttach.join(" + ")} recommended`,
+        detail: `${verifyAttach.join(" + ")} to extend endpoint controls into identity and access policy.`,
+        rationale: attachInsight.rationale,
+        evidence: attachInsight.evidence,
+        sellerPrompt: attachInsight.headline,
+        crossSellCommand: "cross-sell",
+        instantQuote: computeInstantPreview("Verify", state.answers),
+        primary: true,
+      });
+      return cards;
+    }
+
+    if (state.product === "Vault") {
+      const attachInsight = recommendVaultToVerifyAttach(state.answers);
+      cards.push({
+        label: "Attach Verify",
+        description: "Workforce identity, MFA, and adaptive access alongside Vault secrets controls.",
+        productName: "IBM Security Verify",
+        headline: "Verify identity modernization recommended",
+        detail: "Verify for workforce SSO, MFA, adaptive access, and governance alongside Vault secrets controls.",
+        rationale: attachInsight.rationale,
+        evidence: attachInsight.evidence,
+        sellerPrompt: attachInsight.headline,
+        crossSellCommand: "cross-sell",
+        instantQuote: computeInstantPreview("Verify", state.answers),
+        primary: true,
+      });
+      return cards;
+    }
+
+    if (state.product === "Instana") {
+      const mvs = Number(state.answers.instanaMVS ?? 250);
+      cards.push({
+        label: "Attach Turbonomic",
+        description: "Close the loop from observability to automated resource optimization.",
+        productName: "IBM Turbonomic",
+        headline: "Turbonomic (resource automation) — primary attach",
+        detail: `Turbonomic ingests Instana APM data and automates resource decisions. At ${mvs} MVS, Turbonomic requires minimum 200 MVS Standard SaaS — ✅ satisfied.`,
+        rationale: "Instana sees the problem; Turbonomic fixes it automatically — no manual dashboard-to-ticket loop.",
+        evidence: ["Application-aware rightsizing → SLO-safe resource actions", "One-click setup from Instana 'Optimizations' tab when both are under the same IBM account"],
+        sellerPrompt: "Ask: 'When Instana fires an alert, what does your team do next? How long before the resource is actually adjusted?'",
+        crossSellCommand: "cross-sell Turbonomic",
+        instantQuote: computeInstantPreview("Turbonomic", state.answers),
+        primary: true,
+      });
+      cards.push({
+        label: "Attach Concert",
+        description: "Concert Observe requires Instana agents as its telemetry source — architectural dependency.",
+        productName: "IBM Concert",
+        headline: "Concert (AI ops) — Instana is the required data feed",
+        detail: "Concert Observe ingests Instana telemetry for AI-prioritized cross-domain incident intelligence. Not optional — it is the observability source.",
+        rationale: "For customers struggling with alert fatigue or slow MTTR across multiple domains (not just resource optimization), Concert is the stronger motion.",
+        evidence: ["Concert Observe requires Instana agents — this is an architecture dependency", "AI-prioritized incidents replace manual triage across cloud, K8s, and on-prem"],
+        sellerPrompt: "Ask: 'Are your operations teams overwhelmed by alert volume across multiple monitoring tools? How long does it take to correlate an incident?'",
+        crossSellCommand: "cross-sell Concert",
+        instantQuote: computeInstantPreview("Concert", state.answers),
+        primary: false,
+      });
+      return cards;
+    }
+
+    if (state.product === "Turbonomic") {
+      const mvs = Number(state.answers.turbonomicMVS ?? 250);
+      cards.push({
+        label: "Attach Instana",
+        description: "Make Turbonomic application-aware — Instana APM data feeds the optimization engine.",
+        productName: "IBM Instana",
+        headline: "Instana (full-stack observability) — primary attach",
+        detail: `Without Instana, Turbonomic optimizes at infrastructure layer only. With Instana, resource actions are SLO-aware. At ${mvs} MVS, Standard SaaS is recommended.`,
+        rationale: "Application-aware optimization requires APM data. Instana is the native feed for Turbonomic's AI engine.",
+        evidence: ["SLO-aware rightsizing — Turbonomic won't squeeze resources if Instana shows latency degradation", "Sidekick integration: bidirectional metrics and action visibility in both tools"],
+        sellerPrompt: "Ask: 'Is Turbonomic using APM data today, or is it optimizing blind at the infrastructure layer?'",
+        crossSellCommand: "cross-sell Instana",
+        instantQuote: computeInstantPreview("Instana", state.answers),
+        primary: true,
+      });
+      cards.push({
+        label: "Attach Concert",
+        description: "Concert Optimize is powered by Turbonomic — same engine, surfaced through AI ops.",
+        productName: "IBM Concert",
+        headline: "Concert (AI ops) — Turbonomic powers the Optimize module",
+        detail: "Concert Optimize is architecturally dependent on Turbonomic. Selling Concert means selling Turbonomic targets — they are part of the same platform.",
+        rationale: "For customers who want AI-driven operational intelligence beyond pure resource optimization, Concert extends Turbonomic into cross-domain AIOps.",
+        evidence: ["Concert Optimize requires Turbonomic targets configured — not optional", "Same optimization engine with AI-driven cross-domain context added on top"],
+        sellerPrompt: "Ask: 'Beyond rightsizing, is the operations team dealing with incident correlation across multiple domains? Concert adds the AIOps layer on top.'",
+        crossSellCommand: "cross-sell Concert",
+        instantQuote: computeInstantPreview("Concert", state.answers),
+        primary: false,
+      });
+      return cards;
+    }
+
+    if (state.product === "Terraform") {
+      cards.push({
+        label: "Attach Vault (ILM+SLM)",
+        description: "Eliminate static credentials in Terraform state files — IBM's flagship ILM+SLM story.",
+        productName: "IBM HashiCorp Vault",
+        headline: "Vault (secrets security) — primary attach",
+        detail: "Terraform creates the secrets sprawl; Vault fixes it. Dynamic credentials from Vault mean no static keys in state files or CI/CD pipelines.",
+        rationale: "IBM ILM+SLM: Infrastructure Lifecycle Management (Terraform) and Security Lifecycle Management (Vault) delivered together.",
+        evidence: ["Dynamic secrets from every Terraform provisioning run — credentials are ephemeral and auto-rotated", "Eliminates the #1 Terraform security risk: static credentials in state files"],
+        sellerPrompt: "Ask: 'Where are the credentials your Terraform state files reference stored today? Who has access to them?'",
+        crossSellCommand: "cross-sell Vault",
+        instantQuote: computeInstantPreview("Vault", state.answers),
+        primary: true,
+      });
+      cards.push({
+        label: "Attach Turbonomic (ILM+ARM)",
+        description: "Right-size every VM and node Terraform provisions — continuous optimization after provisioning.",
+        productName: "IBM Turbonomic",
+        headline: "Turbonomic (resource optimization) — adjacent attach",
+        detail: "Turbonomic continuously right-sizes every resource Terraform provisions. No more over-provisioned infrastructure burning cloud budget silently.",
+        rationale: "Terraform provisions at a point in time. Turbonomic optimizes continuously after provisioning — closing the ILM loop.",
+        evidence: ["Continuous rightsizing of every VM/node Terraform creates", "ILM+ARM: Infrastructure Lifecycle Management + Application Resource Management"],
+        sellerPrompt: "Ask: 'After Terraform provisions a VM, who ensures it stays right-sized as workloads change over time?'",
+        crossSellCommand: "cross-sell Turbonomic",
+        instantQuote: computeInstantPreview("Turbonomic", state.answers),
+        primary: false,
+      });
+      return cards;
+    }
+
+    if (state.product === "Concert") {
+      cards.push({
+        label: "Attach Instana",
+        description: "Concert Observe requires Instana agents — not optional, architectural dependency.",
+        productName: "IBM Instana",
+        headline: "Instana (observability) — required data feed for Concert",
+        detail: "Concert Observe ingests Instana telemetry. Without Instana agents, Concert's AI context engine has no high-fidelity real-time data to work with.",
+        rationale: "Concert is most powerful with high-quality observability data. Instana is the native and required data source.",
+        evidence: ["Concert Observe requires Instana agents as its telemetry feed", "High-fidelity APM data → better AI prioritization and fewer false-positive incidents"],
+        sellerPrompt: "Ask: 'What monitoring tool feeds Concert today? Is Instana deployed, or are we relying on lower-fidelity data sources?'",
+        crossSellCommand: "cross-sell Instana",
+        instantQuote: computeInstantPreview("Instana", state.answers),
+        primary: true,
+      });
+      return cards;
+    }
+
+    if (state.product === "webMethods") {
+      cards.push({
+        label: "Attach Verify — secure the API fabric",
+        description: "webMethods exposes APIs; Verify governs who can call them with OAuth 2.0/OIDC.",
+        productName: "IBM Security Verify",
+        headline: "Verify identity and API security attach recommended",
+        detail: "Governed integration fabric: webMethods for connectivity, Verify for identity governance and adaptive access on every API endpoint.",
+        rationale: "API modernization motions almost always leave API access ungoverned. Verify closes that gap with identity-aware API security.",
+        evidence: ["OAuth 2.0/OIDC for every API endpoint webMethods publishes", "Adaptive access policy for integration consumers — block or step-up based on context"],
+        sellerPrompt: "Ask: 'Who controls access to the APIs your webMethods platform publishes? Is OAuth in place, or are you still using static API keys?'",
+        crossSellCommand: "cross-sell",
+        instantQuote: computeInstantPreview("Verify", state.answers),
+        primary: true,
+      });
+      return cards;
+    }
+
+    return cards;
+  }, [computeInstantPreview, crossSellSource, resultSource, state.answers, state.phase, state.product]);
 
   const fetchQuotes = useCallback(async () => {
     setQuotesLoading(true);
@@ -136,6 +550,47 @@ export default function ChatPage() {
     if (!state.product || savingQuote) return null;
     setSavingQuote(true);
     try {
+      if (linkedSaveContext) {
+        const groupId = crypto.randomUUID();
+        const baseQuoteId = crypto.randomUUID();
+        const crossSellQuoteId = crypto.randomUUID();
+        const crossSellName = `${name} — ${linkedSaveContext.crossSellProduct} Cross-sell`;
+        const res = await fetch("/api/quotes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quotes: [
+              {
+                id: baseQuoteId,
+                product: linkedSaveContext.baseProduct,
+                answers: linkedSaveContext.baseAnswers,
+                chatSnapshot: linkedSaveContext.baseChatSnapshot,
+                name,
+                linkedQuoteGroupId: groupId,
+                linkedQuoteRole: "base",
+                linkedToQuoteId: crossSellQuoteId,
+              },
+              {
+                id: crossSellQuoteId,
+                product: linkedSaveContext.crossSellProduct,
+                answers: linkedSaveContext.crossSellAnswers,
+                chatSnapshot: linkedSaveContext.crossSellChatSnapshot,
+                name: crossSellName,
+                linkedQuoteGroupId: groupId,
+                linkedQuoteRole: "cross-sell",
+                linkedToQuoteId: baseQuoteId,
+              },
+            ],
+          }),
+        });
+        const json = await res.json();
+        if (res.ok) {
+          setSavedQuotes((prev) => [...(json.quotes ?? []), ...prev]);
+          return null;
+        }
+        return json.error ?? "Failed to save linked quotes";
+      }
+
       const res = await fetch("/api/quotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -150,7 +605,7 @@ export default function ChatPage() {
       const json = await res.json();
       if (res.ok) {
         setSavedQuotes((prev) => [json.quote, ...prev]);
-        return null; // success — no error
+        return null;
       }
       return json.error ?? "Failed to save quote";
     } finally {
@@ -158,9 +613,20 @@ export default function ChatPage() {
     }
   };
 
-  const deleteQuote = async (id: string, rev: string) => {
-    await fetch(`/api/quotes?id=${id}&rev=${encodeURIComponent(rev)}`, { method: "DELETE" });
-    setSavedQuotes((prev) => prev.filter((q) => q.id !== id));
+  const deleteQuote = async (quote: SavedQuote) => {
+    if (quote.linkedQuoteGroupId) {
+      await fetch(`/api/quotes?groupId=${encodeURIComponent(quote.linkedQuoteGroupId)}`, { method: "DELETE" });
+      setSavedQuotes((prev) => prev.filter((q) => q.linkedQuoteGroupId !== quote.linkedQuoteGroupId));
+      return;
+    }
+
+    await fetch(`/api/quotes?id=${quote.id}&rev=${encodeURIComponent(quote._rev ?? "")}`, { method: "DELETE" });
+    setSavedQuotes((prev) => prev.filter((q) => q.id !== quote.id));
+  };
+
+  const launchCrossSell = async (command: string) => {
+    if (loading) return;
+    await send(command);
   };
 
   const loadQuote = (quote: SavedQuote) => {
@@ -325,7 +791,7 @@ export default function ChatPage() {
         setLoading(false);
       }
     },
-    [loading, state, activeQuestion, messages, bpHistory]
+    [activeQuestion, bpHistory, clientMode, loading, messages, state]
   );
 
   // ── Shared helper: send a top-level action (quote/parts/guide) for the current product ──
@@ -337,8 +803,15 @@ export default function ChatPage() {
       // Start at discoveryStep 0 (the action-select question) in discovery phase
       // so the server routes "parts"/"guide"/"quote" through the correct handler.
       const actionKey =
-        state.product === "Verify" ? "verifyAction" :
-        state.product === "NS1"    ? "ns1Action"    : "vaultAction";
+        state.product === "Verify"      ? "verifyAction"      :
+        state.product === "MaaS360"     ? "maas360Action"     :
+        state.product === "NS1"         ? "ns1Action"         :
+        state.product === "Instana"     ? "instanaAction"     :
+        state.product === "Turbonomic"  ? "turbonomicAction"  :
+        state.product === "Terraform"   ? "terraformAction"   :
+        state.product === "Concert"     ? "concertAction"     :
+        state.product === "webMethods"  ? "webMethodsAction"  :
+        "vaultAction";
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -396,33 +869,8 @@ export default function ChatPage() {
     }
   };
 
-  const startQuoting       = () => sendProductAction("quote");
-  const startPartNumbers   = () => sendProductAction("parts");
+  const startQuoting = () => sendProductAction("quote");
   const startBestPractices = () => sendProductAction("bestpractices");
-
-  const toggleClientMode = async () => {
-    if (!state.product || state.phase !== "best-practices") return;
-    const next = !clientMode;
-    setClientMode(next);
-    setLoading(true);
-    setBpHistory([]);
-    try {
-      const bpRes = await fetch("/api/best-practices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product: state.product, history: [], clientMode: next }),
-      });
-      const bpJson = await bpRes.json();
-      const intro = bpJson.reply ?? "Ready.";
-      setBpHistory([{ role: "assistant", content: intro }]);
-      setMessages((m) => [
-        ...m,
-        { id: crypto.randomUUID(), role: "assistant", content: intro, timestamp: Date.now() },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const reset = () => {
     setMessages([WELCOME_MESSAGE]);
@@ -450,11 +898,13 @@ export default function ChatPage() {
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <header className="header-glass px-6 py-3.5 flex items-center gap-3 flex-shrink-0" style={{ height: "56px" }}>
           {/* Deal Genie logo */}
-          <img
+          <Image
             src="/dealgenie-icon.png"
             alt="Deal Genie"
+            width={50}
+            height={50}
             className="rounded-xl flex-shrink-0"
-            style={{ objectFit: "cover", objectPosition: "center", width: "50px", height: "50px" }}
+            style={{ objectFit: "cover", objectPosition: "center" }}
           />
 
           <div className="flex flex-col">
@@ -465,6 +915,39 @@ export default function ChatPage() {
               Requirements → Part Numbers → CPQ
             </p>
           </div>
+
+          {/* Active product pill */}
+          {state.product && (
+            <div
+              className="ml-3 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.14)",
+                color: "rgba(203,213,225,0.9)",
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{
+                  background:
+                    state.product === "Verify" || state.product === "MaaS360" ? "#a855f7" :
+                    state.product === "Terraform" || state.product === "Vault" ? "#3b82f6" :
+                    state.product === "Instana" || state.product === "Concert" || state.product === "NS1" ? "#14b8a6" :
+                    state.product === "Turbonomic" ? "#22c55e" :
+                    state.product === "webMethods" ? "#f97316" : "#0f62fe",
+                }}
+              />
+              {state.product === "Verify" ? "Security Verify" :
+               state.product === "MaaS360" ? "MaaS360" :
+               state.product === "NS1" ? "NS1 Connect" :
+               state.product === "Vault" ? "HashiCorp Vault" :
+               state.product === "Terraform" ? "HashiCorp Terraform" :
+               state.product === "Instana" ? "Instana" :
+               state.product === "Turbonomic" ? "Turbonomic" :
+               state.product === "Concert" ? "Concert" :
+               state.product === "webMethods" ? "webMethods" : state.product}
+            </div>
+          )}
 
           {/* Powered by badge */}
           <div
@@ -538,10 +1021,10 @@ export default function ChatPage() {
                     key={p.value}
                     onClick={() => send(p.value)}
                     disabled={loading}
-                    className="product-card"
+                    className={`product-card ${p.value.toLowerCase()}`}
                   >
                     <div className="flex items-center gap-3">
-                      <span style={{ color: "#0f62fe" }}>{p.icon}</span>
+                      <span style={{ color: "currentColor", opacity: 0.7 }}>{p.icon}</span>
                       <div>
                         <p className="text-sm font-semibold" style={{ color: "#e8eaed" }}>{p.label}</p>
                         <p className="text-xs mt-0.5" style={{ color: "rgba(147,180,253,0.6)" }}>{p.desc}</p>
@@ -712,6 +1195,80 @@ export default function ChatPage() {
                       </svg>
                       Compare Scenarios
                     </button>
+                    {crossSellButtons.length > 0 && (
+                      <div className="flex flex-col gap-2 mt-1">
+                        {crossSellButtons.map((card) => (
+                          <div
+                            key={card.productName}
+                            className="w-full rounded-xl p-3"
+                            style={{
+                              background: card.primary ? "rgba(245,158,11,0.08)" : "rgba(99,102,241,0.06)",
+                              border: `1px solid ${card.primary ? "rgba(245,158,11,0.22)" : "rgba(99,102,241,0.2)"}`,
+                            }}
+                          >
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="min-w-0">
+                                <p className="text-[11px] uppercase tracking-[0.14em]" style={{ color: card.primary ? "rgba(251,191,36,0.72)" : "rgba(167,139,250,0.7)" }}>
+                                  {card.primary ? "Attach recommendation" : "Adjacent motion"}
+                                </p>
+                                <p className="text-sm font-semibold mt-1" style={{ color: card.primary ? "#fef3c7" : "#ede9fe" }}>
+                                  {card.productName}: {card.headline}
+                                </p>
+                                {card.instantQuote && (
+                                  <div
+                                    className="mt-2 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-3"
+                                    style={{ background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.08)" }}
+                                  >
+                                    <span className="text-base font-bold" style={{ color: "#fff" }}>
+                                      ${Math.round(card.instantQuote.monthly).toLocaleString()}<span className="text-xs font-normal opacity-60">/mo</span>
+                                    </span>
+                                    <span className="text-xs opacity-50">·</span>
+                                    <span className="text-sm font-semibold opacity-80" style={{ color: "#fff" }}>
+                                      ${Math.round(card.instantQuote.annual).toLocaleString()}<span className="text-xs font-normal opacity-60">/yr list</span>
+                                    </span>
+                                    <span className="text-[10px] ml-1 opacity-50">{card.instantQuote.keyLine}</span>
+                                  </div>
+                                )}
+                                <p className="text-xs mt-1.5" style={{ color: card.primary ? "rgba(254,243,199,0.82)" : "rgba(237,233,254,0.75)" }}>
+                                  {card.detail}
+                                </p>
+                                <p className="text-xs mt-1" style={{ color: card.primary ? "rgba(254,243,199,0.64)" : "rgba(237,233,254,0.55)" }}>
+                                  {card.rationale}
+                                </p>
+                                <p className="text-[11px] mt-2" style={{ color: card.primary ? "rgba(251,191,36,0.78)" : "rgba(167,139,250,0.78)" }}>
+                                  Seller angle: {card.sellerPrompt}
+                                </p>
+                                {card.evidence.length > 0 && (
+                                  <ul className="mt-2 space-y-1">
+                                    {card.evidence.map((item) => (
+                                      <li key={item} className="text-[11px] leading-relaxed" style={{ color: card.primary ? "rgba(254,243,199,0.64)" : "rgba(237,233,254,0.5)" }}>
+                                        • {item}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                              <button
+                                onClick={() => launchCrossSell(card.crossSellCommand)}
+                                disabled={loading}
+                                className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded-lg transition-all sm:ml-4 flex-shrink-0"
+                                title={card.description}
+                                style={{
+                                  background: card.primary ? "rgba(245,158,11,0.12)" : "rgba(99,102,241,0.1)",
+                                  border: `1px solid ${card.primary ? "rgba(245,158,11,0.3)" : "rgba(99,102,241,0.25)"}`,
+                                  color: card.primary ? "#fbbf24" : "#a78bfa",
+                                }}
+                              >
+                                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                  <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                {card.label}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <button
                       onClick={startBestPractices}
                       disabled={loading}
@@ -914,6 +1471,7 @@ export default function ChatPage() {
         <SaveQuoteModal
           existingNames={savedQuotes.map((q) => q.name ?? "")}
           saving={savingQuote}
+          linkedProductName={linkedSaveContext?.crossSellProduct ?? null}
           onSave={async (name) => {
             const err = await saveCurrentQuote(name);
             if (!err) setSaveModalOpen(false);
@@ -933,11 +1491,13 @@ function SaveQuoteModal({
   saving,
   onSave,
   onCancel,
+  linkedProductName,
 }: {
   existingNames: string[];
   saving: boolean;
   onSave: (name: string) => Promise<string | null>;
   onCancel: () => void;
+  linkedProductName: string | null;
 }) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -968,6 +1528,7 @@ function SaveQuoteModal({
           <h3 className="font-bold text-base" style={{ color: "#e8eaed" }}>Name this quote</h3>
           <p className="text-xs mt-1" style={{ color: "rgba(147,180,253,0.5)" }}>
             Give it a memorable name so you can find it later. Names must be unique.
+            {linkedProductName ? ` Saving will also create a linked ${linkedProductName} cross-sell record.` : ""}
           </p>
         </div>
 
@@ -1060,7 +1621,7 @@ function MessageBubble({ message }: { message: Message }) {
       {/* Assistant avatar */}
       {!isUser && (
         <div className="w-10 h-10 flex-shrink-0 mb-0.5 rounded-full overflow-hidden" style={{ minWidth: "40px" }}>
-          <img src="/dealgenie-icon.png" alt="Deal Genie" className="w-full h-full" style={{ objectFit: "cover" }} />
+          <Image src="/dealgenie-icon.png" alt="Deal Genie" width={40} height={40} className="w-full h-full" style={{ objectFit: "cover" }} />
         </div>
       )}
 
