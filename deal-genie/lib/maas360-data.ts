@@ -18,12 +18,14 @@ export interface MaaS360Addon {
   summary: string;
 }
 
+// Prices from IBM Security MaaS360 Pricing and Packaging source document.
+// Essentials $4, Deluxe $5, Premier $6.25, Enterprise $9 per device/month.
 export const MAAS360_PLANS: MaaS360Plan[] = [
   {
     key: "Essentials",
     label: "Essentials",
-    monthlyPerDevice: 4.24,
-    annualPerDevice: 50.88,
+    monthlyPerDevice: 4.00,
+    annualPerDevice: 48.00,
     summary: "Core UEM for users, smartphones, tablets, laptops, and apps.",
     includes: [
       "Device Mgmt & App Mgmt",
@@ -38,8 +40,8 @@ export const MAAS360_PLANS: MaaS360Plan[] = [
   {
     key: "Deluxe",
     label: "Deluxe",
-    monthlyPerDevice: 5.3,
-    annualPerDevice: 63.6,
+    monthlyPerDevice: 5.00,
+    annualPerDevice: 60.00,
     summary: "Adds email and chat containerization for separated business data.",
     includes: [
       "Essentials+",
@@ -51,8 +53,8 @@ export const MAAS360_PLANS: MaaS360Plan[] = [
   {
     key: "Premier",
     label: "Premier",
-    monthlyPerDevice: 6.63,
-    annualPerDevice: 79.56,
+    monthlyPerDevice: 6.25,
+    annualPerDevice: 75.00,
     summary: "Adds enterprise browser, application security, and protected network access.",
     includes: [
       "Deluxe+",
@@ -67,8 +69,8 @@ export const MAAS360_PLANS: MaaS360Plan[] = [
   {
     key: "Enterprise",
     label: "Enterprise",
-    monthlyPerDevice: 9.54,
-    annualPerDevice: 114.48,
+    monthlyPerDevice: 9.00,
+    annualPerDevice: 108.00,
     summary: "Top package for enterprise protection and productivity.",
     includes: [
       "Premier+",

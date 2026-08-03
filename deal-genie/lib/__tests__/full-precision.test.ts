@@ -183,13 +183,15 @@ describe("FP — Instana pricing constants (Sellers & Partners PDF)", () => {
     expect(std.totalAnnualList / ess.totalAnnualList).toBeCloseTo(79.50 / 21.20, 2);
   });
 
-  test("FP-IN10: Self-Hosted uses starting base price ($321/mo = $3,852/yr) regardless of tier — contact IBM for scale pricing", () => {
-    // Engine deliberately uses INSTANA_SELFHOSTED_BASE_MONTH (32.10 × 10 MVS minimum = $321/mo)
-    // as a "starting at" estimate for both tiers; per-MVS tier differentiation requires an IBM quote.
+  test("FP-IN10: Self-Hosted calculates MVS x rate correctly for both tiers", () => {
+    // Engine uses MVS x ratePerMVS (fixed in instana-engine.ts).
+    // Essentials: 100 MVS x $32.10/mo x 12 = $38,520/yr
+    // Standard:   100 MVS x $120.00/mo x 12 = $144,000/yr
     const ess = computeInstanaQuote({ model: "SelfHosted", tier: "Essentials", mvsCount: 100 });
     const std = computeInstanaQuote({ model: "SelfHosted", tier: "Standard",   mvsCount: 100 });
-    expect(ess.totalAnnualList).toBe(3852);  // 321 × 12
-    expect(std.totalAnnualList).toBe(3852);  // same base — flag says "contact IBM"
+    expect(ess.totalAnnualList).toBeCloseTo(100 * 32.10 * 12, 0);   // $38,520
+    expect(std.totalAnnualList).toBeCloseTo(100 * 120.00 * 12, 0);  // $144,000
+    expect(std.totalAnnualList).toBeGreaterThan(ess.totalAnnualList);
   });
 });
 
@@ -409,38 +411,38 @@ describe("FP — Concert pricing constants (Parts & Pricing Decks)", () => {
 // Source: IBM Security MaaS360 Pricing and Packaging PDF (current list prices)
 
 describe("FP — MaaS360 plan prices (current list)", () => {
-  test("FP-M01: Essentials plan = $4.24/device/month", () => {
+  test("FP-M01: Essentials plan = $4.00/device/month (source: MaaS360 Pricing & Packaging doc)", () => {
     const plan = MAAS360_PLANS.find(p => p.key === "Essentials");
     expect(plan).toBeDefined();
-    expect(plan!.monthlyPerDevice).toBe(4.24);
+    expect(plan!.monthlyPerDevice).toBe(4.00);
   });
 
-  test("FP-M02: Deluxe plan = $5.30/device/month", () => {
+  test("FP-M02: Deluxe plan = $5.00/device/month", () => {
     const plan = MAAS360_PLANS.find(p => p.key === "Deluxe");
     expect(plan).toBeDefined();
-    expect(plan!.monthlyPerDevice).toBe(5.30);
+    expect(plan!.monthlyPerDevice).toBe(5.00);
   });
 
-  test("FP-M03: Premier plan = $6.63/device/month", () => {
+  test("FP-M03: Premier plan = $6.25/device/month", () => {
     const plan = MAAS360_PLANS.find(p => p.key === "Premier");
     expect(plan).toBeDefined();
-    expect(plan!.monthlyPerDevice).toBe(6.63);
+    expect(plan!.monthlyPerDevice).toBe(6.25);
   });
 
-  test("FP-M04: Enterprise plan = $9.54/device/month", () => {
+  test("FP-M04: Enterprise plan = $9.00/device/month", () => {
     const plan = MAAS360_PLANS.find(p => p.key === "Enterprise");
     expect(plan).toBeDefined();
-    expect(plan!.monthlyPerDevice).toBe(9.54);
+    expect(plan!.monthlyPerDevice).toBe(9.00);
   });
 
-  test("FP-M05: Essentials annual = $4.24 × 12 = $50.88/device/year", () => {
+  test("FP-M05: Essentials annual = $4.00 x 12 = $48.00/device/year", () => {
     const plan = MAAS360_PLANS.find(p => p.key === "Essentials");
-    expect(plan!.annualPerDevice).toBeCloseTo(50.88, 2);
+    expect(plan!.annualPerDevice).toBeCloseTo(48.00, 2);
   });
 
-  test("FP-M06: Enterprise 5,000 devices = $9.54 × 5000 × 12 = $572,400/yr", () => {
+  test("FP-M06: Enterprise 5,000 devices = $9.00 x 5000 x 12 = $540,000/yr", () => {
     const r = computeMaaS360Estimate({ devices: 5000, planKey: "Enterprise", addOnKeys: [], includeConcierge: false });
-    expect(r.annualList).toBeCloseTo(9.54 * 5000 * 12, 0);
+    expect(r.annualList).toBeCloseTo(9.00 * 5000 * 12, 0);
   });
 
   test("FP-M07: Enterprise > Premier > Deluxe > Essentials at same device count", () => {

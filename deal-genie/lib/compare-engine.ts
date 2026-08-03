@@ -316,12 +316,12 @@ export function getForkVariables(
       {
         key: "maas360Plan",
         label: "Plan tier",
-        impact: "Essentials $4.24 → Enterprise $9.54/device/month — doubles the per-device rate",
+        impact: "Essentials $4.00 → Enterprise $9.00/device/month — more than doubles the per-device rate",
         options: [
-          { label: "Essentials ($4.24/device/mo)",  value: "Essentials" },
-          { label: "Deluxe ($5.30/device/mo)",      value: "Deluxe" },
-          { label: "Premier ($6.63/device/mo)",     value: "Premier" },
-          { label: "Enterprise ($9.54/device/mo)",  value: "Enterprise" },
+          { label: "Essentials ($4.00/device/mo)",  value: "Essentials" },
+          { label: "Deluxe ($5.00/device/mo)",      value: "Deluxe" },
+          { label: "Premier ($6.25/device/mo)",     value: "Premier" },
+          { label: "Enterprise ($9.00/device/mo)",  value: "Enterprise" },
         ],
       },
     ];
@@ -1015,7 +1015,7 @@ function buildInsight(
 
   if (product === "MaaS360") {
     if (forkVars.some((v) => v.key === "maas360Plan")) {
-      return `MaaS360 plan tier is the biggest per-device driver — Essentials ($4.24) to Enterprise ($9.54) is a 2.25× uplift. The ${pctDiff}% spread of ${diffStr}/yr shows the cost of moving up-tier to secure email, advanced apps, or threat defense.`;
+      return `MaaS360 plan tier is the biggest per-device driver — Essentials ($4.00) to Enterprise ($9.00) is a 2.25× uplift. The ${pctDiff}% spread of ${diffStr}/yr shows the cost of moving up-tier to secure email, advanced apps, or threat defense.`;
     }
     if (forkVars.some((v) => v.key === "maas360Devices")) {
       return `MaaS360 pricing is linear per device — no volume tiers. The ${pctDiff}% spread of ${diffStr}/yr is directly proportional to device count at the selected plan rate.`;

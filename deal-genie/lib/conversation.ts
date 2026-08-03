@@ -20,12 +20,10 @@ import {
   WEBMETHODS_QUESTIONS,
 } from "./questions";
 import {
-  buildCrossSellHint,
   recommendMaaS360ToVerifyAttach,
   recommendVaultToVerifyAttach,
   recommendVerifyCrossSellAttach,
   recommendVerifyToMaaS360Attach,
-  shouldShowCrossSellHint,
 } from "./cross-sell";
 import { computeVerifyQuote } from "./verify-engine";
 import { computeVaultQuote, type VaultEdition, type VaultUseCaseInputs } from "./vault-engine";
@@ -244,12 +242,6 @@ function applyEntities(s: ConversationState, e: ExtractedEntities): void {
   if (e.monitors)         set("monitors",          e.monitors);
 }
 
-function maybeAppendCrossSellHint(state: ConversationState, reply: string): string {
-  if (!shouldShowCrossSellHint(state.product, state.answers)) return reply;
-  const hint = buildCrossSellHint(state.product);
-  return hint ? `${reply}\n\n${hint}` : reply;
-}
-
 // ─── MAIN PROCESSOR ──────────────────────────────────────────────────────────
 
 export function processUserMessage(
@@ -357,11 +349,10 @@ export function processUserMessage(
       s.phase = "computing";
       const result = computeResult(s);
       s.phase = "result";
-      const resultWithCrossSell = maybeAppendCrossSellHint(s, result);
-      // Cross-sell is handled by the visual card panel in the UI — do not append as text here
+      // Cross-sell is handled by the visual card panel in the UI — not appended as text
       return {
         state: s,
-        reply: resultWithCrossSell,
+        reply: result,
         activeQuestion: null,
       };
     }
@@ -418,6 +409,32 @@ export function processUserMessage(
           state: s,
           reply: "**Guided cross-sell mini-flow: IBM HashiCorp Vault**\n\nBased on the Terraform scoping, I'll size the Vault attach so the client can eliminate secrets sprawl and secure every credential their infrastructure automation generates — IBM's ILM + SLM story.",
           activeQuestion: { question: VAULT_CROSS_SELL_QUESTIONS[0] },
+        };
+      }
+
+      // NS1 has two attach targets — Turbonomic (default) or Concert
+      if (s.product === "NS1") {
+        const toConcert = crossSellTarget === "concert";
+        if (toConcert) {
+          s.product = "Concert";
+          s.phase = "discovery";
+          s.discoveryStep = 0;
+          s.answers = { crossSellSource: "NS1" };
+          return {
+            state: s,
+            reply: "**Guided cross-sell mini-flow: IBM Concert**\n\nBased on the NS1 scoping, I'll size the Concert attach. Concert ingests DNS traffic signals alongside application, infrastructure, and security data — surfacing DNS-layer anomalies as AI-prioritized cross-domain incidents before users feel the impact.",
+            activeQuestion: { question: CONCERT_QUESTIONS[1] },
+          };
+        }
+        // Default / "turbonomic" target
+        s.product = "Turbonomic";
+        s.phase = "discovery";
+        s.discoveryStep = 0;
+        s.answers = { crossSellSource: "NS1" };
+        return {
+          state: s,
+          reply: "**Guided cross-sell mini-flow: IBM Turbonomic**\n\nBased on the NS1 scoping, I'll size the Turbonomic attach. NS1 steers traffic to the best-performing endpoint — Turbonomic ensures that endpoint's infrastructure is always right-sized for the load NS1 routes to it.",
+          activeQuestion: { question: TURBONOMIC_QUESTIONS[1] },
         };
       }
 
@@ -1665,6 +1682,8 @@ function computeTurbonomicResult(state: ConversationState): string {
     ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>IBM Instana Observability</strong>. Turbonomic ingests Instana's real-time APM telemetry to make resource decisions application-aware — it will not right-size a resource that is actively causing a performance degradation. <strong>Automated integration (IBM confirmed):</strong> both under the same IBM account with 200+ MVS Instana Standard SaaS → one-click setup from Instana Optimizations tab. <strong>Sidekick:</strong> Instana performance metrics appear in Turbonomic's UI via the Sidekick sidebar. Combined positioning: "See it with Instana, act on it with Turbonomic."</div><div class="result-next">This cross-sell attach is complete.</div>`
     : turboCrossSource === "Concert"
     ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>IBM Concert</strong>. Concert Optimize is powered by Turbonomic — Turbonomic target configuration is a required step when deploying the Optimize module. The two products form IBM's AIOps optimization loop: Concert surfaces the recommendation, Turbonomic executes it. <strong>Sidekick:</strong> Concert users see Turbonomic optimization insights inline. Combined positioning: "Concert sees the opportunity; Turbonomic acts on it."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : turboCrossSource === "NS1"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Turbonomic estimate was launched from <strong>NS1 Connect</strong>. NS1 steers traffic to the best-performing endpoint — Turbonomic ensures that endpoint's infrastructure is continuously right-sized for the load NS1 routes to it, closing the gap between DNS-layer traffic optimization and infrastructure-level resource management. Combined positioning: "NS1 routes traffic to the right place; Turbonomic makes sure that place can handle it."</div><div class="result-next">This cross-sell attach is complete.</div>`
     : "";
 
   return `<div class="result-card">
@@ -1889,6 +1908,8 @@ function computeConcertResult(state: ConversationState): string {
   const concertCrossSource = String(a.crossSellSource ?? "");
   const concertCrossContext = concertCrossSource === "Instana"
     ? `<div class="result-next"><strong>Why this attach:</strong> This Concert scoping was launched from <strong>IBM Instana Observability</strong>. Concert Observe requires Instana agents as its data source. Concert Protect auto-imports Kubernetes clusters and container images from Instana — eliminating manual SBOM file creation. <strong>Sidekick:</strong> Concert users see Instana performance metrics inline. Combined positioning: "Instana captures the signals; Concert tells you what matters and orchestrates the response."</div><div class="result-next">This cross-sell attach is complete.</div>`
+    : concertCrossSource === "NS1"
+    ? `<div class="result-next"><strong>Why this attach:</strong> This Concert scoping was launched from <strong>NS1 Connect</strong>. Concert ingests DNS traffic signals alongside application, infrastructure, and security data. DNS anomalies — latency spikes, zone failures, traffic shifts — are leading indicators of application incidents. Concert surfaces them as AI-prioritized, cross-domain operational intelligence before users feel the impact. Combined positioning: "NS1 governs where traffic goes; Concert governs what happens when it gets there."</div><div class="result-next">This cross-sell attach is complete.</div>`
     : "";
 
   return `<div class="result-card">

@@ -71,7 +71,7 @@ describe("cross-sell conversation flows", () => {
     expect(state.phase).toBe("result");
     expect(state.answers.crossSellSource).toBeUndefined();
     expect(lastActiveQuestionKey).toBeNull();
-    expect(lastReply).toContain("Type **cross-sell** to launch the guided mini-flow.");
+    expect(lastReply).not.toContain("Type **cross-sell**");  // cross-sell is shown as a visual card, not appended as text
   });
 
   test("Verify seller with an adaptive-only completed result launches MaaS360 after requesting cross-sell from result state", () => {

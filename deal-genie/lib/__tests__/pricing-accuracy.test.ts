@@ -204,24 +204,24 @@ describe("Pricing accuracy — Vault 2.0 (Model A)", () => {
 // ─── MaaS360 ─────────────────────────────────────────────────────────────────
 
 describe("Pricing accuracy — MaaS360", () => {
-  test("PA-M01: Essentials 1,000 devices = $4.24 × 1000 × 12 = $50,880/yr", () => {
+  test("PA-M01: Essentials 1,000 devices = $4.00 × 1000 × 12 = $48,000/yr", () => {
     const r = computeMaaS360Estimate({ devices: 1000, planKey: "Essentials", addOnKeys: [], includeConcierge: false });
-    expect(r.annualList).toBeCloseTo(4.24 * 1000 * 12, 0);
+    expect(r.annualList).toBeCloseTo(4.00 * 1000 * 12, 0);
   });
 
-  test("PA-M02: Deluxe 1,000 devices = $5.30 × 1000 × 12 = $63,600/yr", () => {
+  test("PA-M02: Deluxe 1,000 devices = $5.00 × 1000 × 12 = $60,000/yr", () => {
     const r = computeMaaS360Estimate({ devices: 1000, planKey: "Deluxe", addOnKeys: [], includeConcierge: false });
-    expect(r.annualList).toBeCloseTo(5.30 * 1000 * 12, 0);
+    expect(r.annualList).toBeCloseTo(5.00 * 1000 * 12, 0);
   });
 
-  test("PA-M03: Premier 1,000 devices = $6.63 × 1000 × 12 = $79,560/yr", () => {
+  test("PA-M03: Premier 1,000 devices = $6.25 × 1000 × 12 = $75,000/yr", () => {
     const r = computeMaaS360Estimate({ devices: 1000, planKey: "Premier", addOnKeys: [], includeConcierge: false });
-    expect(r.annualList).toBeCloseTo(6.63 * 1000 * 12, 0);
+    expect(r.annualList).toBeCloseTo(6.25 * 1000 * 12, 0);
   });
 
-  test("PA-M04: Enterprise 1,000 devices = $9.54 × 1000 × 12 = $114,480/yr", () => {
+  test("PA-M04: Enterprise 1,000 devices = $9.00 × 1000 × 12 = $108,000/yr", () => {
     const r = computeMaaS360Estimate({ devices: 1000, planKey: "Enterprise", addOnKeys: [], includeConcierge: false });
-    expect(r.annualList).toBeCloseTo(9.54 * 1000 * 12, 0);
+    expect(r.annualList).toBeCloseTo(9.00 * 1000 * 12, 0);
   });
 
   test("PA-M05: Price scales linearly with devices (no volume breaks)", () => {
@@ -266,8 +266,7 @@ describe("Pricing accuracy — NS1", () => {
     expect(r.tier).toBe("Standard");
   });
 
-  test("PA-N02: Premium tier at ≥ 1000 MQ — is correctly flagged as Premium", () => {
-  test("PA-N02: Premium tier at ≥ 1000 MQ — correctly flagged as Premium", () => {
+  test("PA-N02: Premium tier at >= 1000 MQ — correctly flagged as Premium", () => {
     const pre = computeNS1Quote({ queryVolumeMQ: 1000, filterChains: 0, monitors: 0, recordCount: 0 });
     expect(pre.tier).toBe("Premium");
   });
@@ -278,10 +277,6 @@ describe("Pricing accuracy — NS1", () => {
     const yes = computeNS1Quote({ queryVolumeMQ: 100, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
     expect(yes.totalAnnualList).toBe(no.totalAnnualList);
     // Premium DDoS (D0GN5ZX) does add cost though
-    const preDdos = computeNS1Quote({ queryVolumeMQ: 2000, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
-    const no  = computeNS1Quote({ queryVolumeMQ: 100, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: false });
-    const yes = computeNS1Quote({ queryVolumeMQ: 100, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
-    expect(yes.totalAnnualList).toBe(no.totalAnnualList);
     const preDdos   = computeNS1Quote({ queryVolumeMQ: 2000, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: true });
     const preNoDdos = computeNS1Quote({ queryVolumeMQ: 2000, filterChains: 0, monitors: 0, recordCount: 0, ddosProtection: false });
     expect(preDdos.totalAnnualList).toBeGreaterThan(preNoDdos.totalAnnualList);

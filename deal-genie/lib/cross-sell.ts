@@ -9,6 +9,18 @@ import { TURBONOMIC_INSTANA_VALUE_POINTS } from "./turbonomic-data";
 import { CONCERT_INSTANA_VALUE_POINTS } from "./concert-data";
 import { WEBMETHODS_VERIFY_VALUE_POINTS } from "./webmethods-data";
 
+export const NS1_TURBONOMIC_VALUE_POINTS = [
+  "NS1 intelligent DNS steers traffic based on application performance — Turbonomic ensures the infrastructure those DNS endpoints land on is always right-sized for that traffic.",
+  "DNS-routed traffic shaping plus autonomous resource optimization closes the last mile: route users to the fastest endpoint and ensure that endpoint never degrades under load.",
+  "Both products operate on the same infrastructure scope — VMs, containers, cloud instances — making the combined story natural for network and platform architects.",
+];
+
+export const NS1_CONCERT_VALUE_POINTS = [
+  "NS1 provides the DNS-layer telemetry and traffic intelligence; Concert adds AI-driven cross-domain incident correlation across the full application stack those DNS endpoints serve.",
+  "DNS anomalies (latency spikes, zone failures, traffic shifts) are leading indicators of application incidents — Concert surfaces those signals as prioritized, actionable operational intelligence.",
+  "Combined positioning: 'NS1 governs where traffic goes; Concert governs what happens when it gets there.'",
+];
+
 const VAULT_VERIFY_VALUE_POINTS = [
   "Pairs human identity controls with workload and secrets controls in the same security conversation.",
   "Helps security teams connect workforce access policy with privileged and machine-level access boundaries.",
@@ -106,6 +118,35 @@ export const CROSS_SELL_PLAYS: CrossSellPlay[] = [
   },
 
   // ── NEW CROSS-PLAYS ────────────────────────────────────────────────────────
+
+  // NS1 → Turbonomic
+  {
+    id: "ns1-to-turbonomic",
+    source: "NS1",
+    target: "Turbonomic",
+    title: "Intelligent DNS to Application Resource Optimization",
+    shortReason: "NS1 steers traffic to the best-performing endpoint; Turbonomic ensures that endpoint's infrastructure is always right-sized for the incoming load.",
+    businessProblem: "Traffic steering optimizes at the DNS layer, but the infrastructure receiving that traffic is still prone to over-provisioning and performance degradation under variable load.",
+    inFlowMessage:
+      "This could also become an **NS1 + Turbonomic** motion if the client wants to ensure the infrastructure behind their DNS endpoints is continuously right-sized for the traffic NS1 routes to it.",
+    resultMessage:
+      "**Cross-sell recommendation: IBM Turbonomic**\n\nYou already positioned NS1 for intelligent DNS and traffic steering. Turbonomic is the strongest adjacent motion — it ensures the application infrastructure those DNS endpoints serve is always right-sized for load, closing the gap between DNS-layer optimization and infrastructure-level optimization.",
+    valuePoints: NS1_TURBONOMIC_VALUE_POINTS,
+  },
+  // NS1 → Concert
+  {
+    id: "ns1-to-concert",
+    source: "NS1",
+    target: "Concert",
+    title: "Intelligent DNS to AI-Driven Operational Intelligence",
+    shortReason: "NS1's DNS telemetry and traffic steering data is a leading-indicator signal for Concert's cross-domain incident correlation engine.",
+    businessProblem: "DNS anomalies are often the first sign of an application incident, but most AIOps platforms lack DNS-layer signal — Concert with NS1 closes that gap.",
+    inFlowMessage:
+      "This could also become an **NS1 + Concert** motion if the client needs AI-driven operational intelligence that correlates DNS-layer events with application and infrastructure signals.",
+    resultMessage:
+      "**Cross-sell recommendation: IBM Concert**\n\nYou already positioned NS1 for intelligent DNS. Concert is a natural adjacent motion — it ingests DNS traffic signals alongside application, infrastructure, and security data to surface cross-domain incidents with business-impact prioritization.",
+    valuePoints: NS1_CONCERT_VALUE_POINTS,
+  },
 
   // Turbonomic ↔ Instana
   {

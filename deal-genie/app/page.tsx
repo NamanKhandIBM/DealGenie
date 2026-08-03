@@ -19,10 +19,12 @@ import {
   recommendVerifyCrossSellAttach,
   recommendVerifyToMaaS360Attach,
   recommendVerifyToVaultAttach,
+  NS1_TURBONOMIC_VALUE_POINTS,
+  NS1_CONCERT_VALUE_POINTS,
 } from "@/lib/cross-sell";
 import type { SavedQuote } from "@/lib/quote-history";
 import { exportQuoteCsv } from "@/lib/export-csv";
-import { formatMaaS360PlanLabel } from "@/lib/maas360-data";
+import { formatMaaS360PlanLabel, MAAS360_PLANS } from "@/lib/maas360-data";
 import { recommendMaaS360Plan, computeMaaS360Estimate } from "@/lib/maas360-engine";
 import { computeInstanaQuote } from "@/lib/instana-engine";
 import { computeTurbonomicScope } from "@/lib/turbonomic-engine";
@@ -274,7 +276,8 @@ export default function ChatPage() {
           secureMail: false, advancedApps: false, threatDefense: false, remoteSupport: false,
         });
         const r = computeMaaS360Estimate({ devices, planKey: rec.planKey, addOnKeys: [], includeConcierge: false });
-        return { monthly: Math.round(r.monthlyList), annual: r.annualList, keyLine: `${devices.toLocaleString()} devices × $4.24/mo (${rec.planKey})` };
+        const planPrice = MAAS360_PLANS.find((p) => p.key === rec.planKey)?.monthlyPerDevice ?? 4.00;
+        return { monthly: Math.round(r.monthlyList), annual: r.annualList, keyLine: `${devices.toLocaleString()} devices × $${planPrice}/mo (${rec.planKey})` };
       }
       if (target === "Concert") {
         const mvs = Math.max(1, Number(answers.instanaMVS ?? answers.turbonomicMVS ?? answers.concertMVS ?? 100));
@@ -504,6 +507,36 @@ export default function ChatPage() {
         crossSellCommand: "cross-sell Instana",
         instantQuote: computeInstantPreview("Instana", state.answers),
         primary: true,
+      });
+      return cards;
+    }
+
+    if (state.product === "NS1") {
+      cards.push({
+        label: "Attach Turbonomic",
+        description: "Ensure infrastructure behind NS1 traffic-steered endpoints is continuously right-sized.",
+        productName: "IBM Turbonomic",
+        headline: "Turbonomic (resource optimization) — primary attach",
+        detail: "NS1 routes users to the best endpoint; Turbonomic ensures that endpoint's infrastructure can handle the load. DNS-layer steering plus continuous right-sizing = end-to-end performance optimization.",
+        rationale: "Traffic steering optimizes at the DNS layer, but the infrastructure behind those endpoints can still degrade under variable load. Turbonomic closes that gap autonomously.",
+        evidence: NS1_TURBONOMIC_VALUE_POINTS,
+        sellerPrompt: "Ask: 'After NS1 routes traffic to your fastest endpoint, how do you ensure that endpoint's infrastructure stays right-sized as load fluctuates?'",
+        crossSellCommand: "cross-sell Turbonomic",
+        instantQuote: computeInstantPreview("Turbonomic", state.answers),
+        primary: true,
+      });
+      cards.push({
+        label: "Attach Concert",
+        description: "DNS anomalies are leading indicators of application incidents — Concert correlates them with the full stack.",
+        productName: "IBM Concert",
+        headline: "Concert (AI ops) — DNS telemetry as a cross-domain signal",
+        detail: "Concert ingests NS1 DNS traffic signals alongside application, infrastructure, and security data. DNS latency spikes or zone failures surface as AI-prioritized incidents before users feel the impact.",
+        rationale: "DNS is often the first place an application problem shows up. Concert makes that DNS signal actionable across the whole operations domain.",
+        evidence: NS1_CONCERT_VALUE_POINTS,
+        sellerPrompt: "Ask: 'When a DNS anomaly appears in NS1, how quickly can your operations team correlate it with what's happening in the application and infrastructure layers?'",
+        crossSellCommand: "cross-sell Concert",
+        instantQuote: computeInstantPreview("Concert", state.answers),
+        primary: false,
       });
       return cards;
     }

@@ -309,10 +309,10 @@ RELEASE 1 POSITIONING IN DEALGENIE:
 - If the customer needs custom enterprise pricing, unusual bundle structures, or procurement-specific terms, escalate to the IBM product team or formal pricing process
 
 PUBLIC PRICING (CURRENTLY EXPOSED IN THE TOOL):
-- Essentials: $4.24/device/month ($50.88/device/year)
-- Deluxe: $5.30/device/month
-- Premier: $6.63/device/month
-- Enterprise: $9.54/device/month
+- Essentials: $4.00/device/month ($48.00/device/year)
+- Deluxe: $5.00/device/month
+- Premier: $6.25/device/month
+- Enterprise: $9.00/device/month
 - Essentials overage reference: $4.66/device/month
 
 PUBLIC ADD-ONS CURRENTLY EXPOSED:
@@ -1112,7 +1112,7 @@ function staticFollowUp(product: Product, question: string): string {
       return `**Device Discovery**\n\n- Ask how many devices are in scope today and what the mix is across mobile, laptop/desktop, rugged, and BYOD\n- Confirm whether devices are corporate-owned, employee-owned, or shared/frontline\n- The device mix often matters as much as the raw count when choosing the right plan and rollout approach`;
     }
     if (q.includes("price") || q.includes("cost") || q.includes("estimate")) {
-      return `**MaaS360 Public Pricing Guidance**\n\n- Essentials: $4.24/device/month ($50.88/device/year)\n- Deluxe: $5.30/device/month\n- Premier: $6.63/device/month\n- Enterprise: $9.54/device/month\n- Add-ons exposed in the tool: Mobile Threat Defense Advanced ($3.71/device/month), TeamViewer Remote Support ($1.00/device/month), Concierge setup ($500 one-time)\n- Treat these as budgetary public-price estimates, not custom enterprise quotes`;
+      return `**MaaS360 Public Pricing Guidance**\n\n- Essentials: $4.00/device/month ($48.00/device/year)\n- Deluxe: $5.00/device/month\n- Premier: $6.25/device/month\n- Enterprise: $9.00/device/month\n- Add-ons exposed in the tool: Mobile Threat Defense Advanced ($3.71/device/month), TeamViewer Remote Support ($1.00/device/month), Concierge setup ($500 one-time)\n- Treat these as budgetary public-price estimates, not custom enterprise quotes`;
     }
     if (q.includes("threat") || q.includes("remote support") || q.includes("teamviewer") || q.includes("concierge") || q.includes("add-on") || q.includes("addon")) {
       return `**MaaS360 Add-On Guidance**\n\n- Mobile Threat Defense Advanced fits when endpoint risk reduction or stronger mobile security is part of the conversation\n- TeamViewer Remote Support fits when IT needs faster remote troubleshooting for distributed users\n- Concierge setup fits when the customer wants white-glove onboarding or has limited admin capacity\n- Tie add-ons to the operating model and security goals instead of attaching them by default`;

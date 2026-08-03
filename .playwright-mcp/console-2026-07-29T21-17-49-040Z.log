@@ -1,0 +1,5 @@
+[     920ms] [LOG] Load triggered @ https://login.w3.ibm.com/js/login-redirect.js:17
+[    1281ms] [INFO] navigator.platform==MacIntel @ https://login.w3.ibm.com/idaas/mtfim/static/device_type.js?locale=en_US:10
+[    1281ms] [INFO] navigator.userAgent==Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36 @ https://login.w3.ibm.com/idaas/mtfim/static/device_type.js?locale=en_US:11
+[    1281ms] [INFO] navigator.maxTouchPoints==0 @ https://login.w3.ibm.com/idaas/mtfim/static/device_type.js?locale=en_US:12
+[    1281ms] [INFO] document.referrer==https://login.w3.ibm.com/saml/sps/auth @ https://login.w3.ibm.com/idaas/mtfim/static/device_type.js?locale=en_US:13
