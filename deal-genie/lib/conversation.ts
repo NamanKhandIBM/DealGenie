@@ -1963,10 +1963,10 @@ function computeWebMethodsResult(state: ConversationState): string {
   const deploymentRaw = String(a.webMethodsDeployment ?? "saas");
   const industry = (String(a.webMethodsIndustry ?? "other")) as WebMethodsInputs["industryVertical"];
   const verifyOwned = parseYesNo(String(a.webMethodsVerify ?? "no"));
-  const intTxn = parseNumber(String(a.webMethodsIntTxn ?? 0));
-  const apiTxn = parseNumber(String(a.webMethodsApiTxn ?? 0));
-
-  const mftTxn = parseNumber(String(a.webMethodsMftTxn ?? 0));
+  const intTxn  = parseNumber(String(a.webMethodsIntTxn  ?? 0));
+  const apiTxn  = parseNumber(String(a.webMethodsApiTxn  ?? 0));
+  const b2bTxn  = parseNumber(String(a.webMethodsB2bTxn  ?? 0));
+  const mftTxn  = parseNumber(String(a.webMethodsMftTxn  ?? 0));
 
   const inputs: WebMethodsInputs = {
     needsAppIntegration: needs.includes("appIntegration"),
@@ -1977,9 +1977,10 @@ function computeWebMethodsResult(state: ConversationState): string {
     preferSaaS: deploymentRaw === "saas",
     industryVertical: industry,
     verifyAlreadyOwned: verifyOwned,
-    estimatedIntegrations: intTxn > 0 ? intTxn : undefined,
-    estimatedAPITransactions: apiTxn > 0 ? apiTxn : undefined,
-    estimatedMFTTransactions: mftTxn > 0 ? mftTxn : undefined,
+    estimatedIntegrations:     intTxn > 0 ? intTxn : undefined,
+    estimatedAPITransactions:  apiTxn > 0 ? apiTxn : undefined,
+    estimatedB2BTransactions:  b2bTxn > 0 ? b2bTxn : undefined,
+    estimatedMFTTransactions:  mftTxn > 0 ? mftTxn : undefined,
   };
 
   const result = computeWebMethodsScope(inputs);

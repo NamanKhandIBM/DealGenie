@@ -241,7 +241,7 @@ export const WEBMETHODS_DEPLOYMENTS: WebMethodsDeployment[] = [
   {
     key: "saas",
     label: "webMethods SaaS (IBM-hosted iPaaS)",
-    summary: "IBM manages infrastructure; customer focuses on integration design and management. Base: 60 RU/month per environment + 4 RU/100K txn (first 1M/yr). List ~$11.54/RU/year.",
+    summary: "IBM manages infrastructure; customer focuses on integration design and management. Base: 60 RU/month per environment + 4 RU/100K txn (first 1M/yr). List $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026).",
   },
   {
     key: "onPrem",

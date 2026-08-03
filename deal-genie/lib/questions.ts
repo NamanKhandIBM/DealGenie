@@ -933,7 +933,7 @@ export const CONCERT_QUESTIONS: Question[] = [
     subtext: "This determines which IBM product and pricing model applies — SaaS and on-prem are priced very differently.",
     type: "single",
     options: [
-      { label: "IBM hosts it — cloud SaaS", value: "saas", hint: "PID 5900BD6 — ~$1.06/RU/year (GA Jul 2026)" },
+      { label: "IBM hosts it — cloud SaaS", value: "saas", hint: "PID 5900BD6 — ~$1.06/RU/year" },
       { label: "Client hosts it — on-premises or self-managed", value: "onprem", hint: "PID 5900BBE — $212/RU/year subscription" },
     ],
   },
@@ -1041,11 +1041,11 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
     subtext: "Select all that apply.",
     type: "multi",
     options: [
-      { label: "Application integration (SaaS, cloud, on-prem)", value: "appIntegration", hint: "$92/1K txn/year" },
-      { label: "API management and governance", value: "apiManagement", hint: "$100/10K API txn/year" },
-      { label: "B2B / EDI partner integration", value: "b2b", hint: "$75/1K txn/year" },
-      { label: "Managed File Transfer (MFT)", value: "mft", hint: "$85/1K file txn/year" },
-      { label: "Event-driven / streaming integration", value: "eventDriven", hint: "May be IBM Event Automation" },
+      { label: "Application integration (SaaS, cloud, on-prem)", value: "appIntegration", hint: "Budgetary reference: ~$92/1K txn/yr" },
+      { label: "API management and governance", value: "apiManagement", hint: "Budgetary reference: ~$100/10K API txn/yr" },
+      { label: "B2B / EDI partner integration", value: "b2b", hint: "Budgetary reference: ~$75/1K txn/yr" },
+      { label: "Managed File Transfer (MFT)", value: "mft", hint: "Budgetary reference: ~$85/1K file txn/yr" },
+      { label: "Event-driven / streaming integration", value: "eventDriven", hint: "Routes to IBM Event Automation (separate product)" },
     ],
   },
   {
@@ -1055,7 +1055,7 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
       return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("appIntegration");
     },
     ask: "How many integration transactions does the client run per month?",
-    subtext: "Confirmed rate: $92 per 1,000 transactions/year (IBM SaaS Calculator Oct 2024), with volume discount factor.",
+    subtext: "Budgetary reference rate: ~$92 per 1,000 transactions/year (IBM SaaS Calculator Oct 2024 snapshot — verify current rate with IBM before formal quoting).",
     type: "number",
     placeholder: "e.g. 100000",
     unit: "transactions / month",
@@ -1067,10 +1067,22 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
       return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("apiManagement");
     },
     ask: "How many API transactions does the client handle per month?",
-    subtext: "Confirmed rate: $100 per 10,000 API transactions/year (IBM SaaS Calculator Oct 2024), with volume discount factor.",
+    subtext: "Budgetary reference rate: ~$100 per 10,000 API transactions/year (IBM SaaS Calculator Oct 2024 snapshot — verify current rate with IBM before formal quoting).",
     type: "number",
     placeholder: "e.g. 500000",
     unit: "API transactions / month",
+  },
+  {
+    key: "webMethodsB2bTxn",
+    conditional: (a) => {
+      const needs = Array.isArray(a.webMethodsNeeds) ? a.webMethodsNeeds as string[] : [];
+      return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("b2b");
+    },
+    ask: "How many B2B / EDI transactions does the client process per month?",
+    subtext: "Budgetary reference rate: ~$75 per 1,000 transactions/year (IBM SaaS Calculator Oct 2024 snapshot — verify current rate with IBM before formal quoting).",
+    type: "number",
+    placeholder: "e.g. 50000",
+    unit: "B2B transactions / month",
   },
   {
     key: "webMethodsMftTxn",
@@ -1079,7 +1091,7 @@ export const WEBMETHODS_QUESTIONS: Question[] = [
       return String(a.webMethodsAction ?? "quote") === "quote" && needs.includes("mft");
     },
     ask: "How many file transfer transactions does the client perform per month?",
-    subtext: "Confirmed rate: $85 per 1,000 file-transfer transactions/year (IBM SaaS Calculator Oct 2024), with volume discount factor.",
+    subtext: "Budgetary reference rate: ~$85 per 1,000 file-transfer transactions/year (IBM SaaS Calculator Oct 2024 snapshot — verify current rate with IBM before formal quoting).",
     type: "number",
     placeholder: "e.g. 50000",
     unit: "file transfer transactions / month",
