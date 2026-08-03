@@ -145,11 +145,43 @@ export function computeBasePrice(
 // These mirror the actual question options in questions.ts.
 // They are the "levers" a seller can choose to explore.
 
+/**
+ * Returns anchor-relative numeric steps centred on `current`.
+ * Always produces 5 options: 2 below, current, 2 above.
+ * Uses a geometric scale (×/÷ factor) so steps feel natural at any magnitude.
+ */
+function anchoredNumericOptions(
+  current: number,
+  label: (n: number) => string,
+  factor = 5
+): ForkOption[] {
+  const steps: number[] = [];
+  let v = current;
+  // Two steps below (divide by factor, round to nice numbers)
+  const below: number[] = [];
+  for (let i = 0; i < 2; i++) {
+    v = Math.max(1, Math.round(v / factor));
+    below.unshift(v);
+  }
+  // Two steps above (multiply by factor, round)
+  const above: number[] = [];
+  v = current;
+  for (let i = 0; i < 2; i++) {
+    v = Math.round(v * factor);
+    above.push(v);
+  }
+  steps.push(...below, current, ...above);
+  // Deduplicate (can happen at very small values) and keep sorted ascending
+  const unique = Array.from(new Set(steps)).sort((a, b) => a - b);
+  return unique.map((n) => ({ label: label(n), value: n }));
+}
+
 export function getForkVariables(
   product: Product,
-  _answers: Record<string, string | number | boolean | string[]>
+  answers: Record<string, string | number | boolean | string[]>
 ): ForkVariable[] {
   if (product === "Verify") {
+    const currentPop = Math.max(1, Number(answers.population ?? 10000));
     return [
       // ── Core pricing levers ───────────────────────────────────────────────
       {
@@ -167,14 +199,7 @@ export function getForkVariables(
         key: "population",
         label: "User population",
         impact: "Drives MAU — price jumps non-linearly at tier boundaries",
-        options: [
-          { label: "1,000 users",    value: 1000 },
-          { label: "5,000 users",    value: 5000 },
-          { label: "10,000 users",   value: 10000 },
-          { label: "50,000 users",   value: 50000 },
-          { label: "100,000 users",  value: 100000 },
-          { label: "500,000 users",  value: 500000 },
-        ],
+        options: anchoredNumericOptions(currentPop, (n) => `${n.toLocaleString()} users`),
       },
       {
         key: "avgLogins",
@@ -230,43 +255,51 @@ export function getForkVariables(
 
   if (product === "Vault") {
     // Vault 2.0 — Model A (Platform model) only
-    // Model B (legacy Clients/RVU) is deprecated — all new quotes use Model A (Vault 2.0).
+    const currentSecrets = Math.max(1, Number(answers.staticSecretCount ?? answers.rusMonthly ?? 100));
+    const currentRoles   = Math.max(0, Number(answers.dynamicRoles ?? 0));
+    const currentCerts   = Math.max(0, Number(answers.pkiCertsPerMonth ?? 0));
+
+    // Secrets: always anchor to actual value; include 0 implicitly at bottom
+    const secretOpts = anchoredNumericOptions(currentSecrets, (n) => `~${n.toLocaleString()} secrets`);
+
+    // Dynamic roles: if the actual value is 0 keep a fixed scale, else anchor
+    const roleOpts: ForkOption[] = currentRoles === 0
+      ? [
+          { label: "None",         value: 0   },
+          { label: "~10 roles",    value: 10  },
+          { label: "~50 roles",    value: 50  },
+          { label: "~200 roles",   value: 200 },
+        ]
+      : anchoredNumericOptions(currentRoles, (n) => n === 0 ? "None" : `~${n.toLocaleString()} roles`);
+
+    // Certs: if actual value is 0 keep a fixed scale, else anchor
+    const certOpts: ForkOption[] = currentCerts === 0
+      ? [
+          { label: "None",               value: 0    },
+          { label: "~50 certs/month",    value: 50   },
+          { label: "~250 certs/month",   value: 250  },
+          { label: "~1,000 certs/month", value: 1000 },
+        ]
+      : anchoredNumericOptions(currentCerts, (n) => n === 0 ? "None" : `~${n.toLocaleString()} certs/mo`);
+
     return [
       {
         key: "staticSecretCount",
         label: "Secrets stored (passwords, API keys, configs)",
         impact: "1 secret = 1 RU/month — most common Vault use case. 500 secrets → ~$288K/yr list at 1-cluster",
-        options: [
-          { label: "< 25 secrets",        value: 12 },
-          { label: "~100 secrets",        value: 100 },
-          { label: "~500 secrets",        value: 500 },
-          { label: "~1,000 secrets",      value: 1000 },
-          { label: "~5,000 secrets",      value: 5000 },
-        ],
+        options: secretOpts,
       },
       {
         key: "dynamicRoles",
         label: "Auto-rotating credential roles (DB, cloud, SSH)",
         impact: "1 role = 1 RU/month — each DB connection or IAM role Vault auto-rotates",
-        options: [
-          { label: "None",             value: 0 },
-          { label: "~10 roles",        value: 10 },
-          { label: "~50 roles",        value: 50 },
-          { label: "~200 roles",       value: 200 },
-          { label: "~1,000 roles",     value: 1000 },
-        ],
+        options: roleOpts,
       },
       {
         key: "pkiCertsPerMonth",
         label: "SSL/TLS certificates issued per month",
         impact: "certs/month × (lifetime / 730h) = RU. 500 certs at 90-day lifetime = ~1,461 RU/mo extra",
-        options: [
-          { label: "None",               value: 0 },
-          { label: "~50 certs/month",    value: 50 },
-          { label: "~250 certs/month",   value: 250 },
-          { label: "~1,000 certs/month", value: 1000 },
-          { label: "~2,000 certs/month", value: 2000 },
-        ],
+        options: certOpts,
       },
       {
         key: "installCount",
@@ -300,18 +333,13 @@ export function getForkVariables(
   }
 
   if (product === "MaaS360") {
+    const currentDevices = Math.max(1, Number(answers.maas360Devices ?? 1000));
     return [
       {
         key: "maas360Devices",
         label: "Device count",
         impact: "All MaaS360 plans charge per device — linear scale, plan rate stays fixed",
-        options: [
-          { label: "500 devices",    value: 500 },
-          { label: "1,000 devices",  value: 1000 },
-          { label: "5,000 devices",  value: 5000 },
-          { label: "10,000 devices", value: 10000 },
-          { label: "25,000 devices", value: 25000 },
-        ],
+        options: anchoredNumericOptions(currentDevices, (n) => `${n.toLocaleString()} devices`),
       },
       {
         key: "maas360Plan",
@@ -328,19 +356,13 @@ export function getForkVariables(
   }
 
   if (product === "Instana") {
+    const currentMVS = Math.max(1, Number(answers.instanaMVS ?? 100));
     return [
       {
         key: "instanaMVS",
         label: "Host / VM count (MVS)",
         impact: "Primary Instana cost driver — linear at $21.20 (Essentials) or $79.50 (Standard) per MVS/month",
-        options: [
-          { label: "25 hosts",     value: 25 },
-          { label: "100 hosts",    value: 100 },
-          { label: "250 hosts",    value: 250 },
-          { label: "500 hosts",    value: 500 },
-          { label: "1,000 hosts",  value: 1000 },
-          { label: "2,500 hosts",  value: 2500 },
-        ],
+        options: anchoredNumericOptions(currentMVS, (n) => `${n.toLocaleString()} hosts`),
       },
       {
         key: "instanaTier",
@@ -364,19 +386,13 @@ export function getForkVariables(
   }
 
   if (product === "Turbonomic") {
+    const currentTurboMVS = Math.max(1, Number(answers.turbonomicMVS ?? 250));
     return [
       {
         key: "turbonomicMVS",
         label: "Host / VM count (MVS)",
         impact: "Primary Turbonomic cost driver — $18.80/MVS/month commercial SaaS (linear)",
-        options: [
-          { label: "100 VMs",    value: 100 },
-          { label: "250 VMs",    value: 250 },
-          { label: "500 VMs",    value: 500 },
-          { label: "1,000 VMs",  value: 1000 },
-          { label: "2,500 VMs",  value: 2500 },
-          { label: "5,000 VMs",  value: 5000 },
-        ],
+        options: anchoredNumericOptions(currentTurboMVS, (n) => `${n.toLocaleString()} VMs`),
       },
       {
         key: "turbonomicDeployment",
@@ -391,19 +407,13 @@ export function getForkVariables(
   }
 
   if (product === "Terraform") {
+    const currentRUM = Math.max(1, Number(answers.terraformResources ?? 250));
     return [
       {
         key: "terraformResources",
         label: "Managed resources (RUM)",
         impact: "Primary Terraform cost driver — graduated volume discounts kick in above 10K RUM",
-        options: [
-          { label: "500 RUM (Free tier)",   value: 500 },
-          { label: "1,000 RUM",             value: 1000 },
-          { label: "5,000 RUM",             value: 5000 },
-          { label: "10,000 RUM",            value: 10000 },
-          { label: "25,000 RUM",            value: 25000 },
-          { label: "50,000 RUM",            value: 50000 },
-        ],
+        options: anchoredNumericOptions(currentRUM, (n) => `${n.toLocaleString()} RUM`),
       },
       {
         key: "terraformEdition",
@@ -418,18 +428,13 @@ export function getForkVariables(
   }
 
   if (product === "Concert") {
+    const currentApps = Math.max(1, Number(answers.concertApplications ?? 25));
     return [
       {
         key: "concertApplications",
         label: "Application count",
         impact: "Protect (3 RU/app) and Resilience (5 RU/app) modules scale with app count",
-        options: [
-          { label: "10 apps",   value: 10 },
-          { label: "25 apps",   value: 25 },
-          { label: "50 apps",   value: 50 },
-          { label: "100 apps",  value: 100 },
-          { label: "250 apps",  value: 250 },
-        ],
+        options: anchoredNumericOptions(currentApps, (n) => `${n.toLocaleString()} apps`),
       },
       {
         key: "concertDeployment",
@@ -456,29 +461,48 @@ export function getForkVariables(
   }
 
   if (product === "webMethods") {
+    const currentIntTxn = Number(answers.webMethodsIntTxn ?? 0);
+    const currentApiTxn = Number(answers.webMethodsApiTxn ?? 0);
+
+    // For transaction volumes: if 0 (not in use) show a fixed illustrative scale;
+    // if in use, anchor dynamically to actual value.
+    const intTxnOpts: ForkOption[] = currentIntTxn === 0
+      ? [
+          { label: "No integrations",   value: 0        },
+          { label: "10,000 txn/mo",     value: 10000    },
+          { label: "100,000 txn/mo",    value: 100000   },
+          { label: "500,000 txn/mo",    value: 500000   },
+          { label: "1,000,000 txn/mo",  value: 1000000  },
+        ]
+      : [
+          { label: "No integrations", value: 0 },
+          ...anchoredNumericOptions(currentIntTxn, (n) => `${(n/1000).toFixed(0)}K txn/mo`),
+        ];
+
+    const apiTxnOpts: ForkOption[] = currentApiTxn === 0
+      ? [
+          { label: "No API management",       value: 0        },
+          { label: "100,000 API calls/mo",    value: 100000   },
+          { label: "500,000 API calls/mo",    value: 500000   },
+          { label: "1,000,000 API calls/mo",  value: 1000000  },
+        ]
+      : [
+          { label: "No API management", value: 0 },
+          ...anchoredNumericOptions(currentApiTxn, (n) => `${(n/1000).toFixed(0)}K API calls/mo`),
+        ];
+
     return [
       {
         key: "webMethodsIntTxn",
         label: "Integration transactions / month",
         impact: "App integration charges $92/1,000 txn/yr with a volume factor — largest cost lever",
-        options: [
-          { label: "No integrations",         value: 0 },
-          { label: "10,000 txn/mo",           value: 10000 },
-          { label: "100,000 txn/mo",          value: 100000 },
-          { label: "500,000 txn/mo",          value: 500000 },
-          { label: "1,000,000 txn/mo",        value: 1000000 },
-        ],
+        options: intTxnOpts,
       },
       {
         key: "webMethodsApiTxn",
         label: "API management transactions / month",
         impact: "API charges $100/10K txn/yr — adds on top of integration costs",
-        options: [
-          { label: "No API management",       value: 0 },
-          { label: "100,000 API calls/mo",    value: 100000 },
-          { label: "500,000 API calls/mo",    value: 500000 },
-          { label: "1,000,000 API calls/mo",  value: 1000000 },
-        ],
+        options: apiTxnOpts,
       },
       {
         key: "webMethodsDeployment",
@@ -493,51 +517,59 @@ export function getForkVariables(
   }
 
   // NS1
+  const currentMQ       = Math.max(1,  Number(answers.queryMQ        ?? 100));
+  const currentFC       = Number(answers.filterChainCount ?? 0);
+  const currentMon      = Number(answers.monitors         ?? 0);
+  const currentRecords  = Math.max(1000, Number(answers.recordCount  ?? 1000));
+
+  const fcOpts: ForkOption[] = currentFC === 0
+    ? [
+        { label: "No GSLB",           value: 0   },
+        { label: "5 filter chains",   value: 5   },
+        { label: "25 filter chains",  value: 25  },
+        { label: "100 filter chains", value: 100 },
+      ]
+    : [
+        { label: "No GSLB", value: 0 },
+        ...anchoredNumericOptions(currentFC, (n) => `${n} filter chains`),
+      ];
+
+  const monOpts: ForkOption[] = currentMon === 0
+    ? [
+        { label: "No monitors",  value: 0   },
+        { label: "25 monitors",  value: 25  },
+        { label: "100 monitors", value: 100 },
+        { label: "200 monitors", value: 200 },
+      ]
+    : [
+        { label: "No monitors", value: 0 },
+        ...anchoredNumericOptions(currentMon, (n) => `${n} monitors`),
+      ];
+
   return [
     {
       key: "queryMQ",
       label: "Query volume",
       impact: "Biggest NS1 cost driver — tier pricing means non-linear jumps at boundaries",
-      options: [
-        { label: "25M queries/mo",    value: 25 },
-        { label: "100M queries/mo",   value: 100 },
-        { label: "300M queries/mo",   value: 300 },
-        { label: "700M queries/mo",   value: 700 },
-        { label: "2,000M queries/mo", value: 2000 },
-      ],
+      options: anchoredNumericOptions(currentMQ, (n) => `${n.toLocaleString()}M queries/mo`),
     },
     {
       key: "filterChainCount",
       label: "Traffic steering / GSLB (filter chains)",
       impact: "Each steered DNS record = 1 filter chain fee on top of query cost",
-      options: [
-        { label: "No GSLB",           value: 0 },
-        { label: "5 filter chains",   value: 5 },
-        { label: "25 filter chains",  value: 25 },
-        { label: "100 filter chains", value: 100 },
-      ],
+      options: fcOpts,
     },
     {
       key: "monitors",
       label: "Health monitors",
       impact: "Up/down checks per hostname — flat per-monitor monthly fee",
-      options: [
-        { label: "No monitors",   value: 0 },
-        { label: "25 monitors",   value: 25 },
-        { label: "100 monitors",  value: 100 },
-        { label: "200 monitors",  value: 200 },
-      ],
+      options: monOpts,
     },
     {
       key: "recordCount",
       label: "DNS record count",
       impact: "First 1,000 records are free on Standard — billable in 1,000-record blocks above that",
-      options: [
-        { label: "≤ 1,000 (all free)", value: 1000 },
-        { label: "6,000 records",      value: 6000 },
-        { label: "25,000 records",     value: 25000 },
-        { label: "50,000 records",     value: 50000 },
-      ],
+      options: anchoredNumericOptions(currentRecords, (n) => `${n.toLocaleString()} records`),
     },
     {
       key: "ddosProtection",
@@ -664,17 +696,18 @@ export function computeScenarioPrice(
     const devices = Math.max(1, Number(a.maas360Devices ?? 1000));
     // maas360Plan override (from fork) OR derive from question-flow answers
     let planKey = String(a.maas360Plan ?? "");
+    const rec = recommendMaaS360Plan({
+      secureMail:    String(a.maas360SecureMail   ?? "no") === "yes",
+      advancedApps:  String(a.maas360AdvancedApps ?? "no") === "yes",
+      threatDefense: String(a.maas360ThreatDefense ?? "no") === "yes",
+      remoteSupport: String(a.maas360RemoteSupport  ?? "no") === "yes",
+    });
     if (!planKey || !["Essentials", "Deluxe", "Premier", "Enterprise"].includes(planKey)) {
-      // Derive from the recommendation engine using the boolean answers
-      const rec = recommendMaaS360Plan({
-        secureMail:   String(a.maas360SecureMail ?? "no") === "yes",
-        advancedApps: String(a.maas360AdvancedApps ?? "no") === "yes",
-        threatDefense: String(a.maas360ThreatDefense ?? "no") === "yes",
-        remoteSupport: String(a.maas360RemoteSupport ?? "no") === "yes",
-      });
       planKey = rec.planKey;
     }
-    const result = computeMaaS360Estimate({ devices, planKey, addOnKeys: [], includeConcierge: false });
+    // Pass the actual add-ons from the original quote (threat defense → mtdAdvanced, etc.)
+    const includeConcierge = String(a.maas360Concierge ?? "no") === "yes";
+    const result = computeMaaS360Estimate({ devices, planKey, addOnKeys: rec.addOnKeys, includeConcierge });
     return result.annualList;
   }
 
