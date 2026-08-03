@@ -901,8 +901,8 @@ export default function ChatPage() {
           <Image
             src="/dealgenie-icon.png"
             alt="Deal Genie"
-            width={38}
-            height={38}
+            width={50}
+            height={50}
             className="rounded-xl flex-shrink-0"
             style={{ objectFit: "cover", objectPosition: "center" }}
           />
