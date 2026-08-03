@@ -593,20 +593,37 @@ export function computeScenarioPrice(
   const a = { ...base, ...overrides };
 
   if (product === "Verify") {
-    const caps = (a.capabilities as string[]) ?? ["SSO"];
-    const basePop = Number(base.population ?? 500);
-    const pop = Number(a.population ?? basePop);
-    const logins = Math.max(1, Math.min(12, Number(a.avgLogins ?? 12)));
-    const term = String(a.term ?? "12-month") as "12-month" | "3-year";
+    // Cross-sell Verify quotes use verifyNeedsSSO/verifyPopulation/verifyManagedUsers
+    // instead of capabilities/population/managedUsers — mirror conversation.ts logic.
+    const crossSellSource = String(a.crossSellSource ?? "");
+    const isCrossSell = crossSellSource === "MaaS360" || crossSellSource === "Vault" || crossSellSource === "webMethods";
+    let caps: string[];
+    if (isCrossSell) {
+      caps = [
+        ...(String(a.verifyNeedsSSO      ?? "yes") === "yes" ? ["SSO"]      : []),
+        ...(String(a.verifyNeedsMFA      ?? "yes") === "yes" ? ["MFA"]      : []),
+        ...(String(a.verifyNeedsAdaptive ?? "no")  === "yes" ? ["Adaptive"] : []),
+        ...(String(a.verifyNeedsLifecycle ?? "no") === "yes" ? ["Lifecycle"]: []),
+      ];
+      if (caps.length === 0) caps = ["SSO"];
+    } else {
+      caps = (a.capabilities as string[]) ?? ["SSO"];
+    }
+    const popKey    = isCrossSell ? "verifyPopulation"    : "population";
+    const mgdKey    = isCrossSell ? "verifyManagedUsers"  : "managedUsers";
+    const basePop   = Number(base[popKey] ?? base.population ?? 500);
+    const pop       = Number(a[popKey] ?? basePop);
+    const logins    = Math.max(1, Math.min(12, Number(a.avgLogins ?? 12)));
+    const term      = String(a.term ?? "12-month") as "12-month" | "3-year";
     // regions — must be read from answers so multi-region quotes price correctly
-    const regions = Math.max(1, Number(a.regions ?? 1));
+    const regions   = Math.max(1, Number(a.regions ?? 1));
     let managed = 0;
     if (caps.includes("Lifecycle")) {
-      const baseMgd = Number(base.managedUsers ?? basePop);
-      if ("population" in overrides && basePop > 0) {
+      const baseMgd = Number(base[mgdKey] ?? base.managedUsers ?? basePop);
+      if ((popKey in overrides || "population" in overrides) && basePop > 0) {
         managed = Math.round(baseMgd * (pop / basePop));
       } else {
-        managed = Number(a.managedUsers ?? pop);
+        managed = Number(a[mgdKey] ?? a.managedUsers ?? pop);
       }
     }
 
@@ -681,12 +698,25 @@ export function computeScenarioPrice(
     // activity-based differences (secrets/roles/certs) not opaque RU numbers.
     // Legacy rusMonthly fallback: old quotes that have rusMonthly but not
     // staticSecretCount still price correctly.
+    // Include ALL Vault use-cases from the original quote flow — SSH, Transit,
+    // KMSE — so the compare price matches the quote price exactly.
+    const useCases = (a.useCases as string[] | undefined) ?? [];
     const certCount = Number(a.pkiCertsPerMonth ?? 0);
+    const sshCount  = Number(a.sshCredsPerMonth ?? 0);
     const useCaseInputs = {
-      staticSecretCount: Number(a.staticSecretCount ?? a.rusMonthly ?? 100),
-      dynamicRoles:      Number(a.dynamicRoles ?? 0) || undefined,
-      pkiCertsPerMonth:  certCount || undefined,
+      staticSecretCount:    Number(a.staticSecretCount ?? a.rusMonthly ?? 100),
+      dynamicRoles:         Number(a.dynamicRoles ?? 0) || undefined,
+      pkiCertsPerMonth:     certCount || undefined,
       pkiCertLifetimeHours: certCount > 0 ? Number(a.pkiCertLifetime ?? 2160) : undefined,
+      // SSH — only include if the useCases array had "ssh" OR answer keys are explicitly set
+      sshCredsPerMonth:     (useCases.includes("ssh") || sshCount > 0) ? (sshCount || undefined) : undefined,
+      sshLifetimeHours:     (useCases.includes("ssh") || sshCount > 0) ? Number(a.sshLifetime ?? 24) : undefined,
+      // Transit — 150,000 calls = 1 RU
+      transitCallsPerMonth: (useCases.includes("transit") || Number(a.transitCallsPerMonth ?? 0) > 0)
+        ? (Number(a.transitCallsPerMonth ?? 0) || undefined) : undefined,
+      // KMSE encryption keys
+      kmseKeyCount:         (useCases.includes("kmse") || Number(a.kmseKeyCount ?? 0) > 0)
+        ? (Number(a.kmseKeyCount ?? 0) || undefined) : undefined,
     };
     const result = computeVaultQuote({ model: "A-Platform", installCount: installs, useCaseInputs, includeNonProd, includeKMIP });
     return result.totalAnnualList;
@@ -728,14 +758,20 @@ export function computeScenarioPrice(
   }
 
   if (product === "Turbonomic") {
-    const mvs = Math.max(1, Number(a.turbonomicMVS ?? 250));
+    const mvs = Math.max(0, Number(a.turbonomicMVS ?? 0));
     const deployment = (String(a.turbonomicDeployment ?? "SaaS")) as TurbonomicDeployment;
     const isGov = deployment === "SaaSGov";
+    // Pass scopingModel and annualCloudSpend so "monitoredCosts" quotes price correctly.
+    // If the user quoted on cloud spend (scopingModel="monitoredCosts") and turbonomicMVS=0,
+    // hardcoding scopingModel:"mvs" with mvs=0 would return $0 — wrong.
+    const cloudSpend  = Number(a.turbonomicCloudSpend ?? 0);
+    const scopingModelRaw = String(a.turbonomicScopingModel ?? "mvs") as "mvs" | "monitoredCosts";
     const result = computeTurbonomicScope({
       deployment: isGov ? "SaaS" : deployment,
-      estimatedMVS: mvs,
+      estimatedMVS: mvs > 0 ? mvs : 1,
+      annualCloudSpend: cloudSpend > 0 ? cloudSpend : undefined,
+      scopingModel: scopingModelRaw,
       isGovernment: isGov,
-      scopingModel: "mvs",
       includesPublicCloud: String(a.turbonomicCloud ?? "yes") === "yes",
       includesKubernetes: String(a.turbonomicKubernetes ?? "no") === "yes",
     });
@@ -793,31 +829,39 @@ export function computeScenarioPrice(
     const industry = (String(a.webMethodsIndustry ?? "other")) as WebMethodsInputs["industryVertical"];
     const intTxn = Number(a.webMethodsIntTxn ?? 0);
     const apiTxn = Number(a.webMethodsApiTxn ?? 0);
+    const b2bTxn = Number(a.webMethodsB2bTxn ?? 0);
     const mftTxn = Number(a.webMethodsMftTxn ?? 0);
     const result = computeWebMethodsScope({
       needsAppIntegration: needs.includes("appIntegration") || intTxn > 0,
       needsAPIManagement: needs.includes("apiManagement") || apiTxn > 0,
-      needsB2B: needs.includes("b2b"),
+      needsB2B: needs.includes("b2b") || b2bTxn > 0,
       needsMFT: needs.includes("mft") || mftTxn > 0,
       needsEventDriven: needs.includes("eventDriven"),
       preferSaaS: deploymentRaw === "saas",
       industryVertical: industry,
       estimatedIntegrations: intTxn > 0 ? intTxn : undefined,
       estimatedAPITransactions: apiTxn > 0 ? apiTxn : undefined,
+      estimatedB2BTransactions: b2bTxn > 0 ? b2bTxn : undefined,
       estimatedMFTTransactions: mftTxn > 0 ? mftTxn : undefined,
     });
     return result.totalAnnualList;
   }
 
-  // NS1 — use totalAnnualList (confirmed marketplace prices) so the displayed price
-  // matches the quote result. Pass all inputs that the quote engine uses.
+  // NS1 — pass ALL inputs that conversation.ts uses, including dedicatedPoPs,
+  // chinaMQ, and term so the compare price exactly matches the quote price.
   const mq = Number(a.queryMQ ?? 50);
   const fc = Number(a.filterChainCount ?? 0);
   const mon = Number(a.monitors ?? 0);
   const records = Number(a.recordCount ?? 0);
   const gslbRaw = String(a.gslb ?? "no");
   const ddosNxdRaw = String(a.ddos ?? "no");
-  const result = computeNS1Quote({
+  const dedicatedRaw = String(a.dedicated ?? "no");
+  const dedicatedPoPs = dedicatedRaw !== "no" ? Number(dedicatedRaw) || undefined : undefined;
+  const chinaRaw = String(a.china ?? "no");
+  const chinaMQ = chinaRaw === "yes"
+    ? Math.max(50, Number(a.chinaMQ ?? 50))
+    : undefined;
+  const ns1Result = computeNS1Quote({
     queryVolumeMQ:    mq,
     filterChains:     fc,
     monitors:         mon,
@@ -825,13 +869,16 @@ export function computeScenarioPrice(
     rumBased:         gslbRaw === "yes-rum" || gslbRaw === "yes-rum-advanced",
     rumAdvanced:      gslbRaw === "yes-rum-advanced",
     ddosProtection:   ddosNxdRaw === "ddos" || ddosNxdRaw === "both" || ddosNxdRaw === "yes" || String(a.ddosProtection ?? "no") === "yes",
-    nxdWaiver:        ddosNxdRaw === "nxd" || ddosNxdRaw === "both",
+    nxdWaiver:        ddosNxdRaw === "nxd"  || ddosNxdRaw === "both",
     dnsInsights:      String(a.insights ?? "no") === "yes",
     cloudSync:        String(a.cloudSync ?? "no") === "yes",
     growthMQ:         Number(a.growthMQ ?? 0),
     expectedGrowthPct: Number(a.growth ?? 0),
+    dedicatedPoPs,
+    chinaMQ,
+    term: String(a.term ?? "12-month") === "3-year" ? "3-year" : "12-month",
   });
-  return result.totalAnnualList;
+  return ns1Result.totalAnnualList;
 }
 
 // ─── Normalise answers for the quoting engine ─────────────────────────────────
