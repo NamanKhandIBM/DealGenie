@@ -762,78 +762,126 @@ export const INSTANA_QUESTIONS: Question[] = [
 // ─── IBM TURBONOMIC ───────────────────────────────────────────────────────────
 
 export const TURBONOMIC_QUESTIONS: Question[] = [
+  // ── 1. New vs existing client ─────────────────────────────────────────────
+  {
+    key: "turbonomicClientType",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "Is this a new client or an existing Turbonomic client?",
+    type: "single",
+    options: [
+      { label: "New client", value: "new", hint: "No existing Turbonomic entitlement" },
+      { label: "Existing client", value: "existing", hint: "Already has Turbonomic — renewal, expansion, or migration" },
+    ],
+  },
+  // ── 2. Existing client motion ─────────────────────────────────────────────
+  {
+    key: "turbonomicExistingMotion",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      String(a.turbonomicClientType ?? "new") === "existing",
+    ask: "What is the motion for this existing client?",
+    type: "single",
+    options: [
+      { label: "Renewal — renewing existing entitlement", value: "renewal", hint: "Same scope, new term" },
+      { label: "Add capacity — expanding MVS count or cloud spend", value: "addCapacity", hint: "Upsell / expand existing deployment" },
+      { label: "Transition to SaaS — moving from On-Prem to SaaS", value: "toSaaS", hint: "Use Hosting Edition (D0HE7ZX) as bridge" },
+    ],
+  },
+  // ── 3. Use case qualification ─────────────────────────────────────────────
+  {
+    key: "turbonomicUseCase",
+    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
+    ask: "What is the customer's primary use case?",
+    subtext: "This determines the scoping approach and the right pricing metric.",
+    type: "single",
+    options: [
+      { label: "VMware / virtual machine performance", value: "vmware", hint: "Right-size VMs, improve density, reduce manual tuning" },
+      { label: "Kubernetes / container performance", value: "kubernetes", hint: "Right-size pods and nodes, prevent over-provisioning" },
+      { label: "Cloud cost optimization (FinOps)", value: "finops", hint: "Reduce AWS/Azure/GCP waste — MVS or Monitored Costs pricing" },
+      { label: "Workload Parking — auto-stop idle cloud workloads", value: "parking", hint: "$6.26/MVS pay-as-you-go — non-production environments" },
+      { label: "Other / multiple Turbonomic capabilities", value: "other", hint: "Full platform — data center, AI workloads, hybrid cloud" },
+    ],
+  },
+  // ── 4. Deployment / hosting ───────────────────────────────────────────────
   {
     key: "turbonomicDeployment",
-    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
-    ask: "Where does the client need the Turbonomic platform to run?",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      String(a.turbonomicUseCase ?? "vmware") !== "parking",
+    ask: "How should Turbonomic be deployed?",
+    subtext: "IBM-managed (SaaS) is the default for most deals. On-Prem is contact-for-quote.",
     type: "single",
     options: [
-      { label: "IBM hosts it — standard commercial cloud", value: "SaaS", hint: "$18.80/MVS/month — IBM manages the platform, fastest to deploy" },
-      { label: "IBM hosts it — US Federal / FedRAMP environment", value: "SaaSGov", hint: "$23.50/MVS/month — required for US government agencies" },
-      { label: "Customer hosts it in their own data centre", value: "OnPrem", hint: "Contact-for-quote — air-gapped or sovereign requirements" },
-      { label: "Cloud cost savings only — auto-stop idle workloads", value: "Parking", hint: "$6.26/MVS pay-as-you-go — entry-level FinOps, cloud only" },
+      { label: "IBM hosts it — standard commercial cloud (SaaS)", value: "SaaS", hint: "$18.80/MVS/month — IBM manages the platform" },
+      { label: "IBM hosts it — US Federal / FedRAMP (SaaS Gov)", value: "SaaSGov", hint: "$23.50/MVS/month — US government agencies" },
+      { label: "Customer self-managed — own data centre (On-Prem)", value: "OnPrem", hint: "Contact-for-quote — air-gapped or sovereign requirements" },
     ],
   },
+  // ── 5. Scoping model ──────────────────────────────────────────────────────
   {
     key: "turbonomicScopingModel",
-    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote" && String(a.turbonomicDeployment ?? "SaaS") === "SaaS",
-    ask: "What does the client know better — their server count or their annual cloud bill?",
-    subtext: "Either way works. Pick whichever the customer can answer easily. Minimum $1.6M cloud spend required for the Monitored Costs path.",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      (String(a.turbonomicDeployment ?? "SaaS") === "SaaS" || String(a.turbonomicDeployment ?? "SaaS") === "SaaSGov") &&
+      String(a.turbonomicUseCase ?? "vmware") !== "parking",
+    ask: "What does the client know better — their server/VM count or their annual cloud bill?",
+    subtext: "Either way works. Minimum $1.6M cloud spend required for the Monitored Costs path.",
     type: "single",
     options: [
-      { label: "They know how many servers / VMs they have", value: "mvs", hint: "$18.80/MVS/month (commercial) or $23.50/MVS/month (gov) — enter the host count next" },
-      { label: "They know their annual AWS / Azure / GCP spend", value: "monitoredCosts", hint: "Tiered pricing per $100K cloud spend — min $1.6M/yr. Enter the dollar amount next." },
+      { label: "They know how many servers / VMs / nodes they have", value: "mvs", hint: "$18.80/MVS/month (commercial) — enter the count next" },
+      { label: "They know their annual AWS / Azure / GCP bill", value: "monitoredCosts", hint: "Tiered per $100K cloud spend — min $1.6M/yr" },
     ],
   },
+  // ── 6. MVS count ──────────────────────────────────────────────────────────
   {
     key: "turbonomicMVS",
     conditional: (a) =>
       String(a.turbonomicAction ?? "quote") === "quote" &&
-      String(a.turbonomicDeployment ?? "SaaS") === "SaaS" &&
-      String(a.turbonomicScopingModel ?? "mvs") === "mvs",
-    ask: "How many hosts or VMs are in scope for optimization?",
-    subtext: "Use the same MVS count as your Instana scope if Instana is already in the deal. Count: 1 VM = 1 MVS, 1 K8s worker node = 1 MVS.",
+      (String(a.turbonomicDeployment ?? "SaaS") === "SaaS" || String(a.turbonomicDeployment ?? "SaaS") === "SaaSGov" || String(a.turbonomicUseCase ?? "vmware") === "parking") &&
+      String(a.turbonomicScopingModel ?? "mvs") !== "monitoredCosts",
+    ask: "How many hosts, VMs, or Kubernetes nodes are in scope?",
+    subtext: "MVS counting: 1 VM = 1 MVS · 1 K8s worker node = 1 MVS · 1 physical server = 1 MVS. Pods/containers do NOT count separately. Use the same count as your Instana scope if Instana is in the deal.",
     type: "number",
     placeholder: "e.g. 500",
-    unit: "MVS (hosts)",
+    unit: "MVS",
   },
+  // ── 7. VMware vs Kubernetes breakdown ─────────────────────────────────────
+  {
+    key: "turbonomicInfraType",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      Number(a.turbonomicMVS ?? 0) > 0 &&
+      String(a.turbonomicUseCase ?? "vmware") !== "parking" &&
+      String(a.turbonomicUseCase ?? "vmware") !== "finops",
+    ask: "What infrastructure is in scope for optimization?",
+    subtext: "Select all that apply. This does not change the MVS count — it shapes the seller talking points.",
+    type: "multi",
+    options: [
+      { label: "VMware / vSphere VMs", value: "vmware" },
+      { label: "Kubernetes / OpenShift container nodes", value: "kubernetes" },
+      { label: "Public cloud VMs (AWS, Azure, GCP)", value: "cloud" },
+      { label: "Physical / bare-metal servers", value: "physical" },
+      { label: "AI / GPU workloads", value: "ai" },
+    ],
+  },
+  // ── 8. Annual cloud spend ─────────────────────────────────────────────────
   {
     key: "turbonomicCloudSpend",
     conditional: (a) =>
       String(a.turbonomicAction ?? "quote") === "quote" &&
-      String(a.turbonomicDeployment ?? "SaaS") === "SaaS" &&
+      (String(a.turbonomicDeployment ?? "SaaS") === "SaaS" || String(a.turbonomicDeployment ?? "SaaS") === "SaaSGov") &&
       String(a.turbonomicScopingModel ?? "mvs") === "monitoredCosts",
     ask: "What is the client's estimated annual public cloud spend?",
-    subtext: "Monitored Costs (D0I0GZX): tiered pricing per $100K cloud spend. Minimum $1,600,000 annual spend (16 units). Rate ranges from $3,000/unit/yr (small) to $850.80/unit/yr (large).",
+    subtext: "Monitored Costs (D0I0GZX): tiered pricing per $100K cloud spend. Minimum $1,600,000 annual spend (16 units). Rate ranges from $3,000/unit/yr (small) down to $850.80/unit/yr (large).",
     type: "number",
     placeholder: "e.g. 4000000",
     unit: "USD / year",
   },
-  {
-    key: "turbonomicCloud",
-    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
-    ask: "Does the client have public cloud resources to optimize?",
-    subtext: "AWS, Azure, and/or Google Cloud — Turbonomic natively connects to all three.",
-    type: "single",
-    options: [
-      { label: "No", value: "no" },
-      { label: "Yes", value: "yes" },
-    ],
-  },
-  {
-    key: "turbonomicKubernetes",
-    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
-    ask: "Does the client run Kubernetes or container workloads?",
-    type: "single",
-    options: [
-      { label: "No", value: "no" },
-      { label: "Yes", value: "yes" },
-    ],
-  },
+  // ── 9. Primary business driver ────────────────────────────────────────────
   {
     key: "turbonomicDriver",
     conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
-    ask: "What is the primary driver for this conversation?",
+    ask: "What is the primary driver for this Turbonomic conversation?",
     type: "single",
     options: [
       { label: "Cloud cost reduction / FinOps", value: "cost" },
@@ -841,15 +889,51 @@ export const TURBONOMIC_QUESTIONS: Question[] = [
       { label: "Both cost and performance", value: "both" },
     ],
   },
+  // ── 10. APM / observability pain-point (cross-sell hook) ─────────────────
   {
-    key: "turbonomicInstana",
-    conditional: (a) => String(a.turbonomicAction ?? "quote") === "quote",
-    ask: "Does the client already have IBM Instana (or is it part of this deal)?",
-    subtext: "Turbonomic natively integrates with Instana for application-aware optimization — a key differentiator.",
+    key: "turbonomicAPMNeed",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      String(a.turbonomicUseCase ?? "vmware") !== "parking",
+    ask: "Does the customer want application-level visibility alongside resource optimization?",
+    subtext: "Application performance monitoring (APM) paired with Turbonomic makes every resource decision application-aware — it won't right-size something causing latency or errors.",
     type: "single",
     options: [
-      { label: "No", value: "no" },
-      { label: "Yes — already owned", value: "yes" },
+      { label: "No — infrastructure optimization is sufficient", value: "no" },
+      { label: "Yes — they want app-level performance insights too", value: "yes" },
+      { label: "They already have an APM solution", value: "has_apm" },
+    ],
+  },
+  // ── 11. Existing APM solution ─────────────────────────────────────────────
+  {
+    key: "turbonomicExistingAPM",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      String(a.turbonomicAPMNeed ?? "no") === "has_apm",
+    ask: "What APM solution does the customer currently use?",
+    type: "single",
+    options: [
+      { label: "IBM Instana", value: "instana", hint: "Native integration — one-click setup from Instana Optimizations tab" },
+      { label: "Dynatrace", value: "dynatrace" },
+      { label: "Datadog", value: "datadog" },
+      { label: "AppDynamics / Cisco", value: "appdynamics" },
+      { label: "New Relic", value: "newrelic" },
+      { label: "Other / not sure", value: "other" },
+    ],
+  },
+  // ── 12. Services — first-time or existing deployment ─────────────────────
+  {
+    key: "turbonomicDeploymentHistory",
+    conditional: (a) =>
+      String(a.turbonomicAction ?? "quote") === "quote" &&
+      (String(a.turbonomicDeployment ?? "SaaS") === "SaaS" || String(a.turbonomicDeployment ?? "SaaS") === "SaaSGov") &&
+      String(a.turbonomicUseCase ?? "vmware") !== "parking",
+    ask: "Is this the customer's first Turbonomic deployment?",
+    subtext: "Implementation services drive faster ROI, better adoption, and higher renewal rates.",
+    type: "single",
+    options: [
+      { label: "Yes — first-time deployment", value: "first", hint: "Recommend Install + Build SaaS services" },
+      { label: "No — expanding an existing deployment", value: "existing", hint: "Perform SaaS may be appropriate" },
     ],
   },
 ];

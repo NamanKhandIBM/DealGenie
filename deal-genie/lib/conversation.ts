@@ -1635,27 +1635,53 @@ ${bpRows}
 
 function computeTurbonomicResult(state: ConversationState): string {
   const a = state.answers;
-  const deployment = (String(a.turbonomicDeployment ?? "SaaS")) as "SaaS" | "SaaSGov" | "OnPrem" | "Parking";
+
+  // Use case drives deployment default — parking goes directly to Parking edition
+  const useCase = (String(a.turbonomicUseCase ?? "other")) as "vmware" | "kubernetes" | "finops" | "parking" | "other";
+  const deploymentRaw = useCase === "parking" ? "Parking" : String(a.turbonomicDeployment ?? "SaaS");
+  const deployment = deploymentRaw as "SaaS" | "SaaSGov" | "OnPrem" | "Parking";
+
   const mvs = parseNumber(String(a.turbonomicMVS ?? 0));
   const cloudSpend = parseNumber(String(a.turbonomicCloudSpend ?? 0));
   const scopingModel = (String(a.turbonomicScopingModel ?? "mvs")) as "mvs" | "monitoredCosts";
-  const hasCloud = parseYesNo(String(a.turbonomicCloud ?? "yes"));
-  const hasK8s = parseYesNo(String(a.turbonomicKubernetes ?? "no"));
   const driver = (String(a.turbonomicDriver ?? "both")) as "cost" | "performance" | "both";
-  const hasInstana = parseYesNo(String(a.turbonomicInstana ?? "no"));
+
+  // Infrastructure types (multi-select returns array)
+  const infraTypes: string[] = Array.isArray(a.turbonomicInfraType)
+    ? (a.turbonomicInfraType as string[])
+    : [];
+  const includesVMware = infraTypes.includes("vmware") || useCase === "vmware";
+  const includesK8s    = infraTypes.includes("kubernetes") || useCase === "kubernetes";
+  const includesCloud  = infraTypes.includes("cloud") || useCase === "finops";
+  const includesAI     = infraTypes.includes("ai");
+
+  // APM answers
+  const apmNeed = (String(a.turbonomicAPMNeed ?? "no")) as "no" | "yes" | "has_apm";
+  const existingAPM = String(a.turbonomicExistingAPM ?? "");
+
+  // Services
+  const deploymentHistory = String(a.turbonomicDeploymentHistory ?? "first");
+  const isFirstDeployment = deploymentHistory === "first";
 
   const inputs: TurbonomicInputs = {
     deployment,
     estimatedMVS: mvs,
     annualCloudSpend: cloudSpend > 0 ? cloudSpend : undefined,
     scopingModel,
+    useCase,
     isGovernment: deployment === "SaaSGov",
-    includesPublicCloud: hasCloud,
-    includesKubernetes: hasK8s,
+    clientType: (String(a.turbonomicClientType ?? "new")) as "new" | "existing",
+    existingMotion: (String(a.turbonomicExistingMotion ?? "")) as "renewal" | "addCapacity" | "toSaaS" | undefined,
+    includesVMware,
+    includesPublicCloud: includesCloud,
+    includesKubernetes: includesK8s,
     includesDatacenter: deployment === "OnPrem",
+    includesAIWorkloads: includesAI,
     primaryDriver: driver,
-    instanaAlreadyOwned: hasInstana,
-    includeServices: true,
+    apmNeed,
+    existingAPM: existingAPM || undefined,
+    isFirstDeployment,
+    includeServices: isFirstDeployment,
   };
 
   const result = computeTurbonomicScope(inputs);
