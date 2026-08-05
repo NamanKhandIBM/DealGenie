@@ -1,17 +1,19 @@
 /**
  * webMethods estimation engine.
  *
- * CONFIRMED pricing (IWHI SaaS Sizing Calculator, 2nd Jul 2026 + IBM Docs Jul 2026
- *   + IBM webMethods SaaS Calculator, Oct 2024 snapshot):
+ * CONFIRMED pricing (IBM Docs hybrid-integration-lib, Jul 2026 + Seismic Dec 2025
+ *   + IWHI SaaS Sizing Calculator, 2nd July 2026
+ *   + IWHI Software Sizing Calculator, 2nd July 2026):
  *
- *   SaaS list price: $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026)
- *   SaaS base charge: 60 RU/month per integration environment (production)
+ *   SaaS RU structure (IWHI SaaS Sizing Calculator, 2nd Jul 2026):
+ *     Base: Integration 60 RU/env/month + 5 RU/runtime | API Mgmt 50 RU/env/month | B2B 60 RU/env/month
+ *     Integration tiers:   4 RU/100K txn (0–100M/mo), 1 RU/100K txn (100M+/mo)
+ *     API Mgmt tiers:      3 RU/1M txn (0–1B/mo), 2 RU/1M txn (1B+/mo)
+ *     B2B tiers:           4 RU/100K txn (0–100M/mo), 1 RU/100K txn (100M+/mo)
+ *     List price: $40.08/RU/year
  *
- *   Per-product annual rates (IBM SaaS Calculator Oct 2024 — budgetary reference,
- *     verify current rates with IBM before formal quoting):
- *     Integration: ~$92/1K txn/yr | API Mgmt: ~$100/10K API txn/yr
- *     B2B: ~$75/1K txn/yr | B2B Integration: ~$92/1K txn/yr | MFT: ~$85/1K file txn/yr
- *     All share volume-discount factor table (1.00→0.03).
+ *   Software tiers have an extra low-volume band at 20 RU/100K txn (0–10M/mo).
+ *   List price: $40.00/RU/year
  *
  *   Event-Driven: NOT a webMethods RU product — IBM Event Automation (PID 5900-AXM).
  *   On-Premises / CP4I Add-on: priced per VPC — same rate as CP4I. Contact IBM.
@@ -23,13 +25,12 @@ import {
   WEBMETHODS_QUICK_REFERENCE,
   WEBMETHODS_PRICE_PER_RU_YEAR,
   WEBMETHODS_BASE_RU_PER_MONTH,
-  WEBMETHODS_RU_PER_100K_TXN_TIER1,
-  WEBMETHODS_RU_PER_100K_TXN_TIER2,
-  WEBMETHODS_ANNUAL_RATE_INTEGRATION,
-  WEBMETHODS_ANNUAL_RATE_API_MGMT,
-  WEBMETHODS_ANNUAL_RATE_B2B,
-  WEBMETHODS_ANNUAL_RATE_B2B_INT,
+  WEBMETHODS_API_BASE_RU_PER_MONTH,
+  WEBMETHODS_SAAS_INT_TIERS,
+  WEBMETHODS_SAAS_API_TIERS,
+  WEBMETHODS_SAAS_B2B_TIERS,
   WEBMETHODS_ANNUAL_RATE_MFT,
+  computeMonthlyRU,
   webMethodsVolumeFactor,
 } from "./webmethods-data";
 
@@ -70,22 +71,18 @@ export interface WebMethodsScopeSummary {
   quickReference: typeof WEBMETHODS_QUICK_REFERENCE;
 }
 
-// ── Helper: compute annual RU from monthly transaction volume using tiered rates
-function computeIntegrationRU(monthlyTxn: number): { usageRU: number; notes: string } {
-  // Annualize: monthly × 12
-  const annualTxn = monthlyTxn * 12;
-  const tier1Cap = 1_000_000; // first 1M transactions/year at tier-1 rate
-  const tier1Txn = Math.min(annualTxn, tier1Cap);
-  const tier2Txn = Math.max(0, annualTxn - tier1Cap);
-
-  const tier1RU = Math.ceil((tier1Txn / 100_000) * WEBMETHODS_RU_PER_100K_TXN_TIER1);
-  const tier2RU = Math.ceil((tier2Txn / 100_000) * WEBMETHODS_RU_PER_100K_TXN_TIER2);
-  const usageRU = tier1RU + tier2RU;
-
-  const notes = tier2Txn > 0
-    ? `${monthlyTxn.toLocaleString()} txn/mo → ${(annualTxn / 1_000_000).toFixed(1)}M/yr. Tier1: ${tier1RU} RU + Tier2: ${tier2RU} RU (over 1M)`
-    : `${monthlyTxn.toLocaleString()} txn/mo → ${annualTxn.toLocaleString()}/yr, ${tier1RU} RU usage`;
-  return { usageRU, notes };
+// ── Helper: compute monthly RU for a product using its tier table, with a note
+function computeProductRU(
+  monthlyTxn: number,
+  tiers: typeof WEBMETHODS_SAAS_INT_TIERS,
+  label: string,
+): { monthlyRU: number; annualRU: number; notes: string } {
+  const monthlyRU = computeMonthlyRU(monthlyTxn, tiers);
+  const annualRU = monthlyRU * 12;
+  const tier = [...tiers].reverse().find((t) => monthlyTxn >= t.fromTxn);
+  const rateDesc = tier ? `${tier.ruPer} RU per ${tier.perTxn.toLocaleString()} txn` : "n/a";
+  const notes = `${label}: ${monthlyTxn.toLocaleString()} txn/mo → ${monthlyRU} RU/mo (${rateDesc}) × 12 = ${annualRU} RU/yr. Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026.`;
+  return { monthlyRU, annualRU, notes };
 }
 
 export function computeWebMethodsScope(inputs: WebMethodsInputs): WebMethodsScopeSummary {
@@ -112,63 +109,59 @@ export function computeWebMethodsScope(inputs: WebMethodsInputs): WebMethodsScop
     const intTxn = inputs.estimatedIntegrations ?? 0;
     const apiTxn = inputs.estimatedAPITransactions ?? 0;
 
-    // Base charge: 60 RU/month × 12 = 720 RU/year per instance
+    // Base charge: Integration 60 RU/env/month × 12 = 720 RU/year
     const baseRUAnnual = WEBMETHODS_BASE_RU_PER_MONTH * 12;
     const baseAnnualList = Math.round(baseRUAnnual * WEBMETHODS_PRICE_PER_RU_YEAR);
     lines.push({
-      capability: "SaaS Base Subscription (1 environment)",
+      capability: "SaaS Base Subscription — Integration (1 environment)",
       rvuCount: baseRUAnnual,
       annualList: baseAnnualList,
-      notes: `${WEBMETHODS_BASE_RU_PER_MONTH} RU/month × 12 = ${baseRUAnnual} RU × $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/yr`,
+      notes: `Integration base: ${WEBMETHODS_BASE_RU_PER_MONTH} RU/env/month × 12 = ${baseRUAnnual} RU/yr × $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/yr = $${baseAnnualList.toLocaleString()}/yr. Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026.`,
     });
 
     if (intTxn > 0 && inputs.needsAppIntegration) {
-      // Budgetary reference rate: ~$92/1K txn/yr (IBM SaaS Calculator Oct 2024 snapshot)
-      const annualTxn = intTxn * 12;
-      const units = annualTxn / 1000;
-      const factor = webMethodsVolumeFactor(units);
-      const annual = Math.round(units * WEBMETHODS_ANNUAL_RATE_INTEGRATION * factor);
+      const { annualRU, notes } = computeProductRU(intTxn, WEBMETHODS_SAAS_INT_TIERS, "Integration");
+      const annualList = Math.round(annualRU * WEBMETHODS_PRICE_PER_RU_YEAR);
       lines.push({
-        capability: "App Integration (budgetary reference rate)",
-        rvuCount: Math.ceil(annual / WEBMETHODS_PRICE_PER_RU_YEAR),
-        annualList: annual,
-        notes: `${intTxn.toLocaleString()} txn/mo → ${units.toFixed(1)}K units/yr × ~$${WEBMETHODS_ANNUAL_RATE_INTEGRATION}/K/yr × ${factor} volume factor = $${annual.toLocaleString()}/yr. Rate: IBM SaaS Calculator Oct 2024 — verify before formal quoting.`,
+        capability: "App Integration — transaction usage",
+        rvuCount: annualRU,
+        annualList,
+        notes: `${notes} × $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/yr = $${annualList.toLocaleString()}/yr`,
       });
     }
 
     if (apiTxn > 0 && inputs.needsAPIManagement) {
-      // Budgetary reference rate: ~$100/10K API txn/yr (IBM SaaS Calculator Oct 2024 snapshot)
-      const annualApiTxn = apiTxn * 12;
-      const units = annualApiTxn / 10000;
-      const factor = webMethodsVolumeFactor(units);
-      const annual = Math.round(units * WEBMETHODS_ANNUAL_RATE_API_MGMT * factor);
+      // API Management base: 50 RU/env/month
+      const apiBaseRUAnnual = WEBMETHODS_API_BASE_RU_PER_MONTH * 12;
+      const apiBaseList = Math.round(apiBaseRUAnnual * WEBMETHODS_PRICE_PER_RU_YEAR);
       lines.push({
-        capability: "API Management (budgetary reference rate)",
-        rvuCount: Math.ceil(annual / WEBMETHODS_PRICE_PER_RU_YEAR),
-        annualList: annual,
-        notes: `${apiTxn.toLocaleString()} API txn/mo → ${units.toFixed(1)}K units/yr × ~$${WEBMETHODS_ANNUAL_RATE_API_MGMT}/10K-unit/yr × ${factor} volume factor = $${annual.toLocaleString()}/yr. Rate: IBM SaaS Calculator Oct 2024 — verify before formal quoting.`,
+        capability: "API Management base (1 environment)",
+        rvuCount: apiBaseRUAnnual,
+        annualList: apiBaseList,
+        notes: `API Mgmt base: ${WEBMETHODS_API_BASE_RU_PER_MONTH} RU/env/month × 12 = ${apiBaseRUAnnual} RU/yr × $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/yr = $${apiBaseList.toLocaleString()}/yr. Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026.`,
+      });
+      const { annualRU, notes } = computeProductRU(apiTxn, WEBMETHODS_SAAS_API_TIERS, "API Management");
+      const annualList2 = Math.round(annualRU * WEBMETHODS_PRICE_PER_RU_YEAR);
+      lines.push({
+        capability: "API Management — transaction usage",
+        rvuCount: annualRU,
+        annualList: annualList2,
+        notes: `${notes} × $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/yr = $${annualList2.toLocaleString()}/yr`,
       });
     }
 
     if (inputs.needsB2B) {
-      // Use dedicated B2B txn volume if provided; fall back to integration txn as a proxy
-      const b2bTxn = inputs.estimatedB2BTransactions ?? (inputs.estimatedIntegrations ?? 0);
-      if (b2bTxn > 0) {
-        const annualTxn = b2bTxn * 12;
-        const units = annualTxn / 1000;
-        const factor = webMethodsVolumeFactor(units);
-        const annual = Math.round(units * WEBMETHODS_ANNUAL_RATE_B2B * factor);
-        const sourceNote = inputs.estimatedB2BTransactions
-          ? `${b2bTxn.toLocaleString()} B2B txn/mo`
-          : `${b2bTxn.toLocaleString()} txn/mo (proxy — provide B2B txn volume for precision)`;
+      if (intTxn > 0) {
+        const { annualRU, notes } = computeProductRU(intTxn, WEBMETHODS_SAAS_B2B_TIERS, "B2B (using integration txn as proxy)");
+        const annualList = Math.round(annualRU * WEBMETHODS_PRICE_PER_RU_YEAR);
         lines.push({
-          capability: "B2B Integration (budgetary reference rate)",
-          rvuCount: Math.ceil(annual / WEBMETHODS_PRICE_PER_RU_YEAR),
-          annualList: annual,
-          notes: `${sourceNote} → ${units.toFixed(1)}K units/yr × ~$${WEBMETHODS_ANNUAL_RATE_B2B}/K/yr × ${factor} volume factor = $${annual.toLocaleString()}/yr. Rate: IBM SaaS Calculator Oct 2024 — verify before formal quoting.`,
+          capability: "B2B Integration — transaction usage",
+          rvuCount: annualRU,
+          annualList,
+          notes: `${notes} × $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/yr = $${annualList.toLocaleString()}/yr`,
         });
       } else {
-        flags.push("B2B: provide monthly B2B/EDI transaction volume for estimate. Budgetary reference rate: ~$75/1K txn/yr (IBM SaaS Calculator Oct 2024 — verify with IBM before formal quoting).");
+        flags.push("B2B: provide monthly transaction volume for estimate. Tiers: 4 RU/100K txn (0–100M/mo), 1 RU/100K txn (100M+/mo). Base: 60 RU/env/month. Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026.");
       }
     }
 
@@ -180,20 +173,20 @@ export function computeWebMethodsScope(inputs: WebMethodsInputs): WebMethodsScop
         const factor = webMethodsVolumeFactor(units);
         const annual = Math.round(units * WEBMETHODS_ANNUAL_RATE_MFT * factor);
         lines.push({
-          capability: "Managed File Transfer / MFT (budgetary reference rate)",
+          capability: "Managed File Transfer / MFT",
           rvuCount: Math.ceil(annual / WEBMETHODS_PRICE_PER_RU_YEAR),
           annualList: annual,
-          notes: `${mftTxn.toLocaleString()} file txn/mo → ${units.toFixed(1)}K units/yr × ~$${WEBMETHODS_ANNUAL_RATE_MFT}/K/yr × ${factor} volume factor = $${annual.toLocaleString()}/yr. Rate: IBM SaaS Calculator Oct 2024 — verify before formal quoting.`,
+          notes: `${mftTxn.toLocaleString()} file txn/mo → ${annualMftTxn.toLocaleString()}/yr → ${units.toFixed(1)}K units × $${WEBMETHODS_ANNUAL_RATE_MFT}/K/yr × ${factor} volume factor = $${annual.toLocaleString()}/yr. Note: MFT Jul 2026 tier table pending — using Oct 2024 proxy rate.`,
         });
       } else {
-        flags.push("MFT: provide monthly file-transfer transaction volume for estimate. Budgetary reference rate: ~$85/1K file txn/yr (IBM SaaS Calculator Oct 2024 — verify with IBM before formal quoting).");
+        flags.push("MFT: provide monthly file-transfer transaction volume for estimate. Jul 2026 Software tiers: 20 RU/100K txn (0–10M/mo), 4 RU (10M–100M), 1 RU (100M+). SaaS MFT tiers to confirm.");
       }
     }
 
     if (lines.length <= 1) {
-      flags.push("Only base subscription estimated. Provide monthly transaction volume for full usage estimate. Base: 60 RU/month ($28,858/yr list at $40.08/RU/yr).");
+      flags.push("Only base subscription estimated. Provide monthly transaction volume for full usage estimate. Integration base: 60 RU/env/month ($28,858/yr list at $40.08/RU/yr). Transaction tiers: 4 RU/100K txn (0–100M/mo), 1 RU/100K (100M+/mo). Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026.");
     } else {
-      flags.push(`SaaS estimate uses budgetary reference rates (IBM SaaS Calculator Oct 2024 snapshot) + $40.08/RU/year list price (IWHI SaaS Sizing Calculator, 2nd Jul 2026). Verify current per-capability rates with IBM before formal quoting. Standard IBM discounting applies.`);
+      flags.push(`SaaS estimate uses confirmed tiered RU rates from IWHI SaaS Sizing Calculator, 2nd Jul 2026. List price $${WEBMETHODS_PRICE_PER_RU_YEAR}/RU/year. Standard IBM discounting applies.`);
     }
     if (inputs.needsEventDriven) {
       flags.push("⚠ Event-Driven: IBM has not confirmed a webMethods RU rate for this capability. It may be priced under IBM Event Automation (a separate product line). Do NOT quote a webMethods RU rate — confirm with IBM first.");

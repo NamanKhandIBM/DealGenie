@@ -7,25 +7,41 @@
  *
  * CONFIRMED PRICING (IBM "webMethods PIDs and Parts" guide + Seller Enablement
  *   Pricing & Packaging session, Dec 11, 2025 + IBM Docs hybrid-integration-lib, Jul 2026
- *   + IBM webMethods SaaS Calculator, Oct 2024):
+ *   + IWHI SaaS Sizing Calculator, 2nd July 2026
+ *   + IWHI Software Sizing Calculator, 2nd July 2026):
  *
  *  SaaS billing metric: Resource Unit (RU) [IBM Docs uses "RU" not "RVU" — canonical term]
  *
- *  SaaS RU structure (CONFIRMED from IBM Docs, Jul 2026):
- *   Base charge:    60 RU/month per enabled integration capability instance (production)
- *   Usage charge:   4 RU per 100,000 integration transactions for first 1M txn/year
- *                   1 RU per 100,000 integration transactions over 1M/year
+ *  SaaS RU tiered structure (CONFIRMED from IWHI SaaS Sizing Calculator, 2nd Jul 2026):
+ *   Base charge:
+ *     Integration:    60 RU/env/month  +  5 RU/additional runtime
+ *     API Management: 50 RU/env/month
+ *     B2B:            60 RU/env/month
+ *   Transaction tiers (RUs / Per transactions):
+ *     Integration:
+ *       0 – 100,000,000:    4 RU per 100,000 txn  = 0.00004 RU/txn
+ *       100,000,001+:       1 RU per 100,000 txn  = 0.00001 RU/txn
+ *     API Management:
+ *       0 – 1,000,000,000:  3 RU per 1,000,000 txn = 0.000003 RU/txn
+ *       1,000,000,001+:     2 RU per 1,000,000 txn = 0.000002 RU/txn
+ *     B2B:
+ *       0 – 100,000,000:    4 RU per 100,000 txn  = 0.00004 RU/txn
+ *       100,000,001+:       1 RU per 100,000 txn  = 0.00001 RU/txn
  *
- *  Per-product annual RU pricing (CONFIRMED — IBM webMethods SaaS Calculator, Oct 2024):
- *   Integration:       $92  per 1,000 transactions/year
- *   API Management:    $100 per 10,000 API transactions/year
- *   B2B:               $75  per 1,000 transactions/year
- *   B2B Integration:   $92  per 1,000 transactions/year
- *   MFT:               $85  per 1,000 file-transfer transactions/year
- *
- *   All five share the same volume-discount "Low Quantity Tier" factor table:
- *   Factor runs from 1.00 (≤25 units) down to 0.03 (25,001+ units).
- *   Effective RU consumption = base units × discount factor.
+ *  Software (on-prem) RU tiered structure (CONFIRMED from IWHI Software Sizing Calculator, 2nd Jul 2026):
+ *   Transaction tiers (RUs / Per transactions):
+ *     Integration:
+ *       0 – 10,000,000:     20 RU per 100,000 txn = 0.0002 RU/txn
+ *       10,000,001 – 100,000,000:  4 RU per 100,000 txn = 0.00004 RU/txn
+ *       100,000,001+:        1 RU per 100,000 txn = 0.00001 RU/txn
+ *     API Management:
+ *       0 – 100,000,000:    20 RU per 1,000,000 txn = 0.00002 RU/txn
+ *       100,000,001 – 1,000,000,000: 3 RU per 1,000,000 txn = 0.000003 RU/txn
+ *       1,000,000,001+:      2 RU per 1,000,000 txn = 0.000002 RU/txn
+ *     B2B:
+ *       0 – 10,000,000:     20 RU per 100,000 txn = 0.0002 RU/txn
+ *       10,000,001 – 100,000,000:  4 RU per 100,000 txn = 0.00004 RU/txn
+ *       100,000,001+:        1 RU per 100,000 txn = 0.00001 RU/txn
  *
  *  Event-Driven / Events: CONFIRMED as a SEPARATE IBM product — NOT priced under webMethods RU.
 *   Product: IBM Event Automation (Event Streams + Event Endpoint Management + Event Processing)
@@ -123,29 +139,117 @@ export const WEBMETHODS_PRICE_PER_RU_YEAR = 40.08;
 /** Software (on-prem) reference list price per RU per year (IWHI Software Sizing Calculator, 2nd Jul 2026) */
 export const WEBMETHODS_PRICE_PER_RU_YEAR_SOFTWARE = 40.00;
 
-/** SaaS base charge per integration capability instance per month (IBM Docs Jul 2026) */
+/** SaaS base charge per integration environment per month (IWHI SaaS Sizing Calculator, 2nd Jul 2026) */
 export const WEBMETHODS_BASE_RU_PER_MONTH = 60;
 
-/** Usage: RU per 100K integration transactions — tier 1 (first 1M txn/year) */
-export const WEBMETHODS_RU_PER_100K_TXN_TIER1 = 4;
+/** SaaS base charge per additional runtime per month (IWHI SaaS Sizing Calculator, 2nd Jul 2026) */
+export const WEBMETHODS_RUNTIME_RU_PER_MONTH = 5;
 
-/** Usage: RU per 100K integration transactions — tier 2 (over 1M txn/year) */
+/** SaaS API Management base charge per environment per month (IWHI SaaS Sizing Calculator, 2nd Jul 2026) */
+export const WEBMETHODS_API_BASE_RU_PER_MONTH = 50;
+
+// ─── SaaS transaction tier tables (IWHI SaaS Sizing Calculator, 2nd Jul 2026) ─
+
+export interface WebMethodsRUTier {
+  fromTxn: number;          // inclusive lower bound (monthly transactions)
+  ruPer: number;            // RU charge
+  perTxn: number;           // denominator (transactions)
+}
+
+/**
+ * SaaS Integration transaction tiers.
+ * Source: IWHI SaaS Sizing Calculator, Master data tab, 2nd July 2026.
+ */
+export const WEBMETHODS_SAAS_INT_TIERS: WebMethodsRUTier[] = [
+  { fromTxn:           0, ruPer: 4, perTxn: 100_000 },  // 0.00004 RU/txn
+  { fromTxn: 100_000_001, ruPer: 1, perTxn: 100_000 },  // 0.00001 RU/txn
+];
+
+/**
+ * SaaS API Management transaction tiers.
+ * Source: IWHI SaaS Sizing Calculator, Master data tab, 2nd July 2026.
+ */
+export const WEBMETHODS_SAAS_API_TIERS: WebMethodsRUTier[] = [
+  { fromTxn:             0, ruPer: 3, perTxn: 1_000_000 },  // 0.000003 RU/txn
+  { fromTxn: 1_000_000_001, ruPer: 2, perTxn: 1_000_000 },  // 0.000002 RU/txn
+];
+
+/**
+ * SaaS B2B transaction tiers.
+ * Source: IWHI SaaS Sizing Calculator, Master data tab, 2nd July 2026.
+ */
+export const WEBMETHODS_SAAS_B2B_TIERS: WebMethodsRUTier[] = [
+  { fromTxn:           0, ruPer: 4, perTxn: 100_000 },  // 0.00004 RU/txn
+  { fromTxn: 100_000_001, ruPer: 1, perTxn: 100_000 },  // 0.00001 RU/txn
+];
+
+// ─── Software (on-prem) transaction tier tables (IWHI Software Sizing Calculator, 2nd Jul 2026) ─
+
+/**
+ * Software Integration transaction tiers.
+ * Source: IWHI Software Sizing Calculator, Master data tab, 2nd July 2026.
+ */
+export const WEBMETHODS_SW_INT_TIERS: WebMethodsRUTier[] = [
+  { fromTxn:          0, ruPer: 20, perTxn: 100_000 },  // 0.0002 RU/txn
+  { fromTxn: 10_000_001, ruPer:  4, perTxn: 100_000 },  // 0.00004 RU/txn
+  { fromTxn: 100_000_001, ruPer: 1, perTxn: 100_000 },  // 0.00001 RU/txn
+];
+
+/**
+ * Software API Management transaction tiers.
+ * Source: IWHI Software Sizing Calculator, Master data tab, 2nd July 2026.
+ */
+export const WEBMETHODS_SW_API_TIERS: WebMethodsRUTier[] = [
+  { fromTxn:             0, ruPer: 20, perTxn: 1_000_000 },  // 0.00002 RU/txn
+  { fromTxn:   100_000_001, ruPer:  3, perTxn: 1_000_000 },  // 0.000003 RU/txn
+  { fromTxn: 1_000_000_001, ruPer:  2, perTxn: 1_000_000 },  // 0.000002 RU/txn
+];
+
+/**
+ * Software B2B transaction tiers.
+ * Source: IWHI Software Sizing Calculator, Master data tab, 2nd July 2026.
+ */
+export const WEBMETHODS_SW_B2B_TIERS: WebMethodsRUTier[] = [
+  { fromTxn:          0, ruPer: 20, perTxn: 100_000 },  // 0.0002 RU/txn
+  { fromTxn: 10_000_001, ruPer:  4, perTxn: 100_000 },  // 0.00004 RU/txn
+  { fromTxn: 100_000_001, ruPer: 1, perTxn: 100_000 },  // 0.00001 RU/txn
+];
+
+/**
+ * Compute monthly RU usage from monthly transaction count using a tier table.
+ * Tiers are defined by monthly fromTxn lower bounds. Each tier covers from its
+ * fromTxn up to (but not including) the next tier's fromTxn.
+ */
+export function computeMonthlyRU(monthlyTxn: number, tiers: WebMethodsRUTier[]): number {
+  let ru = 0;
+  for (let i = 0; i < tiers.length; i++) {
+    const low  = tiers[i].fromTxn;
+    const high = i + 1 < tiers.length ? tiers[i + 1].fromTxn - 1 : Infinity;
+    if (monthlyTxn < low) break;
+    const txnInBand = Math.min(monthlyTxn, high === Infinity ? monthlyTxn : high) - low + (low === 0 ? 1 : 1);
+    ru += Math.ceil((txnInBand / tiers[i].perTxn) * tiers[i].ruPer);
+  }
+  return ru;
+}
+
+// Legacy single-tier constants retained for backward compatibility
+/** @deprecated Use WEBMETHODS_SAAS_INT_TIERS. Tier-1 rate: 4 RU per 100K txn (0–100M monthly). */
+export const WEBMETHODS_RU_PER_100K_TXN_TIER1 = 4;
+/** @deprecated Use WEBMETHODS_SAAS_INT_TIERS. Tier-2 rate: 1 RU per 100K txn (100M+ monthly). */
 export const WEBMETHODS_RU_PER_100K_TXN_TIER2 = 1;
 
-// ─── Per-product annual RU pricing (IBM webMethods SaaS Calculator, Oct 2024) ─
-// All five products share a volume-discount factor table (factor 1.00→0.03).
-// Effective cost = (units / bundle_size) × annual_rate × discount_factor.
-
-/** Integration: $92 per 1,000 transactions/year */
-export const WEBMETHODS_ANNUAL_RATE_INTEGRATION  = 92;   // per 1,000 txn/yr
-/** API Management: $100 per 10,000 API transactions/year */
-export const WEBMETHODS_ANNUAL_RATE_API_MGMT     = 100;  // per 10,000 API txn/yr
-/** B2B: $75 per 1,000 transactions/year */
-export const WEBMETHODS_ANNUAL_RATE_B2B          = 75;   // per 1,000 txn/yr
-/** B2B Integration: $92 per 1,000 transactions/year */
-export const WEBMETHODS_ANNUAL_RATE_B2B_INT      = 92;   // per 1,000 txn/yr
-/** MFT: $85 per 1,000 file-transfer transactions/year */
-export const WEBMETHODS_ANNUAL_RATE_MFT          = 85;   // per 1,000 file-transfer txn/yr
+// ─── Per-product annual rates — SUPERSEDED by July 2026 RU tier tables above ─
+// Retained only for backward-compat references; do not use for new estimates.
+/** @deprecated Use WEBMETHODS_SAAS_INT_TIERS + WEBMETHODS_PRICE_PER_RU_YEAR instead. */
+export const WEBMETHODS_ANNUAL_RATE_INTEGRATION  = 92;
+/** @deprecated Use WEBMETHODS_SAAS_API_TIERS + WEBMETHODS_PRICE_PER_RU_YEAR instead. */
+export const WEBMETHODS_ANNUAL_RATE_API_MGMT     = 100;
+/** @deprecated Use WEBMETHODS_SAAS_B2B_TIERS + WEBMETHODS_PRICE_PER_RU_YEAR instead. */
+export const WEBMETHODS_ANNUAL_RATE_B2B          = 75;
+/** @deprecated Use WEBMETHODS_SAAS_B2B_TIERS + WEBMETHODS_PRICE_PER_RU_YEAR instead. */
+export const WEBMETHODS_ANNUAL_RATE_B2B_INT      = 92;
+/** @deprecated MFT tiers not yet confirmed from Jul 2026 calculator — use prior rate as proxy. */
+export const WEBMETHODS_ANNUAL_RATE_MFT          = 85;
 
 /**
  * "Low Quantity Tier" volume-discount factor table.
@@ -181,9 +285,9 @@ export const WEBMETHODS_API_TRANSACTIONS_PER_RVU = 10000;
 /** Also export as WEBMETHODS_PRICE_PER_RVU_YEAR for backward compat */
 export const WEBMETHODS_PRICE_PER_RVU_YEAR = WEBMETHODS_PRICE_PER_RU_YEAR;
 
-// Note: the per-product annual rates below (from IBM SaaS Calculator Oct 2024) may also need
-// updating when IBM publishes a new calculator with updated per-capability rates.
-// The price-per-RU was updated from $11.54 to $40.08 (IWHI SaaS Sizing Calculator, 2nd Jul 2026).
+// Note: Oct 2024 flat per-product annual rates have been superseded by the July 2026
+// RU tiered tables above (WEBMETHODS_SAAS_*_TIERS / WEBMETHODS_SW_*_TIERS).
+// The price-per-RU was updated from $11.54 to $40.08/yr (SaaS) and $40.00/yr (Software).
 
 // ─── IBM Event Automation (separate product — NOT webMethods RU) ──────────────
 // Source: "IBM Event Automation Sizing, Parts & Pricing" (Feb 10, 2026)
@@ -260,8 +364,8 @@ export const WEBMETHODS_VERIFY_VALUE_POINTS = [
 // ─── Best practices snippets ─────────────────────────────────────────────────
 export const WEBMETHODS_BEST_PRACTICES = [
   {
-    title: "Size SaaS by RU — base + usage model, with confirmed per-product rates",
-    body: "webMethods SaaS charges 60 RU/month base per enabled integration instance, plus 4 RU per 100K transactions (first 1M/yr) then 1 RU/100K over 1M. List price $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026). For per-product sizing, use the IBM SaaS Calculator rates: Integration $92/1K txn/yr, API Mgmt $100/10K API txn/yr, B2B $75/1K txn/yr, B2B Integration $92/1K txn/yr, MFT $85/1K file txn/yr. All have volume discount factors (1.00→0.03). On-prem is VPC-based — contact IBM.",
+    title: "Size SaaS by RU — base + tiered usage model (July 2026 rates)",
+    body: "webMethods SaaS charges a base per environment/month (Integration: 60 RU, API Mgmt: 50 RU, B2B: 60 RU) plus tiered per-transaction RU. Integration: 4 RU/100K txn (0–100M/mo), then 1 RU/100K txn above. API Mgmt: 3 RU/1M txn (0–1B/mo), then 2 RU/1M above. B2B: 4 RU/100K txn (0–100M/mo), then 1 RU/100K above. List price $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026). Software (on-prem) has an extra low-volume tier at 20 RU/100K txn (0–10M/mo). On-prem is $40.00/RU/year.",
   },
   {
     title: "B2B/EDI is a strong differentiator",
@@ -282,12 +386,14 @@ export const WEBMETHODS_BEST_PRACTICES = [
 ];
 
 export const WEBMETHODS_QUICK_REFERENCE = [
-  { term: "RU", definition: "Resource Unit — SaaS billing unit. $40.08/RU/year (IWHI SaaS Sizing Calculator, 2nd Jul 2026). Base: 60 RU/month/instance. Usage: 4 RU/100K txn (tier 1), 1 RU/100K (tier 2 over 1M/yr)." },
-  { term: "Integration rate", definition: "$92 per 1,000 transactions/year (IBM SaaS Calculator, Oct 2024). Volume discount factor 1.00→0.03." },
-  { term: "API Management rate", definition: "$100 per 10,000 API transactions/year (IBM SaaS Calculator, Oct 2024)." },
-  { term: "B2B rate", definition: "$75 per 1,000 transactions/year (IBM SaaS Calculator, Oct 2024)." },
-  { term: "B2B Integration rate", definition: "$92 per 1,000 transactions/year (IBM SaaS Calculator, Oct 2024)." },
-  { term: "MFT rate", definition: "$85 per 1,000 file-transfer transactions/year (IBM SaaS Calculator, Oct 2024)." },
+  { term: "RU", definition: "Resource Unit — SaaS billing unit. $40.08/RU/year (SaaS) or $40.00/RU/year (Software). Confirmed: IWHI Sizing Calculators, 2nd Jul 2026." },
+  { term: "Integration rate (SaaS)", definition: "Base: 60 RU/env/month + 5 RU/runtime. Tiers: 4 RU per 100K txn (0–100M/mo), 1 RU per 100K txn (100M+/mo). Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026." },
+  { term: "API Management rate (SaaS)", definition: "Base: 50 RU/env/month. Tiers: 3 RU per 1M txn (0–1B/mo), 2 RU per 1M txn (1B+/mo). Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026." },
+  { term: "B2B rate (SaaS)", definition: "Base: 60 RU/env/month. Tiers: 4 RU per 100K txn (0–100M/mo), 1 RU per 100K txn (100M+/mo). Source: IWHI SaaS Sizing Calculator, 2nd Jul 2026." },
+  { term: "Integration rate (Software)", definition: "Tiers: 20 RU per 100K txn (0–10M/mo), 4 RU per 100K txn (10M–100M/mo), 1 RU per 100K txn (100M+/mo). Source: IWHI Software Sizing Calculator, 2nd Jul 2026." },
+  { term: "API Management rate (Software)", definition: "Tiers: 20 RU per 1M txn (0–100M/mo), 3 RU per 1M txn (100M–1B/mo), 2 RU per 1M txn (1B+/mo). Source: IWHI Software Sizing Calculator, 2nd Jul 2026." },
+  { term: "B2B rate (Software)", definition: "Tiers: 20 RU per 100K txn (0–10M/mo), 4 RU per 100K txn (10M–100M/mo), 1 RU per 100K txn (100M+/mo). Source: IWHI Software Sizing Calculator, 2nd Jul 2026." },
+  { term: "MFT rate", definition: "Tiers from Jul 2026 Software calc: 20 RU per 100K txn (0–10M/mo), 4 RU (10M–100M), 1 RU (100M+). SaaS MFT tiers similar — confirm from SaaS calculator. Prior proxy: $85/1K file txn/yr (Oct 2024)." },
   { term: "Event-Driven → IBM Event Automation", definition: "NOT a webMethods RU product. IBM Event Automation (PID 5900-AXM) is the correct SKU. Billing: VPC. $8,000/VPC perpetual (D0DU6ZX) or $3,204/VPC/year subscription (D0DU8ZX). Quote as a separate deal." },
   { term: "Volume discount factor", definition: "All webMethods SaaS products share a factor table: 1.00 at ≤25 units, 0.70 at 26–100, 0.50 at 101–500, 0.30 at 501–2500, 0.10 at 2501–25000, 0.03 at 25001+." },
   { term: "Flow Pilot", definition: "AI assistant inside webMethods for authoring, documenting, and testing integration flows." },
