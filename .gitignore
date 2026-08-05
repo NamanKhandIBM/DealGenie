@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Bob / AI tooling
+.bob/
+
+# Playwright MCP session artifacts
+.playwright-mcp/
+
+# Generated HTML report outputs
+*.html
